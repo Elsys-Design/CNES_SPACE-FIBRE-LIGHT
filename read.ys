@@ -1,0 +1,11 @@
+#additionnal library xilinx to allow elaboration
+#verific -work unisim  -vhdl xil_lib/unisim_VPKG.vhd
+#verific -work unisim  -vhdl xil_lib/unisim_VCOMP.vhd
+#use find . -type f -name "*.vhd" to find every VHDL file in folder
+
+
+#project files
+verific  -vhdl  IP_SPACE_FIBRE/02_dev/01_design/04_packages/pkg_phy_plus_lane.vhd
+verific  -vhdl  IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_phy_plus_lane/lane_init_fsm.vhd
+verific  -vhdl  IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_phy_plus_lane/phy_plus_lane.vhd
+verific  -vhdl  IP_SPACE_FIBRE/02_dev/01_design/03_sources/ip_spacefibre_light_top/spacefibre_light_top.vhd

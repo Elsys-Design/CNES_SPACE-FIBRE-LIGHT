@@ -1,0 +1,24 @@
+#this wokflow works only on bash linux 
+
+variables:
+   GIT_STRATEGY: clone
+   #download only depth 1 of all git project
+   GIT_DEPTH: 1
+   #download all submodules
+   GIT_SUBMODULE_STRATEGY: recursive
+  
+
+stages:
+   - publish_version
+   
+#update linty server on commit
+job_publish_version:
+      stage: publish_version
+      before_script: 
+         -  ( apt-get update -y && apt-get install git -y )
+      script: 
+         - git fetch -a
+         - git checkout $CI_COMMIT_BRANCH
+         - git pull 
+         - git remote add upstream https://oauth2:$TOKEN_LINTY@github.com/Linty-Services/spacefibrelight.git 
+         - git push upstream

@@ -1,0 +1,36 @@
+// BLH dynamic attribute configuration look-up table addresses
+//
+
+`ifdef B_IOBUFE3_DEFINES_VH
+`else
+`define B_IOBUFE3_DEFINES_VH
+
+// Look-up table parameters
+//
+
+`define IOBUFE3_ADDR_N  6
+`define IOBUFE3_ADDR_SZ 32
+`define IOBUFE3_DATA_SZ 144
+
+// Attribute addresses
+//
+
+`define IOBUFE3__DRIVE    32'h00000000
+`define IOBUFE3__DRIVE_SZ 32
+
+`define IOBUFE3__IBUF_LOW_PWR    32'h00000001
+`define IOBUFE3__IBUF_LOW_PWR_SZ 40
+
+`define IOBUFE3__IOSTANDARD    32'h00000002
+`define IOBUFE3__IOSTANDARD_SZ 56
+
+`define IOBUFE3__SIM_DEVICE    32'h00000003
+`define IOBUFE3__SIM_DEVICE_SZ 144
+
+`define IOBUFE3__SIM_INPUT_BUFFER_OFFSET    32'h00000004
+`define IOBUFE3__SIM_INPUT_BUFFER_OFFSET_SZ 32
+
+`define IOBUFE3__USE_IBUFDISABLE    32'h00000005
+`define IOBUFE3__USE_IBUFDISABLE_SZ 72
+
+`endif  // B_IOBUFE3_DEFINES_VH

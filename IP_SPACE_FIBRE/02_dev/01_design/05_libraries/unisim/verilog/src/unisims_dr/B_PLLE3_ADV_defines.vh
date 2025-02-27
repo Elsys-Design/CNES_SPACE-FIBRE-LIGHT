@@ -1,0 +1,103 @@
+// BLH dynamic attribute configuration look-up table addresses
+//
+// Build Summary:
+//    Built By:     mk_defines_vh 3.0001
+//    Built On:     Tue Apr 16 13:43:16 2013
+//    Bundle:       PLLE3
+//    Architecture: olympus
+//    Snapshot Dir: /tmp/F8dowmeFlx
+// Environment Variables:
+//    XILENV="/build/xcoxfndry/P/env/"
+//    MYXILENV=""
+//
+
+`ifdef B_PLLE3_ADV_DEFINES_VH
+`else
+`define B_PLLE3_ADV_DEFINES_VH
+
+// Look-up table parameters
+//
+
+`define PLLE3_ADV_ADDR_N  26
+`define PLLE3_ADV_ADDR_SZ 32
+`define PLLE3_ADV_DATA_SZ 136
+
+// Attribute addresses
+//
+
+`define PLLE3_ADV__BANDWIDTH   	32'h0000	// Type=STRING; Values=OPTIMIZED,HIGH,LOW
+`define PLLE3_ADV__BANDWIDTH_SZ	72
+
+`define PLLE3_ADV__CLKFBOUT_MULT   	32'h0001	// Type=DECIMAL; Min=1, Max=19
+`define PLLE3_ADV__CLKFBOUT_MULT_SZ	32
+
+`define PLLE3_ADV__CLKFBOUT_PHASE   	32'h0002	// Type=FLOAT; Min=-360.000, Max=360.000
+`define PLLE3_ADV__CLKFBOUT_PHASE_SZ	64
+
+`define PLLE3_ADV__CLKIN_FREQ_MAX   	32'h0003	// Type=FLOAT; Min=800.000, Max=1066.000
+`define PLLE3_ADV__CLKIN_FREQ_MAX_SZ	64
+
+`define PLLE3_ADV__CLKIN_FREQ_MIN   	32'h0004	// Type=FLOAT; Min=70.000, Max=70.000
+`define PLLE3_ADV__CLKIN_FREQ_MIN_SZ	64
+
+`define PLLE3_ADV__CLKIN_PERIOD   	32'h0005	// Type=FLOAT; Min=0.000, Max=14.286
+`define PLLE3_ADV__CLKIN_PERIOD_SZ	64
+
+`define PLLE3_ADV__CLKOUT0_DIVIDE   	32'h0006	// Type=DECIMAL; Min=1, Max=128
+`define PLLE3_ADV__CLKOUT0_DIVIDE_SZ	32
+
+`define PLLE3_ADV__CLKOUT0_DUTY_CYCLE   	32'h0007	// Type=FLOAT; Min=0.001, Max=0.999
+`define PLLE3_ADV__CLKOUT0_DUTY_CYCLE_SZ	64
+
+`define PLLE3_ADV__CLKOUT0_PHASE   	32'h0008	// Type=FLOAT; Min=-360.000, Max=360.000
+`define PLLE3_ADV__CLKOUT0_PHASE_SZ	64
+
+`define PLLE3_ADV__CLKOUT1_DIVIDE   	32'h0009	// Type=DECIMAL; Min=1, Max=128
+`define PLLE3_ADV__CLKOUT1_DIVIDE_SZ	32
+
+`define PLLE3_ADV__CLKOUT1_DUTY_CYCLE   	32'h000a	// Type=FLOAT; Min=0.001, Max=0.999
+`define PLLE3_ADV__CLKOUT1_DUTY_CYCLE_SZ	64
+
+`define PLLE3_ADV__CLKOUT1_PHASE   	32'h000b	// Type=FLOAT; Min=-360.000, Max=360.000
+`define PLLE3_ADV__CLKOUT1_PHASE_SZ	64
+
+`define PLLE3_ADV__CLKOUTPHY_MODE   	32'h000c	// Type=STRING; Values=VCO_2X,CLKIN,VCO,VCO_HALF
+`define PLLE3_ADV__CLKOUTPHY_MODE_SZ	64
+
+`define PLLE3_ADV__CLKPFD_FREQ_MAX   	32'h000d	// Type=FLOAT; Min=600.000, Max=667.500
+`define PLLE3_ADV__CLKPFD_FREQ_MAX_SZ	64
+
+`define PLLE3_ADV__CLKPFD_FREQ_MIN   	32'h000e	// Type=FLOAT; Min=70.000, Max=70.000
+`define PLLE3_ADV__CLKPFD_FREQ_MIN_SZ	64
+
+`define PLLE3_ADV__COMPENSATION   	32'h000f	// Type=STRING; Values=AUTO,BUF_IN,INTERNAL
+`define PLLE3_ADV__COMPENSATION_SZ	64
+
+`define PLLE3_ADV__DIVCLK_DIVIDE   	32'h0010	// Type=DECIMAL; Min=1, Max=15
+`define PLLE3_ADV__DIVCLK_DIVIDE_SZ	32
+
+`define PLLE3_ADV__IS_CLKFBIN_INVERTED   	32'h0011	// Type=BINARY; Min=1'b0, Max=1'b1
+`define PLLE3_ADV__IS_CLKFBIN_INVERTED_SZ	1
+
+`define PLLE3_ADV__IS_CLKIN_INVERTED   	32'h0012	// Type=BINARY; Min=1'b0, Max=1'b1
+`define PLLE3_ADV__IS_CLKIN_INVERTED_SZ	1
+
+`define PLLE3_ADV__IS_PWRDWN_INVERTED   	32'h0013	// Type=BINARY; Min=1'b0, Max=1'b1
+`define PLLE3_ADV__IS_PWRDWN_INVERTED_SZ	1
+
+`define PLLE3_ADV__IS_RST_INVERTED   	32'h0014	// Type=BINARY; Min=1'b0, Max=1'b1
+`define PLLE3_ADV__IS_RST_INVERTED_SZ	1
+
+`define PLLE3_ADV__REF_JITTER   	32'h0015	// Type=FLOAT; Min=0.000, Max=0.999
+`define PLLE3_ADV__REF_JITTER_SZ	64
+
+`define PLLE3_ADV__STARTUP_WAIT   	32'h0017	// Type=BOOLSTRING; Values=FALSE,TRUE
+`define PLLE3_ADV__STARTUP_WAIT_SZ	40
+
+`define PLLE3_ADV__VCOCLK_FREQ_MAX   	32'h0018	// Type=FLOAT; Min=1200.000, Max=1335.000
+`define PLLE3_ADV__VCOCLK_FREQ_MAX_SZ	64
+
+`define PLLE3_ADV__VCOCLK_FREQ_MIN   	32'h0019	// Type=FLOAT; Min=600.000, Max=600.000
+`define PLLE3_ADV__VCOCLK_FREQ_MIN_SZ	64
+
+`endif  // B_PLLE3_ADV_DEFINES_VH

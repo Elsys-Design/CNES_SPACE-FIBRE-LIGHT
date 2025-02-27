@@ -1,0 +1,54 @@
+// BLH dynamic attribute configuration look-up table addresses
+//
+
+`ifdef B_RFADC_DEFINES_VH
+`else
+`define B_RFADC_DEFINES_VH
+
+// Look-up table parameters
+//
+
+`define RFADC_ADDR_N  12
+`define RFADC_ADDR_SZ 32
+`define RFADC_DATA_SZ 152
+
+// Attribute addresses
+//
+
+`define RFADC__LD_DEVICE    32'h00000000
+`define RFADC__LD_DEVICE_SZ 16
+
+`define RFADC__OPT_ANALOG    32'h00000001
+`define RFADC__OPT_ANALOG_SZ 16
+
+`define RFADC__OPT_CLK_DIST    32'h00000002
+`define RFADC__OPT_CLK_DIST_SZ 16
+
+`define RFADC__SIM_DEVICE    32'h00000003
+`define RFADC__SIM_DEVICE_SZ 152
+
+`define RFADC__XPA_ACTIVE_DUTYCYCLE    32'h00000004
+`define RFADC__XPA_ACTIVE_DUTYCYCLE_SZ 7
+
+`define RFADC__XPA_CFG0    32'h00000005
+`define RFADC__XPA_CFG0_SZ 16
+
+`define RFADC__XPA_CFG1    32'h00000006
+`define RFADC__XPA_CFG1_SZ 16
+
+`define RFADC__XPA_CFG2    32'h00000007
+`define RFADC__XPA_CFG2_SZ 16
+
+`define RFADC__XPA_NUM_ADCS    32'h00000008
+`define RFADC__XPA_NUM_ADCS_SZ 16
+
+`define RFADC__XPA_NUM_DDCS    32'h00000009
+`define RFADC__XPA_NUM_DDCS_SZ 3
+
+`define RFADC__XPA_PLL_USED    32'h0000000a
+`define RFADC__XPA_PLL_USED_SZ 112
+
+`define RFADC__XPA_SAMPLE_RATE_MSPS    32'h0000000b
+`define RFADC__XPA_SAMPLE_RATE_MSPS_SZ 14
+
+`endif  // B_RFADC_DEFINES_VH

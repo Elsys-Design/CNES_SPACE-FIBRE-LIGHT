@@ -1,0 +1,60 @@
+`include "B_RAM32X16DR8_defines.vh"
+
+reg [`RAM32X16DR8_DATA_SZ-1:0] ATTR [0:`RAM32X16DR8_ADDR_N-1];
+reg [`RAM32X16DR8__INIT_A_SZ-1:0] INIT_A_REG = INIT_A;
+reg [`RAM32X16DR8__INIT_B_SZ-1:0] INIT_B_REG = INIT_B;
+reg [`RAM32X16DR8__INIT_C_SZ-1:0] INIT_C_REG = INIT_C;
+reg [`RAM32X16DR8__INIT_D_SZ-1:0] INIT_D_REG = INIT_D;
+reg [`RAM32X16DR8__INIT_E_SZ-1:0] INIT_E_REG = INIT_E;
+reg [`RAM32X16DR8__INIT_F_SZ-1:0] INIT_F_REG = INIT_F;
+reg [`RAM32X16DR8__INIT_G_SZ-1:0] INIT_G_REG = INIT_G;
+reg [`RAM32X16DR8__INIT_H_SZ-1:0] INIT_H_REG = INIT_H;
+reg IS_WCLK_INVERTED_REG = IS_WCLK_INVERTED;
+
+initial begin
+  ATTR[`RAM32X16DR8__INIT_A] = INIT_A;
+  ATTR[`RAM32X16DR8__INIT_B] = INIT_B;
+  ATTR[`RAM32X16DR8__INIT_C] = INIT_C;
+  ATTR[`RAM32X16DR8__INIT_D] = INIT_D;
+  ATTR[`RAM32X16DR8__INIT_E] = INIT_E;
+  ATTR[`RAM32X16DR8__INIT_F] = INIT_F;
+  ATTR[`RAM32X16DR8__INIT_G] = INIT_G;
+  ATTR[`RAM32X16DR8__INIT_H] = INIT_H;
+  ATTR[`RAM32X16DR8__IS_WCLK_INVERTED] = IS_WCLK_INVERTED;
+end
+
+always @(trig_attr) begin
+  INIT_A_REG = ATTR[`RAM32X16DR8__INIT_A];
+  INIT_B_REG = ATTR[`RAM32X16DR8__INIT_B];
+  INIT_C_REG = ATTR[`RAM32X16DR8__INIT_C];
+  INIT_D_REG = ATTR[`RAM32X16DR8__INIT_D];
+  INIT_E_REG = ATTR[`RAM32X16DR8__INIT_E];
+  INIT_F_REG = ATTR[`RAM32X16DR8__INIT_F];
+  INIT_G_REG = ATTR[`RAM32X16DR8__INIT_G];
+  INIT_H_REG = ATTR[`RAM32X16DR8__INIT_H];
+  IS_WCLK_INVERTED_REG = ATTR[`RAM32X16DR8__IS_WCLK_INVERTED];
+end
+
+// procedures to override, read attribute values
+
+task write_attr;
+  input  [`RAM32X16DR8_ADDR_SZ-1:0] addr;
+  input  [`RAM32X16DR8_DATA_SZ-1:0] data;
+  begin
+    ATTR[addr] = data;
+    trig_attr = ~trig_attr; // to be removed
+  end
+endtask
+
+function [`RAM32X16DR8_DATA_SZ-1:0] read_attr;
+  input  [`RAM32X16DR8_ADDR_SZ-1:0] addr;
+  begin
+    read_attr = ATTR[addr];
+  end
+endfunction
+
+task commit_attr;
+  begin
+trig_attr = ~trig_attr;
+  end
+endtask

@@ -1,0 +1,9 @@
+{
+	"version": "1.0",
+	"modules": {
+		"extended_phy_layer": {
+			"proto_instances": {
+			}
+		}
+	}
+}

@@ -1,0 +1,9 @@
+{
+	"version": "1.0",
+	"modules": {
+		"BufG_GT_bd": {
+			"proto_instances": {
+			}
+		}
+	}
+}

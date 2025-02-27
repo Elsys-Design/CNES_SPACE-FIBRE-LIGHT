@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<EDKSYSTEM EDWVERSION="1.2" TIMESTAMP="Tue Nov 26 11:25:02 2024" VIVADOVERSION="2024.1">
+
+  <SYSTEMINFO ARCH="versal" BOARD="xilinx.com:vek280:part0:1.2" DEVICE="xcve2802" NAME="BufG_GT_bd" PACKAGE="vsvh1760" SPEEDGRADE="-2MP"/>
+
+  <EXTERNALPORTS>
+    <PORT DIR="I" NAME="gt_bufgtce_0" SIGIS="undef" SIGNAME="External_Ports_gt_bufgtce_0">
+      <CONNECTIONS>
+        <CONNECTION INSTANCE="bufg_gt_0" PORT="gt_bufgtce"/>
+      </CONNECTIONS>
+    </PORT>
+    <PORT DIR="I" NAME="gt_bufgtcemask_0" SIGIS="undef" SIGNAME="External_Ports_gt_bufgtcemask_0">
+      <CONNECTIONS>
+        <CONNECTION INSTANCE="bufg_gt_0" PORT="gt_bufgtcemask"/>
+      </CONNECTIONS>
+    </PORT>
+    <PORT DIR="I" NAME="gt_bufgtclr_0" SIGIS="undef" SIGNAME="External_Ports_gt_bufgtclr_0">
+      <CONNECTIONS>
+        <CONNECTION INSTANCE="bufg_gt_0" PORT="gt_bufgtclr"/>
+      </CONNECTIONS>
+    </PORT>
+    <PORT DIR="I" NAME="gt_bufgtclrmask_0" SIGIS="undef" SIGNAME="External_Ports_gt_bufgtclrmask_0">
+      <CONNECTIONS>
+        <CONNECTION INSTANCE="bufg_gt_0" PORT="gt_bufgtclrmask"/>
+      </CONNECTIONS>
+    </PORT>
+    <PORT DIR="I" LEFT="2" NAME="gt_bufgtdiv_0" RIGHT="0" SIGIS="undef" SIGNAME="External_Ports_gt_bufgtdiv_0">
+      <CONNECTIONS>
+        <CONNECTION INSTANCE="bufg_gt_0" PORT="gt_bufgtdiv"/>
+      </CONNECTIONS>
+    </PORT>
+    <PORT CLKFREQUENCY="100000000" DIR="I" NAME="outclk_0" SIGIS="clk" SIGNAME="External_Ports_outclk_0">
+      <CONNECTIONS>
+        <CONNECTION INSTANCE="bufg_gt_0" PORT="outclk"/>
+      </CONNECTIONS>
+    </PORT>
+    <PORT CLKFREQUENCY="150000000" DIR="O" NAME="usrclk_0" SIGIS="gt_usrclk" SIGNAME="bufg_gt_0_usrclk">
+      <CONNECTIONS>
+        <CONNECTION INSTANCE="bufg_gt_0" PORT="usrclk"/>
+      </CONNECTIONS>
+    </PORT>
+  </EXTERNALPORTS>
+
+  <EXTERNALINTERFACES/>
+
+  <MODULES>
+    <MODULE COREREVISION="8" FULLNAME="/bufg_gt_0" HWVERSION="1.0" INSTANCE="bufg_gt_0" IPTYPE="PERIPHERAL" IS_ENABLE="1" MODCLASS="PERIPHERAL" MODTYPE="bufg_gt" VLNV="xilinx.com:ip:bufg_gt:1.0">
+      <DOCUMENTS>
+        <DOCUMENT SOURCE="http://www.xilinx.com/cgi-bin/docs/ipdoc?c=bufg_gt;v=v1_0;d=pg331-versal-transceivers.pdf"/>
+      </DOCUMENTS>
+      <PARAMETERS>
+        <PARAMETER NAME="Component_Name" VALUE="BufG_GT_bd_bufg_gt_0_0"/>
+        <PARAMETER NAME="FREQ_HZ" VALUE="150000000"/>
+        <PARAMETER NAME="LOC" VALUE="UNPLACED"/>
+        <PARAMETER NAME="EDK_IPTYPE" VALUE="PERIPHERAL"/>
+      </PARAMETERS>
+      <PORTS>
+        <PORT DIR="I" NAME="gt_bufgtce" SIGIS="undef" SIGNAME="External_Ports_gt_bufgtce_0">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="External_Ports" PORT="gt_bufgtce_0"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="gt_bufgtcemask" SIGIS="undef" SIGNAME="External_Ports_gt_bufgtcemask_0">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="External_Ports" PORT="gt_bufgtcemask_0"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="gt_bufgtclr" SIGIS="undef" SIGNAME="External_Ports_gt_bufgtclr_0">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="External_Ports" PORT="gt_bufgtclr_0"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="gt_bufgtclrmask" SIGIS="undef" SIGNAME="External_Ports_gt_bufgtclrmask_0">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="External_Ports" PORT="gt_bufgtclrmask_0"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="2" NAME="gt_bufgtdiv" RIGHT="0" SIGIS="undef" SIGNAME="External_Ports_gt_bufgtdiv_0">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="External_Ports" PORT="gt_bufgtdiv_0"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT CLKFREQUENCY="100000000" DIR="I" NAME="outclk" SIGIS="clk" SIGNAME="External_Ports_outclk_0">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="External_Ports" PORT="outclk_0"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT CLKFREQUENCY="150000000" DIR="O" NAME="usrclk" SIGIS="gt_usrclk" SIGNAME="bufg_gt_0_usrclk">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="External_Ports" PORT="usrclk_0"/>
+          </CONNECTIONS>
+        </PORT>
+      </PORTS>
+      <BUSINTERFACES/>
+    </MODULE>
+  </MODULES>
+
+</EDKSYSTEM>
