@@ -10,7 +10,7 @@
 #set your variable below
 
 #set you absolute path to the root of the project spacefibrelight
-export SPACEFIBRELIGHT_ROOT_PATH=/home/flo/FLORENT/GIT/Spacefibrelight/24-9771-ed_cnes_ip-space-fiber-CNES-rev
+export SPACEFIBRELIGHT_ROOT_PATH=/home/flo/temp/elsys/24-9771-ED_CNES_IP-SPACE-FIBRE
 
 #set your framework location
 export FRAMEWORK_COCOTB_INSTALL_PATH=/home/flo/FLORENT/GIT/24-9771-ed-cnes_test-cocotb-framework
