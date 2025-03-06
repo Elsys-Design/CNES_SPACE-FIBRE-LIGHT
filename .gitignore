@@ -37,18 +37,12 @@
 # ignore cocotb generated files
 **/results.xml
 
-
-# ignore uneeded files and files with name too long for windows
-**/extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0/template_verilog_refclk_pins.txt
-**/GTY_wizard_exemple_design_sources/*
-
 #find . -type f -size +5M
 #ignore file >5mo
-IP_SPACE_FIBRE/02_dev/01_design/05_libraries/secureip/gtyp_quad/gtyp_quad_002.svp
+
 IP_SPACE_FIBRE/02_dev/01_design/05_libraries/unisim/verilog/src/unisims/CPM5.v
 IP_SPACE_FIBRE/02_dev/01_design/05_libraries/unisim/verilog/src/unisims/HNICX.v
-IP_SPACE_FIBRE/02_dev/01_design/05_libraries/unisim/verilog/src/unisim_retarget_comp.vp
-IP_SPACE_FIBRE/02_dev/01_design/05_libraries/unisim/vhdl/src/unisims/unisim_retarget_VCOMP.vhdp
+
 
 #specific custom script
 IP_SPACE_FIBRE/02_dev/03_verification/05_scenario/custom.do
