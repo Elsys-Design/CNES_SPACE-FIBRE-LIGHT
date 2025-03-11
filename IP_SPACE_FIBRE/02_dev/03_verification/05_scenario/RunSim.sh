@@ -9,7 +9,7 @@
 ###################################
 #set your variable below
 
-#set you absolute path to the root of the project spacefibrelight
+#set your absolute path to the root of the project spacefibrelight
 export SPACEFIBRELIGHT_ROOT_PATH=/mnt/6ae9ae0d-927d-480b-9d98-fd506029b645/CNES_Project/24-9771-ED_CNES_IP-SPACE-FIBRE
 
 #set your framework location
