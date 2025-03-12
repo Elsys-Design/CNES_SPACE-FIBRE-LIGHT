@@ -1,4 +1,4 @@
-##This file implement common questa libraries used for simulation
+#This file implement common questa libraries used for simulation
 
 #get spacefibrelight project   main root path
 set rootpath $env(SPACEFIBRELIGHT_ROOT_PATH)
