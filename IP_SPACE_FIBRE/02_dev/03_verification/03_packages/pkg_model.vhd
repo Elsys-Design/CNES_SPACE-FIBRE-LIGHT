@@ -292,6 +292,10 @@ package pkg_model is
 
   constant C_VALID_K_WIDTH              : integer                                           := 4;                --- Valid K-character bus width
   
+  constant C_EOP                        : std_logic_vector(7 downto 0)                      := "11111101";       --- EOP value
+  constant C_EEP                        : std_logic_vector(7 downto 0)                      := "11111110";       --- EEP value
+  constant C_FILL                       : std_logic_vector(7 downto 0)                      := "11111011";       --- FILL value
+  
   -- #####################################################################
   -- # INIT functions
   -- #####################################################################

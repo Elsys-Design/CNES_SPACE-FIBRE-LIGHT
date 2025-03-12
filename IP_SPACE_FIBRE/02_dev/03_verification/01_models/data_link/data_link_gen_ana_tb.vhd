@@ -92,21 +92,15 @@ architecture tesbench of DATA_LINK_GEN_ANA_TB is
     signal data_tx            : std_logic_vector(C_INTERNAL_BUS_WIDTH -1 downto 0);
     signal new_data_tx_ppl       : std_logic;                                          -- Flag to write data in FIFO TX
     signal fifo_tx_full_ppl      : std_logic;                                          -- Flag full of the FIFO TX
-    signal lane_reset_dl         : std_logic;                                          -- Lane Reset to the lane layer
     signal valid_k_charac_tx_ppl : std_logic_vector(C_VALID_K_WIDTH -1 downto 0);       -- K charachter valid in the 32-bit DATA_TX_PPL vector
-
-    signal data_rx            : std_logic_vector(C_INTERNAL_BUS_WIDTH -1 downto 0);
-    signal fifo_rx_empty_ppl  : std_logic;                                          -- Flag full of the FIFO TX
-    signal fifo_rx_rd_en_ppl  : std_logic;                                          -- Lane Reset to the lane layer
-    signal valid_k_charac_rx_ppl : std_logic_vector(C_VALID_K_WIDTH -1 downto 0);       -- K charachter valid in the 32-bit DATA_TX_PPL vector
-    signal far_end_capa_dl_i     : std_logic_vector(C_LA_LANE_CAPA_WIDTH-1  downto 0); -- Capability field receive in INIT3 control word
-    
-    signal fifo_data_tx : std_logic_vector(36 -1 downto 0);       -- K charachter valid in the 32-bit DATA_TX_PPL vector
-    signal fifo_data_rx : std_logic_vector(36 -1 downto 0);       -- K charachter valid in the 32-bit DATA_TX_PPL vector
+    signal tlast                 : std_logic;
 
     -- signaux testbench
 
 begin
+
+   clk   <= '1' after 3.3 ns when clk = '0' else
+            '0' after 3.3 ns when clk = '1';
    ---------------------------------------------------------------------------
    -- INSTANCE: I_LANE_GENERATOR_TB
    -- Description : Lane generator model
@@ -147,7 +141,7 @@ begin
    -- Description : Lane analyzer model
    ---------------------------------------------------------------------------
 
-   I_DATA_LINK_ANALYZER: entity work.LANE_ANALYZER
+   I_DATA_LINK_ANALYZER: entity work.DATA_LINK_ANALYZER
    port map (
       CLK             =>  clk,
       RST_N           =>  rstn,
@@ -254,27 +248,6 @@ begin
    wait for 2*hp;
    rstn <= '1';
    rst  <= '0';
---    #########################################################################
---    ###    Test 1: Control Word lane_analyzer and lane_generator          ###
---    #########################################################################
-   -- set Configuration register lane_generator
-   s_gen_axi_wdata(C_DG_FRAME_NB_MAX_BTFD downto 0)                                  <= std_logic_vector(to_unsigned(0,  C_LG_FRAME_NB_WIDTH));        -- lane parameters register, sets the bit field of the lane start signal to '1'
-   s_gen_axi_wdata(C_DG_FRAME_SIZE_MAX_BTFD downto C_DG_FRAME_NB_MAX_BTFD +1)        <= std_logic_vector(to_unsigned(0,C_LG_FRAME_SIZE_WIDTH));            -- lane parameters register, sets the bit field of the auto start signal to '1'
-   s_gen_axi_wdata(C_DG_INTER_PKT_DELAY_MAX_BTFD downto C_DG_FRAME_SIZE_MAX_BTFD +1) <= std_logic_vector(to_unsigned(1, C_LG_INTER_PKT_DELAY_WIDTH)); -- lane parameters register, sets the bit field of the lane reset signal to '1'
-   s_gen_axi_wdata(C_DG_GEN_DATA_BTFD)                                               <= '0';                                                             -- lane parameters register, sets the bit field of the parallel loopback signal to '1'
-   s_gen_axi_wdata(C_DG_DATA_MODE_MAX_BTFD downto C_DG_GEN_DATA_BTFD +1)             <= std_logic_vector(C_DG_DM_CONTROL_WORD);                                               -- lane parameters register, sets the bit field of the parallel loopback signal to '1'
-   s_gen_axi_awaddr  	                                                             <= x"000000" & C_ADDR_DG_CONFIG;
-   write_axi(s_gen_axi_awvalid, s_gen_axi_wvalid, s_gen_axi_bready, clk, s_gen_axi_awready, s_gen_axi_wready, s_gen_axi_bvalid);
-   wait for 2*hp;
-   s_gen_axi_araddr <= x"000000" & C_ADDR_LG_CONFIG;
-   read_axi(s_gen_axi_arvalid, s_gen_axi_rready, clk, s_gen_axi_arready, s_gen_axi_rvalid);
-   check(s_gen_axi_rdata(C_DG_FRAME_NB_MAX_BTFD downto 0),                                  std_logic_vector(to_unsigned(0,  C_LG_FRAME_NB_WIDTH)),        "Frame number reg",    PRINT_ON_ERROR);
-   check(s_gen_axi_rdata(C_DG_FRAME_SIZE_MAX_BTFD downto C_DG_FRAME_NB_MAX_BTFD +1),        std_logic_vector(to_unsigned(0,C_LG_FRAME_SIZE_WIDTH)),            "Frame size reg",      PRINT_ON_ERROR);
-   check(s_gen_axi_rdata(C_DG_INTER_PKT_DELAY_MAX_BTFD downto C_DG_FRAME_SIZE_MAX_BTFD +1), std_logic_vector(to_unsigned(1, C_LG_INTER_PKT_DELAY_WIDTH)), "Inter-packet delay",  PRINT_ON_ERROR);
-   check(s_gen_axi_rdata(C_DG_GEN_DATA_BTFD),                                               '0',                                                             "Generation type reg", PRINT_ON_ERROR);
-   check(s_gen_axi_rdata(C_DG_DATA_MODE_MAX_BTFD downto C_DG_GEN_DATA_BTFD +1),             std_logic_vector(C_LG_DM_CONTROL_WORD),                              "Test 1 Data mode reg",       PRINT_ON_ERROR);
-   s_gen_axi_wdata   <= (others => '0');
-   wait for 2*hp;
  --    ########################################################
  --    ###  Configuration regsiter lane_analyzer            ###
  --    ########################################################
@@ -336,7 +309,7 @@ begin
 
             read_axi(s_ana_axi_arvalid, s_ana_axi_rready, clk, s_ana_axi_arready, s_ana_axi_rvalid);
 
-            check(s_ana_axi_rdata(C_LA_ERR_CNT_MAX_BTFD downto C_LA_TEST_END_BTFD +1),  std_logic_vector(to_unsigned(0,C_LA_CNT_ERR_MAX_WIDTH)), "Error counter not equal to 0", PRINT_ON_ERROR);
+            check(s_ana_axi_rdata(C_LA_ERR_CNT_MAX_BTFD downto C_LA_TEST_END_BTFD +1),  std_logic_vector(to_unsigned(0,C_LA_CNT_ERR_MAX_WIDTH)), "Test" & INTEGER'IMAGE(h) & "." & INTEGER'IMAGE(i) & "." & INTEGER'IMAGE(size_frame) & " Error counter not equal to 0", PRINT_ON_ERROR);
 
             wait for 10*hp;
             s_gen_axi_wdata   <= (others => '0');
@@ -403,7 +376,6 @@ begin
                -- set Configuration register lane_generator
                s_ana_axi_wdata(C_LA_FRAME_NB_MAX_BTFD downto 0)                                  <= std_logic_vector(to_unsigned(nb_frame_ar(i),  C_LA_FRAME_NB_WIDTH));        -- lane parameters register, sets the bit field of the lane start signal to '1'
                s_ana_axi_wdata(C_LA_FRAME_SIZE_MAX_BTFD downto C_LA_FRAME_NB_MAX_BTFD +1)        <= std_logic_vector(to_unsigned(size_frame,C_LA_FRAME_SIZE_WIDTH));            -- lane parameters register, sets the bit field of the auto start signal to '1'
-               s_ana_axi_wdata(C_LA_INTER_PKT_DELAY_MAX_BTFD downto C_LA_FRAME_SIZE_MAX_BTFD +1) <= std_logic_vector(to_unsigned(delay_pkt_ar(k), C_LA_INTER_PKT_DELAY_WIDTH)); -- lane parameters register, sets the bit field of the lane reset signal to '1'
                s_ana_axi_wdata(C_LA_GEN_DATA_BTFD)                                               <= gen_data_ar(h);                                                             -- lane parameters register, sets the bit field of the parallel loopback signal to '1'
                s_ana_axi_wdata(C_LA_DATA_MODE_MAX_BTFD downto C_LA_GEN_DATA_BTFD +1)             <= std_logic_vector(C_LA_DM_DATA);                                               -- lane parameters register, sets the bit field of the parallel loopback signal to '1'
                s_ana_axi_awaddr  	                                                             <= x"000000" & C_ADDR_LA_CONFIG;
@@ -415,7 +387,6 @@ begin
 
                check(s_ana_axi_rdata(C_LG_FRAME_NB_MAX_BTFD downto 0),                                  std_logic_vector(to_unsigned(nb_frame_ar(i),C_LG_FRAME_NB_WIDTH)),         "Frame number reg",    PRINT_ON_ERROR);
                check(s_ana_axi_rdata(C_LG_FRAME_SIZE_MAX_BTFD downto C_LG_FRAME_NB_MAX_BTFD +1),        std_logic_vector(to_unsigned(size_frame,C_LG_FRAME_SIZE_WIDTH)),           "Frame size reg",      PRINT_ON_ERROR);
-               check(s_ana_axi_rdata(C_LG_INTER_PKT_DELAY_MAX_BTFD downto C_LG_FRAME_SIZE_MAX_BTFD +1), std_logic_vector(to_unsigned(delay_pkt_ar(k),C_LG_INTER_PKT_DELAY_WIDTH)), "Inter-packet delay",  PRINT_ON_ERROR);
                check(s_ana_axi_rdata(C_LG_GEN_DATA_BTFD),                                               gen_data_ar(h),                                                            "Generation type reg", PRINT_ON_ERROR);
                check(s_ana_axi_rdata(C_LA_DATA_MODE_MAX_BTFD downto C_LA_GEN_DATA_BTFD +1),             std_logic_vector(C_LA_DM_DATA),                                            "Test 1 Data mode reg",PRINT_ON_ERROR);
                s_ana_axi_wdata   <= (others => '0');

@@ -72,7 +72,7 @@ architecture rtl of DATA_LINK_ANALYZER is
 ---------------------------------------
    type axi_wr_state_t       is (IDLE_WAIT_WR_ADDR, WR_RESPONSE);                             -- Write states for FSM declaration
    type axi_rd_state_t       is (IDLE_WAIT_RD_ADDR, RD_RESPONSE);                             -- Read states for FSM declaration
-   type generation_state_t   is (IDLE, WAIT_NOT_EMPTY, WAIT_FRAME, ANALYZE, WAIT_SKIP, DELAY, END_TEST); -- generation data states for FSM declaration
+   type generation_state_t   is (IDLE, WAIT_RX, ANALYZE, END_TEST);                           -- generation data states for FSM declaration
 ---------------------------------------
 -- SIGNAL DECLARATION
 ---------------------------------------
@@ -85,6 +85,7 @@ architecture rtl of DATA_LINK_ANALYZER is
    signal reg_la_control              : std_logic_vector(G_DATA_WIDTH-1 downto 0);          -- data_link_analyzer control register
    signal reg_la_status               : std_logic_vector(G_DATA_WIDTH-1 downto 0);          -- data_link_analyzer status register
    signal reg_la_init_val             : std_logic_vector(G_DATA_WIDTH-1 downto 0);          -- data_link_analyzer intial value register
+   signal reg_data_rx_frame           : std_logic_vector(G_DATA_WIDTH-1 downto 0);          -- data_link_analyzer generated data register
    -- Intermediate signals
    -----------------------
    signal packet_number                : unsigned(C_LG_FRAME_NB_WIDTH-1 downto 0);           -- Frame number signal
@@ -99,15 +100,13 @@ architecture rtl of DATA_LINK_ANALYZER is
    signal busy_frame                  : std_logic;                                          -- Busy frame signal
    signal test_end_frame              : std_logic;                                          -- End of the test frame signal
    signal err_counter_frame           : unsigned(C_LG_CNT_ERR_MAX_WIDTH-1 downto 0);        -- Error counter frame bus
-   signal fifo_rx_rd_en_ppl_frame     : std_logic;                                          -- P_GENERATOR Flag to write data in FIFO TX
    signal init_val                    : unsigned(C_INTERNAL_BUS_WIDTH-1 downto 0);          -- Initial value signal
    signal cnt_packet                   : unsigned(C_LG_FRAME_NB_WIDTH-1 downto 0);           -- Frame counter
    signal cnt_byte                    : unsigned(C_LG_FRAME_SIZE_WIDTH-1 downto 0);         -- Packet counter
    signal val_data                    : unsigned(C_INTERNAL_BUS_WIDTH-1 downto 0);          -- Data value incremental generation
    signal prbs_data                   : std_logic_vector(C_INTERNAL_BUS_WIDTH-1 downto 0);  -- Data value PRBS generation
-   signal data_verif                  : unsigned(C_INTERNAL_BUS_WIDTH-1 downto 0);          -- Data value incremental generation
-   signal cnt_start                   : unsigned((C_INTERNAL_BUS_WIDTH/8)-1 downto 0);      -- Counter before the first packet of a test
-   
+   signal tdata_i                     : std_logic_vector(C_INTERNAL_BUS_WIDTH-1 downto 0);  -- Data value 
+   signal tuser_i                     : std_logic_vector(C_VALID_K_WIDTH -1 downto 0);      -- Data K character
    begin
 ---------------------------------------
 -- SIGNAL CONNECTION
@@ -353,16 +352,15 @@ architecture rtl of DATA_LINK_ANALYZER is
       if (RST_N ='0') then
          generation_state        <= IDLE;
          cnt_byte                <= (others=>'0');
-         cnt_packet               <= (others=>'0');
-         cnt_start               <= (others=>'0');
+         cnt_packet              <= (others=>'0');
          val_data                <= (others=>'0');
          busy_frame              <= '0';
          test_end_frame          <= '0';
          prbs_data               <= (others=>'1');
          err_counter_frame       <= (others=>'0');
-         data_verif              <= (others=>'0');
          TREADY                  <= '0';
-         cnt_data_valid          <= (others =>'0');
+         tdata_i                 <= (others=>'0');
+         tuser_i                 <= (others=>'0');
       elsif rising_edge(CLK) then
          case generation_state is
             -- Waiting for a start request
@@ -370,224 +368,116 @@ architecture rtl of DATA_LINK_ANALYZER is
                -- reset signals between the tests
                val_data                <= init_val;
                prbs_data               <= std_logic_vector(init_val);
-               data_verif              <= (others=>'0');
-               fifo_rx_rd_en_ppl_frame <= '0';
-               cnt_data_valid          <= (others =>'0');
+               TREADY                  <= '0';
                if (model_start = '1' and data_mode =C_LA_DM_DATA) then
                   busy_frame              <= '1';                                  -- model busy
                   test_end_frame          <= '0';                                  -- reset for a new test
-                  fifo_rx_rd_en_ppl_frame <= '1';                                  -- read fifo RX requested
-                  cnt_byte                <= unsigned(frame_size)-C_PACKET_WIDTH ; -- number of packets = frame size
+                  cnt_byte                <= unsigned(packet_size);                 -- number of packets = frame size
                   err_counter_frame       <= (others=>'0');
-                  if (unsigned(frame_size) <= C_PACKET_WIDTH)then -- first and last packet of the frame
-                     -- determine the number of usefull byte for the last packet
-                     for i in 0 to C_INTERNAL_BUS_WIDTH-1 loop
-                        if (i >= unsigned(frame_size)*to_unsigned(C_PACKET_WIDTH,cnt_byte'length)) then
-                           mask(i) <= '0';
-                        else
-                           mask(i) <= '1';
-                        end if;
-                     end loop;
-                  elsif (unsigned(frame_size)-C_PACKET_WIDTH <= C_PACKET_WIDTH)then -- penultimate packet of the frame
-                     -- determine the number of usefull byte for the last packet
-                     for i in 0 to C_INTERNAL_BUS_WIDTH-1 loop
-                        if (i >= (unsigned(frame_size) - to_unsigned(C_PACKET_WIDTH,cnt_byte'length))*to_unsigned(C_PACKET_WIDTH,cnt_byte'length)) then
-                           mask(i) <= '0';
-                        else
-                           mask(i) <= '1';
-                        end if;
-                     end loop;
-                  else
-                     mask <= (others=>'1');
-                  end if;
-                  generation_state <= WAIT_NOT_EMPTY;
+                  cnt_packet              <= (others => '0');
+                  generation_state <= ANALYZE;
                end if;
 
 
                
-               when GEN_FRAME =>
+            when ANALYZE =>
                -- select data tx in function of the number of bytes remaining in the frame
                if (gen_data = C_INCREMENTAL) then  -- incremental data
-                  reg_data_tx_frame <= std_logic_vector(val_data);-- push data in the register tx
+                  reg_data_rx_frame <= std_logic_vector(val_data);-- push data in the register rx
                   
                   val_data  <= val_data + C_INCR_VAL_DATA;
                else -- PRBS data
-                  reg_data_tx_frame <= prbs_data; -- push PRBS data in the register tx
+                  reg_data_rx_frame <= prbs_data; -- push PRBS data in the register rx
                   
                   prbs_data <= prbs_data(C_INTERNAL_BUS_WIDTH-2 downto 0) & (prbs_data(C_INTERNAL_BUS_WIDTH-1) xor prbs_data(C_INTERNAL_BUS_WIDTH-2) xor prbs_data(C_INTERNAL_BUS_WIDTH-4) xor prbs_data(C_INTERNAL_BUS_WIDTH-5)); -- prbs data generation
                end if;
                
                -- word management
                if packet_size = 2 then
-                  TDATA <= C_EOP & reg_data_tx_frame(23 downto 16) & C_EOP & reg_data_tx_frame(7 downto 0);
-                  TUSER <= "1010";
+                  if (cnt_packet = packet_number-1) then
+                     tdata_i <= C_FILL & C_FILL & C_EOP & reg_data_rx_frame(7 downto 0);
+                     tuser_i <= "1110";
+                  else
+                     tdata_i <= C_EOP & reg_data_rx_frame(23 downto 16) & C_EOP & reg_data_rx_frame(7 downto 0);
+                     tuser_i <= "1010";
+                  end if;
+               elsif (packet_size = 3 and cnt_byte = 1) then
+                  if (cnt_packet = packet_number-1) then
+                     tdata_i <= C_FILL & C_FILL & C_FILL & C_EOP;
+                     tuser_i <= "1111";
+                  else
+                     tdata_i <= C_EOP & reg_data_rx_frame(23 downto 8) & C_EOP;
+                     tuser_i <= "1001";
+                  end if;
                else
                   EOP_word_management : for j in 0 to 3 loop
                      if (j = cnt_byte - 1) then  --EOP needed
-                        TDATA((8*(j+1) -1) downto 8*j) <= C_EOP;
-                        TUSER (j) <= 1;
+                        tdata_i ((8*(j+1) -1) downto 8*j) <= C_EOP;
+                        tuser_i (j) <= '1';
                      elsif (j > cnt_byte - 1 and cnt_packet = packet_number-1) then  -- FILL needed
-                        TDATA((8*(j+1) -1) downto 8*j) <= C_FILL;
-                        TUSER (j) <= 1;
+                        tdata_i ((8*(j+1) -1) downto 8*j) <= C_FILL;
+                        tuser_i (j) <= '1';
                      else  --Normal data
-                        TDATA((8*(j+1) -1) downto 8*j) <= reg_data_tx_frame((8*(j+1) -1) downto 8*j);
-                        TUSER (j) <= 0;
+                        tdata_i ((8*(j+1) -1) downto 8*j) <= reg_data_rx_frame((8*(j+1) -1) downto 8*j);
+                        tuser_i (j) <= '0';
                      end if;
                   end loop;
                end if;
 
                if (packet_size = 2) then
-                  cnt_packet <= cnt_packet + 2;
+                  if (cnt_packet = packet_number-1) then
+                     cnt_packet <= cnt_packet + 1;
+                  else
+                     cnt_packet <= cnt_packet + 2;
+                  end if;
+               elsif (packet_size = 3 and cnt_byte = 1) then
+                  cnt_byte  <= unsigned(packet_size);  -- reset the counter of byte for the nexte frame
+                  if (cnt_packet = packet_number-1) then
+                     cnt_packet <= cnt_packet + 1;
+                  else
+                     cnt_packet <= cnt_packet + 2;
+                  end if;
                elsif (cnt_byte <= 4) then  -- last packet of the frame
-                  cnt_byte  <= unsigned(packet_size)-(3-cnt_byte);  -- reset the counter of byte for the nexte frame
+                  cnt_byte  <= unsigned(packet_size)-(4-cnt_byte);  -- reset the counter of byte for the nexte frame
                   cnt_packet <= cnt_packet+1;
                else
                   cnt_byte      <= cnt_byte-4;
                end if;
                -- packet management
-               TVALID <= 1;
-               if (TREADY = 1 and cnt_packet = packet_number) then
+               TREADY <= '1';
+
+               if (TVALID = '1' and tdata_i /= TDATA) then
+                  err_counter_frame <= err_counter_frame + 1;
+               end if;
+
+               if (TVALID = '1' and cnt_packet >= packet_number) then
                   generation_state <= END_TEST;
-               elsif (TREADY = 1 and cnt_packet < packet_number) then
-                  generation_state <= GEN_FRAME;
+               elsif (TVALID = '1' and cnt_packet < packet_number) then
+                  generation_state <= ANALYZE;
                else
-                  generation_state <= WAIT_TX;
+                  generation_state <= WAIT_RX;
                end if;
 
+            when WAIT_RX =>
+               TREADY <= '1';
 
-            when WAIT_FRAME =>
-               if (DATA_RX = std_logic_vector(to_unsigned(1,DATA_RX'length))) then -- DATA_RX = ID Frame 1
---                  if (VALID_K_CHARAC_RX_PPL/="0000") then
---                    err_counter_frame      <= err_counter_frame+1;
---                  end if;
-                  cnt_start           <= (others=>'0');
-                  -- Generate verification data
-                  if (unsigned(frame_size) <= C_PACKET_WIDTH) then -- first packet of a frame
-                     data_verif <= resize(cnt_frame +2,data_verif'length);  -- ID of the frame
-                  elsif (gen_data= C_INCREMENTAL) then  -- incremental data
-                     if (cnt_byte < C_PACKET_WIDTH) then-- last packet of the frame
-                        data_verif <= val_data and unsigned(mask); -- fill data_verif with usefull data and complete with zeros
-                     else -- classic packet
-                        data_verif <= val_data;  -- push incremental data in the data_verif signal
-                     end if;
-                     val_data  <= val_data + C_INCR_VAL_DATA; -- incremental data generation
-                  else -- PRBS data
-                     if (cnt_byte < C_PACKET_WIDTH) then -- last packet of the frame
-                        data_verif <= unsigned(prbs_data and mask); -- fill the register tx with usefull data and complete with zeros
-                     else -- classic packet
-                        data_verif <= unsigned(prbs_data); -- push PRBS data in the data_verif signal
-                     end if;
-                     prbs_data <= prbs_data(C_INTERNAL_BUS_WIDTH-2 downto 0) & (prbs_data(C_INTERNAL_BUS_WIDTH-1) xor prbs_data(C_INTERNAL_BUS_WIDTH-2) xor prbs_data(C_INTERNAL_BUS_WIDTH-4) xor prbs_data(C_INTERNAL_BUS_WIDTH-5));-- prbs data generation
-                  end if;
-                  -- Packet management
-                  if (unsigned(frame_size) <= C_PACKET_WIDTH)then -- last packet of the frame
-                     cnt_byte       <= unsigned(frame_size);
-                     cnt_frame      <= cnt_frame+2;
-                  elsif (cnt_byte <= C_PACKET_WIDTH )then -- last packet of the frame
-                     cnt_byte       <= unsigned(frame_size);
-                     cnt_frame      <= cnt_frame+1;
-                  elsif (cnt_byte-C_PACKET_WIDTH <= C_PACKET_WIDTH)then -- penultimate packet of the frame
-                     -- determine the number of usefull byte for the last packet
-                     for i in 0 to C_INTERNAL_BUS_WIDTH-1 loop
-                        if (i >= (cnt_byte - to_unsigned(C_PACKET_WIDTH,cnt_byte'length))*to_unsigned(C_PACKET_WIDTH,cnt_byte'length)) then
-                           mask(i) <= '0';
-                        else
-                           mask(i) <= '1';
-                        end if;
-                     end loop;
-                     cnt_byte       <= cnt_byte-C_PACKET_WIDTH;
-                  else -- classic packet
-                     cnt_byte       <= cnt_byte-C_PACKET_WIDTH;
-                  end if;
-                  -- Frame management
-                  if (unsigned(frame_number) = 1) then -- one frame
-                     if (unsigned(frame_size) <= C_PACKET_WIDTH) then -- one packet
-                        generation_state <= END_TEST;
-                     elsif(unsigned(inter_pkt_delay) > to_unsigned(0,inter_pkt_delay'length)) then -- delay requested
-                        generation_state <= DELAY;
-                     else -- no delay requested, next state is data generation
-                        generation_state <= ANALYZE;
-                     end if;
-                  elsif (cnt_frame >= unsigned(frame_number)-1) then -- last frame
-                     cnt_frame        <= (others=>'0');
-                     data_verif       <= (others=>'0');
-                     generation_state <= END_TEST;
-                  elsif(unsigned(inter_pkt_delay) > to_unsigned(0,inter_pkt_delay'length)) then -- delay requested
-                     generation_state <= DELAY;
-                  else -- no delay requested, next state is data generation
-                     generation_state <= ANALYZE;
-                  end if;
-               elsif (cnt_start > unsigned(inter_pkt_delay)+50) then -- No ID frame received after a time
-                  cnt_start         <= (others=>'0');
-                  err_counter_frame <= err_counter_frame+1;
+               if (TVALID = '1' and tdata_i /= TDATA) then
+                  err_counter_frame <= err_counter_frame + 1;
+               end if;
+
+               if (TVALID = '1' and cnt_packet = packet_number) then
+                  generation_state <= END_TEST;
+               elsif (TVALID = '1' and cnt_packet < packet_number) then
+                  generation_state <= ANALYZE;
                else
-                  cnt_start <= cnt_start+1;
+                  generation_state <= WAIT_RX;
                end if;
-
-            when ANALYZE =>
-               -- DATA_RX verification
-               if (FIFO_RX_DATA_VALID_PPL ='1') then
-                 cnt_data_valid  <= (others =>'0');
-                 if (DATA_RX /= std_logic_vector(data_verif) or VALID_K_CHARAC_RX_PPL/="0000") then
-                    err_counter_frame      <= err_counter_frame+1;
-                 end if;
-                 -- Generate data_verif
-                 if (cnt_byte = unsigned(frame_size)) then -- first packet of a frame but not frame 1
-                    data_verif <= resize(cnt_frame +1,data_verif'length);  -- ID of the frame
-                 elsif (gen_data= C_INCREMENTAL) then  -- incremental data
-                    if (cnt_byte < C_PACKET_WIDTH) then-- last packet of the frame
-                       data_verif <= val_data and unsigned(mask); -- fill data_verif with usefull data and complete with zeros
-                    else -- classic packet
-                       data_verif <= val_data;  -- push incremental data in the data_verif signal
-                    end if;
-                    val_data  <= val_data + C_INCR_VAL_DATA; -- incremental data generation
-                 else -- PRBS data
-                    if (cnt_byte < C_PACKET_WIDTH) then -- last packet of the frame
-                       data_verif <= unsigned(prbs_data and mask); -- fill data_verif with usefull data and complete with zeros
-                    else -- classic packet
-                       data_verif <= unsigned(prbs_data); -- push PRBS data in the data_verif signal
-                    end if;
-                    prbs_data <= prbs_data(C_INTERNAL_BUS_WIDTH-2 downto 0) & (prbs_data(C_INTERNAL_BUS_WIDTH-1) xor prbs_data(C_INTERNAL_BUS_WIDTH-2) xor prbs_data(C_INTERNAL_BUS_WIDTH-4) xor prbs_data(C_INTERNAL_BUS_WIDTH-5)); -- prbs data generation
-                 end if;
-                 -- Packet management
-                 if (cnt_byte <= C_PACKET_WIDTH )then -- last packet of the frame
-                    cnt_byte       <= unsigned(frame_size);
-                    cnt_frame      <= cnt_frame+1;
-                 elsif (cnt_byte-C_PACKET_WIDTH <= C_PACKET_WIDTH)then -- penultimate packet of the frame
-                    -- determine the number of usefull byte for the last packet
-                    for i in 0 to C_INTERNAL_BUS_WIDTH-1 loop
-                       if (i >= (cnt_byte - to_unsigned(C_PACKET_WIDTH,cnt_byte'length))*to_unsigned(C_PACKET_WIDTH,cnt_byte'length)) then
-                          mask(i) <= '0';
-                       else
-                          mask(i) <= '1';
-                       end if;
-                    end loop;
-                    cnt_byte       <= cnt_byte-C_PACKET_WIDTH;
-                 else -- classic packet
-                    cnt_byte       <= cnt_byte-C_PACKET_WIDTH;
-                 end if;
-                 -- Frame management
-                 if (cnt_frame >= unsigned(frame_number)) then -- last frame
-                    cnt_frame        <= (others=>'0');
-                    generation_state <= END_TEST;
-                 elsif(unsigned(inter_pkt_delay) > to_unsigned(0,inter_pkt_delay'length)) then -- delay requested
-                   generation_state <= DELAY;
-                 else -- no delay requested, next state is data generation
-                   generation_state <= ANALYZE;
-                 end if;
-               else 
-                 if (cnt_data_valid > 3) then
-                   err_counter_frame  <= err_counter_frame+1;
-                   generation_state   <= END_TEST;
-                   cnt_data_valid     <= (others =>'0');
-                 else 
-                   cnt_data_valid <= cnt_data_valid + 1;
-                 end if;
-               end if;
-
+               
+            
             when END_TEST =>
                test_end_frame         <= '1';  -- test finished
                busy_frame             <= '0';
+               TREADY                 <= '0';
                generation_state <= IDLE;
 
             when others =>

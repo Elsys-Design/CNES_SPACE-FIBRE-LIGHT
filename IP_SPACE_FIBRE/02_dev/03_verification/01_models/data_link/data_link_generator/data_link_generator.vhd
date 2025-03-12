@@ -355,6 +355,7 @@ architecture rtl of DATA_LINK_GENERATOR is
          reg_data_tx_frame           <= (others=>'0');
          TDATA                       <= (others=>'0');
          TVALID                      <= '0';
+         TLAST                       <= '0';
          cnt_byte                    <= (others=>'0');
          cnt_packet                  <= (others=>'0');
          val_data                    <= (others=>'0');
@@ -373,6 +374,7 @@ architecture rtl of DATA_LINK_GENERATOR is
                prbs_data             <= std_logic_vector(init_val);
                reg_data_tx_frame     <= (others=>'0');
                TVALID                <= '0';
+               TLAST                 <= '0';
                if (model_start = '1') then
                   busy_frame        <= '1';                  -- model busy_frame
                   test_end_frame    <= '0';                  -- reset for a new test
@@ -395,51 +397,80 @@ architecture rtl of DATA_LINK_GENERATOR is
                
                -- word management
                if packet_size = 2 then
-                  TDATA <= C_EOP & reg_data_tx_frame(23 downto 16) & C_EOP & reg_data_tx_frame(7 downto 0);
-                  TUSER <= "1010";
+                  if (cnt_packet = packet_number-1) then
+                     TDATA <= C_FILL & C_FILL & C_EOP & reg_data_tx_frame(7 downto 0);
+                     TUSER <= "1110";
+                  else
+                     TDATA <= C_EOP & reg_data_tx_frame(23 downto 16) & C_EOP & reg_data_tx_frame(7 downto 0);
+                     TUSER <= "1010";
+                  end if;
+               elsif (packet_size = 3 and cnt_byte = 1) then
+                  if (cnt_packet = packet_number-1) then
+                     TDATA <= C_FILL & C_FILL & C_FILL & C_EOP;
+                     TUSER <= "1111";
+                  else
+                     TDATA <= C_EOP & reg_data_tx_frame(23 downto 8) & C_EOP;
+                     TUSER <= "1001";
+                  end if;
                else
                   EOP_word_management : for j in 0 to 3 loop
                      if (j = cnt_byte - 1) then  --EOP needed
                         TDATA((8*(j+1) -1) downto 8*j) <= C_EOP;
-                        TUSER (j) <= 1;
+                        TUSER (j) <= '1';
                      elsif (j > cnt_byte - 1 and cnt_packet = packet_number-1) then  -- FILL needed
                         TDATA((8*(j+1) -1) downto 8*j) <= C_FILL;
-                        TUSER (j) <= 1;
+                        TUSER (j) <= '1';
                      else  --Normal data
                         TDATA((8*(j+1) -1) downto 8*j) <= reg_data_tx_frame((8*(j+1) -1) downto 8*j);
-                        TUSER (j) <= 0;
+                        TUSER (j) <= '0';
                      end if;
                   end loop;
                end if;
 
                if (packet_size = 2) then
-                  cnt_packet <= cnt_packet + 2;
+                  if (cnt_packet = packet_number-1) then
+                     cnt_packet <= cnt_packet + 1;
+                  else
+                     cnt_packet <= cnt_packet + 2;
+                  end if;
+                  TLAST <= '1';
+               elsif (packet_size = 3 and cnt_byte = 1) then
+                  cnt_byte  <= unsigned(packet_size);  -- reset the counter of byte for the nexte frame
+                  if (cnt_packet = packet_number-1) then
+                     cnt_packet <= cnt_packet + 1;
+                  else
+                     cnt_packet <= cnt_packet + 2;
+                  end if;
+                  TLAST <= '1';
                elsif (cnt_byte <= 4) then  -- last packet of the frame
-                  cnt_byte  <= unsigned(packet_size)-(3-cnt_byte);  -- reset the counter of byte for the nexte frame
+                  cnt_byte  <= unsigned(packet_size)-(4-cnt_byte);  -- reset the counter of byte for the nexte frame
                   cnt_packet <= cnt_packet+1;
+                  TLAST <= '1';
                else
                   cnt_byte      <= cnt_byte-4;
+                  TLAST <= '0';
                end if;
                -- packet management
-               TVALID <= 1;
-               if (TREADY = 1 and cnt_packet = packet_number) then
+               TVALID <= '1';
+               if (TREADY = '1' and cnt_packet = packet_number) then
                   generation_state <= END_TEST;
-               elsif (TREADY = 1 and cnt_packet < packet_number) then
+               elsif (TREADY = '1' and cnt_packet < packet_number) then
                   generation_state <= GEN_FRAME;
                else
                   generation_state <= WAIT_TX;
                end if;
 
             when WAIT_TX =>
-               if (TREADY = 1 and cnt_packet = packet_number) then
+               if (TREADY = '1' and cnt_packet = packet_number) then
                   generation_state <= END_TEST;
-               elsif (TREADY = 1 ) then
+               elsif (TREADY = '1' ) then
                   generation_state <= GEN_FRAME;
                else
                   generation_state <= WAIT_TX;
                end if;
             when END_TEST =>
-               TVALID <= '0';
+               TVALID                <= '0';
+               TLAST                 <= '0';
                test_end_frame        <= '1';  -- test finished
                busy_frame            <= '0';
                generation_state      <= IDLE;
