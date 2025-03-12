@@ -48,6 +48,28 @@ package pkg_model is
   constant C_ADDR_LA_CONTROL              : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"04";           --- address control lane register lane_analyzer
   constant C_ADDR_LA_STATUS               : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"08";           --- address status lane register lane_analyzer
   constant C_ADDR_LA_INIT_VAL             : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"0C";           --- address initial value register lane_analyzer
+
+  -- data_link_configurator
+  constant C_ADDR_DL_GLOBAL               : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"00";           --- address global register lane_configurator
+  constant C_ADDR_DL_PHY_PARAM            : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"04";           --- address parameters phy register lane_configurator
+  constant C_ADDR_DL_LANE_PARAM           : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"08";           --- address parameters lane register lane_configurator
+  constant C_ADDR_DL_LANE_STATUS          : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"0C";           --- address status lane register lane_configurator
+  constant C_ADDR_DL_DL_STATUS            : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"10";           --- address status lane register lane_configurator
+  constant C_ADDR_DL_DL_PARAM             : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"14";           --- address status lane register lane_configurator
+  constant C_ADDR_DL_DL_QOS               : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"18";           --- address status lane register lane_configurator
+  constant C_ADDR_DL_DL_ERROR_RECOVERY    : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"1C";           --- address status lane register lane_configurator
+  ------------------------------------------------------------------------
+  -- data_link_generator
+  constant C_ADDR_DG_CONFIG               : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"00";           --- address configuration lane register lane_generator
+  constant C_ADDR_DG_CONTROL              : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"04";           --- address control lane register lane_generator
+  constant C_ADDR_DG_STATUS               : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"08";           --- address status lane register lane_generator
+  constant C_ADDR_DG_INIT_VAL             : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"0C";           --- address initial value register lane_generator
+  ------------------------------------------------------------------------
+  -- data_link_analyzer
+  constant C_ADDR_DA_CONFIG               : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"00";           --- address configuration lane register lane_analyzer
+  constant C_ADDR_DA_CONTROL              : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"04";           --- address control lane register lane_analyzer
+  constant C_ADDR_DA_STATUS               : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"08";           --- address status lane register lane_analyzer
+  constant C_ADDR_DA_INIT_VAL             : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"0C";           --- address initial value register lane_analyzer
   ------------------------------------------------------------------------
   -- #####################################################################
   -- # BUS WIDTH
@@ -106,6 +128,26 @@ package pkg_model is
   constant C_FAR_LOST_SIG_BTFD            : integer := 13;                                                      --- parallel loopback enables bitfield
   constant C_FAR_CAPA_MAX_BTFD            : integer := 21;                                                      --- standby reason MSB bitfield
   constant C_RX_POLARITY_BTFD             : integer := 22;                                                      --- RX polarity bitfield
+  
+  -- Parameters data link register
+  constant C_INTERFACE_RST_BTFD           : integer := 0;
+  constant C_LINK_RST_BTFD                : integer := 1;
+  constant C_NACK_RST_EN_BTFD             : integer := 2;
+  constant C_PAUSE_VC_BTFD                : integer := 10;
+  constant C_CONTINUOUS_VC_BTFD           : integer := 18;
+
+  -- Status 1 data link register
+  constant C_SEQ_NUMBER_TX_BTFD           : integer := 7;
+  constant C_SEQ_NUMBER_RX_BTFD           : integer := 15;
+  constant C_VC_CREDIT_BTFD               : integer := 23;
+  constant C_FCT_CREDIT_OVERFLOW_BTFD     : integer := 31;
+
+  -- Status 2 data link register
+  constant C_CRC_LONG_ERROR_BTFD0         : integer := 0;
+  constant C_CRC_SHORT_ERROR_BTFD         : integer := 1;
+  constant C_FRAME_ERROR_BTFD             : integer := 2;
+  constant C_SEQ_ERROR_BTFD               : integer := 3;
+  constant C_FAR_END_LINK_RST_BTFD        : integer := 4;
 
   -- Global register
   constant C_RST_DUT_BTFD                 : integer := 0;                                                       --- RST_DUT_N bitfield
@@ -144,6 +186,40 @@ package pkg_model is
   constant C_LA_TEST_END_BTFD             : integer := 1;                                                       --- Test end bitfield
   constant C_LA_ERR_CNT_MAX_BTFD          : integer := 9;                                                       --- Error counter MSB bitfield
   constant C_LA_LANE_CAPA_MAX_BTFD        : integer := 17;                                                      --- lane capabilities max bitfield
+
+  -- ### data_link_generator ###
+  -- Configuration register lane_generator
+  constant C_DG_FRAME_NB_MAX_BTFD         : integer := 4;                                                       --- Frame number MSB bitfield
+  constant C_DG_FRAME_SIZE_MAX_BTFD       : integer := 13;                                                      --- Frame size MSB bitfield
+  constant C_DG_INTER_PKT_DELAY_MAX_BTFD  : integer := 23;                                                      --- Inter-packet delay MSB bitfield
+  constant C_DG_GEN_DATA_BTFD             : integer := 24;                                                      --- Generation data
+  constant C_DG_DATA_MODE_MAX_BTFD        : integer := 26;                                                      --- Data Mode MSB bitfield
+
+  -- Control register lane_generator
+  constant C_DG_MODEL_START_BTFD          : integer := 0;                                                       --- Model start bitfield
+  constant C_DG_LANE_RESET_BTFD           : integer := 1;                                                       --- Lane Reset bitfield
+  constant C_DG_LANE_CAPA_MAX_BTFD        : integer := 9;                                                     --- lane capabilities max bitfield
+
+  -- Status register lane_generator
+  constant C_DG_BUSY_BTFD                 : integer := 0;                                                       --- Busy bitfield
+  constant C_DG_TEST_END_BTFD             : integer := 1;                                                       --- Test end bitfield
+  constant C_DG_ERR_CNT_MAX_BTFD          : integer := 9;                                                       --- Error counter MSB bitfield
+
+  -- ### data_link_analyzer ###
+  -- Configuration register lane_analyzer
+  constant C_DA_FRAME_NB_MAX_BTFD         : integer := 4;                                                       --- Frame number MSB bitfield
+  constant C_DA_FRAME_SIZE_MAX_BTFD       : integer := 13;                                                      --- Frame size MSB bitfield
+  constant C_DA_INTER_PKT_DELAY_MAX_BTFD  : integer := 23;                                                      --- Inter-packet delay MSB bitfield
+  constant C_DA_GEN_DATA_BTFD             : integer := 24;                                                      --- Generation data
+  constant C_DA_DATA_MODE_MAX_BTFD        : integer := 26;                                                      --- Data Mode MSB bitfield
+
+  -- Control register lane_analyzer
+  constant C_DA_MODEL_START_BTFD          : integer := 0;                                                       --- Model start bitfield
+
+  -- Status register lane_analyzer
+  constant C_DA_BUSY_BTFD                 : integer := 0;                                                       --- Busy bitfield
+  constant C_DA_TEST_END_BTFD             : integer := 1;                                                       --- Test end bitfield
+  constant C_DA_ERR_CNT_MAX_BTFD          : integer := 9;                                                       --- Error counter MSB bitfield
 
   -- #####################################################################
   -- # DEFAULT values
@@ -215,6 +291,7 @@ package pkg_model is
   constant C_LA_DM_RXERR                : unsigned(C_LA_DATA_MODE_WIDTH-1 downto 0)         := "10";             --- RXERR
 
   constant C_VALID_K_WIDTH              : integer                                           := 4;                --- Valid K-character bus width
+  
   -- #####################################################################
   -- # INIT functions
   -- #####################################################################
