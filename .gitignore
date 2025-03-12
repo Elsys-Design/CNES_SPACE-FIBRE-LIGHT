@@ -46,3 +46,9 @@ IP_SPACE_FIBRE/02_dev/01_design/05_libraries/unisim/verilog/src/unisims/HNICX.v
 
 #specific custom script
 IP_SPACE_FIBRE/02_dev/03_verification/05_scenario/custom.do
+
+#linty folder
+.linty
+
+#vscode folder
+.vscode
