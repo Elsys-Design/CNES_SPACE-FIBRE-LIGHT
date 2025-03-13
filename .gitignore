@@ -21,7 +21,7 @@
 #ignore custom config script
 **.customconfig
 #specific parameters for simulation (depend on each installation) 
-IP_SPACE_FIBRE/02_dev/03_verification/environnement
+IP_SPACE_FIBRE/02_dev/03_verification/05_scenario/environnement
 
 #ignore log files
 **/code_coverage.txt

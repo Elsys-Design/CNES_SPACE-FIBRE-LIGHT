@@ -6,10 +6,16 @@
 #
 # Be carefull : The name of the folder as to match the name of the cocotb test inside it
 
-### for conveience you can store all your bash variable commands  in a file called environnement
+### for convenience you can store all your bash variable commands  in a file called environnement
 ## if this file exists it will be sourced automatically
-
-
+FILE=environnement
+if [ -f  ]; then
+   echo "File $FILE exists."
+   source $FILE
+   echo "sourcing this file for custom parameters."
+else
+   echo "File $FILE does not exist. Using gobal variable."
+fi
 
 
 ################## script run control ###########################
