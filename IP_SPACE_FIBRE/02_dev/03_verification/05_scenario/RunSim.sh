@@ -6,8 +6,13 @@
 #
 # Be carefull : The name of the folder as to match the name of the cocotb test inside it
 
-#############################################
+### for conveience you can store all your bash variable commands  in a file called environnement
+## if this file exists it will be sourced automatically
 
+
+
+
+################## script run control ###########################
 # Check if exactly one parameter is passed
 if [ "$#" -ne 1 ]; then
   echo "Error: This script requires exactly one parameter."
@@ -22,6 +27,14 @@ echo "missing SPACEFIBRELIGHT_ROOT_PATH variable"
 echo "please execute in terminal prior to launch this script:"
 echo "      export SPACEFIBRELIGHT_ROOT_PATH=MY/ABSOLUTE/PATH/TO/SPACEFIBRELIBRELIGHT/MAIN/FOLDER"
 exit 1 
+fi
+
+# check if FRAMEWORK_COCOTB_INSTALL_PATH is set
+if  [ -z ${FRAMEWORK_COCOTB_INSTALL_PATH+x} ]; then
+    echo "missing FRAMEWORK_COCOTB_INSTALL_PATH variable"
+    echo "please execute in terminal prior to launch this script:"
+    echo "      export FRAMEWORK_COCOTB_INSTALL_PATH=MY/ABSOLUTE/PATH/TO/COCOTB_FRAMEWORK/MAIN/FOLDER"
+    exit 1 
 fi
 
 ###################################
@@ -72,6 +85,8 @@ else
     trap 'echo -e "\n###############\nTest (or folder): $MYSIM doesnt exist! \nExiting.\n###############\n"' ERR
     cd $MYSIM # Will fail and trigger trap if doesn't exist
     
+    #change error message 
+    trap 'echo -e "\n###############\nError Running test : $MYSIM (see previous error message from cocotb)! \nExiting.\n###############\n"' ERR
     #clean sim build sometimes cocotb fail to refresh it
     rm -r sim_build
 
