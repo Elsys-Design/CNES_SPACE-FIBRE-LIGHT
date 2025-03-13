@@ -20,6 +20,8 @@
 
 #ignore custom config script
 **.customconfig
+#specific parameters for simulation (depend on each installation) 
+IP_SPACE_FIBRE/02_dev/03_verification/environnement
 
 #ignore log files
 **/code_coverage.txt
@@ -52,3 +54,4 @@ IP_SPACE_FIBRE/02_dev/03_verification/05_scenario/custom.do
 
 #vscode folder
 .vscode
+
