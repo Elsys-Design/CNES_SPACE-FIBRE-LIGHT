@@ -28,7 +28,50 @@ entity spacefibre_light_top is
       TX_NEG                           : out std_logic;                          --! Negative LVDS serial data send
       RX_POS                           : in  std_logic;                          --! Positive LVDS serial data received
       RX_NEG                           : in  std_logic;                          --! Negative LVDS serial data received
-
+      ----------------------- Data-Link layer signals -----------------------
+      -- Discret signals
+      AXIS_ACLK_TX_DL                  : in  std_logic_vector(G_VC_NUM downto 0);
+      AXIS_TREADY_TX_DL                : out std_logic_vector(G_VC_NUM downto 0);
+      AXIS_TDATA_TX_DL                 : in  vc_data_array(G_VC_NUM downto 0);
+      AXIS_TUSER_TX_DL                 : in  vc_k_array(G_VC_NUM downto 0);
+      AXIS_TLAST_TX_DL                 : in  std_logic_vector(G_VC_NUM downto 0);
+      AXIS_TVALID_TX_DL                : in  std_logic_vector(G_VC_NUM downto 0);
+      AXIS_ACLK_RX_DL                  : out std_logic_vector(G_VC_NUM downto 0);
+      AXIS_TREADY_RX_DL                : in  std_logic_vector(G_VC_NUM downto 0);
+      AXIS_TDATA_RX_DL                 : out vc_data_array(G_VC_NUM downto 0);
+      AXIS_TUSER_RX_DL                 : out vc_k_array(G_VC_NUM downto 0);
+      AXIS_TLAST_RX_DL                 : out std_logic_vector(G_VC_NUM downto 0);
+      AXIS_TVALID_RX_DL                : out std_logic_vector(G_VC_NUM downto 0);
+      -- Paramters signals
+      INTERFACE_RESET                  : in  std_logic;
+      LINK_RESET                       : in  std_logic;
+      NACK_RST_EN                      : in  std_logic;
+      NACK_RST_MODE                    : in  std_logic;
+      PAUSE_VC                         : in  std_logic_vector(8 downto 0);
+      CONTINUOUS_VC                    : in  std_logic_vector(7 downto 0);
+      -- Status signals
+      SEQ_NUMBER_TX                    : out std_logic_vector(7 downto 0);    --! SEQ_NUMBER in transmission
+      SEQ_NUMBER_RX                    : out std_logic_vector(7 downto 0);    --! SEQ_NUMBER in reception
+      CREDIT_VC                        : out std_logic_vector(7 downto 0);    --! Indicates if each corresponding far-end input buffer has credit
+      FCT_CREDIT_OVERFLOW              : out std_logic_vector(7 downto 0);    --! Indicates overflow of each corresponding input buffer
+      CRC_LONG_ERROR                   : out std_logic;                       --! CRC long error
+      CRC_SHORT_ERROR                  : out std_logic;                       --! CRC short error
+      FRAME_ERROR                      : out std_logic;                       --! Frame error
+      SEQUENCE_ERROR                   : out std_logic;                       --! Sequence error
+      FAR_END_LINK_RESET               : out std_logic;                       --! Far-end link reset status
+      FRAME_FINISHED                   : out std_logic_vector(8 downto 0);    --! Indicates that corresponding channel finished emitting a frame
+      FRAME_TX                         : out std_logic_vector(8 downto 0);    --! Indicates that corresponding channel is emitting a frame
+      DATA_COUNTER_TX                  : out std_logic_vector(6 downto 0);    --! Indicate the number of data transmitted in last frame emitted
+      DATA_COUNTER_RX                  : out std_logic_vector(6 downto 0);    --! Indicate the number of data received in last frame received
+      ACK_COUNTER_TX                   : out std_logic_vector(2 downto 0);    --! ACK counter TX
+      NACK_COUNTER_TX                  : out std_logic_vector(2 downto 0);    --! NACK counter TX
+      FCT_COUNTER_TX                   : out std_logic_vector(3 downto 0);    --! FCT counter TX
+      ACK_COUNTER_RX                   : out std_logic_vector(2 downto 0);    --! ACK counter RX
+      NACK_COUNTER_RX                  : out std_logic_vector(2 downto 0);    --! NACK counter RX
+      FCT_COUNTER_RX                   : out std_logic_vector(3 downto 0);    --! FCT counter RX
+      FULL_COUNTER_RX                  : out std_logic_vector(1 downto 0);    --! FULL counter RX
+      RETRY_COUNTER_RX                 : out std_logic_vector(1 downto 0);    --! RETRY counter RX
+      CURRENT_TIME_SLOT                : out std_logic_vector(7 downto 0)    --! Current time slot
       ----------------------- Phy + Lane layer signals -----------------------
       -- Discret signals
       DATA_TX_PPL                      : in  std_logic_vector(31 downto 00);     --! Data parallel to be send from Data-Link Layer
@@ -73,6 +116,73 @@ architecture rtl of spacefibre_light_top is
          INTERNAL_SYNC_RST_N  : out std_logic      -- Internal reset resynchronized on 50MHz internal clock
       );
    end component;
+
+   component data_link is
+      generic(
+        G_VC_NUM               : integer := 8                                                  --! Number of virtual channel
+        );
+      port(
+        RST_N                  : in  std_logic;                                    --! global reset
+        CLK                    : in  std_logic;                                    --! Clock generated by GTY IP
+        -- Network layer AXI-Stream TX interface
+        AXIS_ACLK_TX_DL        : in  std_logic_vector(G_VC_NUM downto 0);
+        AXIS_TREADY_TX_DL      : out std_logic_vector(G_VC_NUM downto 0);
+        AXIS_TDATA_TX_DL       : in  vc_data_array(G_VC_NUM downto 0);
+        AXIS_TUSER_TX_DL       : in  vc_k_array(G_VC_NUM downto 0);
+        AXIS_TLAST_TX_DL       : in  std_logic_vector(G_VC_NUM downto 0);
+        AXIS_TVALID_TX_DL      : in  std_logic_vector(G_VC_NUM downto 0);
+        -- Network layer RX interface
+        AXIS_ACLK_RX_DL        : out std_logic_vector(G_VC_NUM downto 0);
+        AXIS_TREADY_RX_DL      : in  std_logic_vector(G_VC_NUM downto 0);
+        AXIS_TDATA_RX_DL       : out vc_data_array(G_VC_NUM downto 0);
+        AXIS_TUSER_RX_DL       : out vc_k_array(G_VC_NUM downto 0);
+        AXIS_TLAST_RX_DL       : out std_logic_vector(G_VC_NUM downto 0);
+        AXIS_TVALID_RX_DL      : out std_logic_vector(G_VC_NUM downto 0);
+        -- Lane layer TX interface
+        DATA_TX_PPL            : out  std_logic_vector(31 downto 00);     --! Data parallel to be send from Data-Link Layer
+        CAPABILITY_TX_PPL      : out  std_logic_vector(07 downto 00);     --! Capability send on TX link in INIT3 control word
+        NEW_DATA_TX_PPL        : out  std_logic;                          --! Flag to write data in FIFO TX
+        VALID_K_CHARAC_TX_PPL  : out  std_logic_vector(03 downto 00);     --! K charachter valid in the 32-bit DATA_TX_PPL vector
+        FIFO_TX_FULL_PPL       : in   std_logic;                          --! Flag full of the FIFO TX
+        -- Lane layer RX interface
+        FIFO_RX_RD_EN_PPL      : out  std_logic;                          --! Flag to read data in FIFO RX
+        DATA_RX_PPL            : in   std_logic_vector(31 downto 00);     --! Data parallel to be received to Data-Link Layer
+        FIFO_RX_EMPTY_PPL      : in   std_logic;                          --! Flag EMPTY of the FIFO RX
+        FIFO_RX_DATA_VALID_PPL : in   std_logic;                          --! Flag DATA_VALID of the FIFO RX
+        VALID_K_CHARAC_RX_PPL  : in   std_logic_vector(03 downto 00);     --! K charachter valid in the 32-bit DATA_TR_PPL vector
+        FAR_END_CAPA_DL        : in   std_logic_vector(07 downto 00)     --! Capability field receive in INIT3 control word
+        -- MIB  parameters interface
+        INTERFACE_RESET_DL     : in std_logic;                            --! Reset the link and all configuration register of the Data Link layer
+        LINK_RESET_DL          : in std_logic;                            --! Reset the link
+        NACK_RST_EN_DL         : in std_logic;                            --! Enable automatic link reset on NACK reception
+        NACK_RST_MODE_DL       : in std_logic;                            --! Up for instant link reset on NACK reception, down for link reset at the end of the current received frame on NACK reception
+        PAUSE_VC_DL            : in std_logic_vector(8 downto 0);         --! Pause the corresponding virtual channel after the end of current transmission
+        CONTINUOUS_VC_DL       : in std_logic_vector(7 downto 0);         --! Enable the corresponding virtual channel continuous mode   
+        -- MIB  status interface
+        SEQ_NUMBER_TX_DL        : out std_logic_vector(7 downto 0);       --! SEQ_NUMBER in transmission
+        SEQ_NUMBER_RX_DL        : out std_logic_vector(7 downto 0);       --! SEQ_NUMBER in reception
+        CREDIT_VC_DL            : out std_logic_vector(7 downto 0);       --! Indicates if each corresponding far-end input buffer has credit
+        FCT_CREDIT_OVERFLOW_DL  : out std_logic_vector(7 downto 0);       --! Indicates overflow of each corresponding input buffer
+        CRC_LONG_ERROR_DL       : out std_logic;                          --! CRC long error
+        CRC_SHORT_ERROR_DL      : out std_logic;                          --! CRC short error
+        FRAME_ERROR_DL          : out std_logic;                          --! Frame error
+        SEQUENCE_ERROR_DL       : out std_logic;                          --! Sequence error
+        FAR_END_LINK_RESET_DL   : out std_logic;                          --! Far-end link reset status
+        FRAME_FINISHED_DL       : out std_logic_vector(8 downto 0);       --! Indicates that corresponding channel finished emitting a frame
+        FRAME_TX_DL             : out std_logic_vector(8 downto 0);       --! Indicates that corresponding channel is emitting a frame
+        DATA_COUNTER_TX_DL      : out std_logic_vector(6 downto 0);       --! Indicate the number of data transmitted in last frame emitted
+        DATA_COUNTER_RX_DL      : out std_logic_vector(6 downto 0);       --! Indicate the number of data received in last frame received
+        ACK_COUNTER_TX_DL       : out  std_logic_vector(2 downto 0);      --! ACK counter TX
+        NACK_COUNTER_TX_DL      : out  std_logic_vector(2 downto 0);      --! NACK counter TX
+        FCT_COUNTER_TX_DL       : out  std_logic_vector(3 downto 0);      --! FCT counter TX
+        ACK_COUNTER_RX_DL       : out  std_logic_vector(2 downto 0);      --! ACK counter RX
+        NACK_COUNTER_RX_DL      : out  std_logic_vector(2 downto 0);      --! NACK counter RX
+        FCT_COUNTER_RX_DL       : out  std_logic_vector(3 downto 0);      --! FCT counter RX
+        FULL_COUNTER_RX_DL      : out  std_logic_vector(1 downto 0);      --! FULL counter RX
+        RETRY_COUNTER_RX_DL     : out  std_logic_vector(1 downto 0);      --! RETRY counter RX
+        CURRENT_TIME_SLOT_DL    : out  std_logic_vector(7 downto 0)       --! Current time slot
+      );
+    end component;
 
    component phy_plus_lane is
       port(
@@ -122,6 +232,73 @@ architecture rtl of spacefibre_light_top is
          RX_POLARITY                      : out std_logic                        -- Set when the receiver polarity is inverted
       );
    end component;
+   component mib_data_link is
+      generic(
+         G_VC_NUM               : integer := 8                                                  --! Number of virtual channel
+         );
+        port (
+         -- MIB parameters interface TOP
+         INTERFACE_RESET         : in  std_logic;
+         LINK_RESET              : in  std_logic;
+         NACK_RST_EN             : in  std_logic;
+         NACK_RST_MODE           : in  std_logic;
+         PAUSE_VC                : in  std_logic_vector(G_VC_NUM downto 0);
+         CONTINUOUS_VC           : in  std_logic_vector(G_VC_NUM-1 downto 0);
+         -- MIB parameters interface Data-link
+         INTERFACE_RESET_DL      : out std_logic;
+         LINK_RESET_DL           : out std_logic;
+         NACK_RST_EN_DL          : out std_logic;
+         NACK_RST_MODE_DL        : out std_logic;
+         PAUSE_VC_DL             : out std_logic_vector(G_VC_NUM downto 0);
+         CONTINUOUS_VC_DL        : out std_logic_vector(G_VC_NUM-1 downto 0);
+         -- MIB status interface Data-link
+         SEQ_NUMBER_TX_DL        : in  std_logic_vector(G_VC_NUM-1 downto 0);
+         SEQ_NUMBER_RX_DL        : in  std_logic_vector(G_VC_NUM-1 downto 0);
+         CREDIT_VC_DL            : in  std_logic_vector(G_VC_NUM-1 downto 0);
+         FCT_CREDIT_OVERFLOW_DL  : in  std_logic_vector(G_VC_NUM-1 downto 0);
+         CRC_LONG_ERROR_DL       : in  std_logic;
+         CRC_SHORT_ERROR_DL      : in  std_logic;
+         FRAME_ERROR_DL          : in  std_logic;
+         SEQUENCE_ERROR_DL       : in  std_logic;
+         FAR_END_LINK_RESET_DL   : in  std_logic;
+         FRAME_FINISHED_DL       : in  std_logic_vector(G_VC_NUM downto 0);
+         FRAME_TX_DL             : in  std_logic_vector(G_VC_NUM downto 0);
+         DATA_COUNTER_TX_DL      : in  std_logic_vector(6 downto 0);
+         DATA_COUNTER_RX_DL      : in  std_logic_vector(6 downto 0);
+         ACK_COUNTER_TX_DL       : in  std_logic_vector(2 downto 0);
+         NACK_COUNTER_TX_DL      : in  std_logic_vector(2 downto 0);
+         FCT_COUNTER_TX_DL       : in  std_logic_vector(3 downto 0);
+         ACK_COUNTER_RX_DL       : in  std_logic_vector(2 downto 0);
+         NACK_COUNTER_RX_DL      : in  std_logic_vector(2 downto 0);
+         FCT_COUNTER_RX_DL       : in  std_logic_vector(3 downto 0);
+         FULL_COUNTER_RX_DL      : in  std_logic_vector(1 downto 0);
+         RETRY_COUNTER_RX_DL     : in  std_logic_vector(1 downto 0);
+         CURRENT_TIME_SLOT_DL    : in  std_logic_vector(G_VC_NUM-1 downto 0);
+         -- MIB status interface TOP
+         SEQ_NUMBER_TX           : out std_logic_vector(G_VC_NUM-1 downto 0);
+         SEQ_NUMBER_RX           : out std_logic_vector(G_VC_NUM-1 downto 0);
+         CREDIT_VC               : out std_logic_vector(G_VC_NUM-1 downto 0);
+         FCT_CREDIT_OVERFLOW     : out std_logic_vector(G_VC_NUM-1 downto 0);
+         CRC_LONG_ERROR          : out std_logic;
+         CRC_SHORT_ERROR         : out std_logic;
+         FRAME_ERROR             : out std_logic;
+         SEQUENCE_ERROR          : out std_logic;
+         FAR_END_LINK_RESET      : out std_logic;
+         FRAME_FINISHED          : out std_logic_vector(8 downto 0);
+         FRAME_TX                : out std_logic_vector(8 downto 0);
+         DATA_COUNTER_TX         : out std_logic_vector(6 downto 0);
+         DATA_COUNTER_RX         : out std_logic_vector(6 downto 0);
+         ACK_COUNTER_TX          : out std_logic_vector(2 downto 0);
+         NACK_COUNTER_TX         : out std_logic_vector(2 downto 0);
+         FCT_COUNTER_TX          : out std_logic_vector(3 downto 0);
+         ACK_COUNTER_RX          : out std_logic_vector(2 downto 0);
+         NACK_COUNTER_RX         : out std_logic_vector(2 downto 0);
+         FCT_COUNTER_RX          : out std_logic_vector(3 downto 0);
+         FULL_COUNTER_RX         : out std_logic_vector(1 downto 0);
+         RETRY_COUNTER_RX        : out std_logic_vector(1 downto 0);
+         CURRENT_TIME_SLOT       : out std_logic_vector(G_VC_NUM-1 downto 0)
+        );
+   end component;
 
    component mib_phy_plus_lane is
       port(
@@ -162,24 +339,53 @@ architecture rtl of spacefibre_light_top is
    -------------------------------------------------------- Internal signals declaration --------------------------------------------------
    ----------------------------------------------------------------------------------------------------------------------------------------
    -- Reset generator internal signals
-signal rst_sync_gty_n                     : std_logic;                        --! Synchronous reset on clock generated by GTY PLL
+   signal rst_sync_gty_n                     : std_logic;                        --! Synchronous reset on clock generated by GTY PLL
    -- phy_plus_lane internal signals
-signal clk_tx_i                           : std_logic;                        --! Clock generated by PLL of the manufacturer IP
-signal rst_tx_done                       : std_logic;                         --! Up when internal rx reset done
+   signal clk_tx_i                           : std_logic;                        --! Clock generated by PLL of the manufacturer IP
+   signal rst_tx_done                       : std_logic;                         --! Up when internal rx reset done
    -- MIB phy_plus_lane internal signals
-signal lane_start_ppl                     : std_logic;                        --! Parameter signal between MIB_phy_plus_lane and phy_plus_lane modules
-signal autostart_ppl                      : std_logic;                        --! Parameter signal between MIB_phy_plus_lane and phy_plus_lane modules
-signal lane_reset_ppl                     : std_logic;                        --! Parameter signal between MIB_phy_plus_lane and phy_plus_lane modules
-signal parallel_loopback_en_ppl           : std_logic;                        --! Parameter signal between MIB_phy_plus_lane and phy_plus_lane modules
-signal standby_reason_ppl                 : std_logic_vector(07 downto 00);   --! Parameter signal between MIB_phy_plus_lane and phy_plus_lane modules
-signal near_end_serial_lb_en_ppl          : std_logic;                        --! Parameter signal between MIB_phy_plus_lane and phy_plus_lane modules
-signal far_end_serial_lb_en_ppl           : std_logic;                        --! Parameter signal between MIB_phy_plus_lane and phy_plus_lane modules
-signal lane_state_ppl                     : std_logic_vector(03 downto 00);   --! Status signal between MIB_phy_plus_lane and phy_plus_lane modules
-signal rx_error_cnt_ppl                   : std_logic_vector(07 downto 00);   --! Status signal between MIB_phy_plus_lane and phy_plus_lane modules
-signal rx_error_ovf_ppl                   : std_logic;                        --! Status signal between MIB_phy_plus_lane and phy_plus_lane modules
-signal loss_signal_ppl                    : std_logic;                        --! Status signal between MIB_phy_plus_lane and phy_plus_lane modules
-signal far_end_capa_ppl                   : std_logic_vector(07 downto 00);   --! Status signal between MIB_phy_plus_lane and phy_plus_lane modules
-signal rx_polariry_ppl                    : std_logic;                        --! Status signal between MIB_phy_plus_lane and phy_plus_lane modules
+   signal lane_start_ppl                     : std_logic;                        --! Parameter signal between MIB_phy_plus_lane and phy_plus_lane modules
+   signal autostart_ppl                      : std_logic;                        --! Parameter signal between MIB_phy_plus_lane and phy_plus_lane modules
+   signal lane_reset_ppl                     : std_logic;                        --! Parameter signal between MIB_phy_plus_lane and phy_plus_lane modules
+   signal parallel_loopback_en_ppl           : std_logic;                        --! Parameter signal between MIB_phy_plus_lane and phy_plus_lane modules
+   signal standby_reason_ppl                 : std_logic_vector(07 downto 00);   --! Parameter signal between MIB_phy_plus_lane and phy_plus_lane modules
+   signal near_end_serial_lb_en_ppl          : std_logic;                        --! Parameter signal between MIB_phy_plus_lane and phy_plus_lane modules
+   signal far_end_serial_lb_en_ppl           : std_logic;                        --! Parameter signal between MIB_phy_plus_lane and phy_plus_lane modules
+   signal lane_state_ppl                     : std_logic_vector(03 downto 00);   --! Status signal between MIB_phy_plus_lane and phy_plus_lane modules
+   signal rx_error_cnt_ppl                   : std_logic_vector(07 downto 00);   --! Status signal between MIB_phy_plus_lane and phy_plus_lane modules
+   signal rx_error_ovf_ppl                   : std_logic;                        --! Status signal between MIB_phy_plus_lane and phy_plus_lane modules
+   signal loss_signal_ppl                    : std_logic;                        --! Status signal between MIB_phy_plus_lane and phy_plus_lane modules
+   signal far_end_capa_ppl                   : std_logic_vector(07 downto 00);   --! Status signal between MIB_phy_plus_lane and phy_plus_lane modules
+   signal rx_polariry_ppl                    : std_logic;                        --! Status signal between MIB_phy_plus_lane and phy_plus_lane modules
+   -- MIB data_link internal signals
+   signal interface_reset_dl                 : std_logic;
+   signal link_reset_dl                      : std_logic;
+   signal nack_rst_en_dl                     : std_logic;
+   signal nack_rst_mode_dl                   : std_logic;
+   signal pause_vc_dl                        : std_logic_vector(G_VC_NUM downto 0);
+   signal continuous_vc_dl                   : std_logic_vector(G_VC_NUM-1 downto 0);
+   signal seq_number_tx_dl                   : std_logic_vector(G_VC_NUM-1 downto 0);
+   signal seq_number_rx_dl                   : std_logic_vector(G_VC_NUM-1 downto 0);
+   signal credit_vc_dl                       : std_logic_vector(G_VC_NUM-1 downto 0);
+   signal fct_credit_overflow_dl             : std_logic_vector(G_VC_NUM-1 downto 0);
+   signal crc_long_error_dl                  : std_logic;
+   signal crc_short_error_dl                 : std_logic;
+   signal frame_error_dl                     : std_logic;
+   signal sequence_error_dl                  : std_logic;
+   signal far_end_link_reset_dl              : std_logic;
+   signal frame_finished_dl                  : std_logic_vector(G_VC_NUM downto 0);
+   signal frame_tx_dl                        : std_logic_vector(G_VC_NUM downto 0);
+   signal data_counter_tx_dl                 : std_logic_vector(6 downto 0);
+   signal data_counter_rx_dl                 : std_logic_vector(6 downto 0);
+   signal ack_counter_tx_dl                  : std_logic_vector(2 downto 0);
+   signal nack_counter_tx_dl                 : std_logic_vector(2 downto 0);
+   signal fct_counter_tx_dl                  : std_logic_vector(3 downto 0);
+   signal ack_counter_rx_dl                  : std_logic_vector(2 downto 0);
+   signal nack_counter_rx_dl                 : std_logic_vector(2 downto 0);
+   signal fct_counter_rx_dl                  : std_logic_vector(3 downto 0);
+   signal full_counter_rx_dl                 : std_logic_vector(1 downto 0);
+   signal retry_counter_rx_dl                : std_logic_vector(1 downto 0);
+   signal current_time_slot_dl               : std_logic_vector(G_VC_NUM-1 downto 0);
 
 begin
    ------------------------------------------------------------------------------------------------------------------
@@ -192,6 +398,141 @@ begin
       RST_TX_DONE                      => rst_tx_done,
       INTERNAL_SYNC_RST_N              => rst_sync_gty_n
    );
+   -----------------------------------------------------------------------------------------------------------------
+   ---------------------------------------------- DATA-LINK layer modules ---------------------------------------------
+   ------------------------------------------------------------------------------------------------------------------
+   inst_data_link : entity work.data_link
+   generic map (
+      G_VC_NUM <= G_VC_NUM;
+  );
+   Port map (
+      CLK_TX                  => clk_tx_i,
+      RST_TXCLK_N             => rst_sync_gty_n,
+       -- Network layer AXI-Stream TX interface
+       AXIS_ACLK_TX_DL        => AXIS_ACLK_TX,
+       AXIS_TREADY_TX_DL      => AXIS_TREADY_TX,
+       AXIS_TDATA_TX_DL       => AXIS_TDATA_TX,
+       AXIS_TUSER_TX_DL       => AXIS_TUSER_TX,
+       AXIS_TLAST_TX_DL       => AXIS_TLAST_TX,
+       AXIS_TVALID_TX_DL      => AXIS_TVALID_TX,
+       -- Network layer RX interface
+       AXIS_ACLK_RX_DL        => AXIS_ACLK_RX,
+       AXIS_TREADY_RX_DL      => AXIS_TREADY_RX,
+       AXIS_TDATA_RX_DL       => AXIS_TDATA_RX,
+       AXIS_TUSER_RX_DL       => AXIS_TUSER_RX,
+       AXIS_TLAST_RX_DL       => AXIS_TLAST_RX,
+       AXIS_TVALID_RX_DL      => AXIS_TVALID_RX,
+       -- Lane layer TX interface
+       DATA_TX_PPL            => DATA_TX_PPL,
+       CAPABILITY_TX_PPL      => CAPABILITY_TX_PPL,
+       NEW_DATA_TX_PPL        => NEW_DATA_TX_PPL,
+       VALID_K_CHARAC_TX_PPL  => VALID_K_CHARAC_TX_PPL,
+       FIFO_TX_FULL_PPL       => FIFO_TX_FULL_PPL,
+       -- Lane layer RX interface
+       FIFO_RX_RD_EN_PPL      => FIFO_RX_RD_EN_PPL,
+       DATA_RX_PPL            => DATA_RX_PPL,
+       FIFO_RX_EMPTY_PPL      => FIFO_RX_EMPTY_PPL,
+       FIFO_RX_DATA_VALID_PPL => FIFO_RX_DATA_VALID_PPL,
+       VALID_K_CHARAC_RX_PPL  => VALID_K_CHARAC_RX_PPL,
+       FAR_END_CAPA_DL        => FAR_END_CAPA,
+       -- MIB parameters interface
+       INTERFACE_RESET_DL     => interface_reset_dl,
+       LINK_RESET_DL          => link_reset_dl,
+       NACK_RST_EN_DL         => nack_rst_en_dl,
+       NACK_RST_MODE_DL       => nack_rst_mode_dl,
+       PAUSE_VC_DL            => pause_vc_dl,
+       CONTINUOUS_VC_DL       => continuous_vc_dl,
+       -- MIB status interface
+       SEQ_NUMBER_TX_DL        => seq_number_tx_dl,
+       SEQ_NUMBER_RX_DL        => seq_number_rx_dl,
+       CREDIT_VC_DL            => credit_vc_dl,
+       FCT_CREDIT_OVERFLOW_DL  => fct_credit_overflow_dl,
+       CRC_LONG_ERROR_DL       => crc_long_error_dl,
+       CRC_SHORT_ERROR_DL      => crc_short_error_dl,
+       FRAME_ERROR_DL          => frame_error_dl,
+       SEQUENCE_ERROR_DL       => sequence_error_dl,
+       FAR_END_LINK_RESET_DL   => far_end_link_reset_dl,
+       FRAME_FINISHED_DL       => frame_finished_dl,
+       FRAME_TX_DL             => frame_tx_dl,
+       DATA_COUNTER_TX_DL      => data_counter_tx_dl,
+       DATA_COUNTER_RX_DL      => data_counter_rx_dl,
+       ACK_COUNTER_TX_DL       => ack_counter_tx_dl,
+       NACK_COUNTER_TX_DL      => nack_counter_tx_dl,
+       FCT_COUNTER_TX_DL       => fct_counter_tx_dl,
+       ACK_COUNTER_RX_DL       => ack_counter_rx_dl,
+       NACK_COUNTER_RX_DL      => nack_counter_rx_dl,
+       FCT_COUNTER_RX_DL       => fct_counter_rx_dl,
+       FULL_COUNTER_RX_DL      => full_counter_rx_dl,
+       RETRY_COUNTER_RX_DL     => retry_counter_rx_dl,
+       CURRENT_TIME_SLOT_DL    => current_time_slot_dl
+   );
+
+   inst_mib_data_link : entity work.mib_data_link
+      generic map (
+         G_VC_NUM <= G_VC_NUM;
+      );
+      Port map (
+         -- MIB parameters interface TOP
+         INTERFACE_RESET     => INTERFACE_RESET,
+         LINK_RESET          => LINK_RESET,
+         NACK_RST_EN         => NACK_RST_EN,
+         NACK_RST_MODE       => NACK_RST_MODE,
+         PAUSE_VC            => PAUSE_VC,
+         CONTINUOUS_VC       => CONTINUOUS_VC,
+         -- MIB parameters interface Data-link
+         INTERFACE_RESET_DL  => interface_reset_dl,
+         LINK_RESET_DL       => link_reset_dl,
+         NACK_RST_EN_DL      => nack_rst_en_dl,
+         NACK_RST_MODE_DL    => nack_rst_mode_dl,
+         PAUSE_VC_DL         => pause_vc_dl,
+         CONTINUOUS_VC_DL    => continuous_vc_dl,
+         -- MIB status interface Data-link
+         SEQ_NUMBER_TX_DL    => seq_number_tx_dl,
+         SEQ_NUMBER_RX_DL    => seq_number_rx_dl,
+         CREDIT_VC_DL        => credit_vc_dl,
+         FCT_CREDIT_OVERFLOW_DL => fct_credit_overflow_dl,
+         CRC_LONG_ERROR_DL   => crc_long_error_dl,
+         CRC_SHORT_ERROR_DL  => crc_short_error_dl,
+         FRAME_ERROR_DL      => frame_error_dl,
+         SEQUENCE_ERROR_DL   => sequence_error_dl,
+         FAR_END_LINK_RESET_DL => far_end_link_reset_dl,
+         FRAME_FINISHED_DL   => frame_finished_dl,
+         FRAME_TX_DL         => frame_tx_dl,
+         DATA_COUNTER_TX_DL  => data_counter_tx_dl,
+         DATA_COUNTER_RX_DL  => data_counter_rx_dl,
+         ACK_COUNTER_TX_DL   => ack_counter_tx_dl,
+         NACK_COUNTER_TX_DL  => nack_counter_tx_dl,
+         FCT_COUNTER_TX_DL   => fct_counter_tx_dl,
+         ACK_COUNTER_RX_DL   => ack_counter_rx_dl,
+         NACK_COUNTER_RX_DL  => nack_counter_rx_dl,
+         FCT_COUNTER_RX_DL   => fct_counter_rx_dl,
+         FULL_COUNTER_RX_DL  => full_counter_rx_dl,
+         RETRY_COUNTER_RX_DL => retry_counter_rx_dl,
+         CURRENT_TIME_SLOT_DL => current_time_slot_dl,
+         -- MIB status interface TOP
+         SEQ_NUMBER_TX       => SEQ_NUMBER_TX,
+         SEQ_NUMBER_RX       => SEQ_NUMBER_RX,
+         CREDIT_VC           => CREDIT_VC,
+         FCT_CREDIT_OVERFLOW => FCT_CREDIT_OVERFLOW,
+         CRC_LONG_ERROR      => CRC_LONG_ERROR,
+         CRC_SHORT_ERROR     => CRC_SHORT_ERROR,
+         FRAME_ERROR         => FRAME_ERROR,
+         SEQUENCE_ERROR      => SEQUENCE_ERROR,
+         FAR_END_LINK_RESET  => FAR_END_LINK_RESET,
+         FRAME_FINISHED      => FRAME_FINISHED,
+         FRAME_TX            => FRAME_TX,
+         DATA_COUNTER_TX     => DATA_COUNTER_TX,
+         DATA_COUNTER_RX     => DATA_COUNTER_RX,
+         ACK_COUNTER_TX      => ACK_COUNTER_TX,
+         NACK_COUNTER_TX     => NACK_COUNTER_TX,
+         FCT_COUNTER_TX      => FCT_COUNTER_TX,
+         ACK_COUNTER_RX      => ACK_COUNTER_RX,
+         NACK_COUNTER_RX     => NACK_COUNTER_RX,
+         FCT_COUNTER_RX      => FCT_COUNTER_RX,
+         FULL_COUNTER_RX     => FULL_COUNTER_RX,
+         RETRY_COUNTER_RX    => RETRY_COUNTER_RX,
+         CURRENT_TIME_SLOT   => CURRENT_TIME_SLOT
+      );
    -----------------------------------------------------------------------------------------------------------------
    ---------------------------------------------- PHY_PLUS_LANE modules ---------------------------------------------
    ------------------------------------------------------------------------------------------------------------------

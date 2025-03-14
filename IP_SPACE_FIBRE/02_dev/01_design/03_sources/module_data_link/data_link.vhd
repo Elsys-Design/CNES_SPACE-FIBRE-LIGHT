@@ -39,7 +39,36 @@ entity data_link is
     FIFO_RX_DATA_VALID_PPL : in   std_logic;                          --! Flag DATA_VALID of the FIFO RX
     VALID_K_CHARAC_RX_PPL  : in   std_logic_vector(03 downto 00);     --! K charachter valid in the 32-bit DATA_TR_PPL vector
     FAR_END_CAPA_DL        : in   std_logic_vector(07 downto 00)     --! Capability field receive in INIT3 control word
-    -- MIB interface
+    -- MIB  parameters interface
+    INTERFACE_RESET_DL     : in std_logic;                            --! Reset the link and all configuration register of the Data Link layer
+    LINK_RESET_DL          : in std_logic;                            --! Reset the link
+    NACK_RST_EN_DL         : in std_logic;                            --! Enable automatic link reset on NACK reception
+    NACK_RST_MODE_DL       : in std_logic;                            --! Up for instant link reset on NACK reception, down for link reset at the end of the current received frame on NACK reception
+    PAUSE_VC_DL            : in std_logic_vector(G_VC_NUM downto 0);         --! Pause the corresponding virtual channel after the end of current transmission
+    CONTINUOUS_VC_DL       : in std_logic_vector(G_VC_NUM-1 downto 0);         --! Enable the corresponding virtual channel continuous mode   
+    -- MIB  status interface
+    SEQ_NUMBER_TX_DL        : out std_logic_vector(G_VC_NUM-1 downto 0);       --! SEQ_NUMBER in transmission
+    SEQ_NUMBER_RX_DL        : out std_logic_vector(G_VC_NUM-1 downto 0);       --! SEQ_NUMBER in reception
+    CREDIT_VC_DL            : out std_logic_vector(G_VC_NUM-1 downto 0);       --! Indicates if each corresponding far-end input buffer has credit
+    FCT_CREDIT_OVERFLOW_DL  : out std_logic_vector(G_VC_NUM-1 downto 0);       --! Indicates overflow of each corresponding input buffer
+    CRC_LONG_ERROR_DL       : out std_logic;                          --! CRC long error
+    CRC_SHORT_ERROR_DL      : out std_logic;                          --! CRC short error
+    FRAME_ERROR_DL          : out std_logic;                          --! Frame error
+    SEQUENCE_ERROR_DL       : out std_logic;                          --! Sequence error
+    FAR_END_LINK_RESET_DL   : out std_logic;                          --! Far-end link reset status
+    FRAME_FINISHED_DL       : out std_logic_vector(G_VC_NUM downto 0);       --! Indicates that corresponding channel finished emitting a frame
+    FRAME_TX_DL             : out std_logic_vector(G_VC_NUM downto 0);       --! Indicates that corresponding channel is emitting a frame
+    DATA_COUNTER_TX_DL      : out std_logic_vector(6 downto 0);       --! Indicate the number of data transmitted in last frame emitted
+    DATA_COUNTER_RX_DL      : out std_logic_vector(6 downto 0);       --! Indicate the number of data received in last frame received
+    ACK_COUNTER_TX_DL       : out  std_logic_vector(2 downto 0);      --! ACK counter TX
+    NACK_COUNTER_TX_DL      : out  std_logic_vector(2 downto 0);      --! NACK counter TX
+    FCT_COUNTER_TX_DL       : out  std_logic_vector(3 downto 0);      --! FCT counter TX
+    ACK_COUNTER_RX_DL       : out  std_logic_vector(2 downto 0);      --! ACK counter RX
+    NACK_COUNTER_RX_DL      : out  std_logic_vector(2 downto 0);      --! NACK counter RX
+    FCT_COUNTER_RX_DL       : out  std_logic_vector(3 downto 0);      --! FCT counter RX
+    FULL_COUNTER_RX_DL      : out  std_logic_vector(1 downto 0);      --! FULL counter RX
+    RETRY_COUNTER_RX_DL     : out  std_logic_vector(1 downto 0);      --! RETRY counter RX
+    CURRENT_TIME_SLOT_DL    : out  std_logic_vector(7 downto 0)       --! Current time slot
   );
 end data_link;
 
