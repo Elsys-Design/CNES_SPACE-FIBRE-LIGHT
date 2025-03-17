@@ -29,6 +29,8 @@ package data_link_lib is
   constant C_FCT_CC_SIZE         : integer              := 8;  -- FCT credit counter size: 4x64xM = 256
   constant C_FCT_CC_MAX          : unsigned             := to_unsigned(255, C_FCT_CC_SIZE);  -- FCT credit counter size: 4x64xM = 256
   constant C_M_SIZE              : integer              := 4;  -- Size of M which is multiplier +1
+  -- Input Buffer
+  constant C_IN_BUF_SIZE        : integer              := 8; -- fifo depth = 2**8= 256 words of 32 bits
   -- DATA LENGTH
   constant C_DATA_LENGTH         : integer              := 32; 
   constant C_TYPE_FRAME_LENGTH   : integer              := 4; 
