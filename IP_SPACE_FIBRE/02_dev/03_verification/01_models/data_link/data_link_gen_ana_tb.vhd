@@ -330,10 +330,10 @@ begin
             s_gen_axi_araddr <= x"000000" & C_ADDR_LG_CONFIG;
             read_axi(s_gen_axi_arvalid, s_gen_axi_rready, clk, s_gen_axi_arready, s_gen_axi_rvalid);
 
-            check(s_gen_axi_rdata(C_LG_FRAME_NB_MAX_BTFD downto 0),                                  std_logic_vector(to_unsigned(nb_frame_ar(i),  C_LG_FRAME_NB_WIDTH)),        "Frame number reg",    PRINT_ON_ERROR);
-            check(s_gen_axi_rdata(C_LG_FRAME_SIZE_MAX_BTFD downto C_LG_FRAME_NB_MAX_BTFD +1),        std_logic_vector(to_unsigned(size_frame,C_LG_FRAME_SIZE_WIDTH)),            "Frame size reg",      PRINT_ON_ERROR);
-            check(s_gen_axi_rdata(C_LG_GEN_DATA_BTFD),                                               gen_data_ar(h),                                                             "Generation type reg", PRINT_ON_ERROR);
-            check(s_gen_axi_rdata(C_LG_DATA_MODE_MAX_BTFD downto C_LG_GEN_DATA_BTFD +1),             std_logic_vector(C_LG_DM_DATA),                                             "Test 1 Data mode reg",PRINT_ON_ERROR);
+            check(s_gen_axi_rdata(C_LG_FRAME_NB_MAX_BTFD downto 0),                                  std_logic_vector(to_unsigned(nb_frame_ar(i),  C_LG_FRAME_NB_WIDTH)),"Test" & INTEGER'IMAGE(h) & "." & INTEGER'IMAGE(i) & "." & INTEGER'IMAGE(size_frame) &         "Frame number reg",    PRINT_ON_ERROR);
+            check(s_gen_axi_rdata(C_LG_FRAME_SIZE_MAX_BTFD downto C_LG_FRAME_NB_MAX_BTFD +1),        std_logic_vector(to_unsigned(size_frame,C_LG_FRAME_SIZE_WIDTH)),    "Test" & INTEGER'IMAGE(h) & "." & INTEGER'IMAGE(i) & "." & INTEGER'IMAGE(size_frame) &         "Frame size reg",      PRINT_ON_ERROR);
+            check(s_gen_axi_rdata(C_LG_GEN_DATA_BTFD),                                               gen_data_ar(h),                                                     "Test" & INTEGER'IMAGE(h) & "." & INTEGER'IMAGE(i) & "." & INTEGER'IMAGE(size_frame) &         "Generation type reg", PRINT_ON_ERROR);
+            check(s_gen_axi_rdata(C_LG_DATA_MODE_MAX_BTFD downto C_LG_GEN_DATA_BTFD +1),             std_logic_vector(C_LG_DM_DATA),                                     "Test" & INTEGER'IMAGE(h) & "." & INTEGER'IMAGE(i) & "." & INTEGER'IMAGE(size_frame) &         "Test 1 Data mode reg",PRINT_ON_ERROR);
 
             s_gen_axi_wdata   <= (others => '0');
             wait for 2*hp;
@@ -349,7 +349,7 @@ begin
                s_gen_axi_araddr <= x"000000" & C_ADDR_LG_INIT_VAL;
                read_axi(s_gen_axi_arvalid, s_gen_axi_rready, clk, s_gen_axi_arready, s_gen_axi_rvalid);
 
-               check(s_gen_axi_rdata, std_logic_vector(to_unsigned(1,s_gen_axi_rdata'length)), "Initial value reg incremental", PRINT_ON_ERROR);
+               check(s_gen_axi_rdata, std_logic_vector(to_unsigned(1,s_gen_axi_rdata'length)),"Test" & INTEGER'IMAGE(h) & "." & INTEGER'IMAGE(i) & "." & INTEGER'IMAGE(size_frame) &  "Initial value reg incremental", PRINT_ON_ERROR);
 
                s_gen_axi_wdata   <= (others => '0');
                wait for 2*hp;
@@ -362,7 +362,7 @@ begin
                s_gen_axi_araddr <= x"000000" & C_ADDR_LG_INIT_VAL;
                read_axi(s_gen_axi_arvalid, s_gen_axi_rready, clk, s_gen_axi_arready, s_gen_axi_rvalid);
 
-               check(s_gen_axi_rdata, x"FFFFFFFF", "Initial value reg PRBS", PRINT_ON_ERROR);
+               check(s_gen_axi_rdata, x"FFFFFFFF","Test" & INTEGER'IMAGE(h) & "." & INTEGER'IMAGE(i) & "." & INTEGER'IMAGE(size_frame) &  "Initial value reg PRBS", PRINT_ON_ERROR);
 
                s_gen_axi_wdata   <= (others => '0');
                wait for 2*hp;
@@ -372,7 +372,7 @@ begin
             --    ###  Configuration regsiter lane_analyzer            ###
             --    ########################################################
                -- verify intials values
-               check(data_tx, x"00000000", "data tx init", PRINT_ON_ERROR);
+               check(data_tx, x"00000000","Test" & INTEGER'IMAGE(h) & "." & INTEGER'IMAGE(i) & "." & INTEGER'IMAGE(size_frame) &  "data tx init", PRINT_ON_ERROR);
                -- set Configuration register lane_generator
                s_ana_axi_wdata(C_LA_FRAME_NB_MAX_BTFD downto 0)                                  <= std_logic_vector(to_unsigned(nb_frame_ar(i),  C_LA_FRAME_NB_WIDTH));        -- lane parameters register, sets the bit field of the lane start signal to '1'
                s_ana_axi_wdata(C_LA_FRAME_SIZE_MAX_BTFD downto C_LA_FRAME_NB_MAX_BTFD +1)        <= std_logic_vector(to_unsigned(size_frame,C_LA_FRAME_SIZE_WIDTH));            -- lane parameters register, sets the bit field of the auto start signal to '1'
@@ -385,10 +385,10 @@ begin
 
                read_axi(s_ana_axi_arvalid, s_ana_axi_rready, clk, s_ana_axi_arready, s_ana_axi_rvalid);
 
-               check(s_ana_axi_rdata(C_LG_FRAME_NB_MAX_BTFD downto 0),                                  std_logic_vector(to_unsigned(nb_frame_ar(i),C_LG_FRAME_NB_WIDTH)),         "Frame number reg",    PRINT_ON_ERROR);
-               check(s_ana_axi_rdata(C_LG_FRAME_SIZE_MAX_BTFD downto C_LG_FRAME_NB_MAX_BTFD +1),        std_logic_vector(to_unsigned(size_frame,C_LG_FRAME_SIZE_WIDTH)),           "Frame size reg",      PRINT_ON_ERROR);
-               check(s_ana_axi_rdata(C_LG_GEN_DATA_BTFD),                                               gen_data_ar(h),                                                            "Generation type reg", PRINT_ON_ERROR);
-               check(s_ana_axi_rdata(C_LA_DATA_MODE_MAX_BTFD downto C_LA_GEN_DATA_BTFD +1),             std_logic_vector(C_LA_DM_DATA),                                            "Test 1 Data mode reg",PRINT_ON_ERROR);
+               check(s_ana_axi_rdata(C_LG_FRAME_NB_MAX_BTFD downto 0),                                  std_logic_vector(to_unsigned(nb_frame_ar(i),C_LG_FRAME_NB_WIDTH)),"Test" & INTEGER'IMAGE(h) & "." & INTEGER'IMAGE(i) & "." & INTEGER'IMAGE(size_frame) &          "Frame number reg",    PRINT_ON_ERROR);
+               check(s_ana_axi_rdata(C_LG_FRAME_SIZE_MAX_BTFD downto C_LG_FRAME_NB_MAX_BTFD +1),        std_logic_vector(to_unsigned(size_frame,C_LG_FRAME_SIZE_WIDTH)),  "Test" & INTEGER'IMAGE(h) & "." & INTEGER'IMAGE(i) & "." & INTEGER'IMAGE(size_frame) &          "Frame size reg",      PRINT_ON_ERROR);
+               check(s_ana_axi_rdata(C_LG_GEN_DATA_BTFD),                                               gen_data_ar(h),                                                   "Test" & INTEGER'IMAGE(h) & "." & INTEGER'IMAGE(i) & "." & INTEGER'IMAGE(size_frame) &          "Generation type reg", PRINT_ON_ERROR);
+               check(s_ana_axi_rdata(C_LA_DATA_MODE_MAX_BTFD downto C_LA_GEN_DATA_BTFD +1),             std_logic_vector(C_LA_DM_DATA),                                    "Test" & INTEGER'IMAGE(h) & "." & INTEGER'IMAGE(i) & "." & INTEGER'IMAGE(size_frame) &         "Test 1 Data mode reg",PRINT_ON_ERROR);
                s_ana_axi_wdata   <= (others => '0');
                wait for 2*hp;
             --    ########################################################
@@ -403,7 +403,7 @@ begin
                s_ana_axi_araddr <= x"000000" & C_ADDR_LA_INIT_VAL;
                read_axi(s_ana_axi_arvalid, s_ana_axi_rready, clk, s_ana_axi_arready, s_ana_axi_rvalid);
 
-               check(s_ana_axi_rdata, std_logic_vector(to_unsigned(1,s_ana_axi_rdata'length)), "Initial value reg incremental", PRINT_ON_ERROR);
+               check(s_ana_axi_rdata, std_logic_vector(to_unsigned(1,s_ana_axi_rdata'length)),"Test" & INTEGER'IMAGE(h) & "." & INTEGER'IMAGE(i) & "." & INTEGER'IMAGE(size_frame) &  "Initial value reg incremental", PRINT_ON_ERROR);
 
                s_ana_axi_wdata   <= (others => '0');
                wait for 2*hp;
@@ -416,7 +416,7 @@ begin
                s_ana_axi_araddr <= x"000000" & C_ADDR_LA_INIT_VAL;
                read_axi(s_ana_axi_arvalid, s_ana_axi_rready, clk, s_ana_axi_arready, s_ana_axi_rvalid);
 
-               check(s_ana_axi_rdata, x"FFFFFFFF", "Initial value reg PRBS", PRINT_ON_ERROR);
+               check(s_ana_axi_rdata, x"FFFFFFFF","Test" & INTEGER'IMAGE(h) & "." & INTEGER'IMAGE(i) & "." & INTEGER'IMAGE(size_frame) &  "Initial value reg PRBS", PRINT_ON_ERROR);
 
                s_ana_axi_wdata   <= (others => '0');
                wait for 2*hp;
@@ -446,7 +446,7 @@ begin
 
    read_axi(s_ana_axi_arvalid, s_ana_axi_rready, clk, s_ana_axi_arready, s_ana_axi_rvalid);
 
-   check(s_ana_axi_rdata(C_LA_ERR_CNT_MAX_BTFD downto C_LA_TEST_END_BTFD +1),  std_logic_vector(to_unsigned(0,C_LA_CNT_ERR_MAX_WIDTH)), "Error counter not equal to 0", PRINT_ON_ERROR);
+   check(s_ana_axi_rdata(C_LA_ERR_CNT_MAX_BTFD downto C_LA_TEST_END_BTFD +1),  std_logic_vector(to_unsigned(0,C_LA_CNT_ERR_MAX_WIDTH)),"Test" & INTEGER'IMAGE(h) & "." & INTEGER'IMAGE(i) & "." & INTEGER'IMAGE(size_frame) &  "Error counter not equal to 0", PRINT_ON_ERROR);
 
    wait for 10*hp;
    wait;
