@@ -479,9 +479,7 @@ async def cocotb_run(dut):
     for x in range(8):
         await send_FCT(tb, x, 0, "0"+ f"{(x+131):0>7b}")
 
-    await tb.spacefibre_driver.write_from_file("stimulus/spacefibre_serial/RXERR_error_1.dat")
-    await write_10b_to_Rx(tb, "1101110111")
-    await tb.spacefibre_driver.write_from_file("stimulus/spacefibre_serial/RXERR_error_2.dat")
+    await tb.spacefibre_driver.write_from_file("stimulus/spacefibre_serial/RXERR_error.dat")
 
     #Check NACK
 

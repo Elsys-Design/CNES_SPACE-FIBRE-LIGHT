@@ -295,6 +295,48 @@ async def send_FCT(tb, vc, value, seq_num):
     crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8(seq_num , crc_8)
     await tb.spacefibre_driver.write_to_Rx(crc_8, delay = 0, k_encoding = 1)
 
+async def get_resetflag(tb, resetflag_farend):
+    """
+    Procedure to get the current resetflag of the SpaceFibre Light IP
+    """
+    await Timer(2, units = "us")
+    
+    #Enable LaneStart and wait to be in Started state
+    Enable_Lanestart = Data(0x04, 0x00000001)
+
+    time_out = 0
+    await tb.masters[0].write_data(Enable_Lanestart)
+    while not_started==1 and time_out < 10000:
+        await tb.masters[0].read_data(Data_read_lane_config_status)
+        if format(Data_read_lane_config_status.data[0], '0>8b')[4:8] == STARTED:
+            not_started = 0
+        time_out += 1
+    
+    #Set Lane initialisatiion FSM from Started to Active state
+    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/Started_to_Connected.dat")
+    for x in range (6):
+        await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/300_DEADBEEF.dat")
+        await send_init3(tb, resetflag_farend)
+
+    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+
+    #Check that Lane initialisatiion FSM is in Active State
+    await tb.masters[0].read_data(Data_read_lane_config_status)
+
+    await stimuli
+    if format(Data_read_lane_config_status.data[0], '0>8b')[4:8] != ACTIVE:
+        global test_failed 
+        test_failed = 1
+
+async def send_init3(tb, resetflag_farend):
+    """
+    Send an INIT3 control word with the CAPABILITY_RESET_FLAG set to resetflag_farend
+    """
+    await tb.spacefibre_driver.write_to_Rx("01111100", 0, k_encoding = 1)
+    await tb.spacefibre_driver.write_to_Rx("11001110", 0, k_encoding = 0)
+    await tb.spacefibre_driver.write_to_Rx("00111000", 0, k_encoding = 0)
+    await tb.spacefibre_driver.write_to_Rx("0000001"+str(resetflag_farend), 0, k_encoding = 0)
+
 
 @cocotb.test()
 async def cocotb_run(dut):
@@ -479,9 +521,7 @@ async def cocotb_run(dut):
     for x in range(8):
         await send_FCT(tb, x, 0, "0"+ f"{(x+131):0>7b}")
 
-    await tb.spacefibre_driver.write_from_file("stimulus/spacefibre_serial/RXERR_error_1.dat")
-    await write_10b_to_Rx(tb, "1101110111")
-    await tb.spacefibre_driver.write_from_file("stimulus/spacefibre_serial/RXERR_error_2.dat")
+    await tb.spacefibre_driver.write_from_file("stimulus/spacefibre_serial/RXERR_error.dat")
 
     #Check NACK
 
