@@ -34,14 +34,12 @@ entity data_encpasulation is
 	  BC_STATUS_DMAC                    : in std_logic_vector (2-1 downto 0);
     MULT_CHANNEL_DMAC                 : in std_logic_vector (G_VC_NUM-1 downto 0);
     READY_DENC                        : out std_logic;
-	
     -- DWI interface
     NEW_WORD_DENC                     : out  std_logic;                                    --! Flag DATA_VALID of the FIFO RX from Lane layer
     DATA_DENC                         : out  std_logic_vector(C_DATA_LENGTH-1 downto 0);   --! Data parallel from Lane Layer
     VALID_K_CHARAC_DENC               : out  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
     TYPE_FRAME_DENC                   : out  std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);                 --! Flag EMPTY of the FIFO RX
     END_FRAME_DENC                    : out  std_logic 
-
   );
 end data_encpasulation;
 

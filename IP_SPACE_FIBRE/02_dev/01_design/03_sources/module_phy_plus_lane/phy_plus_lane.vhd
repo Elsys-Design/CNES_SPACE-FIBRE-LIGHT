@@ -48,6 +48,7 @@ entity phy_plus_lane is
       FIFO_RX_DATA_VALID               : out std_logic;                       --! FiFo RX data valid flag
       VALID_K_CHARAC_RX                : out std_logic_vector(03 downto 00);  --! 4-bit valid K character flags to Data-link layer
       FAR_END_CAPA_DL                  : out std_logic_vector(07 downto 00);  --! Capability field receive in INIT3 control word
+      LANE_ACTIVE_DL                   : out std_logic;                       --! Lane Active flag for the DATA Link Layer 
 
       -- FROM/TO Outside
       TX_POS                           : out std_logic;                       --! Positive LVDS serial data send
@@ -800,6 +801,7 @@ LOSS_SIGNAL                <= no_signal_from_lcwd;
 RX_POLARITY                <= invert_rx_bits_from_lif;
 FAR_END_CAPA               <= far_end_capa_i;
 FAR_END_CAPA_DL            <= far_end_capa_i;
+LANE_ACTIVE_DL             <= enable_transm_data_from_lif;
 
 QUAD0_rxp(0)               <= RX_POS;
 QUAD0_rxn(0)               <= RX_NEG;

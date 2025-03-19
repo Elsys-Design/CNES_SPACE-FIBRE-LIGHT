@@ -27,11 +27,11 @@ port (
 	END_FRAME_DENC        : in  std_logic; 
 	-- DENC interface
 	NEW_WORD_DSCOM        : out  std_logic;                                    --! Flag DATA_VALID of the FIFO RX from Lane layer
-	DATA_DSCOM       : out  std_logic_vector(C_DATA_LENGTH-1 downto 0);   --! Data parallel from Lane Layer
+	DATA_DSCOM            : out  std_logic_vector(C_DATA_LENGTH-1 downto 0);   --! Data parallel from Lane Layer
 	VALID_K_CHARAC_DSCOM  : out  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
 	TYPE_FRAME_DSCOM      : out  std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);  
 	END_FRAME_DSCOM       : out  std_logic 
-   );
+  );
 end data_seq_compute;
 
 architecture rtl of data_seq_compute is

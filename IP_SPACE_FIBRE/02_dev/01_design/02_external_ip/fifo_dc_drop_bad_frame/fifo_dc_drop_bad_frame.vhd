@@ -6,7 +6,7 @@
 -- Date de creation : 10/02/15
 --
 -- Description      : Module FIFO dual clock
--- Modification     : Avec suppression des trames erronées
+-- Modification     : Avec suppression des trames erronï¿½es
 ----------------------------------------------------------------------------
 -- Copyright (c) 2014 par ELSYS Design Group
 -- Tous les droits sont reserves. Toute reproduction totale ou partielle est
@@ -33,30 +33,22 @@ entity FIFO_DC_DROP_BAD_FRAME is
     );
     port (
         RST_N                   : in  std_logic;
-
         -- Writing port
         WR_CLK                  : in  std_logic;                                -- Clock
         WR_DATA                 : in  std_logic_vector(G_DWIDTH-1 downto 0);    -- Data write bus
         WR_DATA_EN              : in  std_logic;                                -- Write command
-        
-        ------------------
-        -- MODIF
-        ------------------
         -- Frame control port
         FRAME_ERROR             : in std_logic;                                 -- Valid received data
         END_FRAME               : in std_logic;                                 -- End of frame
         ------------------
-        
         -- Reading port
         RD_CLK                  : in  std_logic;                                -- Clock
         RD_DATA                 : out std_logic_vector(G_DWIDTH-1 downto 0);    -- Data read bus
         RD_DATA_EN              : in  std_logic;                                -- Read command
         RD_DATA_VLD             : out std_logic;                                -- Data valid
-
         -- Command port
         CMD_FLUSH               : in  std_logic;                                -- fifo flush
         STATUS_BUSY_FLUSH       : out std_logic;                                -- fifo is flushing
-
         -- Status port
         STATUS_THRESHOLD_HIGH   : out std_logic;                                -- threshold high reached flag (sur WR_CLK)
         STATUS_THRESHOLD_LOW    : out std_logic;                                -- threshold low reached flag (sur RD_CLK)
@@ -232,14 +224,14 @@ begin
                 
             end if;
             
-            -- Gestion du pointeur d'écriture normal
+            -- Gestion du pointeur d'ï¿½criture normal
             if wr_en = '1' then
                 ------------------
                 -- MODIF
                 ------------------
                if FRAME_ERROR = '1' or bad_frame = '1' then
                     ptr_wr         <= ptr_last_valid;
-                    bad_frame      <= not END_FRAME; -- Réinitialiser si end_frame = '1', sinon garder '1'
+                    bad_frame      <= not END_FRAME; -- Rï¿½initialiser si end_frame = '1', sinon garder '1'
                 elsif END_FRAME = '1' then 
                     ptr_wr         <= ptr_wr_inc;
                     ptr_last_valid <= ptr_wr_inc;

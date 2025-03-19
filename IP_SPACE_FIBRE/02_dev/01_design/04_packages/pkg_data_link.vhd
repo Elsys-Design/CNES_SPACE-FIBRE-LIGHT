@@ -22,22 +22,32 @@ library ieee;
 library work;
 
 package data_link_lib is
+  -- Lane CAPABILITY
+  constant C_CAPA_LINK_RST       : integer := 0;
+  constant C_CAPA_LANE_START     : integer := 1;
+  constant C_CAPA_DATA_SCRAM     : integer := 2;
+  constant C_CAPA_MULTI_LANE     : integer := 3;
+  constant C_CAPA_ROUTING_SW     : integer := 4;
   -- Number of Virtual Channel
-  constant C_VC_NUM               : integer              := 8;
+  constant C_VC_NUM              : integer              := 8;
   -- Output Buffer
   constant C_OUT_BUF_SIZE        : integer              := 6; -- fifo depth = 2**6= 64 words of 32 bits
   constant C_FCT_CC_SIZE         : integer              := 8;  -- FCT credit counter size: 4x64xM = 256
   constant C_FCT_CC_MAX          : unsigned             := to_unsigned(255, C_FCT_CC_SIZE);  -- FCT credit counter size: 4x64xM = 256
   constant C_M_SIZE              : integer              := 4;  -- Size of M which is multiplier +1
+  -- Middle Buffer
+  constant C_MID_BUF_SIZE        : integer              := 6; -- fifo depth = 2**6= 64 words of 32 bits
   -- Input Buffer
-  constant C_IN_BUF_SIZE        : integer              := 8; -- fifo depth = 2**8= 256 words of 32 bits
+  constant C_IN_BUF_SIZE         : integer              := 8; -- fifo depth = 2**8= 256 words of 32 bits
   -- DATA LENGTH
   constant C_DATA_LENGTH         : integer              := 32; 
-  constant C_TYPE_FRAME_LENGTH   : integer              := 4; 
   constant C_BYTE_BY_WORD_LENGTH : integer              := 4; 
+  constant C_DATA_K_WIDTH        : integer              := C_DATA_LENGTH +C_BYTE_BY_WORD_LENGTH; 
+  constant C_TYPE_FRAME_LENGTH   : integer              := 4; 
   constant C_MAX_DATA_FRAME      : unsigned(7 downto 0) := to_unsigned(66, 8);
   constant C_MAX_IDLE_FRAME      : unsigned(7 downto 0) := to_unsigned(65, 8);
   constant C_WORD_BC_FRAME       : unsigned(1 downto 0) := to_unsigned(3, 2);
+  constant C_BYTE_WIDTH          : integer              := 8;
   -- DATA-LINK TYPE OF FRAME
   constant C_DATA_FRM  :std_logic_vector(3 downto 0):= "0001"; -- DATA Frame
   constant C_BC_FRM    :std_logic_vector(3 downto 0):= "0010"; -- BROADCAST Frame

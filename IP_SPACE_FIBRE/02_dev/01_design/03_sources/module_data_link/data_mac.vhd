@@ -29,10 +29,11 @@ entity data_mac is
     REQ_ACK_DONE_DMAC   : out std_logic;
     -- DIBUF interface
     REQ_FCT_DIBUF       : in  std_logic_vector(G_VC_NUM-1 downto 0);                                    --! Flag DATA_VALID of the FIFO RX from Lane layer
-    REQ_FCT_DONE_DIBUF  : out std_logic_vector(G_VC_NUM-1 downto 0);   
+    REQ_FCT_DONE_DMAC   : out std_logic_vector(G_VC_NUM-1 downto 0);   
     -- DOBUF interface
-    VC_READY_DOBUF      : in  std_logic_vector(G_VC_NUM-1 downto 0);
-    VC_DATA_DOBUF       : in  vc_data_array(G_VC_NUM-1 downto 0);
+    VC_READY_DOBUF        : in  std_logic_vector(G_VC_NUM-1 downto 0);
+    VC_DATA_DOBUF         : in  vc_data_array(G_VC_NUM-1 downto 0);
+    VC_VALID_K_CHAR_DOBUF : in  vc_k_array(G_VC_NUM-1 downto 0);
     VC_DATA_VALID_DOBUF : in  std_logic_vector(G_VC_NUM-1 downto 0);
     VC_END_PACKET_DOBUF : in  std_logic_vector(G_VC_NUM-1 downto 0);
     VC_RD_EN_DMAC       : out  std_logic_vector(G_VC_NUM-1 downto 0);
@@ -420,7 +421,7 @@ begin
     BC_STATUS_DMAC       <= (others => '0');
     MULT_CHANNEL_DMAC    <= (others => '0');
     REQ_ACK_DONE_DMAC    <= '0';
-    REQ_FCT_DONE_DIBUF   <= (others => '0');
+    REQ_FCT_DONE_DMAC   <= (others => '0');
   elsif rising_edge(CLK) then
     REQ_ACK_DONE_DMAC        <= '0';
     req_int           <= '0';
@@ -461,28 +462,28 @@ begin
                       elsif REQ_FCT_DIBUF /= std_logic_vector(to_unsigned(0,G_VC_NUM)) then
                         TYPE_FRAME_DMAC   <= C_FCT_FRM;
                         if REQ_FCT_DIBUF(0) ='1' then
-                          REQ_FCT_DONE_DIBUF(0) <= '1'; 
+                          REQ_FCT_DONE_DMAC(0) <= '1'; 
                           MULT_CHANNEL_DMAC  <= std_logic_vector(to_unsigned(0,MULT_CHANNEL_DMAC'length));
                         elsif REQ_FCT_DIBUF(1) ='1' then
-                          REQ_FCT_DONE_DIBUF(1) <= '1'; 
+                          REQ_FCT_DONE_DMAC(1) <= '1'; 
                           MULT_CHANNEL_DMAC  <= std_logic_vector(to_unsigned(1,MULT_CHANNEL_DMAC'length));
                         elsif REQ_FCT_DIBUF(2) ='1' then
-                          REQ_FCT_DONE_DIBUF(2) <= '1'; 
+                          REQ_FCT_DONE_DMAC(2) <= '1'; 
                           MULT_CHANNEL_DMAC  <= std_logic_vector(to_unsigned(2,MULT_CHANNEL_DMAC'length));
                         elsif REQ_FCT_DIBUF(3) ='1' then
-                          REQ_FCT_DONE_DIBUF(3) <= '1'; 
+                          REQ_FCT_DONE_DMAC(3) <= '1'; 
                           MULT_CHANNEL_DMAC  <= std_logic_vector(to_unsigned(3,MULT_CHANNEL_DMAC'length));
                         elsif REQ_FCT_DIBUF(4) ='1' then
-                          REQ_FCT_DONE_DIBUF(4) <= '1'; 
+                          REQ_FCT_DONE_DMAC(4) <= '1'; 
                           MULT_CHANNEL_DMAC  <= std_logic_vector(to_unsigned(4,MULT_CHANNEL_DMAC'length));
                         elsif REQ_FCT_DIBUF(5) ='1' then
-                          REQ_FCT_DONE_DIBUF(5) <= '1'; 
+                          REQ_FCT_DONE_DMAC(5) <= '1'; 
                           MULT_CHANNEL_DMAC  <= std_logic_vector(to_unsigned(5,MULT_CHANNEL_DMAC'length));
                         elsif REQ_FCT_DIBUF(6) ='1' then
-                          REQ_FCT_DONE_DIBUF(6) <= '1'; 
+                          REQ_FCT_DONE_DMAC(6) <= '1'; 
                           MULT_CHANNEL_DMAC  <= std_logic_vector(to_unsigned(6,MULT_CHANNEL_DMAC'length));
                         elsif REQ_FCT_DIBUF(7) ='1' then
-                          REQ_FCT_DONE_DIBUF(7) <= '1'; 
+                          REQ_FCT_DONE_DMAC(7) <= '1'; 
                           MULT_CHANNEL_DMAC  <= std_logic_vector(to_unsigned(7,MULT_CHANNEL_DMAC'length));
                         end if;
                       end if;
