@@ -68,7 +68,10 @@ async def initialization_procedure(tb):
     #Reset of the DUT
     await tb.reset_DUT()
 
-    #LaneReset with Lane_Configurator
+    #Interface Reset with Lane_Configurator
+    await tb.masters[0].init_run("stimuli/axi/Interface_reset.json")
+
+    #Lane Reset with Lane_Configurator
     await tb.masters[0].init_run("stimuli/axi/Lane_reset.json")
 
     #Wait to go to Disabled
@@ -355,7 +358,7 @@ async def cocotb_run(dut):
     ##########################################################################
     ##########################################################################
     ##########################################################################
-    ### Step 1: Check transmission of frame and insertion of control words ###
+    #############          Step 1: Check link reset FSM          #############
     ##########################################################################
     ##########################################################################
     ##########################################################################
@@ -364,352 +367,211 @@ async def cocotb_run(dut):
     step_1_failed = 0
     #Sets DUT lane initialisation FSM to Active
 
+    
+
+    monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_1", number_of_word = 2500))
+    
+    
+    await tb.reset_DUT()
+
+    #Check Link Reset has been asserted
+
+    await get_resetflag(tb, 0)
+
+    #Check in monitor for last init3 ResetFlag = 1
+
+    #LaneReset with Lane_Configurator
+    await tb.masters[0].init_run("stimuli/axi/Lane_reset.json")
+
+    await get_resetflag(tb, 1)
+
+    #Check in monitor for last init3 ResetFlag = 1
+
+    #LaneReset with Lane_Configurator
+    await tb.masters[0].init_run("stimuli/axi/Lane_reset.json")
+
+    await get_resetflag(tb, 0)
+
+    #Check in monitor for last init3 ResetFlag = 0
+
+
+    #InterfaceReset with Lane_Configurator
+    await tb.masters[0].init_run("stimuli/axi/Interface_reset.json")
+
+    #Check Link Reset has been asserted
+
+    await get_resetflag(tb, 1)
+
+    #Check in monitor for last init3 ResetFlag = 1
+
+    #LaneReset with Lane_Configurator
+    await tb.masters[0].init_run("stimuli/axi/Lane_reset.json")
+
+    await get_resetflag(tb, 0)
+
+    #Check in monitor for last init3 ResetFlag = 0
+
+    #LaneReset with Lane_Configurator
+    await tb.masters[0].init_run("stimuli/axi/Lane_reset.json")
+
+    await get_resetflag(tb, 1)
+
+    #Check in monitor for last init3 ResetFlag = 0
+
+    #Check Link Reset has been asserted
+
+    await get_resetflag(tb, 0)
+
+    #Check in monitor for last init3 ResetFlag = 1
+
+    #LaneReset with Lane_Configurator
+    await tb.masters[0].init_run("stimuli/axi/Lane_reset.json")
+
+    await get_resetflag(tb, 1)
+
+    #Check in monitor for last init3 ResetFlag = 1
+
+    #LaneReset with Lane_Configurator
+    await tb.masters[0].init_run("stimuli/axi/Lane_reset.json")
+
+    await get_resetflag(tb, 0)
+
+    #Check in monitor for last init3 ResetFlag = 0
+
+    #LinkReset with Lane_Configurator
+    await tb.masters[0].init_run("stimuli/axi/Link_reset.json")
+
+    #Check Link Reset has been asserted
+
+    await get_resetflag(tb, 0)
+
+    #Check in monitor for last init3 ResetFlag = 1
+
+    #LaneReset with Lane_Configurator
+    await tb.masters[0].init_run("stimuli/axi/Lane_reset.json")
+
+    await get_resetflag(tb, 1)
+
+    #Check in monitor for last init3 ResetFlag = 1
+
+    #LaneReset with Lane_Configurator
+    await tb.masters[0].init_run("stimuli/axi/Lane_reset.json")
+
+    await get_resetflag(tb, 0)
+
+    #Check in monitor for last init3 ResetFlag = 0
+
+
+    ##########################################################################
+    ##########################################################################
+    ##########################################################################
+    #############       Step 2: Check link reset procedure       #############
+    ##########################################################################
+    ##########################################################################
+    ##########################################################################
+
+    step_1_failed = 0
+    #Sets DUT lane initialisation FSM to Active
+
     monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_1", number_of_word = 2500))
     
     await initialization_procedure(tb)
 
-    #Send first FCT to each virtual channel
-    for x in range(8):
-        await send_FCT(tb, x, 0, "0"+ f"{(x+1):0>7b}")
-    
+    #Check FCT request and reset
+
+    #Check that idle frame  PRBS start at 0xFFFF
+
     await configure_gen_vc_dl(tb, [0xE1,0x1F,0x00,0x00], [0x00,0x00,0x00,0x00])
 
     await start_gen_vc_dl(tb)
 
-    #Send FCT to each virtual channel
+    #Check that idle frame are sent
+
+    #Send first FCT to each virtual channel
+    for x in range(8):
+        await send_FCT(tb, x, 0, "0"+ f"{(x+1):0>7b}")
+        
+    #Check that the data frame are received
+
+
+    #Send first FCT to each virtual channel
     for x in range(8):
         await send_FCT(tb, x, 0, "0"+ f"{(x+9):0>7b}")
-
-    await configure_model_dl(tb, 3, [0x08,0x04,0x00,0x00], [0x00,0x00,0x00,0x03])
-    await configure_model_dl(tb, 5, [0x04,0x08,0x00,0x00], [0x00,0x00,0x00,0x05])
-    await configure_model_dl(tb, 7, [0x02,0x10,0x00,0x00], [0x00,0x00,0x00,0x07])
-    await configure_model_dl(tb, 9, [0x10,0x02,0x00,0x00], [0x00,0x00,0x00,0x09])
-    await configure_model_dl(tb, 11, [0x08,0x04,0x00,0x00], [0x00,0x00,0x00,0x11])
-    await configure_model_dl(tb, 13, [0x04,0x08,0x00,0x00], [0x00,0x00,0x00,0x13])
-    await configure_model_dl(tb, 15, [0x02,0x10,0x00,0x00], [0x00,0x00,0x00,0x15])
-    await configure_model_dl(tb, 17, [0x10,0x02,0x00,0x00], [0x00,0x00,0x00,0x17])
-
+    
+    await configure_gen_vc_dl(tb, [0xE1,0x1F,0x00,0x00], [0x00,0x00,0x00,0x01])
+    
     await start_gen_vc_dl(tb)
 
-    await configure_model_dl(tb, 19, [0x82,0x00,0x00,0x00], [0x00,0x00,0x00,0x00])
-    await start_model_dl(tb, 19)
+    #Check that the data frame are received
 
-    #Send FCT to each virtual channel
+    #Send first FCT to each virtual channel
     for x in range(8):
         await send_FCT(tb, x, 0, "0"+ f"{(x+17):0>7b}")
-
     
-    await configure_model_dl(tb, 3, [0xE1,0x1F,0x00,0x00], [0x00,0x00,0x00,0x00])
+    await configure_gen_vc_dl(tb, [0xE1,0x1F,0x00,0x00], [0x00,0x00,0x00,0x01])
+    
+    await configure_model_dl(tb, 3, [0xE1,0x1F,0x00,0x01], [0x2A,0x00,0x00,0x00])
     await start_model_dl(tb, 3)
 
-    await configure_model_dl(tb, 19, [0x82,0x00,0x00,0x00], [0x00,0x00,0x00,0x02])
-    await start_model_dl(tb, 19)
+    await start_gen_vc_dl(tb)
 
-    #Send FCT to each virtual channel
+
+    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_1_" + str(0), 255, 1, 64, 0, 0, 24, delay = 0, invert_polarity = 0, seed = 42)
+
+    #Check that the data frame are received
+
+    #LinkReset with Lane_Configurator
+    await tb.masters[0].init_run("stimuli/axi/Link_reset.json")
+
+    #Check EEP reception, #check EEP on input buffer 0
+
+    #Check FCT request and reset
+
+    #Check that idle frame  PRBS start at 0xFFFF
+
+    await configure_gen_vc_dl(tb, [0xE1,0x1F,0x00,0x00], [0x00,0x00,0x00,0x00])
+
+    await start_gen_vc_dl(tb)
+
+    #Check that idle frame are sent
+
+    #Send first FCT to each virtual channel
     for x in range(8):
-        await send_FCT(tb, x, 0, "0"+ f"{(x+25):0>7b}")
+        await send_FCT(tb, x, 0, "0"+ f"{(x+1):0>7b}")
+        
+    #Check that the data frame are received
 
-    #wait for idle frame (100 words)
 
-    await configure_model_dl(tb, 19, [0x82,0x00,0x00,0x00], [0x00,0x00,0x00,0x02])
-    await start_model_dl(tb, 19)
+    #Send NACK
+    await tb.spacefibre_random_generator_data_link.write_to_Rx("11111100", 0, k_encoding = 1, invert_polarity = 0)
+    crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8("11111100")
+    await tb.spacefibre_random_generator_data_link.write_to_Rx("10111011", 0, k_encoding = 0, invert_polarity = 0)
+    crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8("10111011", crc_8)
+    await tb.spacefibre_random_generator_data_link.write_to_Rx("00000100", 0, k_encoding = 0, invert_polarity = 0)
+    crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8("00000100", crc_8)
+    await tb.spacefibre_random_generator_data_link.write_to_Rx(crc_8, 0, k_encoding = 0, invert_polarity = 0)
 
-    #wait for idle frame (32 words)
+    #Check That Link Reset has been asserted
+
+    #Check EEP reception, #check EEP on input buffer 0
+
+    #Check FCT request and reset
+
+    #Check that idle frame  PRBS start at 0xFFFF
 
 
     await configure_gen_vc_dl(tb, [0xE1,0x1F,0x00,0x00], [0x00,0x00,0x00,0x00])
 
     await start_gen_vc_dl(tb)
 
-    await monitor
-
-
-    ##########################################################################
-    ##########################################################################
-    ##########################################################################
-    ###########        Step 2: Check NACK and ACK insertion        ###########
-    ##########################################################################
-    ##########################################################################
-    ##########################################################################
-    
-    monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_2", number_of_word = 2500))
-
-    await initialization_procedure(tb)
+    #Check that idle frame are sent
 
     #Send first FCT to each virtual channel
     for x in range(8):
         await send_FCT(tb, x, 0, "0"+ f"{(x+1):0>7b}")
-
-    await configure_gen_vc_dl(tb, [0xE1,0x1F,0x00,0x00], [0x00,0x00,0x00,0x00])
-
-
-    for model in range(8):
-        await configure_model_dl(tb, 3+2*model, [0xE1,0x1F,0x00,0x01], [0x2A,0x00,0x00,0x00])
-        await start_model_dl(tb, 3+2*model)
-
-    await start_gen_vc_dl(tb)
-
-
-    for target in range(8):
-        await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_1_" + str(target), 255, 1, 64, 0, target, target + 8, delay = 0, invert_polarity = 0, seed = 42)
-
-    #Check ACK Request
-
-    for x in range(8):
-        await send_FCT(tb, x, 0, "0"+ f"{(x+17):0>7b}")
-
-    await configure_gen_vc_dl(tb,[0xE1,0x1F,0x00,0x00], [0x00,0x00,0x00,0x00])
-
-
-    for model in range(8):
-        await configure_model_dl(tb, 3+2*model, [0x01,0x14,0x00,0x01], [0x2B,0x00,0x00,0x00])
-        await start_model_dl(tb, 3+2*model)
-
-    await start_gen_vc_dl(tb)
-
-    for target in range(8):
-        await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_2_" + str(target), 160, 15, 40, 0, target, 5*target + 24, delay = 0, invert_polarity = 0, seed = 43)
-
-    #Check ACK Request (every 15 word)
-
-    for x in range(8):
-        await send_FCT(tb, x, 0, "0"+ f"{(x+65):0>7b}")
-
-    for model in range(8):
-        await configure_model_dl(tb, 3+2*model, [0x01,0x14,0x00,0x01], [0x2C,0x00,0x00,0x00])
-        await start_model_dl(tb, 3+2*model)
-
-
-    for target in range(8):
-        await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_3_" + str(target), 160, 15, 40, 0, target, 5*target + 72, delay = 0, invert_polarity = 0, seed = 44)
-
-    #Check ACK Request (every 15 word)
-
-    await configure_model_dl(tb, 3, [0x81,0x0C,0x00,0x01], [0x2D,0x00,0x00,0x00])
-    await start_model_dl(tb, 3)
-
-    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_4_" + str(0), 100, 1, 5, 0, 0, 112, delay = 0, invert_polarity = 0, seed = 45)
-
-    for x in range(8):
-        await send_FCT(tb, x, 0, "0"+ f"{(x+113):0>7b}")
-    
-    await tb.spacefibre_driver.write_from_file("stimulus/spacefibre_serial/CRC_error.dat")
-
-    #Check NACK request
-
-    await configure_model_dl(tb, 3, [0x81,0x01,0x00,0x01], [0x2E,0x00,0x00,0x00])
-    await start_model_dl(tb, 3)
-
-    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_5_" + str(0), 12, 10, 3, 0, 0, 120, delay = 0, invert_polarity = 0, seed = 46)
-
-    #Check ACK
-
-    for x in range(8):
-        await send_FCT(tb, x, 0, "0"+ f"{(x+131):0>7b}")
-
-    await tb.spacefibre_driver.write_from_file("stimulus/spacefibre_serial/SEQ_NUM_error.dat")
-
-    #Check NACK
-
-    await configure_model_dl(tb, 3, [0x81,0x01,0x00,0x01], [0x2E,0x00,0x00,0x00])
-    await start_model_dl(tb, 3)
-
-    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_6_" + str(0), 12, 10, 3, 0, 0, 138, delay = 0, invert_polarity = 0, seed = 46)
-
-    #Check ACK
-
-    for x in range(8):
-        await send_FCT(tb, x, 0, "0"+ f"{(x+131):0>7b}")
-
-    await tb.spacefibre_driver.write_from_file("stimulus/spacefibre_serial/RXERR_error.dat")
-
-    #Check NACK
-
-    await tb.spacefibre_driver.write_from_file("stimulus/spacefibre_serial/Pos_seq_error.dat")
-
-    #Check NACK
-
-    await tb.spacefibre_driver.write_from_file("stimulus/spacefibre_serial/Neg_seq_error.dat")
-
-    #Check NACK
+        
+    #Check that the data frame are received
 
     await monitor
-
-    ##########################################################################
-    ##########################################################################
-    ##########################################################################
-    ###########     Step 3: Check CRC and SEQ_NUMBER generation    ###########
-    ##########################################################################
-    ##########################################################################
-    ##########################################################################
-
-
-    monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_3", number_of_word = 2500))
-
-    await initialization_procedure(tb)
-
-    #Send first FCT to each virtual channel
-    for x in range(8):
-        await send_FCT(tb, x, 0, "0"+ f"{(x+1):0>7b}")
-    
-    #Check FCT and SEQ num and CRC
-
-    await configure_gen_vc_dl(tb, [0xE1,0x1F,0x00,0x00], [0x00,0x00,0x00,0x00])
-
-    await start_gen_vc_dl(tb)
-
-    #Check data frame SEQ NUM and CRC
-
-    await configure_model_dl(tb, 19, [0x01,0x01,0x00,0x01], [0x2E,0x00,0x00,0x00])
-    await start_model_dl(tb, 19)
-
-    #Check broadcast frame SEQ NUM and CRC
-
-    for x in range(8):
-        await send_FCT(tb, x, 0, "0"+ f"{(x+9):0>7b}")
-    
-    await tb.spacefibre_driver.write_from_file("stimulus/spacefibre_serial/CRC_error_bis.dat")
-
-
-    #Check NACK SEQ NUM and CRC
-
-    await configure_model_dl(tb, 3, [0x81,0x01,0x00,0x01], [0x2E,0x00,0x00,0x00])
-    await start_model_dl(tb, 3)
-
-    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_3_1_" + str(0), 12, 10, 3, 0, 0, 16, delay = 0, invert_polarity = 0, seed = 46)
-
-    #Check ACK SEQ NUM and CRC
-
-    for x in range(8):
-        await send_FCT(tb, x, 0, "0"+ f"{(x+18):0>7b}")
-
-
-    await configure_gen_vc_dl(tb,[0xE1,0x1F,0x00,0x00], [0x00,0x00,0x00,0x00])
-
-    await start_gen_vc_dl(tb)
-
-    #Check data frame SEQ NUM and CRC
-
-    await configure_model_dl(tb, 19, [0x01,0x01,0x00,0x01], [0x2E,0x00,0x00,0x00])
-    await start_model_dl(tb, 19)
-
-    #Check broadcast frame SEQ NUM and CRC
-
-    
-    await monitor
-
-    ##########################################################################
-    ##########################################################################
-    ##########################################################################
-    ###########     Step 4: Check output buffers flow control      ###########
-    ##########################################################################
-    ##########################################################################
-    ##########################################################################
-
-
-    monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_3", number_of_word = 2500))
-
-    await initialization_procedure(tb)
-
-    #Check that FCT are sent for each virtual buffer
-
-    await configure_gen_vc_dl(tb,[0xE1,0x1F,0x00,0x00], [0x00,0x00,0x00,0x00])
-
-    await start_gen_vc_dl(tb)
-
-    #Check transmission of idle frame
-
-    #Send first FCT to each virtual channel
-    for x in range(8):
-        await send_FCT(tb, x, 0, "0"+ f"{(x+1):0>7b}")
-
-    #Check transmission of data frame
-
-    await configure_gen_vc_dl(tb,[0xE2,0x1F,0x00,0x00], [0x00,0x00,0x00,0x00])
-
-    await start_gen_vc_dl(tb)
-
-    #Check transmission of idle frame
-
-    #Send first FCT to each virtual channel
-    for x in range(8):
-        await send_FCT(tb, x, 0, "0"+ f"{(x+9):0>7b}")
-
-    #Check transmission of 1 out of 2 data frame
-
-    ##########################################################################
-    ##########################################################################
-    ##########################################################################
-    ###########       Step 5: Check output buffers competiton      ###########
-    ##########################################################################
-    ##########################################################################
-    ##########################################################################
-
-    monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_3", number_of_word = 2500))
-
-    await initialization_procedure(tb)
-    
-    #Send first FCT to each virtual channel
-    
-    for x in range(8):
-        await send_FCT(tb, x, 0, "0"+ f"{(x+1):0>7b}")
-
-    #Check that FCT are sent for each virtual buffer
-
-    await configure_gen_vc_dl(tb, [0xE1,0x1F,0x00,0x00], [0x00,0x00,0x00,0x00])
-
-    await configure_model_dl(tb, 19, [0x01,0x01,0x00,0x01], [0x2E,0x00,0x00,0x00])
-
-    x = [cocotb.start_soon(start_model_dl(tb, 19))]
-
-    x += [cocotb.start_soon(start_gen_vc_dl(tb))]
-
-    await Combine(*x)
-
-    #Check transmission data and broadcast frame, check order of virtual
-
-    for x in range(8):
-        await send_FCT(tb, x, 0, "0"+ f"{(x+9):0>7b}")
-
-    await configure_model_dl(tb, 3, [0x08,0x04,0x00,0x00], [0x00,0x00,0x00,0x03])
-    await configure_model_dl(tb, 7, [0x02,0x10,0x00,0x00], [0x00,0x00,0x00,0x07])
-    await configure_model_dl(tb, 11, [0x08,0x04,0x00,0x00], [0x00,0x00,0x00,0x11])
-    await configure_model_dl(tb, 15, [0x02,0x10,0x00,0x00], [0x00,0x00,0x00,0x15])
-
-    await start_model_dl(tb, 3)
-    await start_model_dl(tb, 7)
-    await start_model_dl(tb, 11)
-    await start_model_dl(tb, 15)
-
-    #Check transmission data, check order of virtual
-
-    await monitor
-
-    ##########################################################################
-    ##########################################################################
-    ##########################################################################
-    ###########     Step 6: Check continuous mode output buffers   ###########
-    ##########################################################################
-    ##########################################################################
-    ##########################################################################
-
-    monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_3", number_of_word = 2500))
-
-    await initialization_procedure(tb)
-
-    data_config = Data(0x10, [0x04, 0x40,0x00,0x00])
-
-    await tb.masters[0].write_data(data_config)
-
-    await configure_model_dl(tb, 3, [0xF0,0x1F,0x00,0x01], [0x00,0x00,0x00,0x2A])
-    await start_model_dl(tb, 3)
-
-    #Check that Data Frame are received
-
-    await configure_gen_vc_dl(tb, [0xF0,0x1F,0x00,0x01], [0x00,0x00,0x00,0x00])
-    await configure_model_dl(tb, 3, [0xFF,0x1F,0x00,0x01], [0x00,0x00,0x00,0x2A])
-    await start_gen_vc_dl(tb)
-    
-    #Check EEP insertion
 
 

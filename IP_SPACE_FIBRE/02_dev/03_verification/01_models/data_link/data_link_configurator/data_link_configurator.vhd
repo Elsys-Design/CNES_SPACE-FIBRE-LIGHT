@@ -21,7 +21,7 @@ use work.pkg_model.all;
 ------------------------------------------------------------------------------------------------------------------
 --                                                      ENTITY                                                  --
 ------------------------------------------------------------------------------------------------------------------
-entity LANE_CONFIGURATOR is
+entity DATA_LINK_CONFIGURATOR is
     generic(
        G_ADDR_WIDTH : positive := C_AXI_ADDR_WIDTH;                              -- Generic for AXI address width
        G_DATA_WIDTH : positive := C_AXI_DATA_WIDTH                               -- Generic for AXI data width
@@ -64,20 +64,21 @@ entity LANE_CONFIGURATOR is
    INTERFACE_RST         : out std_logic;                                        -- Enable interface reset
    LINK_RST              : out std_logic;                                        -- Reset link
    NACK_RST_EN           : out std_logic;                                        -- Enable automatic reset on NACK reception
-   PAUSE_VC              : out std_logic_vector(G_CHANNEL_NUMBER-1 downto 0);    -- Pause each corresponding virtual channel at the end of the current frame being sent
+   NACK_RST_MODE         : out std_logic;                                        -- Select automatic reset mode on NACK reception
+   PAUSE_VC              : out std_logic_vector(G_CHANNEL_NUMBER downto 0);      -- Pause each corresponding channel at the end of the current frame being sent
    CONTINUOUS_VC         : out std_logic_vector(G_CHANNEL_NUMBER-1 downto 0);    -- Enable continuous mode of each corresponding virtual channel
-
+   
    -- to the LANE
    LANE_START            : out std_logic;                                        -- SpaceFibre lane start initialization signal
    AUTOSTART             : out std_logic;                                        -- Enables communication lane to initialize automatically when a link is established
    LANE_RESET            : out std_logic;                                        -- Reset Lane layer signal
    PARALLEL_LOOPBACK_EN  : out std_logic;                                        -- Parallel loopback enables signal
    STANDBY_REASON        : out std_logic_vector(C_STDBYREASON_WIDTH-1 downto 0); -- Standby reason field
-
+   
    -- to the PHY
    NEAR_END_SERIAL_LB_EN : out std_logic;                                        -- Near-End Serial Loopback
    FAR_END_SERIAL_LB_EN  : out std_logic;                                        -- Far -End Serial Loopback
-
+   
    -- from the DATA LINK
    VC_CREDIT             : in std_logic_vector(G_CHANNEL_NUMBER-1 downto 0);     -- Up if each corresponding virtual channel has credit in the far-end input buffer
    FCT_CREDIT_OVERFLOW   : in std_logic_vector(G_CHANNEL_NUMBER-1 downto 0);     -- Up if each corresponding virtual channel credit counter overflowed
@@ -88,8 +89,24 @@ entity LANE_CONFIGURATOR is
    FAR_END_LINK_RST      : in std_logic;                                         -- Far-end Link reset status
    SEQ_NUMBER_TX         : in std_logic_vector(7 downto 0);                      -- SEQ_NUMBER in transmission
    SEQ_NUMBER_RX         : in std_logic_vector(7 downto 0);                      -- SEQ_NUMBER in reception
-
-
+   INPUT_BUFFER_OVFL     : in std_logic_vector(G_CHANNEL_NUMBER-1 downto 0);     -- Up if the corresponding input buffer has overflowed
+   FRAME_TX              : in std_logic_vector(G_CHANNEL_NUMBER downto 0);       -- 
+   FRAME_FINISHED        : in std_logic_vector(G_CHANNEL_NUMBER downto 0);       -- 
+   DATA_CNT_TX           : in std_logic_vector(7 downto 0);                      -- 
+   DATA_CNT_RX           : in std_logic_vector(7 downto 0);                      --
+   ACK_COUNTER_TX        : in std_logic_vector(2 downto 0);
+   NACK_COUNTER_TX       : in std_logic_vector(2 downto 0);
+   FCT_COUNTER_TX        : in std_logic_vector(3 downto 0);
+   ACK_COUNTER_RX        : in std_logic_vector(2 downto 0);
+   NACK_COUNTER_RX       : in std_logic_vector(2 downto 0);
+   FCT_COUNTER_RX        : in std_logic_vector(3 downto 0);
+   FULL_COUNTER_RX       : in std_logic_vector(1 downto 0);
+   RETRY_COUNTER_RX      : in std_logic_vector(1 downto 0);
+   CURRENT_TIME_SLOT     : in std_logic_vector(7 downto 0);
+   LINK_RST_ASSERTED     : in std_logic;                                         -- Link has been reseted
+   RESET_PARAM_DL        : in std_logic;                                         -- Reset configuration parameters control
+   
+   
    -- from the LANE
    LANE_STATE            : in std_logic_vector(C_LANESTATE_WIDTH-1 downto 0);    -- Lane state field
    RX_ERROR_CNT          : in std_logic_vector(C_RX_ERR_CNT_WIDTH-1 downto 0);   -- RX Error Counter
@@ -101,12 +118,12 @@ entity LANE_CONFIGURATOR is
    -- to the DUT
    RST_DUT_N             : out std_logic                                         -- Reset DUT (active low)
    );
-end LANE_CONFIGURATOR;
+end DATA_LINK_CONFIGURATOR;
 
 ------------------------------------------------------------------------------------------------------------------
 --                                                  ARCHITECTURE                                                --
 ------------------------------------------------------------------------------------------------------------------
-architecture rtl of LANE_CONFIGURATOR is
+architecture rtl of DATA_LINK_CONFIGURATOR is
 ---------------------------------------
 -- TYPES
 ---------------------------------------
@@ -121,13 +138,15 @@ architecture rtl of LANE_CONFIGURATOR is
    -- Registers
    ------------
    signal reg_dl_param     : std_logic_vector(G_DATA_WIDTH-1 downto 0);          -- Data Link parameters register
-   signal reg_dl_status    : std_logic_vector(G_DATA_WIDTH-1 downto 0);          -- Data Link status register
-   signal reg_dl_qos       : std_logic_vector(G_DATA_WIDTH-1 downto 0);          -- Data Link status register
+   signal reg_dl_status_1  : std_logic_vector(G_DATA_WIDTH-1 downto 0);          -- Data Link status register
+   signal reg_dl_status_2  : std_logic_vector(G_DATA_WIDTH-1 downto 0);          -- Data Link status register
+   signal reg_dl_qos_1     : std_logic_vector(G_DATA_WIDTH-1 downto 0);          -- Data Link status register
+   signal reg_dl_qos_2     : std_logic_vector(G_DATA_WIDTH-1 downto 0);          -- Data Link status register
    signal reg_lane_param   : std_logic_vector(G_DATA_WIDTH-1 downto 0);          -- Lane parameters register
    signal reg_lane_status  : std_logic_vector(G_DATA_WIDTH-1 downto 0);          -- Lane status register
    signal reg_phy_param    : std_logic_vector(G_DATA_WIDTH-1 downto 0);          -- PHY parameters register
    signal reg_global       : std_logic_vector(G_DATA_WIDTH-1 downto 0);          -- Global register
-   -- internal signals
+   -- internal signals dl
    ------------
    signal vc_credit_i           :  std_logic_vector(G_CHANNEL_NUMBER-1 downto 0);     -- Up if each corresponding virtual channel has credit in the far-end input buffer
    signal fct_credit_overflow_i :  std_logic_vector(G_CHANNEL_NUMBER-1 downto 0);     -- Up if each corresponding virtual channel credit counter overflowed
@@ -138,7 +157,7 @@ architecture rtl of LANE_CONFIGURATOR is
    signal far_end_link_rst_i    :  std_logic;                                         -- Far-end Link reset status
    signal seq_number_tx_i       :  std_logic_vector(7 downto 0);                      -- SEQ_NUMBER in transmission
    signal seq_number_rx_i       :  std_logic_vector(7 downto 0);                      -- SEQ_NUMBER in reception
-   -- internal signals
+   -- internal signals lane and phy
    ------------
    signal lane_start_pulse : std_logic;                                          -- SpaceFibre lane start initialization signal pulsed
 
@@ -154,6 +173,23 @@ architecture rtl of LANE_CONFIGURATOR is
    -- inputs resynchronization
    signal inputs_to_sync   : std_logic_vector(G_CHANNEL_NUMBER + G_CHANNEL_NUMBER + 41 downto 0);
    signal inputs_to_model  : std_logic_vector(G_CHANNEL_NUMBER + G_CHANNEL_NUMBER + 41 downto 0);
+
+   signal frame_tx_i           : std_logic_vector(G_CHANNEL_NUMBER downto 0);    -- 
+   signal frame_finished_i     : std_logic_vector(G_CHANNEL_NUMBER downto 0);       -- 
+   signal data_cnt_tx_i        : std_logic_vector(7 downto 0);                      -- 
+   signal data_cnt_rx_i        : std_logic_vector(7 downto 0);                      --
+   signal ack_counter_tx_i     : std_logic_vector(2 downto 0);
+   signal nack_counter_tx_i    : std_logic_vector(2 downto 0);
+   signal fct_counter_tx_i     : std_logic_vector(3 downto 0);
+   signal ack_counter_rx_i     : std_logic_vector(2 downto 0);
+   signal nack_counter_rx_i    : std_logic_vector(2 downto 0);
+   signal fct_counter_rx_i     : std_logic_vector(3 downto 0);
+   signal full_counter_rx_i    : std_logic_vector(1 downto 0);
+   signal retry_counter_rx_i   : std_logic_vector(1 downto 0);
+   signal current_time_slot_i  : std_logic_vector(7 downto 0);
+   signal link_rst_asserted_i  : std_logic;                                         -- link has been reseted
+   signal reset_param_dl_i     : std_logic; 
+
    begin
 ---------------------------------------
 -- SIGNAL CONNECTION
@@ -304,11 +340,26 @@ architecture rtl of LANE_CONFIGURATOR is
                        S_AXI_RVALID <= '1';
                        axi_rd_state <= RD_RESPONSE;
                    -- Status DL register address
-                  elsif (S_AXI_ARADDR(C_SLAVE_ADDR_WIDTH-1 downto 0) = C_ADDR_DL_DL_STATUS) then
-                     S_AXI_RDATA  <= reg_dl_status;
-                     S_AXI_RRESP  <= "00";
-                     S_AXI_RVALID <= '1';
-                     axi_rd_state <= RD_RESPONSE;
+                   elsif (S_AXI_ARADDR(C_SLAVE_ADDR_WIDTH-1 downto 0) = C_ADDR_DL_DL_STATUS_1) then
+                      S_AXI_RDATA  <= reg_dl_status_1;
+                      S_AXI_RRESP  <= "00";
+                      S_AXI_RVALID <= '1';
+                      axi_rd_state <= RD_RESPONSE;
+                   elsif (S_AXI_ARADDR(C_SLAVE_ADDR_WIDTH-1 downto 0) = C_ADDR_DL_DL_STATUS_2) then
+                      S_AXI_RDATA  <= reg_dl_status_2;
+                      S_AXI_RRESP  <= "00";
+                      S_AXI_RVALID <= '1';
+                      axi_rd_state <= RD_RESPONSE;
+                   elsif (S_AXI_ARADDR(C_SLAVE_ADDR_WIDTH-1 downto 0) = C_ADDR_DL_DL_QOS_1) then
+                      S_AXI_RDATA  <= reg_dl_qos_1;
+                      S_AXI_RRESP  <= "00";
+                      S_AXI_RVALID <= '1';
+                      axi_rd_state <= RD_RESPONSE;
+                   elsif (S_AXI_ARADDR(C_SLAVE_ADDR_WIDTH-1 downto 0) = C_ADDR_DL_DL_QOS_2) then
+                      S_AXI_RDATA  <= reg_dl_qos_2;
+                      S_AXI_RRESP  <= "00";
+                      S_AXI_RVALID <= '1';
+                      axi_rd_state <= RD_RESPONSE;
                    -- Global register address
                    elsif (S_AXI_ARADDR(C_SLAVE_ADDR_WIDTH-1 downto 0) = C_ADDR_DL_GLOBAL) then
                        S_AXI_RDATA  <= reg_global;
