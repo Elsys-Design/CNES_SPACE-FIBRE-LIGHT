@@ -19,7 +19,7 @@ library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
 
-library work;
+library data_link_lib;
 
 package data_link_lib is
   -- Lane CAPABILITY

@@ -20,28 +20,29 @@ library ieee;
   use ieee.numeric_std.all;
 
 entity mib_data_link is
-   generic(
+  generic(
     G_VC_NUM               : integer := 8                                                  --! Number of virtual channel
     );
    port (
     -- MIB parameters interface TOP
-    INTERFACE_RESET     : in  std_logic;
-    LINK_RESET          : in  std_logic;
-    NACK_RST_EN         : in  std_logic;
-    NACK_RST_MODE       : in  std_logic;
-    PAUSE_VC            : in  std_logic_vector(G_VC_NUM downto 0);
-    CONTINUOUS_VC       : in  std_logic_vector(G_VC_NUM-1 downto 0);
+    INTERFACE_RESET         : in  std_logic;
+    LINK_RESET              : in  std_logic;
+    NACK_RST_EN             : in  std_logic;
+    NACK_RST_MODE           : in  std_logic;
+    PAUSE_VC                : in  std_logic_vector(G_VC_NUM downto 0);
+    CONTINUOUS_VC           : in  std_logic_vector(G_VC_NUM-1 downto 0);
     -- MIB parameters interface Data-link
-    INTERFACE_RESET_DL  : out std_logic;
-    LINK_RESET_DL       : out std_logic;
-    NACK_RST_EN_DL      : out std_logic;
-    NACK_RST_MODE_DL    : out std_logic;
-    PAUSE_VC_DL         : out std_logic_vector(G_VC_NUM downto 0);
-    CONTINUOUS_VC_DL    : out std_logic_vector(G_VC_NUM-1 downto 0);
+    INTERFACE_RESET_DL      : out std_logic;
+    LINK_RESET_DL           : out std_logic;
+    NACK_RST_EN_DL          : out std_logic;
+    NACK_RST_MODE_DL        : out std_logic;
+    PAUSE_VC_DL             : out std_logic_vector(G_VC_NUM downto 0);
+    CONTINUOUS_VC_DL        : out std_logic_vector(G_VC_NUM-1 downto 0);
     -- MIB status interface Data-link
     SEQ_NUMBER_TX_DL        : in  std_logic_vector(G_VC_NUM-1 downto 0);
     SEQ_NUMBER_RX_DL        : in  std_logic_vector(G_VC_NUM-1 downto 0);
     CREDIT_VC_DL            : in  std_logic_vector(G_VC_NUM-1 downto 0);
+    INPUT_BUF_OVF_VC_DL     : in  std_logic_vector(G_VC_NUM-1 downto 0);
     FCT_CREDIT_OVERFLOW_DL  : in  std_logic_vector(G_VC_NUM-1 downto 0);
     CRC_LONG_ERROR_DL       : in  std_logic;
     CRC_SHORT_ERROR_DL      : in  std_logic;
@@ -61,10 +62,13 @@ entity mib_data_link is
     FULL_COUNTER_RX_DL      : in  std_logic_vector(1 downto 0);
     RETRY_COUNTER_RX_DL     : in  std_logic_vector(1 downto 0);
     CURRENT_TIME_SLOT_DL    : in  std_logic_vector(G_VC_NUM-1 downto 0);
+    RESET_PARAM_DL          : in  std_logic;
+    LINK_RST_ASSERTED_DL    : in  std_logic;
     -- MIB status interface TOP
     SEQ_NUMBER_TX           : out std_logic_vector(G_VC_NUM-1 downto 0);
     SEQ_NUMBER_RX           : out std_logic_vector(G_VC_NUM-1 downto 0);
     CREDIT_VC               : out std_logic_vector(G_VC_NUM-1 downto 0);
+    INPUT_BUF_OVF_VC        : out std_logic_vector(G_VC_NUM-1 downto 0);
     FCT_CREDIT_OVERFLOW     : out std_logic_vector(G_VC_NUM-1 downto 0);
     CRC_LONG_ERROR          : out std_logic;
     CRC_SHORT_ERROR         : out std_logic;
@@ -83,7 +87,9 @@ entity mib_data_link is
     FCT_COUNTER_RX          : out std_logic_vector(3 downto 0);
     FULL_COUNTER_RX         : out std_logic_vector(1 downto 0);
     RETRY_COUNTER_RX        : out std_logic_vector(1 downto 0);
-    CURRENT_TIME_SLOT       : out std_logic_vector(G_VC_NUM-1 downto 0)
+    CURRENT_TIME_SLOT       : out std_logic_vector(G_VC_NUM-1 downto 0);
+    RESET_PARAM             : out std_logic;
+    LINK_RST_ASSERTED       : out std_logic
    );
 end mib_data_link;
 
@@ -101,6 +107,7 @@ begin
   SEQ_NUMBER_TX           <= SEQ_NUMBER_TX_DL;
   SEQ_NUMBER_RX           <= SEQ_NUMBER_RX_DL;
   CREDIT_VC               <= CREDIT_VC_DL;
+  INPUT_BUF_OVF_VC        <= INPUT_BUF_OVF_VC_DL;
   FCT_CREDIT_OVERFLOW     <= FCT_CREDIT_OVERFLOW_DL;
   CRC_LONG_ERROR          <= CRC_LONG_ERROR_DL;
   CRC_SHORT_ERROR         <= CRC_SHORT_ERROR_DL;
@@ -120,5 +127,7 @@ begin
   FULL_COUNTER_RX         <= FULL_COUNTER_RX_DL;
   RETRY_COUNTER_RX        <= RETRY_COUNTER_RX_DL;
   CURRENT_TIME_SLOT       <= CURRENT_TIME_SLOT_DL;
+  RESET_PARAM             <= RESET_PARAM_DL;
+  LINK_RST_ASSERTED       <= LINK_RST_ASSERTED_DL;
 
 end architecture rtl;

@@ -12,8 +12,8 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
-library work;
-use work.data_link_lib.all;
+library data_link_lib;
+use data_link_lib.data_link_lib.all;
 
 entity data_err_management is
   port (

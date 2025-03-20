@@ -12,8 +12,8 @@ library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
 
-library work;
-use work.data_link_lib.all;
+library data_link_lib;
+use data_link_lib.data_link_lib.all;
 
 entity data_mac is
   generic(
@@ -135,12 +135,12 @@ begin
                         new_packet       <= '1';
                         idle_cnt  <= idle_cnt +1;
                       elsif idle_cnt= 62 then
-                        new_word         <= '1';
-                        idle_data(15 downto 0) <= idle_data(14 downto 0) & (idle_data(5) xor idle_data(4) xor idle_data(3) xor idle_data(0));
+                        new_word  <= '1';
+                        idle_data <= idle_data -1;
                         idle_cnt  <= (others => '0');
                       else
                         new_word         <= '1';
-                        idle_data(15 downto 0)  <= idle_data(14 downto 0) & (idle_data(5) xor idle_data(4) xor idle_data(3) xor idle_data(0));
+                        idle_data <= idle_data -1;
                         idle_cnt  <= idle_cnt +1;
                       end if;
                     end if;
@@ -179,7 +179,7 @@ begin
                       virtual_channel  <= to_unsigned(1,virtual_channel'length);
                       if req_int = '1' then  -- Request ready to send
                         VC_RD_EN_DMAC <= (others => '0'); -- Pausing data transfers
-                        if VC_DATA_VALID_DOBUF(0) = '1' then -- if a transfer is in progress
+                        if VC_DATA_VALID_DOBUF(1) = '1' then -- if a transfer is in progress
                           data_vc       <= VC_DATA_DOBUF(1);
                           new_word      <= '1';
                         end if;
@@ -204,7 +204,7 @@ begin
                       else -- VC changement
                         VC_RD_EN_DMAC <= (others => '0');
                         data_transfer <= '0';
-                        current_state_vc <= VC_1_ST;
+                        current_state_vc <= VC_2_ST;
                       end if;
       when VC_2_ST =>
                       virtual_channel  <= to_unsigned(2,virtual_channel'length);
@@ -235,7 +235,7 @@ begin
                       else -- VC changement
                         VC_RD_EN_DMAC <= (others => '0');
                         data_transfer <= '0';
-                        current_state_vc <= VC_1_ST;
+                        current_state_vc <= VC_3_ST;
                       end if;
       when VC_3_ST =>
                       virtual_channel  <= to_unsigned(3,virtual_channel'length);
@@ -266,7 +266,7 @@ begin
                       else -- VC changement
                         VC_RD_EN_DMAC <= (others => '0');
                         data_transfer <= '0';
-                        current_state_vc <= VC_1_ST;
+                        current_state_vc <= VC_4_ST;
                       end if;
       when VC_4_ST =>
                       virtual_channel  <= to_unsigned(4,virtual_channel'length);
@@ -297,7 +297,7 @@ begin
                       else -- VC changement
                         VC_RD_EN_DMAC <= (others => '0');
                         data_transfer <= '0';
-                        current_state_vc <= VC_1_ST;
+                        current_state_vc <= VC_5_ST;
                       end if;
       when VC_5_ST =>
                       virtual_channel  <= to_unsigned(5,virtual_channel'length);
@@ -328,7 +328,7 @@ begin
                       else -- VC changement
                         VC_RD_EN_DMAC <= (others => '0');
                         data_transfer <= '0';
-                        current_state_vc <= VC_1_ST;
+                        current_state_vc <= VC_6_ST;
                       end if;
       when VC_6_ST =>
                       virtual_channel  <= to_unsigned(6,virtual_channel'length);
@@ -359,7 +359,7 @@ begin
                       else -- VC changement
                         VC_RD_EN_DMAC <= (others => '0');
                         data_transfer <= '0';
-                        current_state_vc <= VC_1_ST;
+                        current_state_vc <= VC_7_ST;
                       end if;
       when VC_7_ST =>
                       virtual_channel  <= to_unsigned(7,virtual_channel'length);
@@ -390,7 +390,7 @@ begin
                       else -- VC changement
                         VC_RD_EN_DMAC <= (others => '0');
                         data_transfer <= '0';
-                        current_state_vc <= VC_1_ST;
+                        current_state_vc <= BC_ST;
                       end if;
       when BC_ST   =>
                         virtual_channel  <= to_unsigned(G_VC_NUM,virtual_channel'length);
@@ -421,7 +421,7 @@ begin
                         else -- VC changement
                           VC_RD_EN_DMAC <= (others => '0');
                           data_transfer <= '0';
-                          current_state_vc <= VC_1_ST;
+                          current_state_vc <= IDLE_ST;
                         end if;
     end case;
   end if;
@@ -447,9 +447,10 @@ begin
     BC_STATUS_DMAC       <= (others => '0');
     MULT_CHANNEL_DMAC    <= (others => '0');
     REQ_ACK_DONE_DMAC    <= '0';
-    REQ_FCT_DONE_DMAC   <= (others => '0');
+    REQ_FCT_DONE_DMAC    <= (others => '0');
+    TRANS_POL_FLG_DMAC   <= '0';
   elsif rising_edge(CLK) then
-    REQ_ACK_DONE_DMAC        <= '0';
+    REQ_ACK_DONE_DMAC <= '0';
     req_int           <= '0';
     case current_state_req is
       when IDLE_ST =>
@@ -481,35 +482,35 @@ begin
                         REQ_ACK_DONE_DMAC  <= '1';
                         TYPE_FRAME_DMAC    <= C_ACK_FRM;
                         TRANS_POL_FLG_DMAC <= TRANS_POL_FLG_DERRM;
-                      elsif REQ_NACK_DERRM = '1' then 
+                      elsif REQ_NACK_DERRM = '1' then
                         REQ_ACK_DONE_DMAC  <= '1';
                         TYPE_FRAME_DMAC    <= C_NACK_FRM;
                         TRANS_POL_FLG_DMAC <= TRANS_POL_FLG_DERRM;
                       elsif REQ_FCT_DIBUF /= std_logic_vector(to_unsigned(0,G_VC_NUM)) then
                         TYPE_FRAME_DMAC   <= C_FCT_FRM;
                         if REQ_FCT_DIBUF(0) ='1' then
-                          REQ_FCT_DONE_DMAC(0) <= '1'; 
+                          REQ_FCT_DONE_DMAC(0) <= '1';
                           MULT_CHANNEL_DMAC  <= std_logic_vector(to_unsigned(0,MULT_CHANNEL_DMAC'length));
                         elsif REQ_FCT_DIBUF(1) ='1' then
-                          REQ_FCT_DONE_DMAC(1) <= '1'; 
+                          REQ_FCT_DONE_DMAC(1) <= '1';
                           MULT_CHANNEL_DMAC  <= std_logic_vector(to_unsigned(1,MULT_CHANNEL_DMAC'length));
                         elsif REQ_FCT_DIBUF(2) ='1' then
-                          REQ_FCT_DONE_DMAC(2) <= '1'; 
+                          REQ_FCT_DONE_DMAC(2) <= '1';
                           MULT_CHANNEL_DMAC  <= std_logic_vector(to_unsigned(2,MULT_CHANNEL_DMAC'length));
                         elsif REQ_FCT_DIBUF(3) ='1' then
-                          REQ_FCT_DONE_DMAC(3) <= '1'; 
+                          REQ_FCT_DONE_DMAC(3) <= '1';
                           MULT_CHANNEL_DMAC  <= std_logic_vector(to_unsigned(3,MULT_CHANNEL_DMAC'length));
                         elsif REQ_FCT_DIBUF(4) ='1' then
-                          REQ_FCT_DONE_DMAC(4) <= '1'; 
+                          REQ_FCT_DONE_DMAC(4) <= '1';
                           MULT_CHANNEL_DMAC  <= std_logic_vector(to_unsigned(4,MULT_CHANNEL_DMAC'length));
                         elsif REQ_FCT_DIBUF(5) ='1' then
-                          REQ_FCT_DONE_DMAC(5) <= '1'; 
+                          REQ_FCT_DONE_DMAC(5) <= '1';
                           MULT_CHANNEL_DMAC  <= std_logic_vector(to_unsigned(5,MULT_CHANNEL_DMAC'length));
                         elsif REQ_FCT_DIBUF(6) ='1' then
-                          REQ_FCT_DONE_DMAC(6) <= '1'; 
+                          REQ_FCT_DONE_DMAC(6) <= '1';
                           MULT_CHANNEL_DMAC  <= std_logic_vector(to_unsigned(6,MULT_CHANNEL_DMAC'length));
                         elsif REQ_FCT_DIBUF(7) ='1' then
-                          REQ_FCT_DONE_DMAC(7) <= '1'; 
+                          REQ_FCT_DONE_DMAC(7) <= '1';
                           MULT_CHANNEL_DMAC  <= std_logic_vector(to_unsigned(7,MULT_CHANNEL_DMAC'length));
                         end if;
                       end if;

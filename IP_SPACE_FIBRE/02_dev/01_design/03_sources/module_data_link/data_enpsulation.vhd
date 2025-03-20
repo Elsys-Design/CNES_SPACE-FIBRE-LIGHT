@@ -12,8 +12,8 @@ library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
 
-library work;
-use work.data_link_lib.all;
+library data_link_lib;
+use data_link_lib.data_link_lib.all;
 
 entity data_encpasulation is
   generic (
@@ -39,7 +39,7 @@ entity data_encpasulation is
     DATA_DENC                         : out  std_logic_vector(C_DATA_LENGTH-1 downto 0);   --! Data parallel from Lane Layer
     VALID_K_CHARAC_DENC               : out  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
     TYPE_FRAME_DENC                   : out  std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);                 --! Flag EMPTY of the FIFO RX
-    END_FRAME_DENC                    : out  std_logic 
+    END_FRAME_DENC                    : out  std_logic
   );
 end data_encpasulation;
 
@@ -68,8 +68,8 @@ begin
 p_encapsulation_fsm: process(CLK, RST_N)
 begin
 if RST_N = '0' then
-  DATA_DENC           <= (others => '0'); 
-  VALID_K_CHARAC_DENC <= (others => '0'); 
+  DATA_DENC           <= (others => '0');
+  VALID_K_CHARAC_DENC <= (others => '0');
   TYPE_FRAME_DENC     <= (others => '0');
   NEW_WORD_DENC       <= '0';
   END_FRAME_DENC      <= '0';
@@ -78,11 +78,11 @@ if RST_N = '0' then
 elsif rising_edge(CLK) then
   TYPE_FRAME_DENC <= TYPE_FRAME_DMAC;
   case current_state is
-    when START_FRAME_ST =>  
+    when START_FRAME_ST =>
                             END_FRAME_DENC      <= '0';
                             NEW_WORD_DENC       <= '0';
                             VALID_K_CHARAC_DENC <= "0000";
-                            if NEW_PACKET_DMAC = '1' then  
+                            if NEW_PACKET_DMAC = '1' then
                               READY_DENC            <= '0';
                               if TYPE_FRAME_DMAC = C_DATA_FRM then
 			                        	DATA_DENC      <= C_RESERVED_SYMB & VIRTUAL_CHANNEL_DMAC & C_SDF_WORD;
@@ -120,17 +120,17 @@ elsif rising_edge(CLK) then
 			                        	NEW_WORD_DENC       <= '1';
                                 current_state       <= START_FRAME_ST;
 			                        end if;
-                            elsif NEW_WORD_DMAC ='1' and TYPE_FRAME_DMAC = C_IDLE_FRM then 
+                            elsif NEW_WORD_DMAC ='1' and TYPE_FRAME_DMAC = C_IDLE_FRM then
                               READY_DENC          <= '1';
                               DATA_DENC           <= DATA_DMAC;
                               VALID_K_CHARAC_DENC <= "0000";
                               NEW_WORD_DENC       <= '1';
-                            else 
+                            else
                               READY_DENC          <= '1';
-                            end if; 
-    when TRANSFER_ST    =>  
+                            end if;
+    when TRANSFER_ST    =>
                             READY_DENC            <= '0';
-                            if END_PACKET_DMAC = '1' then 
+                            if END_PACKET_DMAC = '1' then
 			                        DATA_DENC           <= DATA_DMAC;
 			                        VALID_K_CHARAC_DENC <= "0000";
 			                        NEW_WORD_DENC       <= '1';
@@ -140,7 +140,7 @@ elsif rising_edge(CLK) then
                               VALID_K_CHARAC_DENC <= "0000";
                               NEW_WORD_DENC       <= '1';
                             end if;
-    when END_FRAME_ST   =>	
+    when END_FRAME_ST   =>
                             END_FRAME_DENC        <= '1';
                             READY_DENC            <= '1';
                             current_state         <= START_FRAME_ST;

@@ -12,8 +12,8 @@ library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
 
-library work;
-use work.data_link_lib.all;
+library data_link_lib;
+use data_link_lib.data_link_lib.all;
 
 entity data_seq_check is
   port (
