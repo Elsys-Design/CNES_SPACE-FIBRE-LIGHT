@@ -58,8 +58,8 @@ architecture rtl of data_out_buff is
       G_THRESHOLD_HIGH        : integer := 2**10;                              -- high threshold
       G_THRESHOLD_LOW         : integer := 0;                                  -- low threshold
       -- User parameters ends
-      S_AXIS_TDATA_WIDTH	    : integer := 32;                                 -- Data AXIS length                           
-  		S_AXIS_TUSER_WIDTH	    : integer := 4                                   -- User AXIS length   
+      S_AXIS_TDATA_WIDTH	    : integer := 32;                                 -- Data AXIS length
+  		S_AXIS_TUSER_WIDTH	    : integer := 4                                   -- User AXIS length
   	);
   	port (
   		-- Users to add ports here
@@ -68,7 +68,7 @@ architecture rtl of data_out_buff is
   		RD_CLK                  : in  std_logic;                                -- Clock
       RD_DATA                 : out std_logic_vector(G_DWIDTH-1 downto 0);    -- Data read bus
       RD_DATA_EN              : in  std_logic;                                -- Read command
-      RD_DATA_VLD             : out std_logic;                                -- Data valid		
+      RD_DATA_VLD             : out std_logic;                                -- Data valid
   		-- STATUS FIFO
       cmd_flush               : in  std_logic;                                -- fifo flush
       STATUS_BUSY_FLUSH       : out std_logic;                                -- fifo is flushing
@@ -98,7 +98,7 @@ type data_in_fsm is (
   WAIT_EIP_ST
   );
 
-  signal current_state          : data_in_fsm;  
+  signal current_state          : data_in_fsm;
   --Fifo signals
   signal rd_data                : std_logic_vector(C_DATA_LENGTH + C_BYTE_BY_WORD_LENGTH-1 downto 0);
   signal rd_data_vld            : std_logic;
@@ -108,25 +108,22 @@ type data_in_fsm is (
   signal status_full            : std_logic;
   signal status_empty           : std_logic;
 
-  signal s_axis_tdata_i         	  : std_logic_vector(C_DATA_LENGTH-1 downto 0);
-  signal s_axis_tuser_i         	  : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
-  signal s_axis_tlast_i         	  : std_logic;
-  signal s_axis_tvalid_i        	  : std_logic;
+  signal s_axis_tdata_i         : std_logic_vector(C_DATA_LENGTH-1 downto 0);
+  signal s_axis_tuser_i         : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
+  signal s_axis_tlast_i         : std_logic;
+  signal s_axis_tvalid_i        : std_logic;
   -- continuous mode
-  signal cont_mode_flg              : std_logic;
-  -- 
+  signal cont_mode_flg          : std_logic;
   signal last_k_char            : std_logic;
   signal cmd_flush              : std_logic;
   --Flow control signals
-  signal fct_credit_cnt         : unsigned(C_FCT_CC_SIZE-1 downto 0);        
-
-  signal eip_out                 : std_logic;
-  signal cnt_eip               : unsigned(6-1 downto 0);     -- cnt_word sent, max= 64
-
-  signal data_out              : std_logic_vector(C_DATA_LENGTH-1 downto 0);
-  signal valid_k_char_out      : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
-  signal vc_end_packet         : std_logic;
-  signal cnt_word_sent         : unsigned(6-1 downto 0);     -- cnt_word sent, max= 64
+  signal fct_credit_cnt         : unsigned(C_FCT_CC_SIZE-1 downto 0);
+  signal eip_out                : std_logic;
+  signal cnt_eip                : unsigned(6-1 downto 0);     -- cnt_word sent, max= 64
+  signal data_out               : std_logic_vector(C_DATA_LENGTH-1 downto 0);
+  signal valid_k_char_out       : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
+  signal vc_end_packet          : std_logic;
+  signal cnt_word_sent          : unsigned(6-1 downto 0);     -- cnt_word sent, max= 64
 
 
 begin
@@ -198,7 +195,7 @@ end process p_continuous_mode;
 -- Process: p_data_in_fifo
 -- Description: Manages the data written into the fifo
 ---------------------------------------------------------
-p_data_in_fifo: process(CLK, RST_N)
+p_data_in_fifo: process(RST_N, S_AXIS_ACLK_NW)
 begin
   if RST_N = '0' then
     s_axis_tdata_i  <= (others => '0');
@@ -275,16 +272,16 @@ begin
                                     s_axis_tuser_i  <= (others => '0');
                                     s_axis_tlast_i  <= '0';
                                     s_axis_tvalid_i <= '0';
-                                  end if; 
+                                  end if;
     end case;
   end if;
 end process p_data_in_fifo;
 ---------------------------------------------------------
 -- Process: p_last_char_written
--- Description: Analyses if the last character written into 
+-- Description: Analyses if the last character written into
 --              the fifo was an EOP, EEP or Fill
 ---------------------------------------------------------
-p_last_char_written: process(CLK, RST_N)
+p_last_char_written: process(RST_N, S_AXIS_ACLK_NW)
 begin
   if RST_N = '0' then
     last_k_char <= '0';
@@ -313,7 +310,7 @@ end process p_last_char_written;
         if FCT_FAR_END_DDES = '1' and vc_end_packet = '1' then -- FCT received and packet sent
           if C_FCT_CC_MAX > (fct_credit_cnt + (unsigned(M_VAL_DDES)*64)- cnt_word_sent) then -- FCT credit counter will not overflow
             fct_credit_cnt <= fct_credit_cnt + (unsigned(M_VAL_DDES)*64) - cnt_word_sent;
-          else 
+          else
             FCT_CC_OVF_DOBUF <= '1';
             fct_credit_cnt   <= C_FCT_CC_MAX;
           end if;
@@ -323,7 +320,7 @@ end process p_last_char_written;
           else
             fct_credit_cnt <= (others => '0');
           end if;
-        elsif FCT_FAR_END_DDES = '1' then -- FCT received 
+        elsif FCT_FAR_END_DDES = '1' then -- FCT received
           if C_FCT_CC_MAX > fct_credit_cnt + (unsigned(M_VAL_DDES)*64) then -- FCT credit counter will not overflow
             fct_credit_cnt <= fct_credit_cnt + (unsigned(M_VAL_DDES)*64);
           else

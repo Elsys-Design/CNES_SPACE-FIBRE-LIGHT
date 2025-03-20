@@ -28,7 +28,7 @@ entity data_desencapsulation is
     DATA_VALID_DMBUF       : in  std_logic;                              --! Data valid
     -- DOBUF interface
     FCT_FAR_END_DDES       : out  std_logic_vector(G_VC_NUM-1 downto 0); --! Data write bus
-    M_VAL_DDES             : out  vc_mult_array(G_VC_NUM-1 downto 0);    --! Multiplier values for each virtual channel
+    M_VAL_DDES             : out  vc_m_val_array(G_VC_NUM-1 downto 0);    --! Multiplier values for each virtual channel
     -- DIBUF interface
     DATA_DDES              : out  vc_data_k_array(G_VC_NUM downto 0);    --! Data write vc & broadcast
     DATA_EN_DDES           : out  std_logic_vector(G_VC_NUM downto 0)    --! Write command vc & broadcast

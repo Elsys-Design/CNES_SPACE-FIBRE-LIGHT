@@ -40,10 +40,10 @@ package data_link_lib is
   -- Input Buffer
   constant C_IN_BUF_SIZE         : integer              := 8; -- fifo depth = 2**8= 256 words of 32 bits
   -- DATA LENGTH
-  constant C_DATA_LENGTH         : integer              := 32; 
-  constant C_BYTE_BY_WORD_LENGTH : integer              := 4; 
-  constant C_DATA_K_WIDTH        : integer              := C_DATA_LENGTH +C_BYTE_BY_WORD_LENGTH; 
-  constant C_TYPE_FRAME_LENGTH   : integer              := 4; 
+  constant C_DATA_LENGTH         : integer              := 32;
+  constant C_BYTE_BY_WORD_LENGTH : integer              := 4;
+  constant C_DATA_K_WIDTH        : integer              := C_DATA_LENGTH +C_BYTE_BY_WORD_LENGTH;
+  constant C_TYPE_FRAME_LENGTH   : integer              := 4;
   constant C_MAX_DATA_FRAME      : unsigned(7 downto 0) := to_unsigned(66, 8);
   constant C_MAX_IDLE_FRAME      : unsigned(7 downto 0) := to_unsigned(65, 8);
   constant C_WORD_BC_FRAME       : unsigned(1 downto 0) := to_unsigned(3, 2);
@@ -90,6 +90,7 @@ package data_link_lib is
   type vc_k_array is array (natural range <>) of std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
   type vc_data_k_array is array (natural range <>) of std_logic_vector(C_DATA_LENGTH+C_BYTE_BY_WORD_LENGTH-1 downto 0);
   type vc_mult_array is array (natural range <>) of std_logic_vector(3-1 downto 0);
+  type vc_m_val_array is array (natural range <>) of std_logic_vector(C_M_SIZE-1 downto 0);
   -- #####################################################################
   -- # INIT functions
   -- #####################################################################
