@@ -204,7 +204,7 @@ begin
     s_axis_tvalid_i <= '0';
     cmd_flush       <= '0';
     current_state   <= IDLE_ST;
-  elsif rising_edge(CLK) then
+  elsif rising_edge(S_AXIS_ACLK_NW) then
     cmd_flush <= '0';
     case current_state is 
       when IDLE_ST =>
@@ -285,7 +285,7 @@ p_last_char_written: process(RST_N, S_AXIS_ACLK_NW)
 begin
   if RST_N = '0' then
     last_k_char <= '0';
-  elsif rising_edge(CLK) then
+  elsif rising_edge(S_AXIS_ACLK_NW) then
     if S_AXIS_TUSER_NW(C_BYTE_BY_WORD_LENGTH-1)='1' and S_AXIS_TVALID_NW='1' then
       last_k_char <= '1';
     elsif S_AXIS_TVALID_NW='1' then
@@ -322,7 +322,7 @@ end process p_last_char_written;
           end if;
         elsif FCT_FAR_END_DDES = '1' then -- FCT received
           if C_FCT_CC_MAX > fct_credit_cnt + (unsigned(M_VAL_DDES)*64) then -- FCT credit counter will not overflow
-            fct_credit_cnt <= fct_credit_cnt + (unsigned(M_VAL_DDES)*64);
+           fct_credit_cnt <= fct_credit_cnt + (unsigned(M_VAL_DDES)*64);
           else
             FCT_CC_OVF_DOBUF <= '1';
             fct_credit_cnt   <= C_FCT_CC_MAX;
