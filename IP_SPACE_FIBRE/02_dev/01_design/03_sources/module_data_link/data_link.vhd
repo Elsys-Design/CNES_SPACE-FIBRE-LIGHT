@@ -27,17 +27,17 @@ entity data_link is
     AXIS_TLAST_RX_DL       : out std_logic_vector(G_VC_NUM downto 0);
     AXIS_TVALID_RX_DL      : out std_logic_vector(G_VC_NUM downto 0);
     -- Lane layer TX interface
-    DATA_TX_PPL            : out  std_logic_vector(31 downto 00);         --! Data parallel to be send from Data-Link Layer
-    CAPABILITY_TX_PPL      : out  std_logic_vector(07 downto 00);         --! Capability send on TX link in INIT3 control word
-    NEW_DATA_TX_PPL        : out  std_logic;                              --! Flag to write data in FIFO TX
-    VALID_K_CHARAC_TX_PPL  : out  std_logic_vector(03 downto 00);         --! K charachter valid in the 32-bit DATA_TX_PPL vector
+    DATA_TX_DL             : out  std_logic_vector(31 downto 00);         --! Data parallel to be send from Data-Link Layer
+    CAPABILITY_TX_DL       : out  std_logic_vector(07 downto 00);         --! Capability send on TX link in INIT3 control word
+    NEW_DATA_TX_DL         : out  std_logic;                              --! Flag to write data in FIFO TX
+    VALID_K_CHARAC_TX_DL   : out  std_logic_vector(03 downto 00);         --! K charachter valid in the 32-bit DATA_TX_DL vector
     FIFO_TX_FULL_PPL       : in   std_logic;                              --! Flag full of the FIFO TX
     -- Lane layer RX interface
-    FIFO_RX_RD_EN_PPL      : out  std_logic;                              --! Flag to read data in FIFO RX
-    DATA_RX_PPL            : in   std_logic_vector(31 downto 00);         --! Data parallel to be received to Data-Link Layer
-    FIFO_RX_EMPTY_PPL      : in   std_logic;                              --! Flag EMPTY of the FIFO RX
-    FIFO_RX_DATA_VALID_PPL : in   std_logic;                              --! Flag DATA_VALID of the FIFO RX
-    VALID_K_CHARAC_RX_PPL  : in   std_logic_vector(03 downto 00);         --! K charachter valid in the 32-bit DATA_TR_PPL vector
+    FIFO_RX_RD_EN_DL        : out  std_logic;                              --! Flag to read data in FIFO RX
+    DATA_RX_PPL             : in   std_logic_vector(31 downto 00);         --! Data parallel to be received to Data-Link Layer
+    FIFO_RX_EMPTY_PPL       : in   std_logic;                              --! Flag EMPTY of the FIFO RX
+    FIFO_RX_DATA_VALID_PPL  : in   std_logic;                              --! Flag DATA_VALID of the FIFO RX
+    VALID_K_CHARAC_RX_PPL   : in   std_logic_vector(03 downto 00);         --! K charachter valid in the 32-bit DATA_TR_PPL vector
     FAR_END_CAPA_PPL        : in   std_logic_vector(07 downto 00);         --! Capability field receive in INIT3 control word
     LANE_ACTIVE_PPL         : in  std_logic;                               --! Lane Active flag for the DATA Link Layer
     LANE_RESET_DL           : out std_logic;
@@ -74,7 +74,6 @@ entity data_link is
     CURRENT_TIME_SLOT_DL    : out  std_logic_vector(7 downto 0);          --! Current time slot
     RESET_PARAM_DL          : out std_logic;                              --! Reset configuration parameters control
     LINK_RST_ASSERTED_DL    : out std_logic                              --! Link has been reseted
- 
   );
 end data_link;
 architecture Behavioral of data_link is
@@ -229,7 +228,7 @@ architecture Behavioral of data_link is
       LINK_RESET_DLRE         : in  std_logic;                                    --! Link Reset command
       -- PHY PLUS LANE layer interface
       FIFO_RX_DATA_VALID_PPL  : in  std_logic;                                    --! Flag DATA_VALID of the FIFO RX from Lane layer
-      FIFO_RX_RD_EN_PPL       : out std_logic;                                   --! Flag to read data in FIFO RX
+      FIFO_RX_RD_EN_DL        : out std_logic;                                   --! Flag to read data in FIFO RX
       DATA_RX_PPL             : in  std_logic_vector(C_DATA_LENGTH-1 downto 0);   --! Data parallel from Lane Layer
       VALID_K_CHARAC_PPL      : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);               --! K charachter valid in the 32-bit DATA_RX_PPL vector
       -- DCCHECK layer interface
@@ -370,8 +369,8 @@ architecture Behavioral of data_link is
       VC_RUN_EMISSION_MIB : out std_logic_vector(G_VC_NUM downto 0);
       -- DENC interface
       DATA_DMAC            : out std_logic_vector(C_DATA_LENGTH-1 downto 0);
+      VALID_K_CHAR_DMAC    : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
       NEW_WORD_DMAC        : out std_logic;
-      NEW_PACKET_DMAC      : out std_logic;
       END_PACKET_DMAC      : out std_logic;
       TYPE_FRAME_DMAC      : out std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);
       VIRTUAL_CHANNEL_DMAC : out std_logic_vector(G_VC_NUM-1 downto 0);
@@ -379,8 +378,7 @@ architecture Behavioral of data_link is
       BC_CHANNEL_DMAC      : out std_logic_vector(G_VC_NUM-1 downto 0);
       BC_STATUS_DMAC       : out std_logic_vector(2-1 downto 0);
       MULT_CHANNEL_DMAC    : out std_logic_vector(G_VC_NUM-1 downto 0);
-      TRANS_POL_FLG_DMAC   : out std_logic;
-      READY_DENC           : in std_logic
+      TRANS_POL_FLG_DMAC   : out std_logic
     );
   end component;
 
@@ -393,8 +391,8 @@ architecture Behavioral of data_link is
       CLK                              : in  std_logic;                                    --! Clock generated by GTY IP
       -- DMAC interface
       DATA_DMAC                         : in  std_logic_vector(C_DATA_LENGTH-1 downto 0);   --! Data parallel from Lane Layer
+      VALID_K_CHAR_DMAC                 : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
       NEW_WORD_DMAC                     : in  std_logic;                                    --! Flag DATA_VALID of the FIFO RX from Lane layer
-      NEW_PACKET_DMAC                   : in  std_logic;                                    --! Flag DATA_VALID of the FIFO RX from Lane layer
       END_PACKET_DMAC                   : in  std_logic;                                    --! Flag DATA_VALID of the FIFO RX from Lane layer
       TYPE_FRAME_DMAC                   : in  std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);                 --! Flag EMPTY of the FIFO RX
       VIRTUAL_CHANNEL_DMAC              : in std_logic_vector (G_VC_NUM-1 downto 0);
@@ -402,8 +400,7 @@ architecture Behavioral of data_link is
       BC_CHANNEL_DMAC                   : in std_logic_vector (G_VC_NUM-1 downto 0);
       BC_STATUS_DMAC                    : in std_logic_vector (2-1 downto 0);
       MULT_CHANNEL_DMAC                 : in std_logic_vector (G_VC_NUM-1 downto 0);
-      READY_DENC                        : out std_logic;
-      -- DWI interface
+      -- DSCC interface
       NEW_WORD_DENC                     : out  std_logic;                                    --! Flag DATA_VALID of the FIFO RX from Lane layer
       DATA_DENC                         : out  std_logic_vector(C_DATA_LENGTH-1 downto 0);   --! Data parallel from Lane Layer
       VALID_K_CHARAC_DENC               : out  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
@@ -497,8 +494,8 @@ architecture Behavioral of data_link is
   signal vc_end_packet_dobuf        : std_logic_vector(G_VC_NUM downto 0);
   signal vc_rd_en_dmac              : std_logic_vector(G_VC_NUM downto 0);
   signal data_dmac                  : std_logic_vector(C_DATA_LENGTH-1 downto 0);
+  signal valid_k_charac_dmac        : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
   signal new_word_dmac              : std_logic;
-  signal new_packet_dmac            : std_logic;
   signal end_packet_dmac            : std_logic;
   signal type_frame_dmac            : std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);
   signal virtual_channel_dmac       : std_logic_vector(G_VC_NUM-1 downto 0);
@@ -507,7 +504,6 @@ architecture Behavioral of data_link is
   signal bc_status_dmac             : std_logic_vector(1 downto 0);
   signal mult_channel_dmac          : std_logic_vector(G_VC_NUM-1 downto 0);
   signal trans_pol_flg_dmac         : std_logic;
-  signal ready_denc                 : std_logic;
   signal new_word_denc              : std_logic;
   signal data_denc                  : std_logic_vector(C_DATA_LENGTH-1 downto 0);
   signal valid_k_charac_denc        : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
@@ -649,7 +645,7 @@ begin
       CLK                     => CLK,
       LINK_RESET_DLRE         => link_reset_dlre,
       FIFO_RX_DATA_VALID_PPL  => FIFO_RX_DATA_VALID_PPL,
-      FIFO_RX_RD_EN_PPL       => FIFO_RX_RD_EN_PPL,
+      FIFO_RX_RD_EN_DL       => FIFO_RX_RD_EN_DL,
       DATA_RX_PPL             => DATA_RX_PPL,
       VALID_K_CHARAC_PPL      => VALID_K_CHARAC_RX_PPL,
       TYPE_FRAME_DWI          => type_frame_dwi,
@@ -763,8 +759,8 @@ begin
       VC_END_EMISSION_MIB  => FRAME_FINISHED_DL,
       VC_RUN_EMISSION_MIB  => FRAME_TX_DL,
       DATA_DMAC            => data_dmac,
+      VALID_K_CHAR_DMAC    => valid_k_charac_dmac,
       NEW_WORD_DMAC        => new_word_dmac,
-      NEW_PACKET_DMAC      => new_packet_dmac,
       END_PACKET_DMAC      => end_packet_dmac,
       TYPE_FRAME_DMAC      => type_frame_dmac,
       VIRTUAL_CHANNEL_DMAC => virtual_channel_dmac,
@@ -772,8 +768,7 @@ begin
       BC_CHANNEL_DMAC      => bc_channel_dmac,
       BC_STATUS_DMAC       => bc_status_dmac,
       MULT_CHANNEL_DMAC    => mult_channel_dmac,
-      TRANS_POL_FLG_DMAC   => trans_pol_flg_dmac,
-      READY_DENC           => ready_denc
+      TRANS_POL_FLG_DMAC   => trans_pol_flg_dmac
     );
 
   inst_data_encpasulation: data_encpasulation
@@ -784,8 +779,8 @@ begin
       RST_N                 => rst_n,
       CLK                   => clk,
       DATA_DMAC             => data_dmac,
+      VALID_K_CHAR_DMAC    => valid_k_charac_dmac,
       NEW_WORD_DMAC         => new_word_dmac,
-      NEW_PACKET_DMAC       => new_packet_dmac,
       END_PACKET_DMAC       => end_packet_dmac,
       TYPE_FRAME_DMAC       => type_frame_dmac,
       VIRTUAL_CHANNEL_DMAC  => virtual_channel_dmac,
@@ -793,7 +788,6 @@ begin
       BC_CHANNEL_DMAC       => bc_channel_dmac,
       BC_STATUS_DMAC        => bc_status_dmac,
       MULT_CHANNEL_DMAC     => mult_channel_dmac,
-      READY_DENC            => ready_denc,
       NEW_WORD_DENC         => new_word_denc,
       DATA_DENC             => data_denc,
       VALID_K_CHARAC_DENC   => valid_k_charac_denc,
@@ -827,8 +821,8 @@ begin
       TYPE_FRAME_DSCOM      => type_frame_dscom,
       END_FRAME_DSCOM       => end_frame_dscom,
       FIFO_FULL_TX_LANE     => FIFO_TX_FULL_PPL,
-      VALID_K_CHARAC_DCCOM  => VALID_K_CHARAC_TX_PPL,
-      DATA_DCCOM            => DATA_TX_PPL,
-      NEW_WORD_DCCOM        => NEW_DATA_TX_PPL
+      VALID_K_CHARAC_DCCOM  => VALID_K_CHARAC_TX_DL,
+      DATA_DCCOM            => DATA_TX_DL,
+      NEW_WORD_DCCOM        => NEW_DATA_TX_DL
     );
 end Behavioral;

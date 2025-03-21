@@ -23,7 +23,7 @@ entity data_word_id_fsm is
     LINK_RESET_DLRE         : in  std_logic;                                    --! Link Reset command 
     -- PHY PLUS LANE layer interface
     FIFO_RX_DATA_VALID_PPL  : in  std_logic;                                    --! Flag DATA_VALID of the FIFO RX from Lane layer
-    FIFO_RX_RD_EN_PPL       : out std_logic;                                   --! Flag to read data in FIFO RX  
+    FIFO_RX_RD_EN_DL       : out std_logic;                                   --! Flag to read data in FIFO RX  
     DATA_RX_PPL             : in  std_logic_vector(C_DATA_LENGTH-1 downto 0);   --! Data parallel from Lane Layer
     VALID_K_CHARAC_PPL      : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);               --! K charachter valid in the 32-bit DATA_RX_PPL vector
     -- DCCHECK layer interface
@@ -325,9 +325,9 @@ end process p_data_word_detection;
 p_fifo_rd_ppl: process(CLK, RST_N)
 begin
 	if RST_N = '0' then
-		FIFO_RX_RD_EN_PPL <= '0';
+		FIFO_RX_RD_EN_DL <= '0';
 	elsif rising_edge(CLK) then
-		FIFO_RX_RD_EN_PPL <= '1';
+		FIFO_RX_RD_EN_DL <= '1';
 	end if;
 end process p_fifo_rd_ppl;  
 

@@ -42,7 +42,7 @@ entity spacefibre_light_top is
       AXIS_TUSER_TX_DL                 : in  vc_k_array(G_VC_NUM downto 0);
       AXIS_TLAST_TX_DL                 : in  std_logic_vector(G_VC_NUM downto 0);
       AXIS_TVALID_TX_DL                : in  std_logic_vector(G_VC_NUM downto 0);
-      AXIS_ACLK_RX_DL                  : out std_logic_vector(G_VC_NUM downto 0);
+      AXIS_ACLK_RX_DL                  : in  std_logic_vector(G_VC_NUM downto 0);
       AXIS_TREADY_RX_DL                : in  std_logic_vector(G_VC_NUM downto 0);
       AXIS_TDATA_RX_DL                 : out vc_data_array(G_VC_NUM downto 0);
       AXIS_TUSER_RX_DL                 : out vc_k_array(G_VC_NUM downto 0);
@@ -78,7 +78,7 @@ entity spacefibre_light_top is
       FCT_COUNTER_RX                   : out std_logic_vector(3 downto 0);    --! FCT counter RX
       FULL_COUNTER_RX                  : out std_logic_vector(1 downto 0);    --! FULL counter RX
       RETRY_COUNTER_RX                 : out std_logic_vector(1 downto 0);    --! RETRY counter RX
-      CURRENT_TIME_SLOT                : out std_logic_vector(7 downto 0)    --! Current time slot
+      CURRENT_TIME_SLOT                : out std_logic_vector(7 downto 0);    --! Current time slot
       RESET_PARAM                      : out std_logic;
       LINK_RST_ASSERTED                : out std_logic;
       ----------------------- Phy + Lane layer signals -----------------------
@@ -377,7 +377,6 @@ architecture rtl of spacefibre_light_top is
    signal rx_error_cnt_ppl                   : std_logic_vector(07 downto 00);   --! Status signal between MIB_phy_plus_lane and phy_plus_lane modules
    signal rx_error_ovf_ppl                   : std_logic;                        --! Status signal between MIB_phy_plus_lane and phy_plus_lane modules
    signal loss_signal_ppl                    : std_logic;                        --! Status signal between MIB_phy_plus_lane and phy_plus_lane modules
-   signal far_end_capa_ppl                   : std_logic_vector(07 downto 00);   --! Status signal between MIB_phy_plus_lane and phy_plus_lane modules
    signal rx_polarity_ppl                    : std_logic;                        --! Status signal between MIB_phy_plus_lane and phy_plus_lane modules
    -- MIB data_link internal signals
    signal interface_reset_dl                 : std_logic;
@@ -428,38 +427,38 @@ begin
    ------------------------------------------------------------------------------------------------------------------
    inst_data_link : data_link
    generic map (
-      G_VC_NUM <= G_VC_NUM;
-  );
+      G_VC_NUM => G_VC_NUM
+   )
    Port map (
       CLK                     => clk_tx_i,
       RST_N                   => rst_sync_gty_n,
        -- Network layer AXI-Stream TX interface
-       AXIS_ACLK_TX_NW        => AXIS_ACLK_TX,
-       AXIS_TREADY_TX_DL      => AXIS_TREADY_TX,
-       AXIS_TDATA_TX_NW       => AXIS_TDATA_TX,
-       AXIS_TUSER_TX_NW       => AXIS_TUSER_TX,
-       AXIS_TLAST_TX_NW       => AXIS_TLAST_TX,
-       AXIS_TVALID_TX_NW      => AXIS_TVALID_TX,
+       AXIS_ACLK_TX_NW        => AXIS_ACLK_TX_DL,
+       AXIS_TREADY_TX_DL      => AXIS_TREADY_TX_DL,
+       AXIS_TDATA_TX_NW       => AXIS_TDATA_TX_DL,
+       AXIS_TUSER_TX_NW       => AXIS_TUSER_TX_DL,
+       AXIS_TLAST_TX_NW       => AXIS_TLAST_TX_DL,
+       AXIS_TVALID_TX_NW      => AXIS_TVALID_TX_DL,
        -- Network layer RX interface
-       AXIS_ACLK_RX_NW        => AXIS_ACLK_RX,
-       AXIS_TREADY_RX_NW      => AXIS_TREADY_RX,
-       AXIS_TDATA_RX_DL       => AXIS_TDATA_RX,
-       AXIS_TUSER_RX_DL       => AXIS_TUSER_RX,
-       AXIS_TLAST_RX_DL       => AXIS_TLAST_RX,
-       AXIS_TVALID_RX_DL      => AXIS_TVALID_RX,
+       AXIS_ACLK_RX_NW        => AXIS_ACLK_RX_DL,
+       AXIS_TREADY_RX_NW      => AXIS_TREADY_RX_DL,
+       AXIS_TDATA_RX_DL       => AXIS_TDATA_RX_DL,
+       AXIS_TUSER_RX_DL       => AXIS_TUSER_RX_DL,
+       AXIS_TLAST_RX_DL       => AXIS_TLAST_RX_DL,
+       AXIS_TVALID_RX_DL      => AXIS_TVALID_RX_DL,
        -- Lane layer TX interface
-        DATA_TX_DL            =>  data_tx_dl,
-        CAPABILITY_TX_DL      =>  capability_tx_dl,
-        NEW_DATA_TX_DL        =>  new_data_tx_dl,
-        VALID_K_CHARAC_TX_DL  =>  valid_k_charac_tx_dl,
-        FIFO_TX_FULL_PPL      =>  fifo_tx_full_ppl,
+       DATA_TX_DL            =>  data_tx_dl,
+       CAPABILITY_TX_DL      =>  capability_tx_dl,
+       NEW_DATA_TX_DL        =>  new_data_tx_dl,
+       VALID_K_CHARAC_TX_DL  =>  valid_k_charac_tx_dl,
+       FIFO_TX_FULL_PPL      =>  fifo_tx_full_ppl,
        -- Lane layer RX interface
        FIFO_RX_RD_EN_DL       => fifo_rx_rd_en_dl,
        DATA_RX_PPL            => data_rx_ppl,
        FIFO_RX_EMPTY_PPL      => fifo_rx_empty_ppl,
        FIFO_RX_DATA_VALID_PPL => fifo_rx_data_valid_ppl,
        VALID_K_CHARAC_RX_PPL  => valid_k_charac_rx_ppl,
-       FAR_END_CAPA_PPL       => far_end_capa,
+       FAR_END_CAPA_PPL       => far_end_capa_ppl,
        LANE_ACTIVE_PPL        => lane_active_ppl,
        LANE_RESET_DL          => lane_reset_dl,
        -- MIB parameters interface
@@ -499,8 +498,8 @@ begin
 
    inst_mib_data_link : mib_data_link
       generic map (
-         G_VC_NUM <= G_VC_NUM;
-      );
+         G_VC_NUM => G_VC_NUM
+      )
       Port map (
          -- MIB parameters interface Lane
          INTERFACE_RESET     => INTERFACE_RESET,
