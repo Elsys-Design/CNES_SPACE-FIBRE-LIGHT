@@ -44,6 +44,8 @@ IP_SPACE_FIBRE/02_dev/03_verification/05_scenario/environnement
 
 IP_SPACE_FIBRE/02_dev/01_design/05_libraries/unisim/verilog/src/unisims/CPM5.v
 IP_SPACE_FIBRE/02_dev/01_design/05_libraries/unisim/verilog/src/unisims/HNICX.v
+IP_SPACE_FIBRE/02_dev/01_design/05_libraries/unisim/verilog/src/unisim_retarget_comp.vp
+IP_SPACE_FIBRE/02_dev/01_design/05_libraries/secureip/gtyp_quad/gtyp_quad_002.svp
 
 
 #specific custom script
