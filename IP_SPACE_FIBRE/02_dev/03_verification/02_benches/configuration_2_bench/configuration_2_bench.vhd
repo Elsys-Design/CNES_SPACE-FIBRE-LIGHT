@@ -18,15 +18,16 @@ use ieee.numeric_std.all;
 
 library work;
 use work.pkg_model.all;
-use work.data_link_lib.all;
+library data_link_lib;
+use data_link_lib.data_link_lib.all;
 
-
-library model;
 
 entity CONFIGURATION_2_BENCH is
     generic(
-        G_ADDR_WIDTH : positive := C_AXI_ADDR_WIDTH;                              -- Generic for AXI address width
-        G_DATA_WIDTH : positive := C_AXI_DATA_WIDTH                             -- Generic for AXI data width
+        G_ADDR_WIDTH        : positive := C_AXI_ADDR_WIDTH;                              -- Generic for AXI address width
+        G_DATA_WIDTH        : positive := C_AXI_DATA_WIDTH;                            -- Generic for AXI data width
+        G_VC_NUM            : positive := 8;
+        G_CHANNEL_NUMBER    : positive := 8
     );
     port(
         -- Clock and reset
@@ -475,7 +476,8 @@ architecture Behavioral of CONFIGURATION_2_BENCH is
         s_ana_axi_rvalid      : std_logic; 
     end record;
 
-    signal internal_signals_ana : array (0 to 8) of t_internal_signals_ana;
+    type t_internal_signals_ana_array is array (8 downto 0 ) of t_internal_signals_ana;
+    signal internal_signals_ana : t_internal_signals_ana_array;
 
     -- Internal signals for each generator instance
     type t_internal_signals_gen is record
@@ -505,13 +507,15 @@ architecture Behavioral of CONFIGURATION_2_BENCH is
         s_gen_axi_rvalid      : std_logic; 
     end record;
 
-    signal internal_signals_gen : array (0 to 8) of t_internal_signals_gen;
+    type t_internal_signals_gen_array is array (8 downto 0 ) of t_internal_signals_gen;
+    signal internal_signals_gen : t_internal_signals_gen_array;
 
 
     -- Internal signals for top of the SpaceFibre IP
 
 
     --AXI4 Stream TX
+    signal axis_arstn_tx_dl          : std_logic_vector(G_VC_NUM downto 0);
     signal axis_aclk_tx_dl           : std_logic_vector(G_VC_NUM downto 0);
     signal axis_tready_tx_dl         : std_logic_vector(G_VC_NUM downto 0);
     signal axis_tdata_tx_dl          : vc_data_array(G_VC_NUM downto 0);
@@ -519,6 +523,7 @@ architecture Behavioral of CONFIGURATION_2_BENCH is
     signal axis_tlast_tx_dl          : std_logic_vector(G_VC_NUM downto 0);
     signal axis_tvalid_tx_dl         : std_logic_vector(G_VC_NUM downto 0);
     --AXI4 Stream RX
+    signal axis_arstn_rx_dl          : std_logic_vector(G_VC_NUM downto 0);
     signal axis_aclk_rx_dl           : std_logic_vector(G_VC_NUM downto 0);
     signal axis_tready_rx_dl         : std_logic_vector(G_VC_NUM downto 0);
     signal axis_tdata_rx_dl          : vc_data_array(G_VC_NUM downto 0);
@@ -526,18 +531,18 @@ architecture Behavioral of CONFIGURATION_2_BENCH is
     signal axis_tlast_rx_dl          : std_logic_vector(G_VC_NUM downto 0);
     signal axis_tvalid_rx_dl        : std_logic_vector(G_VC_NUM downto 0);
     --Spy and injection interface
-    signal data_tx_ppl               : std_logic_vector(31 downto 0);
-    signal lane_reset_dl_ppl        : std_logic;
-    signal capability_tx_ppl         : std_logic_vector(7 downto 0);
-    signal new_data_tx_ppl           : std_logic;
-    signal valid_k_charac_tx_ppl     : std_logic_vector(3 downto 0);
-    signal fifo_rx_rd_en_ppl         : std_logic;
-    signal fifo_tx_full_ppl          : std_logic;
-    signal data_rx_ppl               : std_logic_vector(31 downto 0);
-    signal fifo_rx_empty_ppl         : std_logic;
-    signal fifo_rx_data_valid_ppl    : std_logic;
-    signal valid_k_charac_rx_ppl    : std_logic_vector(3 downto 0);
-    signal far_end_capa_dl           : std_logic_vector(7 downto 0);
+    -- signal data_tx_ppl               : std_logic_vector(31 downto 0);
+    -- signal lane_reset_dl_ppl        : std_logic;
+    -- signal capability_tx_ppl         : std_logic_vector(7 downto 0);
+    -- signal new_data_tx_ppl           : std_logic;
+    -- signal valid_k_charac_tx_ppl     : std_logic_vector(3 downto 0);
+    -- signal fifo_rx_rd_en_ppl         : std_logic;
+    -- signal fifo_tx_full_ppl          : std_logic;
+    -- signal data_rx_ppl               : std_logic_vector(31 downto 0);
+    -- signal fifo_rx_empty_ppl         : std_logic;
+    -- signal fifo_rx_data_valid_ppl    : std_logic;
+    -- signal valid_k_charac_rx_ppl    : std_logic_vector(3 downto 0);
+    -- signal far_end_capa_dl           : std_logic_vector(7 downto 0);
     --MIB
     
     signal sequence_error            : std_logic;
@@ -572,12 +577,14 @@ architecture Behavioral of CONFIGURATION_2_BENCH is
            RX_NEG                           : in  std_logic;                          --! Negative LVDS serial data received
            ----------------------- Data-Link layer signals -----------------------
            -- Discret signals
+           AXIS_ARSTN_TX_DL                 : in  std_logic_vector(G_VC_NUM downto 0);
            AXIS_ACLK_TX_DL                  : in  std_logic_vector(G_VC_NUM downto 0);
            AXIS_TREADY_TX_DL                : out std_logic_vector(G_VC_NUM downto 0);
            AXIS_TDATA_TX_DL                 : in  vc_data_array(G_VC_NUM downto 0);
            AXIS_TUSER_TX_DL                 : in  vc_k_array(G_VC_NUM downto 0);
            AXIS_TLAST_TX_DL                 : in  std_logic_vector(G_VC_NUM downto 0);
            AXIS_TVALID_TX_DL                : in  std_logic_vector(G_VC_NUM downto 0);
+           AXIS_ARSTN_RX_DL                 : in  std_logic_vector(G_VC_NUM downto 0);
            AXIS_ACLK_RX_DL                  : out std_logic_vector(G_VC_NUM downto 0);
            AXIS_TREADY_RX_DL                : in  std_logic_vector(G_VC_NUM downto 0);
            AXIS_TDATA_RX_DL                 : out vc_data_array(G_VC_NUM downto 0);
@@ -616,18 +623,18 @@ architecture Behavioral of CONFIGURATION_2_BENCH is
            CURRENT_TIME_SLOT                : out std_logic_vector(7 downto 0);    --! Current time slot
            ----------------------- Phy + Lane layer signals -----------------------
            -- Discret signals
-           DATA_TX_PPL                      : in  std_logic_vector(31 downto 00);     --! Data parallel to be send from Data-Link Layer
-           LANE_RESET_DL_PPL                : in  std_logic;                          --! LANE_RESET from DATA-LINK layer
-           CAPABILITY_TX_PPL                : in  std_logic_vector(07 downto 00);     --! Capability send on TX link in INIT3 control word
-           NEW_DATA_TX_PPL                  : in  std_logic;                          --! Flag to write data in FIFO TX
-           VALID_K_CHARAC_TX_PPL            : in  std_logic_vector(03 downto 00);     --! K charachter valid in the 32-bit DATA_TX_PPL vector
-           FIFO_RX_RD_EN_PPL                : in  std_logic;                          --! Flag to read data in FIFO RX
-           FIFO_TX_FULL_PPL                 : out std_logic;                          --! Flag full of the FIFO TX
-           DATA_RX_PPL                      : out std_logic_vector(31 downto 00);     --! Data parallel to be received to Data-Link Layer
-           FIFO_RX_EMPTY_PPL                : out std_logic;                          --! Flag EMPTY of the FIFO RX
-           FIFO_RX_DATA_VALID_PPL           : out std_logic;                          --! Flag DATA_VALID of the FIFO RX
-           VALID_K_CHARAC_RX_PPL            : out std_logic_vector(03 downto 00);     --! K charachter valid in the 32-bit DATA_TR_PPL vector
-           FAR_END_CAPA_DL                  : out std_logic_vector(07 downto 00);     --! Capability field receive in INIT3 control word
+        --    DATA_TX_PPL                      : in  std_logic_vector(31 downto 00);     --! Data parallel to be send from Data-Link Layer
+        --    LANE_RESET_DL_PPL                : in  std_logic;                          --! LANE_RESET from DATA-LINK layer
+        --    CAPABILITY_TX_PPL                : in  std_logic_vector(07 downto 00);     --! Capability send on TX link in INIT3 control word
+        --    NEW_DATA_TX_PPL                  : in  std_logic;                          --! Flag to write data in FIFO TX
+        --    VALID_K_CHARAC_TX_PPL            : in  std_logic_vector(03 downto 00);     --! K charachter valid in the 32-bit DATA_TX_PPL vector
+        --    FIFO_RX_RD_EN_PPL                : in  std_logic;                          --! Flag to read data in FIFO RX
+        --    FIFO_TX_FULL_PPL                 : out std_logic;                          --! Flag full of the FIFO TX
+        --    DATA_RX_PPL                      : out std_logic_vector(31 downto 00);     --! Data parallel to be received to Data-Link Layer
+        --    FIFO_RX_EMPTY_PPL                : out std_logic;                          --! Flag EMPTY of the FIFO RX
+        --    FIFO_RX_DATA_VALID_PPL           : out std_logic;                          --! Flag DATA_VALID of the FIFO RX
+        --    VALID_K_CHARAC_RX_PPL            : out std_logic_vector(03 downto 00);     --! K charachter valid in the 32-bit DATA_TR_PPL vector
+        --    FAR_END_CAPA_DL                  : out std_logic_vector(07 downto 00);     --! Capability field receive in INIT3 control word
            -- Paramter and Status signals
            LANE_START                       : in  std_logic;                          --! Asserts or de-asserts LaneStart for the lane
            AUTOSTART                        : in  std_logic;                          --! Asserts or de-asserts AutoStart for the lane
@@ -648,7 +655,7 @@ architecture Behavioral of CONFIGURATION_2_BENCH is
     begin
 
     -- Instantiate the LANE_CONFIGURATOR module
-    DATA_LINK_CONFIGURATOR_INST : entity model.DATA_LINK_CONFIGURATOR
+    DATA_LINK_CONFIGURATOR_INST : entity work.DATA_LINK_CONFIGURATOR
         generic map(
             G_ADDR_WIDTH => G_ADDR_WIDTH,
             G_DATA_WIDTH => G_DATA_WIDTH
@@ -698,7 +705,7 @@ architecture Behavioral of CONFIGURATION_2_BENCH is
             NEAR_END_SERIAL_LB_EN => near_end_serial_lb_en,
             FAR_END_SERIAL_LB_EN  => far_end_serial_lb_en,
             
-            VC_CREDIT             => credit_vc,
+            VC_CREDIT             => vc_credit,
             FCT_CREDIT_OVERFLOW   => fct_credit_overflow,
             CRC_LONG_ERROR        => crc_long_error,
             CRC_SHORT_ERROR       => crc_short_error,
@@ -707,23 +714,21 @@ architecture Behavioral of CONFIGURATION_2_BENCH is
             FAR_END_LINK_RST      => far_end_link_rst,
             SEQ_NUMBER_TX         => seq_number_tx,
             SEQ_NUMBER_RX         => seq_number_rx,
-
-            INPUT_BUFFER_OVFL     => input_buffer_ovfl, --missing in spacefibre top
+            INPUT_BUFFER_OVFL     => input_buffer_ovfl,
 
             FRAME_TX              => frame_tx,
             FRAME_FINISHED        => frame_finished,
             DATA_CNT_TX           => data_counter_tx,
             DATA_CNT_RX           => data_counter_rx,
-
-            -- ACK_COUNTER_TX                   => ack_counter_tx,
-            -- NACK_COUNTER_TX                  => nack_counter_tx,
-            -- FCT_COUNTER_TX                   => fct_counter_tx,
-            -- ACK_COUNTER_RX                   => ack_counter_rx,
-            -- NACK_COUNTER_RX                  => nack_counter_rx,
-            -- FCT_COUNTER_RX                   => fct_counter_rx,
-            -- FULL_COUNTER_RX                  => full_counter_rx,
-            -- RETRY_COUNTER_RX                 => retry_counter_rx,
-            -- CURRENT_TIME_SLOT                => current_time_slot,
+            ACK_COUNTER_TX        => ack_counter_tx,
+            NACK_COUNTER_TX       => nack_counter_tx,
+            FCT_COUNTER_TX        => fct_counter_tx,
+            ACK_COUNTER_RX        => ack_counter_rx,
+            NACK_COUNTER_RX       => nack_counter_rx,
+            FCT_COUNTER_RX        => fct_counter_rx,
+            FULL_COUNTER_RX       => full_counter_rx,
+            RETRY_COUNTER_RX      => retry_counter_rx,
+            CURRENT_TIME_SLOT     => current_time_slot,
 
             LANE_STATE            => lane_state,
             RX_ERROR_CNT          => rx_error_cnt,
@@ -737,7 +742,7 @@ architecture Behavioral of CONFIGURATION_2_BENCH is
 
     -- Instantiate the DATA_LINK_ANALYZER module 9 times
     gen_data_link_analyzer: for i in 0 to 8 generate
-        DATA_LINK_ANALYZER_INST : entity model.DATA_LINK_ANALYZER
+        DATA_LINK_ANALYZER_INST : entity work.DATA_LINK_ANALYZER
             generic map(
                 G_ADDR_WIDTH => G_ADDR_WIDTH,
                 G_DATA_WIDTH => G_DATA_WIDTH
@@ -771,171 +776,172 @@ architecture Behavioral of CONFIGURATION_2_BENCH is
     end generate;
 
 
-    S_ANA_0_AXI_AWADDR    <= internal_signals_ana(0).s_ana_axi_awaddr;
-    S_ANA_0_AXI_AWVALID   <= internal_signals_ana(0).s_ana_axi_awvalid;
-    S_ANA_0_AXI_AWREADY   <= internal_signals_ana(0).s_ana_axi_awready;
-    S_ANA_0_AXI_WDATA     <= internal_signals_ana(0).s_ana_axi_wdata;
-    S_ANA_0_AXI_WSTRB     <= internal_signals_ana(0).s_ana_axi_wstrb;
-    S_ANA_0_AXI_WVALID    <= internal_signals_ana(0).s_ana_axi_wvalid;
-    S_ANA_0_AXI_WREADY    <= internal_signals_ana(0).s_ana_axi_wready;
-    S_ANA_0_AXI_BREADY    <= internal_signals_ana(0).s_ana_axi_bready;
-    S_ANA_0_AXI_BRESP     <= internal_signals_ana(0).s_ana_axi_bresp;
-    S_ANA_0_AXI_BVALID    <= internal_signals_ana(0).s_ana_axi_bvalid;
-    S_ANA_0_AXI_ARADDR    <= internal_signals_ana(0).s_ana_axi_araddr;
-    S_ANA_0_AXI_ARVALID   <= internal_signals_ana(0).s_ana_axi_arvalid;
-    S_ANA_0_AXI_ARREADY   <= internal_signals_ana(0).s_ana_axi_arready;
-    S_ANA_0_AXI_RREADY    <= internal_signals_ana(0).s_ana_axi_rready;
-    S_ANA_0_AXI_RDATA     <= internal_signals_ana(0).s_ana_axi_rdata;
-    S_ANA_0_AXI_RRESP     <= internal_signals_ana(0).s_ana_axi_rresp;
-    S_ANA_0_AXI_RVALID    <= internal_signals_ana(0).s_ana_axi_rvalid;
+    internal_signals_ana(0).s_ana_axi_awaddr    <= S_ANA_0_AXI_AWADDR;
+    internal_signals_ana(0).s_ana_axi_awvalid   <= S_ANA_0_AXI_AWVALID;
+    S_ANA_0_AXI_AWREADY                         <= internal_signals_ana(0).s_ana_axi_awready;
+    internal_signals_ana(0).s_ana_axi_wdata     <= S_ANA_0_AXI_WDATA;
+    internal_signals_ana(0).s_ana_axi_wstrb     <= S_ANA_0_AXI_WSTRB;
+    internal_signals_ana(0).s_ana_axi_wvalid    <= S_ANA_0_AXI_WVALID;
+    S_ANA_0_AXI_WREADY                          <= internal_signals_ana(0).s_ana_axi_wready;
+    internal_signals_ana(0).s_ana_axi_bready    <= S_ANA_0_AXI_BREADY;
+    S_ANA_0_AXI_BRESP                           <= internal_signals_ana(0).s_ana_axi_bresp;
+    S_ANA_0_AXI_BVALID                          <= internal_signals_ana(0).s_ana_axi_bvalid;
+    internal_signals_ana(0).s_ana_axi_araddr    <= S_ANA_0_AXI_ARADDR;
+    internal_signals_ana(0).s_ana_axi_arvalid   <= S_ANA_0_AXI_ARVALID;
+    S_ANA_0_AXI_ARREADY                         <= internal_signals_ana(0).s_ana_axi_arready;
+    internal_signals_ana(0).s_ana_axi_rready    <= S_ANA_0_AXI_RREADY;
+    S_ANA_0_AXI_RDATA                           <= internal_signals_ana(0).s_ana_axi_rdata;
+    S_ANA_0_AXI_RRESP                           <= internal_signals_ana(0).s_ana_axi_rresp;
+    S_ANA_0_AXI_RVALID                          <= internal_signals_ana(0).s_ana_axi_rvalid;
 
-    S_ANA_1_AXI_AWADDR    <= internal_signals_ana(1).s_ana_axi_awaddr;
-    S_ANA_1_AXI_AWVALID   <= internal_signals_ana(1).s_ana_axi_awvalid;
-    S_ANA_1_AXI_AWREADY   <= internal_signals_ana(1).s_ana_axi_awready;
-    S_ANA_1_AXI_WDATA     <= internal_signals_ana(1).s_ana_axi_wdata;
-    S_ANA_1_AXI_WSTRB     <= internal_signals_ana(1).s_ana_axi_wstrb;
-    S_ANA_1_AXI_WVALID    <= internal_signals_ana(1).s_ana_axi_wvalid;
-    S_ANA_1_AXI_WREADY    <= internal_signals_ana(1).s_ana_axi_wready;
-    S_ANA_1_AXI_BREADY    <= internal_signals_ana(1).s_ana_axi_bready;
-    S_ANA_1_AXI_BRESP     <= internal_signals_ana(1).s_ana_axi_bresp;
-    S_ANA_1_AXI_BVALID    <= internal_signals_ana(1).s_ana_axi_bvalid;
-    S_ANA_1_AXI_ARADDR    <= internal_signals_ana(1).s_ana_axi_araddr;
-    S_ANA_1_AXI_ARVALID   <= internal_signals_ana(1).s_ana_axi_arvalid;
-    S_ANA_1_AXI_ARREADY   <= internal_signals_ana(1).s_ana_axi_arready;
-    S_ANA_1_AXI_RREADY    <= internal_signals_ana(1).s_ana_axi_rready;
-    S_ANA_1_AXI_RDATA     <= internal_signals_ana(1).s_ana_axi_rdata;
-    S_ANA_1_AXI_RRESP     <= internal_signals_ana(1).s_ana_axi_rresp;
-    S_ANA_1_AXI_RVALID    <= internal_signals_ana(1).s_ana_axi_rvalid;
+    internal_signals_ana(1).s_ana_axi_awaddr    <= S_ANA_1_AXI_AWADDR;
+    internal_signals_ana(1).s_ana_axi_awvalid   <= S_ANA_1_AXI_AWVALID;
+    S_ANA_1_AXI_AWREADY                         <= internal_signals_ana(1).s_ana_axi_awready;
+    internal_signals_ana(1).s_ana_axi_wdata     <= S_ANA_1_AXI_WDATA;
+    internal_signals_ana(1).s_ana_axi_wstrb     <= S_ANA_1_AXI_WSTRB;
+    internal_signals_ana(1).s_ana_axi_wvalid    <= S_ANA_1_AXI_WVALID;
+    S_ANA_1_AXI_WREADY                          <= internal_signals_ana(1).s_ana_axi_wready;
+    internal_signals_ana(1).s_ana_axi_bready    <= S_ANA_1_AXI_BREADY;
+    S_ANA_1_AXI_BRESP                           <= internal_signals_ana(1).s_ana_axi_bresp;
+    S_ANA_1_AXI_BVALID                          <= internal_signals_ana(1).s_ana_axi_bvalid;
+    internal_signals_ana(1).s_ana_axi_araddr    <= S_ANA_1_AXI_ARADDR;
+    internal_signals_ana(1).s_ana_axi_arvalid   <= S_ANA_1_AXI_ARVALID;
+    S_ANA_1_AXI_ARREADY                         <= internal_signals_ana(1).s_ana_axi_arready;
+    internal_signals_ana(1).s_ana_axi_rready    <= S_ANA_1_AXI_RREADY;
+    S_ANA_1_AXI_RDATA                           <= internal_signals_ana(1).s_ana_axi_rdata;
+    S_ANA_1_AXI_RRESP                           <= internal_signals_ana(1).s_ana_axi_rresp;
+    S_ANA_1_AXI_RVALID                          <= internal_signals_ana(1).s_ana_axi_rvalid;
 
-    S_ANA_2_AXI_AWADDR    <= internal_signals_ana(2).s_ana_axi_awaddr;
-    S_ANA_2_AXI_AWVALID   <= internal_signals_ana(2).s_ana_axi_awvalid;
-    S_ANA_2_AXI_AWREADY   <= internal_signals_ana(2).s_ana_axi_awready;
-    S_ANA_2_AXI_WDATA     <= internal_signals_ana(2).s_ana_axi_wdata;
-    S_ANA_2_AXI_WSTRB     <= internal_signals_ana(2).s_ana_axi_wstrb;
-    S_ANA_2_AXI_WVALID    <= internal_signals_ana(2).s_ana_axi_wvalid;
-    S_ANA_2_AXI_WREADY    <= internal_signals_ana(2).s_ana_axi_wready;
-    S_ANA_2_AXI_BREADY    <= internal_signals_ana(2).s_ana_axi_bready;
-    S_ANA_2_AXI_BRESP     <= internal_signals_ana(2).s_ana_axi_bresp;
-    S_ANA_2_AXI_BVALID    <= internal_signals_ana(2).s_ana_axi_bvalid;
-    S_ANA_2_AXI_ARADDR    <= internal_signals_ana(2).s_ana_axi_araddr;
-    S_ANA_2_AXI_ARVALID   <= internal_signals_ana(2).s_ana_axi_arvalid;
-    S_ANA_2_AXI_ARREADY   <= internal_signals_ana(2).s_ana_axi_arready;
-    S_ANA_2_AXI_RREADY    <= internal_signals_ana(2).s_ana_axi_rready;
-    S_ANA_2_AXI_RDATA     <= internal_signals_ana(2).s_ana_axi_rdata;
-    S_ANA_2_AXI_RRESP     <= internal_signals_ana(2).s_ana_axi_rresp;
-    S_ANA_2_AXI_RVALID    <= internal_signals_ana(2).s_ana_axi_rvalid;
+    internal_signals_ana(2).s_ana_axi_awaddr    <= S_ANA_2_AXI_AWADDR;
+    internal_signals_ana(2).s_ana_axi_awvalid   <= S_ANA_2_AXI_AWVALID;
+    S_ANA_2_AXI_AWREADY                         <= internal_signals_ana(2).s_ana_axi_awready;
+    internal_signals_ana(2).s_ana_axi_wdata     <= S_ANA_2_AXI_WDATA;
+    internal_signals_ana(2).s_ana_axi_wstrb     <= S_ANA_2_AXI_WSTRB;
+    internal_signals_ana(2).s_ana_axi_wvalid    <= S_ANA_2_AXI_WVALID;
+    S_ANA_2_AXI_WREADY                          <= internal_signals_ana(2).s_ana_axi_wready;
+    internal_signals_ana(2).s_ana_axi_bready    <= S_ANA_2_AXI_BREADY;
+    S_ANA_2_AXI_BRESP                           <= internal_signals_ana(2).s_ana_axi_bresp;
+    S_ANA_2_AXI_BVALID                          <= internal_signals_ana(2).s_ana_axi_bvalid;
+    internal_signals_ana(2).s_ana_axi_araddr    <= S_ANA_2_AXI_ARADDR;
+    internal_signals_ana(2).s_ana_axi_arvalid   <= S_ANA_2_AXI_ARVALID;
+    S_ANA_2_AXI_ARREADY                         <= internal_signals_ana(2).s_ana_axi_arready;
+    internal_signals_ana(2).s_ana_axi_rready    <= S_ANA_2_AXI_RREADY;
+    S_ANA_2_AXI_RDATA                           <= internal_signals_ana(2).s_ana_axi_rdata;
+    S_ANA_2_AXI_RRESP                           <= internal_signals_ana(2).s_ana_axi_rresp;
+    S_ANA_2_AXI_RVALID                          <= internal_signals_ana(2).s_ana_axi_rvalid;
 
-    S_ANA_3_AXI_AWADDR    <= internal_signals_ana(3).s_ana_axi_awaddr;
-    S_ANA_3_AXI_AWVALID   <= internal_signals_ana(3).s_ana_axi_awvalid;
-    S_ANA_3_AXI_AWREADY   <= internal_signals_ana(3).s_ana_axi_awready;
-    S_ANA_3_AXI_WDATA     <= internal_signals_ana(3).s_ana_axi_wdata;
-    S_ANA_3_AXI_WSTRB     <= internal_signals_ana(3).s_ana_axi_wstrb;
-    S_ANA_3_AXI_WVALID    <= internal_signals_ana(3).s_ana_axi_wvalid;
-    S_ANA_3_AXI_WREADY    <= internal_signals_ana(3).s_ana_axi_wready;
-    S_ANA_3_AXI_BREADY    <= internal_signals_ana(3).s_ana_axi_bready;
-    S_ANA_3_AXI_BRESP     <= internal_signals_ana(3).s_ana_axi_bresp;
-    S_ANA_3_AXI_BVALID    <= internal_signals_ana(3).s_ana_axi_bvalid;
-    S_ANA_3_AXI_ARADDR    <= internal_signals_ana(3).s_ana_axi_araddr;
-    S_ANA_3_AXI_ARVALID   <= internal_signals_ana(3).s_ana_axi_arvalid;
-    S_ANA_3_AXI_ARREADY   <= internal_signals_ana(3).s_ana_axi_arready;
-    S_ANA_3_AXI_RREADY    <= internal_signals_ana(3).s_ana_axi_rready;
-    S_ANA_3_AXI_RDATA     <= internal_signals_ana(3).s_ana_axi_rdata;
-    S_ANA_3_AXI_RRESP     <= internal_signals_ana(3).s_ana_axi_rresp;
-    S_ANA_3_AXI_RVALID    <= internal_signals_ana(3).s_ana_axi_rvalid;
+    internal_signals_ana(3).s_ana_axi_awaddr    <= S_ANA_3_AXI_AWADDR;
+    internal_signals_ana(3).s_ana_axi_awvalid   <= S_ANA_3_AXI_AWVALID;
+    S_ANA_3_AXI_AWREADY                         <= internal_signals_ana(3).s_ana_axi_awready;
+    internal_signals_ana(3).s_ana_axi_wdata     <= S_ANA_3_AXI_WDATA;
+    internal_signals_ana(3).s_ana_axi_wstrb     <= S_ANA_3_AXI_WSTRB;
+    internal_signals_ana(3).s_ana_axi_wvalid    <= S_ANA_3_AXI_WVALID;
+    S_ANA_3_AXI_WREADY                          <= internal_signals_ana(3).s_ana_axi_wready;
+    internal_signals_ana(3).s_ana_axi_bready    <= S_ANA_3_AXI_BREADY;
+    S_ANA_3_AXI_BRESP                           <= internal_signals_ana(3).s_ana_axi_bresp;
+    S_ANA_3_AXI_BVALID                          <= internal_signals_ana(3).s_ana_axi_bvalid;
+    internal_signals_ana(3).s_ana_axi_araddr    <= S_ANA_3_AXI_ARADDR;
+    internal_signals_ana(3).s_ana_axi_arvalid   <= S_ANA_3_AXI_ARVALID;
+    S_ANA_3_AXI_ARREADY                         <= internal_signals_ana(3).s_ana_axi_arready;
+    internal_signals_ana(3).s_ana_axi_rready    <= S_ANA_3_AXI_RREADY;
+    S_ANA_3_AXI_RDATA                           <= internal_signals_ana(3).s_ana_axi_rdata;
+    S_ANA_3_AXI_RRESP                           <= internal_signals_ana(3).s_ana_axi_rresp;
+    S_ANA_3_AXI_RVALID                          <= internal_signals_ana(3).s_ana_axi_rvalid;
 
-    S_ANA_4_AXI_AWADDR    <= internal_signals_ana(4).s_ana_axi_awaddr;
-    S_ANA_4_AXI_AWVALID   <= internal_signals_ana(4).s_ana_axi_awvalid;
-    S_ANA_4_AXI_AWREADY   <= internal_signals_ana(4).s_ana_axi_awready;
-    S_ANA_4_AXI_WDATA     <= internal_signals_ana(4).s_ana_axi_wdata;
-    S_ANA_4_AXI_WSTRB     <= internal_signals_ana(4).s_ana_axi_wstrb;
-    S_ANA_4_AXI_WVALID    <= internal_signals_ana(4).s_ana_axi_wvalid;
-    S_ANA_4_AXI_WREADY    <= internal_signals_ana(4).s_ana_axi_wready;
-    S_ANA_4_AXI_BREADY    <= internal_signals_ana(4).s_ana_axi_bready;
-    S_ANA_4_AXI_BRESP     <= internal_signals_ana(4).s_ana_axi_bresp;
-    S_ANA_4_AXI_BVALID    <= internal_signals_ana(4).s_ana_axi_bvalid;
-    S_ANA_4_AXI_ARADDR    <= internal_signals_ana(4).s_ana_axi_araddr;
-    S_ANA_4_AXI_ARVALID   <= internal_signals_ana(4).s_ana_axi_arvalid;
-    S_ANA_4_AXI_ARREADY   <= internal_signals_ana(4).s_ana_axi_arready;
-    S_ANA_4_AXI_RREADY    <= internal_signals_ana(4).s_ana_axi_rready;
-    S_ANA_4_AXI_RDATA     <= internal_signals_ana(4).s_ana_axi_rdata;
-    S_ANA_4_AXI_RRESP     <= internal_signals_ana(4).s_ana_axi_rresp;
-    S_ANA_4_AXI_RVALID    <= internal_signals_ana(4).s_ana_axi_rvalid;
+    internal_signals_ana(4).s_ana_axi_awaddr    <= S_ANA_4_AXI_AWADDR;
+    internal_signals_ana(4).s_ana_axi_awvalid   <= S_ANA_4_AXI_AWVALID;
+    S_ANA_4_AXI_AWREADY                         <= internal_signals_ana(4).s_ana_axi_awready;
+    internal_signals_ana(4).s_ana_axi_wdata     <= S_ANA_4_AXI_WDATA;
+    internal_signals_ana(4).s_ana_axi_wstrb     <= S_ANA_4_AXI_WSTRB;
+    internal_signals_ana(4).s_ana_axi_wvalid    <= S_ANA_4_AXI_WVALID;
+    S_ANA_4_AXI_WREADY                          <= internal_signals_ana(4).s_ana_axi_wready;
+    internal_signals_ana(4).s_ana_axi_bready    <= S_ANA_4_AXI_BREADY;
+    S_ANA_4_AXI_BRESP                           <= internal_signals_ana(4).s_ana_axi_bresp;
+    S_ANA_4_AXI_BVALID                          <= internal_signals_ana(4).s_ana_axi_bvalid;
+    internal_signals_ana(4).s_ana_axi_araddr    <= S_ANA_4_AXI_ARADDR;
+    internal_signals_ana(4).s_ana_axi_arvalid   <= S_ANA_4_AXI_ARVALID;
+    S_ANA_4_AXI_ARREADY                         <= internal_signals_ana(4).s_ana_axi_arready;
+    internal_signals_ana(4).s_ana_axi_rready    <= S_ANA_4_AXI_RREADY;
+    S_ANA_4_AXI_RDATA                           <= internal_signals_ana(4).s_ana_axi_rdata;
+    S_ANA_4_AXI_RRESP                           <= internal_signals_ana(4).s_ana_axi_rresp;
+    S_ANA_4_AXI_RVALID                          <= internal_signals_ana(4).s_ana_axi_rvalid;
 
-    S_ANA_5_AXI_AWADDR    <= internal_signals_ana(5).s_ana_axi_awaddr;
-    S_ANA_5_AXI_AWVALID   <= internal_signals_ana(5).s_ana_axi_awvalid;
-    S_ANA_5_AXI_AWREADY   <= internal_signals_ana(5).s_ana_axi_awready;
-    S_ANA_5_AXI_WDATA     <= internal_signals_ana(5).s_ana_axi_wdata;
-    S_ANA_5_AXI_WSTRB     <= internal_signals_ana(5).s_ana_axi_wstrb;
-    S_ANA_5_AXI_WVALID    <= internal_signals_ana(5).s_ana_axi_wvalid;
-    S_ANA_5_AXI_WREADY    <= internal_signals_ana(5).s_ana_axi_wready;
-    S_ANA_5_AXI_BREADY    <= internal_signals_ana(5).s_ana_axi_bready;
-    S_ANA_5_AXI_BRESP     <= internal_signals_ana(5).s_ana_axi_bresp;
-    S_ANA_5_AXI_BVALID    <= internal_signals_ana(5).s_ana_axi_bvalid;
-    S_ANA_5_AXI_ARADDR    <= internal_signals_ana(5).s_ana_axi_araddr;
-    S_ANA_5_AXI_ARVALID   <= internal_signals_ana(5).s_ana_axi_arvalid;
-    S_ANA_5_AXI_ARREADY   <= internal_signals_ana(5).s_ana_axi_arready;
-    S_ANA_5_AXI_RREADY    <= internal_signals_ana(5).s_ana_axi_rready;
-    S_ANA_5_AXI_RDATA     <= internal_signals_ana(5).s_ana_axi_rdata;
-    S_ANA_5_AXI_RRESP     <= internal_signals_ana(5).s_ana_axi_rresp;
-    S_ANA_5_AXI_RVALID    <= internal_signals_ana(5).s_ana_axi_rvalid;
+    internal_signals_ana(5).s_ana_axi_awaddr    <= S_ANA_5_AXI_AWADDR;
+    internal_signals_ana(5).s_ana_axi_awvalid   <= S_ANA_5_AXI_AWVALID;
+    S_ANA_5_AXI_AWREADY                         <= internal_signals_ana(5).s_ana_axi_awready;
+    internal_signals_ana(5).s_ana_axi_wdata     <= S_ANA_5_AXI_WDATA;
+    internal_signals_ana(5).s_ana_axi_wstrb     <= S_ANA_5_AXI_WSTRB;
+    internal_signals_ana(5).s_ana_axi_wvalid    <= S_ANA_5_AXI_WVALID;
+    S_ANA_5_AXI_WREADY                          <= internal_signals_ana(5).s_ana_axi_wready;
+    internal_signals_ana(5).s_ana_axi_bready    <= S_ANA_5_AXI_BREADY;
+    S_ANA_5_AXI_BRESP                           <= internal_signals_ana(5).s_ana_axi_bresp;
+    S_ANA_5_AXI_BVALID                          <= internal_signals_ana(5).s_ana_axi_bvalid;
+    internal_signals_ana(5).s_ana_axi_araddr    <= S_ANA_5_AXI_ARADDR;
+    internal_signals_ana(5).s_ana_axi_arvalid   <= S_ANA_5_AXI_ARVALID;
+    S_ANA_5_AXI_ARREADY                         <= internal_signals_ana(5).s_ana_axi_arready;
+    internal_signals_ana(5).s_ana_axi_rready    <= S_ANA_5_AXI_RREADY;
+    S_ANA_5_AXI_RDATA                           <= internal_signals_ana(5).s_ana_axi_rdata;
+    S_ANA_5_AXI_RRESP                           <= internal_signals_ana(5).s_ana_axi_rresp;
+    S_ANA_5_AXI_RVALID                          <= internal_signals_ana(5).s_ana_axi_rvalid;
 
-    S_ANA_6_AXI_AWADDR    <= internal_signals_ana(6).s_ana_axi_awaddr;
-    S_ANA_6_AXI_AWVALID   <= internal_signals_ana(6).s_ana_axi_awvalid;
-    S_ANA_6_AXI_AWREADY   <= internal_signals_ana(6).s_ana_axi_awready;
-    S_ANA_6_AXI_WDATA     <= internal_signals_ana(6).s_ana_axi_wdata;
-    S_ANA_6_AXI_WSTRB     <= internal_signals_ana(6).s_ana_axi_wstrb;
-    S_ANA_6_AXI_WVALID    <= internal_signals_ana(6).s_ana_axi_wvalid;
-    S_ANA_6_AXI_WREADY    <= internal_signals_ana(6).s_ana_axi_wready;
-    S_ANA_6_AXI_BREADY    <= internal_signals_ana(6).s_ana_axi_bready;
-    S_ANA_6_AXI_BRESP     <= internal_signals_ana(6).s_ana_axi_bresp;
-    S_ANA_6_AXI_BVALID    <= internal_signals_ana(6).s_ana_axi_bvalid;
-    S_ANA_6_AXI_ARADDR    <= internal_signals_ana(6).s_ana_axi_araddr;
-    S_ANA_6_AXI_ARVALID   <= internal_signals_ana(6).s_ana_axi_arvalid;
-    S_ANA_6_AXI_ARREADY   <= internal_signals_ana(6).s_ana_axi_arready;
-    S_ANA_6_AXI_RREADY    <= internal_signals_ana(6).s_ana_axi_rready;
-    S_ANA_6_AXI_RDATA     <= internal_signals_ana(6).s_ana_axi_rdata;
-    S_ANA_6_AXI_RRESP     <= internal_signals_ana(6).s_ana_axi_rresp;
-    S_ANA_6_AXI_RVALID    <= internal_signals_ana(6).s_ana_axi_rvalid;
+    internal_signals_ana(6).s_ana_axi_awaddr    <= S_ANA_6_AXI_AWADDR;
+    internal_signals_ana(6).s_ana_axi_awvalid   <= S_ANA_6_AXI_AWVALID;
+    S_ANA_6_AXI_AWREADY                         <= internal_signals_ana(6).s_ana_axi_awready;
+    internal_signals_ana(6).s_ana_axi_wdata     <= S_ANA_6_AXI_WDATA;
+    internal_signals_ana(6).s_ana_axi_wstrb     <= S_ANA_6_AXI_WSTRB;
+    internal_signals_ana(6).s_ana_axi_wvalid    <= S_ANA_6_AXI_WVALID;
+    S_ANA_6_AXI_WREADY                          <= internal_signals_ana(6).s_ana_axi_wready;
+    internal_signals_ana(6).s_ana_axi_bready    <= S_ANA_6_AXI_BREADY;
+    S_ANA_6_AXI_BRESP                           <= internal_signals_ana(6).s_ana_axi_bresp;
+    S_ANA_6_AXI_BVALID                          <= internal_signals_ana(6).s_ana_axi_bvalid;
+    internal_signals_ana(6).s_ana_axi_araddr    <= S_ANA_6_AXI_ARADDR;
+    internal_signals_ana(6).s_ana_axi_arvalid   <= S_ANA_6_AXI_ARVALID;
+    S_ANA_6_AXI_ARREADY                         <= internal_signals_ana(6).s_ana_axi_arready;
+    internal_signals_ana(6).s_ana_axi_rready    <= S_ANA_6_AXI_RREADY;
+    S_ANA_6_AXI_RDATA                           <= internal_signals_ana(6).s_ana_axi_rdata;
+    S_ANA_6_AXI_RRESP                           <= internal_signals_ana(6).s_ana_axi_rresp;
+    S_ANA_6_AXI_RVALID                          <= internal_signals_ana(6).s_ana_axi_rvalid;
 
-    S_ANA_7_AXI_AWADDR    <= internal_signals_ana(7).s_ana_axi_awaddr;
-    S_ANA_7_AXI_AWVALID   <= internal_signals_ana(7).s_ana_axi_awvalid;
-    S_ANA_7_AXI_AWREADY   <= internal_signals_ana(7).s_ana_axi_awready;
-    S_ANA_7_AXI_WDATA     <= internal_signals_ana(7).s_ana_axi_wdata;
-    S_ANA_7_AXI_WSTRB     <= internal_signals_ana(7).s_ana_axi_wstrb;
-    S_ANA_7_AXI_WVALID    <= internal_signals_ana(7).s_ana_axi_wvalid;
-    S_ANA_7_AXI_WREADY    <= internal_signals_ana(7).s_ana_axi_wready;
-    S_ANA_7_AXI_BREADY    <= internal_signals_ana(7).s_ana_axi_bready;
-    S_ANA_7_AXI_BRESP     <= internal_signals_ana(7).s_ana_axi_bresp;
-    S_ANA_7_AXI_BVALID    <= internal_signals_ana(7).s_ana_axi_bvalid;
-    S_ANA_7_AXI_ARADDR    <= internal_signals_ana(7).s_ana_axi_araddr;
-    S_ANA_7_AXI_ARVALID   <= internal_signals_ana(7).s_ana_axi_arvalid;
-    S_ANA_7_AXI_ARREADY   <= internal_signals_ana(7).s_ana_axi_arready;
-    S_ANA_7_AXI_RREADY    <= internal_signals_ana(7).s_ana_axi_rready;
-    S_ANA_7_AXI_RDATA     <= internal_signals_ana(7).s_ana_axi_rdata;
-    S_ANA_7_AXI_RRESP     <= internal_signals_ana(7).s_ana_axi_rresp;
-    S_ANA_7_AXI_RVALID    <= internal_signals_ana(7).s_ana_axi_rvalid;
+    internal_signals_ana(7).s_ana_axi_awaddr    <= S_ANA_7_AXI_AWADDR;
+    internal_signals_ana(7).s_ana_axi_awvalid   <= S_ANA_7_AXI_AWVALID;
+    S_ANA_7_AXI_AWREADY                         <= internal_signals_ana(7).s_ana_axi_awready;
+    internal_signals_ana(7).s_ana_axi_wdata     <= S_ANA_7_AXI_WDATA;
+    internal_signals_ana(7).s_ana_axi_wstrb     <= S_ANA_7_AXI_WSTRB;
+    internal_signals_ana(7).s_ana_axi_wvalid    <= S_ANA_7_AXI_WVALID;
+    S_ANA_7_AXI_WREADY                          <= internal_signals_ana(7).s_ana_axi_wready;
+    internal_signals_ana(7).s_ana_axi_bready    <= S_ANA_7_AXI_BREADY;
+    S_ANA_7_AXI_BRESP                           <= internal_signals_ana(7).s_ana_axi_bresp;
+    S_ANA_7_AXI_BVALID                          <= internal_signals_ana(7).s_ana_axi_bvalid;
+    internal_signals_ana(7).s_ana_axi_araddr    <= S_ANA_7_AXI_ARADDR;
+    internal_signals_ana(7).s_ana_axi_arvalid   <= S_ANA_7_AXI_ARVALID;
+    S_ANA_7_AXI_ARREADY                         <= internal_signals_ana(7).s_ana_axi_arready;
+    internal_signals_ana(7).s_ana_axi_rready    <= S_ANA_7_AXI_RREADY;
+    S_ANA_7_AXI_RDATA                           <= internal_signals_ana(7).s_ana_axi_rdata;
+    S_ANA_7_AXI_RRESP                           <= internal_signals_ana(7).s_ana_axi_rresp;
+    S_ANA_7_AXI_RVALID                          <= internal_signals_ana(7).s_ana_axi_rvalid;
 
-    S_ANA_8_AXI_AWADDR    <= internal_signals_ana(8).s_ana_axi_awaddr;
-    S_ANA_8_AXI_AWVALID   <= internal_signals_ana(8).s_ana_axi_awvalid;
-    S_ANA_8_AXI_AWREADY   <= internal_signals_ana(8).s_ana_axi_awready;
-    S_ANA_8_AXI_WDATA     <= internal_signals_ana(8).s_ana_axi_wdata;
-    S_ANA_8_AXI_WSTRB     <= internal_signals_ana(8).s_ana_axi_wstrb;
-    S_ANA_8_AXI_WVALID    <= internal_signals_ana(8).s_ana_axi_wvalid;
-    S_ANA_8_AXI_WREADY    <= internal_signals_ana(8).s_ana_axi_wready;
-    S_ANA_8_AXI_BREADY    <= internal_signals_ana(8).s_ana_axi_bready;
-    S_ANA_8_AXI_BRESP     <= internal_signals_ana(8).s_ana_axi_bresp;
-    S_ANA_8_AXI_BVALID    <= internal_signals_ana(8).s_ana_axi_bvalid;
-    S_ANA_8_AXI_ARADDR    <= internal_signals_ana(8).s_ana_axi_araddr;
-    S_ANA_8_AXI_ARVALID   <= internal_signals_ana(8).s_ana_axi_arvalid;
-    S_ANA_8_AXI_ARREADY   <= internal_signals_ana(8).s_ana_axi_arready;
-    S_ANA_8_AXI_RREADY    <= internal_signals_ana(8).s_ana_axi_rready;
-    S_ANA_8_AXI_RDATA     <= internal_signals_ana(8).s_ana_axi_rdata;
-    S_ANA_8_AXI_RRESP     <= internal_signals_ana(8).s_ana_axi_rresp;
-    S_ANA_8_AXI_RVALID    <= internal_signals_ana(8).s_ana_axi_rvalid;
-
+    internal_signals_ana(8).s_ana_axi_awaddr    <= S_ANA_8_AXI_AWADDR;
+    internal_signals_ana(8).s_ana_axi_awvalid   <= S_ANA_8_AXI_AWVALID;
+    S_ANA_8_AXI_AWREADY                         <= internal_signals_ana(8).s_ana_axi_awready;
+    internal_signals_ana(8).s_ana_axi_wdata     <= S_ANA_8_AXI_WDATA;
+    internal_signals_ana(8).s_ana_axi_wstrb     <= S_ANA_8_AXI_WSTRB;
+    internal_signals_ana(8).s_ana_axi_wvalid    <= S_ANA_8_AXI_WVALID;
+    S_ANA_8_AXI_WREADY                          <= internal_signals_ana(8).s_ana_axi_wready;
+    internal_signals_ana(8).s_ana_axi_bready    <= S_ANA_8_AXI_BREADY;
+    S_ANA_8_AXI_BRESP                           <= internal_signals_ana(8).s_ana_axi_bresp;
+    S_ANA_8_AXI_BVALID                          <= internal_signals_ana(8).s_ana_axi_bvalid;
+    internal_signals_ana(8).s_ana_axi_araddr    <= S_ANA_8_AXI_ARADDR;
+    internal_signals_ana(8).s_ana_axi_arvalid   <= S_ANA_8_AXI_ARVALID;
+    S_ANA_8_AXI_ARREADY                         <= internal_signals_ana(8).s_ana_axi_arready;
+    internal_signals_ana(8).s_ana_axi_rready    <= S_ANA_8_AXI_RREADY;
+    S_ANA_8_AXI_RDATA                           <= internal_signals_ana(8).s_ana_axi_rdata;
+    S_ANA_8_AXI_RRESP                           <= internal_signals_ana(8).s_ana_axi_rresp;
+    S_ANA_8_AXI_RVALID                          <= internal_signals_ana(8).s_ana_axi_rvalid;
+    
+    
     -- Instantiate the DATA_LINK_GENERATOR module 9 times
     gen_data_link_generator: for i in 0 to 8 generate
-        DATA_LINK_GENERATOR_INST : entity model.DATA_LINK_GENERATOR
+        DATA_LINK_GENERATOR_INST : entity work.DATA_LINK_GENERATOR
             generic map(
                 G_ADDR_WIDTH => G_ADDR_WIDTH,
                 G_DATA_WIDTH => G_DATA_WIDTH
@@ -968,168 +974,172 @@ architecture Behavioral of CONFIGURATION_2_BENCH is
             );
     end generate;
 
+	    internal_signals_gen(0).s_gen_axi_awaddr    <= S_GEN_0_AXI_AWADDR;
+        internal_signals_gen(0).s_gen_axi_awvalid   <= S_GEN_0_AXI_AWVALID;
+        S_GEN_0_AXI_AWREADY                         <= internal_signals_gen(0).s_gen_axi_awready;
+        internal_signals_gen(0).s_gen_axi_wdata     <= S_GEN_0_AXI_WDATA;
+        internal_signals_gen(0).s_gen_axi_wstrb     <= S_GEN_0_AXI_WSTRB;
+        internal_signals_gen(0).s_gen_axi_wvalid    <= S_GEN_0_AXI_WVALID;
+        S_GEN_0_AXI_WREADY                          <= internal_signals_gen(0).s_gen_axi_wready;
+        internal_signals_gen(0).s_gen_axi_bready    <= S_GEN_0_AXI_BREADY;
+        S_GEN_0_AXI_BRESP                           <= internal_signals_gen(0).s_gen_axi_bresp;
+        S_GEN_0_AXI_BVALID                          <= internal_signals_gen(0).s_gen_axi_bvalid;
+        internal_signals_gen(0).s_gen_axi_araddr    <= S_GEN_0_AXI_ARADDR;
+        internal_signals_gen(0).s_gen_axi_arvalid   <= S_GEN_0_AXI_ARVALID;
+        S_GEN_0_AXI_ARREADY                         <= internal_signals_gen(0).s_gen_axi_arready;
+        internal_signals_gen(0).s_gen_axi_rready    <= S_GEN_0_AXI_RREADY;
+        S_GEN_0_AXI_RDATA                           <= internal_signals_gen(0).s_gen_axi_rdata;
+        S_GEN_0_AXI_RRESP                           <= internal_signals_gen(0).s_gen_axi_rresp;
+        S_GEN_0_AXI_RVALID                          <= internal_signals_gen(0).s_gen_axi_rvalid;
+    
+        internal_signals_gen(1).s_gen_axi_awaddr    <= S_GEN_1_AXI_AWADDR;
+        internal_signals_gen(1).s_gen_axi_awvalid   <= S_GEN_1_AXI_AWVALID;
+        S_GEN_1_AXI_AWREADY                         <= internal_signals_gen(1).s_gen_axi_awready;
+        internal_signals_gen(1).s_gen_axi_wdata     <= S_GEN_1_AXI_WDATA;
+        internal_signals_gen(1).s_gen_axi_wstrb     <= S_GEN_1_AXI_WSTRB;
+        internal_signals_gen(1).s_gen_axi_wvalid    <= S_GEN_1_AXI_WVALID;
+        S_GEN_1_AXI_WREADY                          <= internal_signals_gen(1).s_gen_axi_wready;
+        internal_signals_gen(1).s_gen_axi_bready    <= S_GEN_1_AXI_BREADY;
+        S_GEN_1_AXI_BRESP                           <= internal_signals_gen(1).s_gen_axi_bresp;
+        S_GEN_1_AXI_BVALID                          <= internal_signals_gen(1).s_gen_axi_bvalid;
+        internal_signals_gen(1).s_gen_axi_araddr    <= S_GEN_1_AXI_ARADDR;
+        internal_signals_gen(1).s_gen_axi_arvalid   <= S_GEN_1_AXI_ARVALID;
+        S_GEN_1_AXI_ARREADY                         <= internal_signals_gen(1).s_gen_axi_arready;
+        internal_signals_gen(1).s_gen_axi_rready    <= S_GEN_1_AXI_RREADY;
+        S_GEN_1_AXI_RDATA                           <= internal_signals_gen(1).s_gen_axi_rdata;
+        S_GEN_1_AXI_RRESP                           <= internal_signals_gen(1).s_gen_axi_rresp;
+        S_GEN_1_AXI_RVALID                          <= internal_signals_gen(1).s_gen_axi_rvalid;
+    
+        internal_signals_gen(2).s_gen_axi_awaddr    <= S_GEN_2_AXI_AWADDR;
+        internal_signals_gen(2).s_gen_axi_awvalid   <= S_GEN_2_AXI_AWVALID;
+        S_GEN_2_AXI_AWREADY                         <= internal_signals_gen(2).s_gen_axi_awready;
+        internal_signals_gen(2).s_gen_axi_wdata     <= S_GEN_2_AXI_WDATA;
+        internal_signals_gen(2).s_gen_axi_wstrb     <= S_GEN_2_AXI_WSTRB;
+        internal_signals_gen(2).s_gen_axi_wvalid    <= S_GEN_2_AXI_WVALID;
+        S_GEN_2_AXI_WREADY                          <= internal_signals_gen(2).s_gen_axi_wready;
+        internal_signals_gen(2).s_gen_axi_bready    <= S_GEN_2_AXI_BREADY;
+        S_GEN_2_AXI_BRESP                           <= internal_signals_gen(2).s_gen_axi_bresp;
+        S_GEN_2_AXI_BVALID                          <= internal_signals_gen(2).s_gen_axi_bvalid;
+        internal_signals_gen(2).s_gen_axi_araddr    <= S_GEN_2_AXI_ARADDR;
+        internal_signals_gen(2).s_gen_axi_arvalid   <= S_GEN_2_AXI_ARVALID;
+        S_GEN_2_AXI_ARREADY                         <= internal_signals_gen(2).s_gen_axi_arready;
+        internal_signals_gen(2).s_gen_axi_rready    <= S_GEN_2_AXI_RREADY;
+        S_GEN_2_AXI_RDATA                           <= internal_signals_gen(2).s_gen_axi_rdata;
+        S_GEN_2_AXI_RRESP                           <= internal_signals_gen(2).s_gen_axi_rresp;
+        S_GEN_2_AXI_RVALID                          <= internal_signals_gen(2).s_gen_axi_rvalid;
+    
+        internal_signals_gen(3).s_gen_axi_awaddr    <= S_GEN_3_AXI_AWADDR;
+        internal_signals_gen(3).s_gen_axi_awvalid   <= S_GEN_3_AXI_AWVALID;
+        S_GEN_3_AXI_AWREADY                         <= internal_signals_gen(3).s_gen_axi_awready;
+        internal_signals_gen(3).s_gen_axi_wdata     <= S_GEN_3_AXI_WDATA;
+        internal_signals_gen(3).s_gen_axi_wstrb     <= S_GEN_3_AXI_WSTRB;
+        internal_signals_gen(3).s_gen_axi_wvalid    <= S_GEN_3_AXI_WVALID;
+        S_GEN_3_AXI_WREADY                          <= internal_signals_gen(3).s_gen_axi_wready;
+        internal_signals_gen(3).s_gen_axi_bready    <= S_GEN_3_AXI_BREADY;
+        S_GEN_3_AXI_BRESP                           <= internal_signals_gen(3).s_gen_axi_bresp;
+        S_GEN_3_AXI_BVALID                          <= internal_signals_gen(3).s_gen_axi_bvalid;
+        internal_signals_gen(3).s_gen_axi_araddr    <= S_GEN_3_AXI_ARADDR;
+        internal_signals_gen(3).s_gen_axi_arvalid   <= S_GEN_3_AXI_ARVALID;
+        S_GEN_3_AXI_ARREADY                         <= internal_signals_gen(3).s_gen_axi_arready;
+        internal_signals_gen(3).s_gen_axi_rready    <= S_GEN_3_AXI_RREADY;
+        S_GEN_3_AXI_RDATA                           <= internal_signals_gen(3).s_gen_axi_rdata;
+        S_GEN_3_AXI_RRESP                           <= internal_signals_gen(3).s_gen_axi_rresp;
+        S_GEN_3_AXI_RVALID                          <= internal_signals_gen(3).s_gen_axi_rvalid;
+    
+        internal_signals_gen(4).s_gen_axi_awaddr    <= S_GEN_4_AXI_AWADDR;
+        internal_signals_gen(4).s_gen_axi_awvalid   <= S_GEN_4_AXI_AWVALID;
+        S_GEN_4_AXI_AWREADY                         <= internal_signals_gen(4).s_gen_axi_awready;
+        internal_signals_gen(4).s_gen_axi_wdata     <= S_GEN_4_AXI_WDATA;
+        internal_signals_gen(4).s_gen_axi_wstrb     <= S_GEN_4_AXI_WSTRB;
+        internal_signals_gen(4).s_gen_axi_wvalid    <= S_GEN_4_AXI_WVALID;
+        S_GEN_4_AXI_WREADY                          <= internal_signals_gen(4).s_gen_axi_wready;
+        internal_signals_gen(4).s_gen_axi_bready    <= S_GEN_4_AXI_BREADY;
+        S_GEN_4_AXI_BRESP                           <= internal_signals_gen(4).s_gen_axi_bresp;
+        S_GEN_4_AXI_BVALID                          <= internal_signals_gen(4).s_gen_axi_bvalid;
+        internal_signals_gen(4).s_gen_axi_araddr    <= S_GEN_4_AXI_ARADDR;
+        internal_signals_gen(4).s_gen_axi_arvalid   <= S_GEN_4_AXI_ARVALID;
+        S_GEN_4_AXI_ARREADY                         <= internal_signals_gen(4).s_gen_axi_arready;
+        internal_signals_gen(4).s_gen_axi_rready    <= S_GEN_4_AXI_RREADY;
+        S_GEN_4_AXI_RDATA                           <= internal_signals_gen(4).s_gen_axi_rdata;
+        S_GEN_4_AXI_RRESP                           <= internal_signals_gen(4).s_gen_axi_rresp;
+        S_GEN_4_AXI_RVALID                          <= internal_signals_gen(4).s_gen_axi_rvalid;
+    
+        internal_signals_gen(5).s_gen_axi_awaddr    <= S_GEN_5_AXI_AWADDR;
+        internal_signals_gen(5).s_gen_axi_awvalid   <= S_GEN_5_AXI_AWVALID;
+        S_GEN_5_AXI_AWREADY                         <= internal_signals_gen(5).s_gen_axi_awready;
+        internal_signals_gen(5).s_gen_axi_wdata     <= S_GEN_5_AXI_WDATA;
+        internal_signals_gen(5).s_gen_axi_wstrb     <= S_GEN_5_AXI_WSTRB;
+        internal_signals_gen(5).s_gen_axi_wvalid    <= S_GEN_5_AXI_WVALID;
+        S_GEN_5_AXI_WREADY                          <= internal_signals_gen(5).s_gen_axi_wready;
+        internal_signals_gen(5).s_gen_axi_bready    <= S_GEN_5_AXI_BREADY;
+        S_GEN_5_AXI_BRESP                           <= internal_signals_gen(5).s_gen_axi_bresp;
+        S_GEN_5_AXI_BVALID                          <= internal_signals_gen(5).s_gen_axi_bvalid;
+        internal_signals_gen(5).s_gen_axi_araddr    <= S_GEN_5_AXI_ARADDR;
+        internal_signals_gen(5).s_gen_axi_arvalid   <= S_GEN_5_AXI_ARVALID;
+        S_GEN_5_AXI_ARREADY                         <= internal_signals_gen(5).s_gen_axi_arready;
+        internal_signals_gen(5).s_gen_axi_rready    <= S_GEN_5_AXI_RREADY;
+        S_GEN_5_AXI_RDATA                           <= internal_signals_gen(5).s_gen_axi_rdata;
+        S_GEN_5_AXI_RRESP                           <= internal_signals_gen(5).s_gen_axi_rresp;
+        S_GEN_5_AXI_RVALID                          <= internal_signals_gen(5).s_gen_axi_rvalid;
+    
+        internal_signals_gen(6).s_gen_axi_awaddr    <= S_GEN_6_AXI_AWADDR;
+        internal_signals_gen(6).s_gen_axi_awvalid   <= S_GEN_6_AXI_AWVALID;
+        S_GEN_6_AXI_AWREADY                         <= internal_signals_gen(6).s_gen_axi_awready;
+        internal_signals_gen(6).s_gen_axi_wdata     <= S_GEN_6_AXI_WDATA;
+        internal_signals_gen(6).s_gen_axi_wstrb     <= S_GEN_6_AXI_WSTRB;
+        internal_signals_gen(6).s_gen_axi_wvalid    <= S_GEN_6_AXI_WVALID;
+        S_GEN_6_AXI_WREADY                          <= internal_signals_gen(6).s_gen_axi_wready;
+        internal_signals_gen(6).s_gen_axi_bready    <= S_GEN_6_AXI_BREADY;
+        S_GEN_6_AXI_BRESP                           <= internal_signals_gen(6).s_gen_axi_bresp;
+        S_GEN_6_AXI_BVALID                          <= internal_signals_gen(6).s_gen_axi_bvalid;
+        internal_signals_gen(6).s_gen_axi_araddr    <= S_GEN_6_AXI_ARADDR;
+        internal_signals_gen(6).s_gen_axi_arvalid   <= S_GEN_6_AXI_ARVALID;
+        S_GEN_6_AXI_ARREADY                         <= internal_signals_gen(6).s_gen_axi_arready;
+        internal_signals_gen(6).s_gen_axi_rready    <= S_GEN_6_AXI_RREADY;
+        S_GEN_6_AXI_RDATA                           <= internal_signals_gen(6).s_gen_axi_rdata;
+        S_GEN_6_AXI_RRESP                           <= internal_signals_gen(6).s_gen_axi_rresp;
+        S_GEN_6_AXI_RVALID                          <= internal_signals_gen(6).s_gen_axi_rvalid;
+    
+        internal_signals_gen(7).s_gen_axi_awaddr    <= S_GEN_7_AXI_AWADDR;
+        internal_signals_gen(7).s_gen_axi_awvalid   <= S_GEN_7_AXI_AWVALID;
+        S_GEN_7_AXI_AWREADY                         <= internal_signals_gen(7).s_gen_axi_awready;
+        internal_signals_gen(7).s_gen_axi_wdata     <= S_GEN_7_AXI_WDATA;
+        internal_signals_gen(7).s_gen_axi_wstrb     <= S_GEN_7_AXI_WSTRB;
+        internal_signals_gen(7).s_gen_axi_wvalid    <= S_GEN_7_AXI_WVALID;
+        S_GEN_7_AXI_WREADY                          <= internal_signals_gen(7).s_gen_axi_wready;
+        internal_signals_gen(7).s_gen_axi_bready    <= S_GEN_7_AXI_BREADY;
+        S_GEN_7_AXI_BRESP                           <= internal_signals_gen(7).s_gen_axi_bresp;
+        S_GEN_7_AXI_BVALID                          <= internal_signals_gen(7).s_gen_axi_bvalid;
+        internal_signals_gen(7).s_gen_axi_araddr    <= S_GEN_7_AXI_ARADDR;
+        internal_signals_gen(7).s_gen_axi_arvalid   <= S_GEN_7_AXI_ARVALID;
+        S_GEN_7_AXI_ARREADY                         <= internal_signals_gen(7).s_gen_axi_arready;
+        internal_signals_gen(7).s_gen_axi_rready    <= S_GEN_7_AXI_RREADY;
+        S_GEN_7_AXI_RDATA                           <= internal_signals_gen(7).s_gen_axi_rdata;
+        S_GEN_7_AXI_RRESP                           <= internal_signals_gen(7).s_gen_axi_rresp;
+        S_GEN_7_AXI_RVALID                          <= internal_signals_gen(7).s_gen_axi_rvalid;
+    
+        internal_signals_gen(8).s_gen_axi_awaddr    <= S_GEN_8_AXI_AWADDR;
+        internal_signals_gen(8).s_gen_axi_awvalid   <= S_GEN_8_AXI_AWVALID;
+        S_GEN_8_AXI_AWREADY                         <= internal_signals_gen(8).s_gen_axi_awready;
+        internal_signals_gen(8).s_gen_axi_wdata     <= S_GEN_8_AXI_WDATA;
+        internal_signals_gen(8).s_gen_axi_wstrb     <= S_GEN_8_AXI_WSTRB;
+        internal_signals_gen(8).s_gen_axi_wvalid    <= S_GEN_8_AXI_WVALID;
+        S_GEN_8_AXI_WREADY                          <= internal_signals_gen(8).s_gen_axi_wready;
+        internal_signals_gen(8).s_gen_axi_bready    <= S_GEN_8_AXI_BREADY;
+        S_GEN_8_AXI_BRESP                           <= internal_signals_gen(8).s_gen_axi_bresp;
+        S_GEN_8_AXI_BVALID                          <= internal_signals_gen(8).s_gen_axi_bvalid;
+        internal_signals_gen(8).s_gen_axi_araddr    <= S_GEN_8_AXI_ARADDR;
+        internal_signals_gen(8).s_gen_axi_arvalid   <= S_GEN_8_AXI_ARVALID;
+        S_GEN_8_AXI_ARREADY                         <= internal_signals_gen(8).s_gen_axi_arready;
+        internal_signals_gen(8).s_gen_axi_rready    <= S_GEN_8_AXI_RREADY;
+        S_GEN_8_AXI_RDATA                           <= internal_signals_gen(8).s_gen_axi_rdata;
+        S_GEN_8_AXI_RRESP                           <= internal_signals_gen(8).s_gen_axi_rresp;
+        S_GEN_8_AXI_RVALID                          <= internal_signals_gen(8).s_gen_axi_rvalid;
 
-    S_GEN_0_AXI_AWADDR    <= internal_signals_gen(0).s_gen_axi_awaddr;
-    S_GEN_0_AXI_AWVALID   <= internal_signals_gen(0).s_gen_axi_awvalid;
-    S_GEN_0_AXI_AWREADY   <= internal_signals_gen(0).s_gen_axi_awready;
-    S_GEN_0_AXI_WDATA     <= internal_signals_gen(0).s_gen_axi_wdata;
-    S_GEN_0_AXI_WSTRB     <= internal_signals_gen(0).s_gen_axi_wstrb;
-    S_GEN_0_AXI_WVALID    <= internal_signals_gen(0).s_gen_axi_wvalid;
-    S_GEN_0_AXI_WREADY    <= internal_signals_gen(0).s_gen_axi_wready;
-    S_GEN_0_AXI_BREADY    <= internal_signals_gen(0).s_gen_axi_bready;
-    S_GEN_0_AXI_BRESP     <= internal_signals_gen(0).s_gen_axi_bresp;
-    S_GEN_0_AXI_BVALID    <= internal_signals_gen(0).s_gen_axi_bvalid;
-    S_GEN_0_AXI_ARADDR    <= internal_signals_gen(0).s_gen_axi_araddr;
-    S_GEN_0_AXI_ARVALID   <= internal_signals_gen(0).s_gen_axi_arvalid;
-    S_GEN_0_AXI_ARREADY   <= internal_signals_gen(0).s_gen_axi_arready;
-    S_GEN_0_AXI_RREADY    <= internal_signals_gen(0).s_gen_axi_rready;
-    S_GEN_0_AXI_RDATA     <= internal_signals_gen(0).s_gen_axi_rdata;
-    S_GEN_0_AXI_RRESP     <= internal_signals_gen(0).s_gen_axi_rresp;
-    S_GEN_0_AXI_RVALID    <= internal_signals_gen(0).s_gen_axi_rvalid;
 
-    S_GEN_1_AXI_AWADDR    <= internal_signals_gen(1).s_gen_axi_awaddr;
-    S_GEN_1_AXI_AWVALID   <= internal_signals_gen(1).s_gen_axi_awvalid;
-    S_GEN_1_AXI_AWREADY   <= internal_signals_gen(1).s_gen_axi_awready;
-    S_GEN_1_AXI_WDATA     <= internal_signals_gen(1).s_gen_axi_wdata;
-    S_GEN_1_AXI_WSTRB     <= internal_signals_gen(1).s_gen_axi_wstrb;
-    S_GEN_1_AXI_WVALID    <= internal_signals_gen(1).s_gen_axi_wvalid;
-    S_GEN_1_AXI_WREADY    <= internal_signals_gen(1).s_gen_axi_wready;
-    S_GEN_1_AXI_BREADY    <= internal_signals_gen(1).s_gen_axi_bready;
-    S_GEN_1_AXI_BRESP     <= internal_signals_gen(1).s_gen_axi_bresp;
-    S_GEN_1_AXI_BVALID    <= internal_signals_gen(1).s_gen_axi_bvalid;
-    S_GEN_1_AXI_ARADDR    <= internal_signals_gen(1).s_gen_axi_araddr;
-    S_GEN_1_AXI_ARVALID   <= internal_signals_gen(1).s_gen_axi_arvalid;
-    S_GEN_1_AXI_ARREADY   <= internal_signals_gen(1).s_gen_axi_arready;
-    S_GEN_1_AXI_RREADY    <= internal_signals_gen(1).s_gen_axi_rready;
-    S_GEN_1_AXI_RDATA     <= internal_signals_gen(1).s_gen_axi_rdata;
-    S_GEN_1_AXI_RRESP     <= internal_signals_gen(1).s_gen_axi_rresp;
-    S_GEN_1_AXI_RVALID    <= internal_signals_gen(1).s_gen_axi_rvalid;
 
-    S_GEN_2_AXI_AWADDR    <= internal_signals_gen(2).s_gen_axi_awaddr;
-    S_GEN_2_AXI_AWVALID   <= internal_signals_gen(2).s_gen_axi_awvalid;
-    S_GEN_2_AXI_AWREADY   <= internal_signals_gen(2).s_gen_axi_awready;
-    S_GEN_2_AXI_WDATA     <= internal_signals_gen(2).s_gen_axi_wdata;
-    S_GEN_2_AXI_WSTRB     <= internal_signals_gen(2).s_gen_axi_wstrb;
-    S_GEN_2_AXI_WVALID    <= internal_signals_gen(2).s_gen_axi_wvalid;
-    S_GEN_2_AXI_WREADY    <= internal_signals_gen(2).s_gen_axi_wready;
-    S_GEN_2_AXI_BREADY    <= internal_signals_gen(2).s_gen_axi_bready;
-    S_GEN_2_AXI_BRESP     <= internal_signals_gen(2).s_gen_axi_bresp;
-    S_GEN_2_AXI_BVALID    <= internal_signals_gen(2).s_gen_axi_bvalid;
-    S_GEN_2_AXI_ARADDR    <= internal_signals_gen(2).s_gen_axi_araddr;
-    S_GEN_2_AXI_ARVALID   <= internal_signals_gen(2).s_gen_axi_arvalid;
-    S_GEN_2_AXI_ARREADY   <= internal_signals_gen(2).s_gen_axi_arready;
-    S_GEN_2_AXI_RREADY    <= internal_signals_gen(2).s_gen_axi_rready;
-    S_GEN_2_AXI_RDATA     <= internal_signals_gen(2).s_gen_axi_rdata;
-    S_GEN_2_AXI_RRESP     <= internal_signals_gen(2).s_gen_axi_rresp;
-    S_GEN_2_AXI_RVALID    <= internal_signals_gen(2).s_gen_axi_rvalid;
-
-    S_GEN_3_AXI_AWADDR    <= internal_signals_gen(3).s_gen_axi_awaddr;
-    S_GEN_3_AXI_AWVALID   <= internal_signals_gen(3).s_gen_axi_awvalid;
-    S_GEN_3_AXI_AWREADY   <= internal_signals_gen(3).s_gen_axi_awready;
-    S_GEN_3_AXI_WDATA     <= internal_signals_gen(3).s_gen_axi_wdata;
-    S_GEN_3_AXI_WSTRB     <= internal_signals_gen(3).s_gen_axi_wstrb;
-    S_GEN_3_AXI_WVALID    <= internal_signals_gen(3).s_gen_axi_wvalid;
-    S_GEN_3_AXI_WREADY    <= internal_signals_gen(3).s_gen_axi_wready;
-    S_GEN_3_AXI_BREADY    <= internal_signals_gen(3).s_gen_axi_bready;
-    S_GEN_3_AXI_BRESP     <= internal_signals_gen(3).s_gen_axi_bresp;
-    S_GEN_3_AXI_BVALID    <= internal_signals_gen(3).s_gen_axi_bvalid;
-    S_GEN_3_AXI_ARADDR    <= internal_signals_gen(3).s_gen_axi_araddr;
-    S_GEN_3_AXI_ARVALID   <= internal_signals_gen(3).s_gen_axi_arvalid;
-    S_GEN_3_AXI_ARREADY   <= internal_signals_gen(3).s_gen_axi_arready;
-    S_GEN_3_AXI_RREADY    <= internal_signals_gen(3).s_gen_axi_rready;
-    S_GEN_3_AXI_RDATA     <= internal_signals_gen(3).s_gen_axi_rdata;
-    S_GEN_3_AXI_RRESP     <= internal_signals_gen(3).s_gen_axi_rresp;
-    S_GEN_3_AXI_RVALID    <= internal_signals_gen(3).s_gen_axi_rvalid;
-
-    S_GEN_4_AXI_AWADDR    <= internal_signals_gen(4).s_gen_axi_awaddr;
-    S_GEN_4_AXI_AWVALID   <= internal_signals_gen(4).s_gen_axi_awvalid;
-    S_GEN_4_AXI_AWREADY   <= internal_signals_gen(4).s_gen_axi_awready;
-    S_GEN_4_AXI_WDATA     <= internal_signals_gen(4).s_gen_axi_wdata;
-    S_GEN_4_AXI_WSTRB     <= internal_signals_gen(4).s_gen_axi_wstrb;
-    S_GEN_4_AXI_WVALID    <= internal_signals_gen(4).s_gen_axi_wvalid;
-    S_GEN_4_AXI_WREADY    <= internal_signals_gen(4).s_gen_axi_wready;
-    S_GEN_4_AXI_BREADY    <= internal_signals_gen(4).s_gen_axi_bready;
-    S_GEN_4_AXI_BRESP     <= internal_signals_gen(4).s_gen_axi_bresp;
-    S_GEN_4_AXI_BVALID    <= internal_signals_gen(4).s_gen_axi_bvalid;
-    S_GEN_4_AXI_ARADDR    <= internal_signals_gen(4).s_gen_axi_araddr;
-    S_GEN_4_AXI_ARVALID   <= internal_signals_gen(4).s_gen_axi_arvalid;
-    S_GEN_4_AXI_ARREADY   <= internal_signals_gen(4).s_gen_axi_arready;
-    S_GEN_4_AXI_RREADY    <= internal_signals_gen(4).s_gen_axi_rready;
-    S_GEN_4_AXI_RDATA     <= internal_signals_gen(4).s_gen_axi_rdata;
-    S_GEN_4_AXI_RRESP     <= internal_signals_gen(4).s_gen_axi_rresp;
-    S_GEN_4_AXI_RVALID    <= internal_signals_gen(4).s_gen_axi_rvalid;
-
-    S_GEN_5_AXI_AWADDR    <= internal_signals_gen(5).s_gen_axi_awaddr;
-    S_GEN_5_AXI_AWVALID   <= internal_signals_gen(5).s_gen_axi_awvalid;
-    S_GEN_5_AXI_AWREADY   <= internal_signals_gen(5).s_gen_axi_awready;
-    S_GEN_5_AXI_WDATA     <= internal_signals_gen(5).s_gen_axi_wdata;
-    S_GEN_5_AXI_WSTRB     <= internal_signals_gen(5).s_gen_axi_wstrb;
-    S_GEN_5_AXI_WVALID    <= internal_signals_gen(5).s_gen_axi_wvalid;
-    S_GEN_5_AXI_WREADY    <= internal_signals_gen(5).s_gen_axi_wready;
-    S_GEN_5_AXI_BREADY    <= internal_signals_gen(5).s_gen_axi_bready;
-    S_GEN_5_AXI_BRESP     <= internal_signals_gen(5).s_gen_axi_bresp;
-    S_GEN_5_AXI_BVALID    <= internal_signals_gen(5).s_gen_axi_bvalid;
-    S_GEN_5_AXI_ARADDR    <= internal_signals_gen(5).s_gen_axi_araddr;
-    S_GEN_5_AXI_ARVALID   <= internal_signals_gen(5).s_gen_axi_arvalid;
-    S_GEN_5_AXI_ARREADY   <= internal_signals_gen(5).s_gen_axi_arready;
-    S_GEN_5_AXI_RREADY    <= internal_signals_gen(5).s_gen_axi_rready;
-    S_GEN_5_AXI_RDATA     <= internal_signals_gen(5).s_gen_axi_rdata;
-    S_GEN_5_AXI_RRESP     <= internal_signals_gen(5).s_gen_axi_rresp;
-    S_GEN_5_AXI_RVALID    <= internal_signals_gen(5).s_gen_axi_rvalid;
-
-    S_GEN_6_AXI_AWADDR    <= internal_signals_gen(6).s_gen_axi_awaddr;
-    S_GEN_6_AXI_AWVALID   <= internal_signals_gen(6).s_gen_axi_awvalid;
-    S_GEN_6_AXI_AWREADY   <= internal_signals_gen(6).s_gen_axi_awready;
-    S_GEN_6_AXI_WDATA     <= internal_signals_gen(6).s_gen_axi_wdata;
-    S_GEN_6_AXI_WSTRB     <= internal_signals_gen(6).s_gen_axi_wstrb;
-    S_GEN_6_AXI_WVALID    <= internal_signals_gen(6).s_gen_axi_wvalid;
-    S_GEN_6_AXI_WREADY    <= internal_signals_gen(6).s_gen_axi_wready;
-    S_GEN_6_AXI_BREADY    <= internal_signals_gen(6).s_gen_axi_bready;
-    S_GEN_6_AXI_BRESP     <= internal_signals_gen(6).s_gen_axi_bresp;
-    S_GEN_6_AXI_BVALID    <= internal_signals_gen(6).s_gen_axi_bvalid;
-    S_GEN_6_AXI_ARADDR    <= internal_signals_gen(6).s_gen_axi_araddr;
-    S_GEN_6_AXI_ARVALID   <= internal_signals_gen(6).s_gen_axi_arvalid;
-    S_GEN_6_AXI_ARREADY   <= internal_signals_gen(6).s_gen_axi_arready;
-    S_GEN_6_AXI_RREADY    <= internal_signals_gen(6).s_gen_axi_rready;
-    S_GEN_6_AXI_RDATA     <= internal_signals_gen(6).s_gen_axi_rdata;
-    S_GEN_6_AXI_RRESP     <= internal_signals_gen(6).s_gen_axi_rresp;
-    S_GEN_6_AXI_RVALID    <= internal_signals_gen(6).s_gen_axi_rvalid;
-
-    S_GEN_7_AXI_AWADDR    <= internal_signals_gen(7).s_gen_axi_awaddr;
-    S_GEN_7_AXI_AWVALID   <= internal_signals_gen(7).s_gen_axi_awvalid;
-    S_GEN_7_AXI_AWREADY   <= internal_signals_gen(7).s_gen_axi_awready;
-    S_GEN_7_AXI_WDATA     <= internal_signals_gen(7).s_gen_axi_wdata;
-    S_GEN_7_AXI_WSTRB     <= internal_signals_gen(7).s_gen_axi_wstrb;
-    S_GEN_7_AXI_WVALID    <= internal_signals_gen(7).s_gen_axi_wvalid;
-    S_GEN_7_AXI_WREADY    <= internal_signals_gen(7).s_gen_axi_wready;
-    S_GEN_7_AXI_BREADY    <= internal_signals_gen(7).s_gen_axi_bready;
-    S_GEN_7_AXI_BRESP     <= internal_signals_gen(7).s_gen_axi_bresp;
-    S_GEN_7_AXI_BVALID    <= internal_signals_gen(7).s_gen_axi_bvalid;
-    S_GEN_7_AXI_ARADDR    <= internal_signals_gen(7).s_gen_axi_araddr;
-    S_GEN_7_AXI_ARVALID   <= internal_signals_gen(7).s_gen_axi_arvalid;
-    S_GEN_7_AXI_ARREADY   <= internal_signals_gen(7).s_gen_axi_arready;
-    S_GEN_7_AXI_RREADY    <= internal_signals_gen(7).s_gen_axi_rready;
-    S_GEN_7_AXI_RDATA     <= internal_signals_gen(7).s_gen_axi_rdata;
-    S_GEN_7_AXI_RRESP     <= internal_signals_gen(7).s_gen_axi_rresp;
-    S_GEN_7_AXI_RVALID    <= internal_signals_gen(7).s_gen_axi_rvalid;
-
-    S_GEN_8_AXI_AWADDR    <= internal_signals_gen(8).s_gen_axi_awaddr;
-    S_GEN_8_AXI_AWVALID   <= internal_signals_gen(8).s_gen_axi_awvalid;
-    S_GEN_8_AXI_AWREADY   <= internal_signals_gen(8).s_gen_axi_awready;
-    S_GEN_8_AXI_WDATA     <= internal_signals_gen(8).s_gen_axi_wdata;
-    S_GEN_8_AXI_WSTRB     <= internal_signals_gen(8).s_gen_axi_wstrb;
-    S_GEN_8_AXI_WVALID    <= internal_signals_gen(8).s_gen_axi_wvalid;
-    S_GEN_8_AXI_WREADY    <= internal_signals_gen(8).s_gen_axi_wready;
-    S_GEN_8_AXI_BREADY    <= internal_signals_gen(8).s_gen_axi_bready;
-    S_GEN_8_AXI_BRESP     <= internal_signals_gen(8).s_gen_axi_bresp;
-    S_GEN_8_AXI_BVALID    <= internal_signals_gen(8).s_gen_axi_bvalid;
-    S_GEN_8_AXI_ARADDR    <= internal_signals_gen(8).s_gen_axi_araddr;
-    S_GEN_8_AXI_ARVALID   <= internal_signals_gen(8).s_gen_axi_arvalid;
-    S_GEN_8_AXI_ARREADY   <= internal_signals_gen(8).s_gen_axi_arready;
-    S_GEN_8_AXI_RREADY    <= internal_signals_gen(8).s_gen_axi_rready;
-    S_GEN_8_AXI_RDATA     <= internal_signals_gen(8).s_gen_axi_rdata;
-    S_GEN_8_AXI_RRESP     <= internal_signals_gen(8).s_gen_axi_rresp;
-    S_GEN_8_AXI_RVALID    <= internal_signals_gen(8).s_gen_axi_rvalid;
+        axis_arstn_tx_dl <= (others => rst_n);
+        axis_arstn_rx_dl <= (others => rst_n);
 
 
 -- Instantiation of the spacefibre_light_top module
@@ -1144,12 +1154,14 @@ port map (
     TX_NEG                           => tx_neg,
     RX_POS                           => rx_pos,
     RX_NEG                           => rx_neg,
+    AXIS_ARSTN_TX_DL                 => axis_arstn_tx_dl,
     AXIS_ACLK_TX_DL                  => axis_aclk_tx_dl,
     AXIS_TREADY_TX_DL                => axis_tready_tx_dl,
     AXIS_TDATA_TX_DL                 => axis_tdata_tx_dl,
     AXIS_TUSER_TX_DL                 => axis_tuser_tx_dl,
     AXIS_TLAST_TX_DL                 => axis_tlast_tx_dl,
     AXIS_TVALID_TX_DL                => axis_tvalid_tx_dl,
+    AXIS_ARSTN_RX_DL                 => axis_arstn_rx_dl,
     AXIS_ACLK_RX_DL                  => axis_aclk_rx_dl,
     AXIS_TREADY_RX_DL                => axis_tready_rx_dl,
     AXIS_TDATA_RX_DL                 => axis_tdata_rx_dl,
@@ -1165,7 +1177,7 @@ port map (
 
     SEQ_NUMBER_TX                    => seq_number_tx,
     SEQ_NUMBER_RX                    => seq_number_rx,
-    CREDIT_VC                        => credit_vc,
+    CREDIT_VC                        => vc_credit,
     FCT_CREDIT_OVERFLOW              => fct_credit_overflow,
     CRC_LONG_ERROR                   => crc_long_error,
     CRC_SHORT_ERROR                  => crc_short_error,
@@ -1176,8 +1188,6 @@ port map (
     FRAME_TX                         => frame_tx,
     DATA_COUNTER_TX                  => data_counter_tx,
     DATA_COUNTER_RX                  => data_counter_rx,
-    
-    --missing following signal in configurator
     ACK_COUNTER_TX                   => ack_counter_tx,
     NACK_COUNTER_TX                  => nack_counter_tx,
     FCT_COUNTER_TX                   => fct_counter_tx,
@@ -1189,18 +1199,18 @@ port map (
     CURRENT_TIME_SLOT                => current_time_slot,
 
     --interface spy and injector
-    DATA_TX_PPL                      => data_tx_ppl,
-    LANE_RESET_DL_PPL                => lane_reset_dl_ppl,
-    CAPABILITY_TX_PPL                => capability_tx_ppl,
-    NEW_DATA_TX_PPL                  => new_data_tx_ppl,
-    VALID_K_CHARAC_TX_PPL            => valid_k_charac_tx_ppl,
-    FIFO_RX_RD_EN_PPL                => fifo_rx_rd_en_ppl,
-    FIFO_TX_FULL_PPL                 => fifo_tx_full_ppl,
-    DATA_RX_PPL                      => data_rx_ppl,
-    FIFO_RX_EMPTY_PPL                => fifo_rx_empty_ppl,
-    FIFO_RX_DATA_VALID_PPL           => fifo_rx_data_valid_ppl,
-    VALID_K_CHARAC_RX_PPL            => valid_k_charac_rx_ppl,
-    FAR_END_CAPA_DL                  => far_end_capa_dl,
+    -- DATA_TX_PPL                      => data_tx_ppl,
+    -- LANE_RESET_DL_PPL                => lane_reset_dl_ppl,
+    -- CAPABILITY_TX_PPL                => capability_tx_ppl,
+    -- NEW_DATA_TX_PPL                  => new_data_tx_ppl,
+    -- VALID_K_CHARAC_TX_PPL            => valid_k_charac_tx_ppl,
+    -- FIFO_RX_RD_EN_PPL                => fifo_rx_rd_en_ppl,
+    -- FIFO_TX_FULL_PPL                 => fifo_tx_full_ppl,
+    -- DATA_RX_PPL                      => data_rx_ppl,
+    -- FIFO_RX_EMPTY_PPL                => fifo_rx_empty_ppl,
+    -- FIFO_RX_DATA_VALID_PPL           => fifo_rx_data_valid_ppl,
+    -- VALID_K_CHARAC_RX_PPL            => valid_k_charac_rx_ppl,
+    -- FAR_END_CAPA_DL                  => far_end_capa_dl,
     
     
     LANE_START                       => lane_start,

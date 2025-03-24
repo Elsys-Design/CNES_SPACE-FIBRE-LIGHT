@@ -27,6 +27,7 @@ vlib sim_build/unisim
 vlib sim_build/commun
 vlib sim_build/phy_plus_lane_lib
 vlib sim_build/secureip
+vlib sim_build/data_link_lib
 echo "############# End create Libraries #############"
 
 echo "############# Map Libraries #############"
@@ -35,6 +36,7 @@ vmap xpm sim_build/xpm
 vmap unisim sim_build/unisim
 vmap commun sim_build/commun
 vmap phy_plus_lane_lib sim_build/phy_plus_lane_lib
+vmap data_link_lib sim_build/data_link_lib
 echo "############# End map Libraries #############"
 
 
@@ -125,4 +127,44 @@ vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_
 vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_phy_plus_lane/phy_plus_lane.vhd
 vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_phy_plus_lane/mib_phy_plus_lane.vhd
 echo "######### End compile Lane_layer ##########"
+
 echo "########## End compile Phy+Lane ###########"
+
+
+
+echo "################################################"
+echo "######## Start compile Data_Link_layer #########"
+echo "################################################"
+
+vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/04_packages/pkg_data_link.vhd
+
+vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/02_external_ip/fifo_dc_custom_to_axis/AXIS_MASTER.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/02_external_ip/fifo_dc_custom_to_axis/FIFO_DC_AXIS_M.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/02_external_ip/fifo_dc_axis_to_custom/AXIS_SLAVE.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/02_external_ip/fifo_dc_axis_to_custom/FIFO_DC_AXIS_S.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/data_crc_check.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/data_crc_compute.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/data_desencapsulation.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/data_enpsulation.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/data_err_management.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/data_in_bc_buf.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/data_in_buf.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/data_link_reset.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/data_mac.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/data_out_bc_buf.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/data_out_buf.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/data_seq_check.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/data_seq_compute.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/data_word_id_fsm.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/02_external_ip/fifo_dc/fifo_dc.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/02_external_ip/fifo_dc_drop_bad_frame/fifo_dc_drop_bad_frame.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/data_link.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/mib_data_link.vhd
+
+echo "######## End compile Data_Link_layer #########"
+
+
+
+
+
+
