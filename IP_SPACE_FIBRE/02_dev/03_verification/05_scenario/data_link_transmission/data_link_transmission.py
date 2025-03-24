@@ -142,17 +142,18 @@ async def start_all_dl(tb):
     Start test on all data link analyzer and all data link generator.
     """
     action = []
-    Data_start_test= Data(Data_lane_ana_control, 0x00000001)
+    Data_lane_ana_control.data = bytearray([0x01,0x00,0x00,0x00])
     # Start analyzer
     for channel in range(2, 11):
-        x = cocotb.start_soon(tb.masters[2*channel].write_data(Data_start_test))
+        x = cocotb.start_soon(tb.masters[2*channel].write_data(Data_lane_ana_control))
         action += [x]
     await Combine(*action)
 
-    Data_start_test= Data(Data_lane_gen_control, 0x00000001)
+    action = []
+    Data_lane_gen_control.data = bytearray([0x01,0x00,0x00,0x00])
     # Start generator
     for channel in range(2, 11):
-        x = cocotb.start_soon(tb.masters[2*channel-1].write_data(Data_start_test))
+        x = cocotb.start_soon(tb.masters[2*channel-1].write_data(Data_lane_gen_control))
         action += [x]
     await Combine(*action)
 
@@ -161,17 +162,18 @@ async def start_all_vc_dl(tb):
     Start test on all data link analyzer and all data link generator.
     """
     action = []
-    Data_start_test= Data(Data_lane_ana_control, 0x00000001)
+    Data_lane_ana_control.data = bytearray([0x01,0x00,0x00,0x00])
     # Start analyzer
     for channel in range(2, 10):
-        x = cocotb.start_soon(tb.masters[2*channel].write_data(Data_start_test))
+        x = cocotb.start_soon(tb.masters[2*channel].write_data(Data_lane_ana_control))
         action += [x]
     await Combine(*action)
 
-    Data_start_test= Data(Data_lane_gen_control, 0x00000001)
+    action = []
+    Data_lane_gen_control.data = bytearray([0x01,0x00,0x00,0x00])
     # Start generator
     for channel in range(2, 10):
-        x = cocotb.start_soon(tb.masters[2*channel-1].write_data(Data_start_test))
+        x = cocotb.start_soon(tb.masters[2*channel-1].write_data(Data_lane_gen_control))
         action += [x]
     await Combine(*action)
 
@@ -180,32 +182,34 @@ async def configure_all_vc_dl(tb, conf, seed):
     Start test on all data link analyzer and all data link generator.
     """
     action = []
-    Data_config_test= Data(Data_lane_ana_config, conf)
+    Data_lane_ana_config.data = bytearray(conf)
     # configure analyzer
     for channel in range(2, 10):
-        x = cocotb.start_soon(tb.masters[2*channel].write_data(Data_config_test))
-        action += [x]
-    await Combine(*action)
-
-    Data_config_test= Data(Data_lane_gen_config, conf)
-    # configure generator
-    for channel in range(2, 10):
-        x = cocotb.start_soon(tb.masters[2*channel-1].write_data(Data_config_test))
+        x = cocotb.start_soon(tb.masters[2*channel].write_data(Data_lane_ana_config))
         action += [x]
     await Combine(*action)
 
     action = []
-    Data_seed_test= Data(Data_lane_ana_seed, seed)
-    # configure analyzer seed
+    Data_lane_gen_config.data = bytearray(conf)
+    # configure generator
     for channel in range(2, 10):
-        x = cocotb.start_soon(tb.masters[2*channel].write_data(Data_seed_test))
+        x = cocotb.start_soon(tb.masters[2*channel-1].write_data(Data_lane_gen_config))
         action += [x]
     await Combine(*action)
 
-    Data_seed_test= Data(Data_lane_gen_seed, seed)
+    action = []
+    Data_lane_ana_seed.data = bytearray(seed)
+    # configure analyzer seed
+    for channel in range(2, 10):
+        x = cocotb.start_soon(tb.masters[2*channel].write_data(Data_lane_ana_seed))
+        action += [x]
+    await Combine(*action)
+
+    action = []
+    Data_lane_gen_seed.data = bytearray(seed)
     # configure generator seed
     for channel in range(2, 10):
-        x = cocotb.start_soon(tb.masters[2*channel-1].write_data(Data_seed_test))
+        x = cocotb.start_soon(tb.masters[2*channel-1].write_data(Data_lane_gen_seed))
         action += [x]
     await Combine(*action)
 
@@ -214,10 +218,12 @@ async def start_gen_vc_dl(tb):
     """
     Start test on all data link analyzer and all data link generator.
     """
-    Data_start_test= Data(Data_lane_gen_control, 0x00000001)
+
+    action = []
+    Data_lane_gen_control.data = bytearray([0x01, 0x00, 0x00, 0x00])
     # Start generator
     for channel in range(2, 10):
-        x = cocotb.start_soon(tb.masters[2*channel-1].write_data(Data_start_test))
+        x = cocotb.start_soon(tb.masters[2*channel-1].write_data(Data_lane_gen_control))
         action += [x]
     await Combine(*action)
 
@@ -225,17 +231,19 @@ async def configure_gen_vc_dl(tb, conf, seed):
     """
     Start test on all data link analyzer and all data link generator.
     """
-    Data_config_test= Data(Data_lane_gen_config, conf)
+    Data_lane_gen_config.data = bytearray(conf)
+    action = []
     # configure generator
     for channel in range(2, 10):
-        x = cocotb.start_soon(tb.masters[2*channel-1].write_data(Data_config_test))
+        x = cocotb.start_soon(tb.masters[2*channel-1].write_data(Data_lane_gen_config))
         action += [x]
     await Combine(*action)
 
-    Data_seed_test= Data(Data_lane_gen_seed, seed)
+    action = []
+    Data_lane_gen_seed.data = bytearray(seed)
     # configure generator seed
     for channel in range(2, 10):
-        x = cocotb.start_soon(tb.masters[2*channel-1].write_data(Data_seed_test))
+        x = cocotb.start_soon(tb.masters[2*channel-1].write_data(Data_lane_gen_seed))
         action += [x]
     await Combine(*action)
 
@@ -244,22 +252,23 @@ async def configure_model_dl(tb, model, conf, seed):
     Start test on all data link analyzer and all data link generator.
     """
     # configure generator
-    Data_config_test= Data(Data_lane_gen_config, conf)
+    Data_lane_gen_config.data = bytearray(conf)
 
-    await tb.masters[model].write_data(Data_config_test)
+    await tb.masters[model].write_data(Data_lane_gen_config)
 
 
     # configure generator seed
-    Data_seed_test= Data(Data_lane_gen_seed, seed)
-    await tb.masters[model].write_data(Data_seed_test)
+    Data_lane_gen_seed.data = bytearray(seed)
+
+    await tb.masters[model].write_data(Data_lane_gen_seed)
 
 async def start_model_dl(tb, model):
     """
     Start test on all data link analyzer and all data link generator.
     """
-    Data_start_test= Data(Data_lane_gen_control, 0x00000001)
+    Data_lane_gen_control.data = bytearray([0x01,0x00,0x00,0x00])
     # Start model
-    await tb.masters[model].write_data(Data_start_test)
+    await tb.masters[model].write_data(Data_lane_gen_control)
 
 
 async def write_10b_to_Rx(tb, encoded_data, delay, invert_polarity = 0):

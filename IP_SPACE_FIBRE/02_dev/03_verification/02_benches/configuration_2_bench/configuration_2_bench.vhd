@@ -64,6 +64,48 @@ entity CONFIGURATION_2_BENCH is
         S_CON_AXI_RRESP       : out std_logic_vector(1 downto 0);                -- Read response (OKAY or ERROR)
         S_CON_AXI_RVALID      : out std_logic;                                   -- Slave asserts when read data is valid
 
+
+        ---
+        -- AXI4 Lite slave interface Lane Analyzer
+        ---
+        S_ANA_LANE_AXI_AWADDR : in std_logic_vector(G_ADDR_WIDTH-1 downto 0);    -- Write address from master to slave
+        S_ANA_LANE_AXI_AWVALID: in std_logic;                                    -- Master asserts when write address is valid
+        S_ANA_LANE_AXI_AWREADY: out std_logic;                                   -- Slave ready to accept write address
+        S_ANA_LANE_AXI_WDATA  : in std_logic_vector(G_DATA_WIDTH-1 downto 0);    -- Write data from master
+        S_ANA_LANE_AXI_WSTRB  : in std_logic_vector(3 downto 0);                 -- Write strobe, indicates active byte lanes
+        S_ANA_LANE_AXI_WVALID : in std_logic;                                    -- Master asserts when write data is valid
+        S_ANA_LANE_AXI_WREADY : out std_logic;                                   -- Slave ready to accept write data
+        S_ANA_LANE_AXI_BREADY : in std_logic;                                    -- Master ready to receive write response
+        S_ANA_LANE_AXI_BRESP  : out std_logic_vector(1 downto 0);                -- Write response from slave (OKAY or ERROR)
+        S_ANA_LANE_AXI_BVALID : out std_logic;                                   -- Slave asserts when write response is valid
+        S_ANA_LANE_AXI_ARADDR : in std_logic_vector(G_ADDR_WIDTH-1 downto 0);    -- Read address from master to slave
+        S_ANA_LANE_AXI_ARVALID: in std_logic;                                    -- Master asserts when read address is valid
+        S_ANA_LANE_AXI_ARREADY: out std_logic;                                   -- Slave ready to accept read address
+        S_ANA_LANE_AXI_RREADY : in std_logic;                                    -- Master ready to receive read data
+        S_ANA_LANE_AXI_RDATA  : out std_logic_vector(G_DATA_WIDTH-1 downto 0);   -- Read data from slave to master
+        S_ANA_LANE_AXI_RRESP  : out std_logic_vector(1 downto 0);                -- Read response (OKAY or ERROR)
+        S_ANA_LANE_AXI_RVALID : out std_logic;                                   -- Slave asserts when read data is valid
+
+        ---
+        -- AXI4 Lite slave interface Lane Analyzer
+        ---
+        S_GEN_LANE_AXI_AWADDR : in std_logic_vector(G_ADDR_WIDTH-1 downto 0);    -- Write address from master to slave
+        S_GEN_LANE_AXI_AWVALID: in std_logic;                                    -- Master asserts when write address is valid
+        S_GEN_LANE_AXI_AWREADY: out std_logic;                                   -- Slave ready to accept write address
+        S_GEN_LANE_AXI_WDATA  : in std_logic_vector(G_DATA_WIDTH-1 downto 0);    -- Write data from master
+        S_GEN_LANE_AXI_WSTRB  : in std_logic_vector(3 downto 0);                 -- Write strobe, indicates active byte lanes
+        S_GEN_LANE_AXI_WVALID : in std_logic;                                    -- Master asserts when write data is valid
+        S_GEN_LANE_AXI_WREADY : out std_logic;                                   -- Slave ready to accept write data
+        S_GEN_LANE_AXI_BREADY : in std_logic;                                    -- Master ready to receive write response
+        S_GEN_LANE_AXI_BRESP  : out std_logic_vector(1 downto 0);                -- Write response from slave (OKAY or ERROR)
+        S_GEN_LANE_AXI_BVALID : out std_logic;                                   -- Slave asserts when write response is valid
+        S_GEN_LANE_AXI_ARADDR : in std_logic_vector(G_ADDR_WIDTH-1 downto 0);    -- Read address from master to slave
+        S_GEN_LANE_AXI_ARVALID: in std_logic;                                    -- Master asserts when read address is valid
+        S_GEN_LANE_AXI_ARREADY: out std_logic;                                   -- Slave ready to accept read address
+        S_GEN_LANE_AXI_RREADY : in std_logic;                                    -- Master ready to receive read data
+        S_GEN_LANE_AXI_RDATA  : out std_logic_vector(G_DATA_WIDTH-1 downto 0);   -- Read data from slave to master
+        S_GEN_LANE_AXI_RRESP  : out std_logic_vector(1 downto 0);                -- Read response (OKAY or ERROR)
+        S_GEN_LANE_AXI_RVALID : out std_logic;                                   -- Slave asserts when read data is valid
         ---
         -- AXI4 Lite slave interface of all Data Link Analyzer
         ---
@@ -87,7 +129,7 @@ entity CONFIGURATION_2_BENCH is
         S_ANA_0_AXI_RRESP     : out std_logic_vector(1 downto 0);                        -- Read response (OKAY or ERROR)
         S_ANA_0_AXI_RVALID    : out std_logic;                                           -- Slave asserts when read data is valid
 
-        -- AXI4 Lite slave interface for each instance
+        
         S_ANA_1_AXI_AWADDR    : in std_logic_vector(G_ADDR_WIDTH-1 downto 0);            -- Write address from master to slave
         S_ANA_1_AXI_AWVALID   : in std_logic;                                            -- Master asserts when write address is valid
         S_ANA_1_AXI_AWREADY   : out std_logic;                                           -- Slave ready to accept write address
@@ -106,7 +148,7 @@ entity CONFIGURATION_2_BENCH is
         S_ANA_1_AXI_RRESP     : out std_logic_vector(1 downto 0);                        -- Read response (OKAY or ERROR)
         S_ANA_1_AXI_RVALID    : out std_logic;                                           -- Slave asserts when read data is valid
 
-        -- AXI4 Lite slave interface for each instance
+        
         S_ANA_2_AXI_AWADDR    : in std_logic_vector(G_ADDR_WIDTH-1 downto 0);            -- Write address from master to slave
         S_ANA_2_AXI_AWVALID   : in std_logic;                                            -- Master asserts when write address is valid
         S_ANA_2_AXI_AWREADY   : out std_logic;                                           -- Slave ready to accept write address
@@ -125,7 +167,7 @@ entity CONFIGURATION_2_BENCH is
         S_ANA_2_AXI_RRESP     : out std_logic_vector(1 downto 0);                        -- Read response (OKAY or ERROR)
         S_ANA_2_AXI_RVALID    : out std_logic;                                           -- Slave asserts when read data is valid
 
-        -- AXI4 Lite slave interface for each instance
+        
         S_ANA_3_AXI_AWADDR    : in std_logic_vector(G_ADDR_WIDTH-1 downto 0);            -- Write address from master to slave
         S_ANA_3_AXI_AWVALID   : in std_logic;                                            -- Master asserts when write address is valid
         S_ANA_3_AXI_AWREADY   : out std_logic;                                           -- Slave ready to accept write address
@@ -144,7 +186,7 @@ entity CONFIGURATION_2_BENCH is
         S_ANA_3_AXI_RRESP     : out std_logic_vector(1 downto 0);                        -- Read response (OKAY or ERROR)
         S_ANA_3_AXI_RVALID    : out std_logic;                                           -- Slave asserts when read data is valid
 
-        -- AXI4 Lite slave interface for each instance
+        
         S_ANA_4_AXI_AWADDR    : in std_logic_vector(G_ADDR_WIDTH-1 downto 0);            -- Write address from master to slave
         S_ANA_4_AXI_AWVALID   : in std_logic;                                            -- Master asserts when write address is valid
         S_ANA_4_AXI_AWREADY   : out std_logic;                                           -- Slave ready to accept write address
@@ -163,7 +205,7 @@ entity CONFIGURATION_2_BENCH is
         S_ANA_4_AXI_RRESP     : out std_logic_vector(1 downto 0);                        -- Read response (OKAY or ERROR)
         S_ANA_4_AXI_RVALID    : out std_logic;                                           -- Slave asserts when read data is valid
 
-        -- AXI4 Lite slave interface for each instance
+        
         S_ANA_5_AXI_AWADDR    : in std_logic_vector(G_ADDR_WIDTH-1 downto 0);            -- Write address from master to slave
         S_ANA_5_AXI_AWVALID   : in std_logic;                                            -- Master asserts when write address is valid
         S_ANA_5_AXI_AWREADY   : out std_logic;                                           -- Slave ready to accept write address
@@ -182,7 +224,7 @@ entity CONFIGURATION_2_BENCH is
         S_ANA_5_AXI_RRESP     : out std_logic_vector(1 downto 0);                        -- Read response (OKAY or ERROR)
         S_ANA_5_AXI_RVALID    : out std_logic;                                           -- Slave asserts when read data is valid
 
-        -- AXI4 Lite slave interface for each instance
+        
         S_ANA_6_AXI_AWADDR    : in std_logic_vector(G_ADDR_WIDTH-1 downto 0);            -- Write address from master to slave
         S_ANA_6_AXI_AWVALID   : in std_logic;                                            -- Master asserts when write address is valid
         S_ANA_6_AXI_AWREADY   : out std_logic;                                           -- Slave ready to accept write address
@@ -201,7 +243,7 @@ entity CONFIGURATION_2_BENCH is
         S_ANA_6_AXI_RRESP     : out std_logic_vector(1 downto 0);                        -- Read response (OKAY or ERROR)
         S_ANA_6_AXI_RVALID    : out std_logic;                                           -- Slave asserts when read data is valid
 
-        -- AXI4 Lite slave interface for each instance
+        
         S_ANA_7_AXI_AWADDR    : in std_logic_vector(G_ADDR_WIDTH-1 downto 0);            -- Write address from master to slave
         S_ANA_7_AXI_AWVALID   : in std_logic;                                            -- Master asserts when write address is valid
         S_ANA_7_AXI_AWREADY   : out std_logic;                                           -- Slave ready to accept write address
@@ -433,7 +475,19 @@ architecture Behavioral of CONFIGURATION_2_BENCH is
     signal crc_long_error        : std_logic;
     signal crc_short_error       : std_logic;
     signal frame_error           : std_logic;
+    signal sequence_error        : std_logic;
     signal far_end_link_rst      : std_logic;
+    signal data_counter_tx       : std_logic_vector(6 downto 0);
+    signal data_counter_rx       : std_logic_vector(6 downto 0);
+    signal ack_counter_tx        : std_logic_vector(2 downto 0);
+    signal nack_counter_tx       : std_logic_vector(2 downto 0);
+    signal fct_counter_tx        : std_logic_vector(3 downto 0);
+    signal ack_counter_rx        : std_logic_vector(2 downto 0);
+    signal nack_counter_rx       : std_logic_vector(2 downto 0);
+    signal fct_counter_rx        : std_logic_vector(3 downto 0);
+    signal full_counter_rx       : std_logic_vector(1 downto 0);
+    signal retry_counter_rx      : std_logic_vector(1 downto 0);
+    signal current_time_slot     : std_logic_vector(7 downto 0);
     signal seq_number_tx         : std_logic_vector(7 downto 0);
     signal seq_number_rx         : std_logic_vector(7 downto 0);
     signal input_buffer_ovfl     : std_logic_vector(G_CHANNEL_NUMBER-1 downto 0);
@@ -545,20 +599,6 @@ architecture Behavioral of CONFIGURATION_2_BENCH is
     -- signal far_end_capa_dl           : std_logic_vector(7 downto 0);
     --MIB
     
-    signal sequence_error            : std_logic;
-    signal far_end_link_reset        : std_logic;
-    signal data_counter_tx           : std_logic_vector(6 downto 0);
-    signal data_counter_rx           : std_logic_vector(6 downto 0);
-
-    signal ack_counter_tx            : std_logic_vector(2 downto 0);
-    signal nack_counter_tx           : std_logic_vector(2 downto 0);
-    signal fct_counter_tx             : std_logic_vector(3 downto 0);
-    signal ack_counter_rx            : std_logic_vector(2 downto 0);
-    signal nack_counter_rx           : std_logic_vector(2 downto 0);
-    signal fct_counter_rx            : std_logic_vector(3 downto 0);
-    signal full_counter_rx           : std_logic_vector(1 downto 0);
-    signal retry_counter_rx          : std_logic_vector(1 downto 0);
-    signal current_time_slot         : std_logic_vector(7 downto 0);
     
         
         -- Component declaration for spacefibre_light_top
@@ -585,7 +625,7 @@ architecture Behavioral of CONFIGURATION_2_BENCH is
            AXIS_TLAST_TX_DL                 : in  std_logic_vector(G_VC_NUM downto 0);
            AXIS_TVALID_TX_DL                : in  std_logic_vector(G_VC_NUM downto 0);
            AXIS_ARSTN_RX_DL                 : in  std_logic_vector(G_VC_NUM downto 0);
-           AXIS_ACLK_RX_DL                  : out std_logic_vector(G_VC_NUM downto 0);
+           AXIS_ACLK_RX_DL                  : in std_logic_vector(G_VC_NUM downto 0);
            AXIS_TREADY_RX_DL                : in  std_logic_vector(G_VC_NUM downto 0);
            AXIS_TDATA_RX_DL                 : out vc_data_array(G_VC_NUM downto 0);
            AXIS_TUSER_RX_DL                 : out vc_k_array(G_VC_NUM downto 0);
@@ -685,13 +725,9 @@ architecture Behavioral of CONFIGURATION_2_BENCH is
             S_AXI_RVALID          => S_CON_AXI_RVALID,
 
             INTERFACE_RST         => interface_rst,
-
-            RESET_PARAM_DL        => reset_param_dl, --missing in spacefibre top
-
+            RESET_PARAM_DL        => reset_param_dl,
             LINK_RST              => link_rst,
-
-            LINK_RST_ASSERTED     => link_rst_asserted, --missing in spacefibre top
-
+            LINK_RST_ASSERTED     => link_rst_asserted,
             NACK_RST_EN           => nack_rst_en,
             NACK_RST_MODE         => nack_rst_mode,
             PAUSE_VC              => pause_vc,
@@ -1138,8 +1174,27 @@ architecture Behavioral of CONFIGURATION_2_BENCH is
 
 
 
-        axis_arstn_tx_dl <= (others => rst_n);
         axis_arstn_rx_dl <= (others => rst_n);
+
+        gen_data_link_tx: for i in 0 to 8 generate
+            axis_aclk_tx_dl(i)                  <= clk;
+            axis_arstn_tx_dl(i)                 <= rst_n;
+            internal_signals_gen(i).tready      <= axis_tready_tx_dl(i);
+            axis_tdata_tx_dl(i)                 <= internal_signals_gen(i).tdata;
+            axis_tuser_tx_dl(i)                 <= internal_signals_gen(i).tuser;
+            axis_tlast_tx_dl(i)                 <= internal_signals_gen(i).tlast;
+            axis_tvalid_tx_dl(i)                <= internal_signals_gen(i).tvalid;
+        end generate;
+
+        gen_data_link_rx: for i in 0 to 8 generate
+            axis_aclk_rx_dl(i)                  <= clk;
+            axis_arstn_rx_dl(i)                 <= rst_n;
+            axis_tready_rx_dl(i)                <=internal_signals_ana(i).tready;
+            internal_signals_ana(i).tdata       <=axis_tdata_rx_dl(i);
+            internal_signals_ana(i).tuser       <=axis_tuser_rx_dl(i);
+            internal_signals_ana(i).tlast       <=axis_tlast_rx_dl(i);
+            internal_signals_ana(i).tvalid      <=axis_tvalid_rx_dl(i);
+        end generate;
 
 
 -- Instantiation of the spacefibre_light_top module

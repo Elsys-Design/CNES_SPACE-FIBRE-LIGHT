@@ -77,7 +77,7 @@ class SpaceFibre_Random_Generator:
         """
         Return the CRC-8bit after the byte_input has been taken into acount
         """
-        for i in byte_input:
+        for i in range(8):
             input = int(byte_input[7-i])
             input = int(crc_8[7]) ^ input
             crc_8 = crc_8[1 : 8] + "0"

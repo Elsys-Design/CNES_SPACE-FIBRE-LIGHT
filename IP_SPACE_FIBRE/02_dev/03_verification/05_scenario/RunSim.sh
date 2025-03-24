@@ -60,6 +60,7 @@ current_dir=$(realpath $current_dir)
 #Add models directories and bench directory to python path
 export PYTHONPATH=$current_dir:$PYTHONPATH
 export PYTHONPATH=$current_dir/../02_benches/configuration_1_bench:$PYTHONPATH
+export PYTHONPATH=$current_dir/../02_benches/configuration_2_bench:$PYTHONPATH
 export PYTHONPATH=$current_dir/../02_benches/common:$PYTHONPATH
 export PYTHONPATH=$current_dir/../01_models/python_model:$PYTHONPATH
 #add framework to pythonpath
