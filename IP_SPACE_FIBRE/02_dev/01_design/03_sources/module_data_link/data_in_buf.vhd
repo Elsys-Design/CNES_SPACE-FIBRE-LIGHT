@@ -22,6 +22,7 @@ entity data_in_buf is
     -- Link Reset
     LINK_RESET_DLRE        : in std_logic;
     -- AXI-Stream interface
+    M_AXIS_ARSTN_NW	       : in std_logic;
     M_AXIS_ACLK_NW	       : in  std_logic;
     M_AXIS_TVALID_DIBUF	   : out std_logic;
     M_AXIS_TDATA_DIBUF	   : out std_logic_vector(C_DATA_LENGTH-1 downto 0);
@@ -30,10 +31,10 @@ entity data_in_buf is
     M_AXIS_TUSER_DIBUF     : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
     -- DDES interface
     DATA_DDES              : in  std_logic_vector(C_DATA_LENGTH+C_BYTE_BY_WORD_LENGTH-1 downto 0);
-    DATA_EN_DDES           : in  std_logic;    
+    DATA_EN_DDES           : in  std_logic;
     -- DMAC interface
-    REQ_FCT_DIBUF          : out  std_logic;  
-    REQ_FCT_DONE_DMAC      : in std_logic;  
+    REQ_FCT_DIBUF          : out  std_logic;
+    REQ_FCT_DONE_DMAC      : in std_logic;
     --MIB interface
     INPUT_BUF_OVF_DIBUF    : out std_logic
   );
@@ -87,18 +88,18 @@ architecture rtl of data_in_buf is
     IDLE_ST,
     ADD_EEP_ST
   );
-  
+
   type req_fct_fsm is (
     IDLE_ST,
     REQ_FCT_ST
   );
 
   signal current_state          : data_in_fsm;
-  signal current_state_fct      : req_fct_fsm; 
+  signal current_state_fct      : req_fct_fsm;
   signal link_reset_cmd         : std_logic;
   signal status_busy_flush      : std_logic;
   signal status_full            : std_logic;
-  signal cmd_flush              : std_logic;    
+  signal cmd_flush              : std_logic;
   signal last_k_char            : std_logic;
   signal data_in                : std_logic_vector(C_DATA_LENGTH+C_BYTE_BY_WORD_LENGTH-1 downto 0);
   signal data_in_en             : std_logic;
@@ -110,12 +111,18 @@ architecture rtl of data_in_buf is
   signal m_axis_tlast	          : std_logic;
   signal m_axis_tready	        : std_logic;
   signal m_axis_tuser           : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
+  -- FCT
+  signal req_fct_done           : std_logic;
+  signal req_fct_done_reg1      : std_logic;
+  signal req_fct_done_reg2      : std_logic;
+  signal req_fct_i              : std_logic;
+  signal req_fct_i_reg1         : std_logic;
+  signal req_fct_i_reg2         : std_logic;
 
 begin
 ---------------------------------------------------------
 -----                     Assignation               -----
 ---------------------------------------------------------
-	
 M_AXIS_TVALID_DIBUF  <= m_axis_tvalid;
 M_AXIS_TDATA_DIBUF	 <= m_axis_tdata;
 M_AXIS_TLAST_DIBUF	 <= m_axis_tlast;
@@ -133,7 +140,7 @@ M_AXIS_TUSER_DIBUF   <= m_axis_tuser;
       M_AXIS_TUSER_WIDTH      => C_BYTE_BY_WORD_LENGTH
   )
   port map (
-      aresetn                => RST_N,
+      aresetn                => M_AXIS_ARSTN_NW,
       WR_CLK                 => CLK,
       WR_DATA                => data_in,
       WR_DATA_EN             => data_in_en,
@@ -167,10 +174,10 @@ begin
     INPUT_BUF_OVF_DIBUF <= '0';
   elsif rising_edge(CLK) then
     if status_full = '1' then
-      link_reset_cmd         <= '1';
+      link_reset_cmd      <= '1';
       INPUT_BUF_OVF_DIBUF <= '1';
     else
-      link_reset_cmd         <= '0';
+      link_reset_cmd      <= '0';
       INPUT_BUF_OVF_DIBUF <= '0';
     end if;
   end if;
@@ -188,13 +195,13 @@ begin
     data_in_en      <= '0';
   elsif rising_edge(CLK) then
     cmd_flush <= '0';
-    case current_state is 
+    case current_state is
       when IDLE_ST =>
                             if LINK_RESET_DLRE = '1' or link_reset_cmd = '1' then
                               cmd_flush <= '1';
                               if last_k_char = '1' then
                                 current_state <= IDLE_ST;
-                              else 
+                              else
                                 current_state <= ADD_EEP_ST;
                               end if;
                             else
@@ -203,7 +210,7 @@ begin
                             end if;
 
 
-        when ADD_EEP_ST => 
+        when ADD_EEP_ST =>
                             if status_busy_flush= '0' and LINK_RESET_DLRE = '0' and link_reset_cmd = '0' then
                               current_state <= IDLE_ST;
                               data_in       <= "1111" & C_FILL_SYMB & C_FILL_SYMB & C_FILL_SYMB & C_EEP_SYMB;
@@ -217,11 +224,11 @@ end process p_data_in_fifo;
 -- Description: Analyses if the last character written into 
 --              the fifo was an EOP, EEP or Fill
 ---------------------------------------------------------
-p_last_char_read: process(CLK, RST_N)
+p_last_char_read: process(M_AXIS_ACLK_NW, M_AXIS_ARSTN_NW)
 begin
-  if RST_N = '0' then
+  if M_AXIS_ARSTN_NW = '0' then
     last_k_char <= '0';
-  elsif rising_edge(CLK) then
+  elsif rising_edge(M_AXIS_ACLK_NW) then
     if m_axis_tvalid = '1' and m_axis_tready ='1' then
       if m_axis_tuser(C_BYTE_BY_WORD_LENGTH-1)='1' then
         last_k_char <= '1';
@@ -235,19 +242,31 @@ end process p_last_char_read;
 -- Process: p_cnt_word
 -- Description: Count the number of word sent
 ---------------------------------------------------------
-p_cnt_word: process(CLK, RST_N)
+p_cnt_word: process(M_AXIS_ACLK_NW, M_AXIS_ARSTN_NW)
 begin
-  if RST_N = '0' then
-    cnt_word_sent      <= (others =>'0');
-  elsif rising_edge(CLK) then
+  if M_AXIS_ARSTN_NW = '0' then
+    cnt_word_sent     <= (others =>'0');
+    req_fct_i         <= '0';
+    req_fct_done_reg1 <= '0';
+    req_fct_done_reg2 <= '0';
+  elsif rising_edge(M_AXIS_ACLK_NW) then
+    req_fct_done_reg1 <= req_fct_done;
+    req_fct_done_reg2 <= req_fct_done_reg1;
     if m_axis_tvalid = '1' and m_axis_tready ='1' then
       if cnt_word_sent > 62 then
         cnt_word_sent <= to_unsigned(1,cnt_word_sent'length);
+        req_fct_i     <= '1';
+      elsif req_fct_done_reg2 <='1' then
+          req_fct_i     <= '0';
+          cnt_word_sent <= cnt_word_sent + 1;
       else
         cnt_word_sent <= cnt_word_sent + 1;
       end if;
     elsif cnt_word_sent > 62 then
       cnt_word_sent <= (others =>'0');
+      req_fct_i     <= '1';
+    elsif req_fct_done_reg2 <='1' then
+      req_fct_i     <= '0';
     end if;
   end if;
 end process p_cnt_word;
@@ -261,15 +280,20 @@ begin
     cnt_req_fct       <= (others => '0');
     current_state_fct <= IDLE_ST;
     REQ_FCT_DIBUF     <= '0';
+    req_fct_done      <= '0';
   elsif rising_edge(CLK) then
-    case current_state_fct is 
+    req_fct_done   <= '0';
+    req_fct_i_reg1 <= req_fct_i;
+    req_fct_i_reg2 <= req_fct_i_reg1;
+    case current_state_fct is
       when IDLE_ST =>
                            if LINK_RESET_DLRE = '1' or link_reset_cmd = '1' then
                              current_state_fct   <= REQ_FCT_ST;
-                           elsif cnt_word_sent > 62 then
+                           elsif req_fct_i_reg2 ='1' then
                              REQ_FCT_DIBUF   <= '1';
                            elsif REQ_FCT_DONE_DMAC = '1' then
                              REQ_FCT_DIBUF   <= '0';
+                             req_fct_done    <= '1';
                            end if;
 
 
@@ -278,9 +302,10 @@ begin
                             REQ_FCT_DIBUF   <= '1';
                             if REQ_FCT_DONE_DMAC= '1' then
                               if cnt_req_fct > 2 then
-                                REQ_FCT_DIBUF   <= '0';
-                                cnt_req_fct     <= (others => '0');
+                                REQ_FCT_DIBUF       <= '0';
+                                cnt_req_fct         <= (others => '0');
                                 current_state_fct   <= IDLE_ST;
+                                req_fct_done        <= '1';
                               else
                                 cnt_req_fct <= cnt_req_fct + 1;
                               end if;

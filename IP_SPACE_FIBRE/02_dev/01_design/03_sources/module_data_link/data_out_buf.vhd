@@ -22,6 +22,7 @@ entity data_out_buff is
     -- Link Reset
     LINK_RESET_DLRE       : in std_logic;
     -- AXI-Stream interface
+    S_AXIS_ARSTN_NW	      : in std_logic;
 		S_AXIS_ACLK_NW	      : in std_logic;
 		S_AXIS_TREADY_DL      : out std_logic;
 		S_AXIS_TDATA_NW       : in std_logic_vector(C_DATA_LENGTH-1 downto 0);
@@ -119,7 +120,16 @@ type data_in_fsm is (
   --Flow control signals
   signal fct_credit_cnt         : unsigned(C_FCT_CC_SIZE-1 downto 0);
   signal eip_out                : std_logic;
+  signal eip_in_req             : std_logic;
+  signal eip_in_ack             : std_logic;
+  signal eip_in_ack_reg1        : std_logic;
+  signal eip_in_ack_reg2        : std_logic;
+  signal eip_out_ack            : std_logic;
   signal cnt_eip                : unsigned(6-1 downto 0);     -- cnt_word sent, max= 64
+  signal cnt_eip_out            : unsigned(6-1 downto 0);     -- cnt_word sent, max= 64
+  signal cnt_eip_in             : unsigned(6-1 downto 0);     -- cnt_word sent, max= 64
+  signal cnt_eip_in_reg1        : unsigned(6-1 downto 0);     -- cnt_word sent, max= 64
+  signal cnt_eip_in_reg2        : unsigned(6-1 downto 0);     -- cnt_word sent, max= 64
   signal data_out               : std_logic_vector(C_DATA_LENGTH-1 downto 0);
   signal valid_k_char_out       : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
   signal vc_end_packet          : std_logic;
@@ -195,9 +205,9 @@ end process p_continuous_mode;
 -- Process: p_data_in_fifo
 -- Description: Manages the data written into the fifo
 ---------------------------------------------------------
-p_data_in_fifo: process(RST_N, S_AXIS_ACLK_NW)
+p_data_in_fifo: process(S_AXIS_ARSTN_NW, S_AXIS_ACLK_NW)
 begin
-  if RST_N = '0' then
+  if S_AXIS_ARSTN_NW = '0' then
     s_axis_tdata_i  <= (others => '0');
     s_axis_tuser_i  <= (others => '0');
     s_axis_tlast_i  <= '0';
@@ -281,9 +291,9 @@ end process p_data_in_fifo;
 -- Description: Analyses if the last character written into
 --              the fifo was an EOP, EEP or Fill
 ---------------------------------------------------------
-p_last_char_written: process(RST_N, S_AXIS_ACLK_NW)
+p_last_char_written: process(S_AXIS_ARSTN_NW, S_AXIS_ACLK_NW)
 begin
-  if RST_N = '0' then
+  if S_AXIS_ARSTN_NW = '0' then
     last_k_char <= '0';
   elsif rising_edge(S_AXIS_ACLK_NW) then
     if S_AXIS_TUSER_NW(C_BYTE_BY_WORD_LENGTH-1)='1' and S_AXIS_TVALID_NW='1' then
@@ -341,7 +351,7 @@ begin
     vc_end_packet <= '0';
   elsif rising_edge(CLK) then
     vc_end_packet <= '0';
-    if cnt_word_sent >= 63  and vc_end_packet ='0' then 
+    if cnt_word_sent >= 63  and vc_end_packet ='0' then
       vc_end_packet <='1';
     elsif status_threshold_low = '1' and VC_RD_EN_DMAC='1' and vc_end_packet ='0'and cnt_word_sent > 0 then
       vc_end_packet <='1';
@@ -390,21 +400,72 @@ begin
 end process p_detect_eip_out;
 ---------------------------------------------------------
 -- Process: p_eip_cnt
+-- Description: Detection of EIP in the buffer
+---------------------------------------------------------
+p_eip_in: process(S_AXIS_ARSTN_NW, S_AXIS_ACLK_NW)
+begin
+  if S_AXIS_ARSTN_NW = '0' then
+    cnt_eip_in      <= (others =>'0');
+    cnt_eip_in_reg1 <= (others =>'0');
+    cnt_eip_in_reg2 <= (others =>'0');
+    eip_in_req      <= '0';
+    eip_in_ack_reg1 <= '0';
+    eip_in_ack_reg2 <= '0';
+  elsif rising_edge(S_AXIS_ACLK_NW) then
+    cnt_eip_in      <= cnt_eip_in;
+    cnt_eip_in_reg2 <= cnt_eip_in_reg1;
+    eip_in_ack_reg1 <= eip_in_ack;
+    eip_in_ack_reg2 <= eip_in_ack_reg1;
+    if S_AXIS_TLAST_NW = '1' and eip_in_ack_reg2 ='1' then
+      cnt_eip_in <= cnt_eip_in - cnt_eip_in_reg2 + 1;
+      eip_in_req <= '0';
+    elsif S_AXIS_TLAST_NW = '1' then
+      cnt_eip_in <= cnt_eip_in +1;
+      eip_in_req <= '1';
+    elsif eip_in_ack_reg2 ='1' then
+      cnt_eip_in <= cnt_eip_in - cnt_eip_in_reg2;
+      eip_in_req <= '0';
+    end if;
+  end if;
+end process p_eip_in;
+---------------------------------------------------------
+-- Process: p_eip_cnt_out
+-- Description: counter of eip in the buffer
+---------------------------------------------------------
+p_eip_cnt_out: process(CLK, RST_N)
+begin
+  if RST_N = '0' then
+    cnt_eip_out   <= (others =>'0');
+  elsif rising_edge(CLK) then
+    if eip_out = '1' then
+      cnt_eip_out    <= cnt_eip_out + 1;
+    elsif eip_out_ack='1' then
+      cnt_eip_out   <= (others =>'0');
+    end if;
+  end if;
+end process p_eip_cnt_out;
+---------------------------------------------------------
+-- Process: p_eip_cnt
 -- Description: counter of eip in the buffer
 ---------------------------------------------------------
 p_eip_cnt: process(CLK, RST_N)
 begin
   if RST_N = '0' then
-    cnt_eip <= (others =>'0');
+    cnt_eip     <= (others =>'0');
+    eip_in_ack  <= '0';
+    eip_out_ack <= '0';
   elsif rising_edge(CLK) then
-    if S_AXIS_TLAST_NW = '1'  and status_full = '0' and eip_out='0' then
-      cnt_eip <= cnt_eip + 1;
-    elsif S_AXIS_TLAST_NW = '0'  and eip_out='1' then
-      cnt_eip <= cnt_eip - 1;
+    eip_in_ack  <= '0';
+    eip_out_ack <= '0';
+    if eip_in_req = '1' then
+      cnt_eip     <= cnt_eip + cnt_eip_in;
+      eip_in_ack  <= '1';
+    elsif cnt_eip_out > 0  then
+      cnt_eip     <= cnt_eip - cnt_eip_out;
+      eip_out_ack <= '1';
     end if;
   end if;
 end process p_eip_cnt;
-
 ---------------------------------------------------------
 -- Process: p_vc_ready
 -- Description: Manages the virtual channel ready signal

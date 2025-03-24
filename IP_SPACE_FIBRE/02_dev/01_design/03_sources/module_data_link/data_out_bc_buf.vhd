@@ -94,6 +94,7 @@ architecture rtl of data_out_bc_buf is
 
   -- continuous mode
   signal cmd_flush              : std_logic;
+  signal cnt_cmd_flush          : unsigned (1 downto 0);
   signal vc_end_packet          : std_logic;
   signal cnt_word_sent          : unsigned(6-1 downto 0);     -- cnt_word sent, max= 64
 begin
@@ -145,23 +146,31 @@ begin
 ---------------------------------------------------------
 ---------------------------------------------------------
 -- Process: p_link_reset
--- Description: EIP output detection
+-- Description: Flush management 
 ---------------------------------------------------------
 p_link_reset: process(CLK, RST_N)
 begin
   if RST_N = '0' then
-    cmd_flush <= '0';
+    cmd_flush     <= '0';
+    cnt_cmd_flush <= (others => '0');
   elsif rising_edge(CLK) then
-    if LINK_RESET_DLRE = '1' then
-      cmd_flush <='1';
+    if (cnt_cmd_flush > 2) then
+      cmd_flush     <= '0';
+      cnt_cmd_flush <= (others => '0');
+    elsif LINK_RESET_DLRE = '1' then
+      cnt_cmd_flush <= cnt_cmd_flush + 1;
+      cmd_flush     <= '1';
+    elsif cmd_flush = '1' then
+      cnt_cmd_flush <= cnt_cmd_flush + 1;
     else
-      cmd_flush <='0';
+      cmd_flush     <='0';
+      cnt_cmd_flush <= (others => '0');
     end if;
   end if;
 end process p_link_reset;
 ---------------------------------------------------------
 -- Process: p_vc_end_packet
--- Description: EIP output detection
+-- Description: End of packet management
 ---------------------------------------------------------
 p_vc_end_packet: process(CLK, RST_N)
 begin
