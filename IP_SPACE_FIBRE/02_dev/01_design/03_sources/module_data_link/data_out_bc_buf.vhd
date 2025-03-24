@@ -83,14 +83,6 @@ architecture rtl of data_out_bc_buf is
   end component;
 
 ----------------------------- Declaration signals -----------------------------
-type data_in_fsm is (
-  IDLE_ST,
-  WAIT_END_FLUSH_ST,
-  ADD_EEP_ST,
-  WAIT_EIP_ST
-  );
-
-  signal current_state          : data_in_fsm;
   --Fifo signals
   signal rd_data                : std_logic_vector(C_DATA_LENGTH + C_BYTE_BY_WORD_LENGTH-1 downto 0);
   signal rd_data_vld            : std_logic;
@@ -100,31 +92,15 @@ type data_in_fsm is (
   signal status_full            : std_logic;
   signal status_empty           : std_logic;
 
-  signal s_axis_tdata_i         : std_logic_vector(C_DATA_LENGTH-1 downto 0);
-  signal s_axis_tuser_i         : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
-  signal s_axis_tlast_i         : std_logic;
-  signal s_axis_tvalid_i        : std_logic;
   -- continuous mode
-  signal cont_mode_flg          : std_logic;
-  signal last_k_char            : std_logic;
   signal cmd_flush              : std_logic;
-  --Flow control signals
-  signal fct_credit_cnt         : unsigned(C_FCT_CC_SIZE-1 downto 0);
-  signal eip_out                : std_logic;
-  signal cnt_eip                : unsigned(6-1 downto 0);     -- cnt_word sent, max= 64
-  signal data_out               : std_logic_vector(C_DATA_LENGTH-1 downto 0);
-  signal valid_k_char_out       : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
+  signal cnt_cmd_flush          : unsigned (1 downto 0);
   signal vc_end_packet          : std_logic;
   signal cnt_word_sent          : unsigned(6-1 downto 0);     -- cnt_word sent, max= 64
-
-
 begin
 ---------------------------------------------------------
 -----                     Assignation               -----
 ---------------------------------------------------------
-
-  data_out             <= rd_data(C_DATA_LENGTH-1 downto 0);
-  valid_k_char_out     <= rd_data(C_DATA_LENGTH+C_BYTE_BY_WORD_LENGTH-1 downto C_DATA_LENGTH);
 
   DATA_DOBUF           <= rd_data(C_DATA_LENGTH-1 downto 0);
   VALID_K_CHARAC_DOBUF <= rd_data(C_DATA_LENGTH+C_BYTE_BY_WORD_LENGTH-1 downto C_DATA_LENGTH);
@@ -170,23 +146,31 @@ begin
 ---------------------------------------------------------
 ---------------------------------------------------------
 -- Process: p_link_reset
--- Description: EIP output detection
+-- Description: Flush management 
 ---------------------------------------------------------
 p_link_reset: process(CLK, RST_N)
 begin
   if RST_N = '0' then
-    cmd_flush <= '0';
+    cmd_flush     <= '0';
+    cnt_cmd_flush <= (others => '0');
   elsif rising_edge(CLK) then
-    if LINK_RESET_DLRE = '1' then 
-      cmd_flush <='1';
+    if (cnt_cmd_flush > 2) then
+      cmd_flush     <= '0';
+      cnt_cmd_flush <= (others => '0');
+    elsif LINK_RESET_DLRE = '1' then
+      cnt_cmd_flush <= cnt_cmd_flush + 1;
+      cmd_flush     <= '1';
+    elsif cmd_flush = '1' then
+      cnt_cmd_flush <= cnt_cmd_flush + 1;
     else
-      cmd_flush <='0';
+      cmd_flush     <='0';
+      cnt_cmd_flush <= (others => '0');
     end if;
   end if;
 end process p_link_reset;
 ---------------------------------------------------------
 -- Process: p_vc_end_packet
--- Description: EIP output detection
+-- Description: End of packet management
 ---------------------------------------------------------
 p_vc_end_packet: process(CLK, RST_N)
 begin
@@ -194,7 +178,7 @@ begin
     vc_end_packet <= '0';
   elsif rising_edge(CLK) then
     vc_end_packet <= '0';
-    if cnt_word_sent >= 1  and vc_end_packet ='0' then 
+    if cnt_word_sent > 1 and vc_end_packet ='0' then 
       vc_end_packet <='1';
     elsif status_threshold_low = '1' and VC_RD_EN_DMAC='1' and vc_end_packet ='0'and cnt_word_sent > 0 then
       vc_end_packet <='1';
@@ -228,7 +212,7 @@ end process p_cnt_word;
     if RST_N = '0' then
       VC_READY_DOBUF <= '0';
     elsif rising_edge(CLK) then
-      if status_full = '0' then
+      if status_empty = '0' then
         VC_READY_DOBUF <= '1';
       else
         VC_READY_DOBUF <= '0';

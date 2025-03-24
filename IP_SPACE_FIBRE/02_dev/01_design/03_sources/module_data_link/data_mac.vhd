@@ -128,7 +128,7 @@ begin
     case current_state_vc is
       when IDLE_ST =>
                     type_frame       <= C_IDLE_FRM;
-                    if vc_ready /= std_logic_vector(to_unsigned(0,G_VC_NUM)) then
+                    if vc_ready /= std_logic_vector(to_unsigned(0,G_VC_NUM+1)) then
                         current_state_vc <= VC_0_ST;
                     else
                       if idle_cnt = 0 then
