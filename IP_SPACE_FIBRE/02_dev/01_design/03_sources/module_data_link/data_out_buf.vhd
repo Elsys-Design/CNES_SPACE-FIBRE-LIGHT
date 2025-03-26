@@ -43,6 +43,7 @@ entity data_out_buff is
     LANE_ACTIVE_ST_PPL    : in std_logic;
     --MIB Interface
     FCT_CC_OVF_DOBUF      : out std_logic;
+    CREDIT_VC_DOBUF       : out std_logic;
     VC_CONT_MODE_MIB      : in std_logic
   );
 end data_out_buff;
@@ -303,6 +304,22 @@ begin
     end if;
   end if;
 end process p_last_char_written;
+---------------------------------------------------------
+-- Process: p_has_credit
+-- Description: Indicates if far end input buffer has credit
+---------------------------------------------------------
+p_has_credit: process(CLK, RST_N)
+begin
+  if RST_N = '0' then
+    CREDIT_VC_DOBUF <= '0';
+  elsif rising_edge(CLK) then
+    if fct_credit_cnt > 0 then
+      CREDIT_VC_DOBUF <= '1';
+    else
+      CREDIT_VC_DOBUF <= '0';
+    end if;
+  end if;
+end process p_has_credit;
 ---------------------------------------------------------
 -- Process: p_fct_credit_cnt
 -- Description: Manages the FCT credit counter 

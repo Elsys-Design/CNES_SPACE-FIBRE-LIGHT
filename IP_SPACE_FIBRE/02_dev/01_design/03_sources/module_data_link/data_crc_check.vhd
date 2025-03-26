@@ -31,11 +31,14 @@ entity data_crc_check is
     -- data_seq_check (DSCHECK) interface
     NEW_WORD_DCCHECK       : out std_logic;                                    --! Flag DATA_VALID of the FIFO RX from Lane layer
     DATA_DCCHECK           : out std_logic_vector(C_DATA_LENGTH-1 downto 0);   --! Data parallel from Lane Layer
-    VALID_K_CHARAC_DCCHECK : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); 
+    VALID_K_CHARAC_DCCHECK : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
     END_FRAME_DCCHECK      : out std_logic;
     TYPE_FRAME_DCCHECK     : out std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);                 --! Flag EMPTY of the FIFO RX
     SEQ_NUM_DCCHECK        : out std_logic_vector(7 downto 0);
-    CRC_ERR_DCCHECK        : out std_logic
+    CRC_ERR_DCCHECK        : out std_logic;
+    -- MIB
+    CRC_LONG_ERR_DCCHECK   : out std_logic;
+    CRC_SHORT_ERR_DCCHECK  : out std_logic
   );
 end data_crc_check;
 
@@ -68,7 +71,7 @@ begin
 ---------------------------------------------------------
 ---------------------------------------------------------
 -- Process: p_CRC_16B_DWI
--- Description: Compute the CRC for a data frame 
+-- Description: Compute the CRC for a data frame
 ---------------------------------------------------------
  p_CRC_16B_DWI: process(CLK, RST_N)
     variable crc_var : std_logic_vector(15 downto 0);
@@ -87,28 +90,28 @@ begin
           if crc_reg /= CRC_16B_DWI then
             crc_err_16b <= '1';
           end if;
-          crc_reg    <= (others => '1'); 
+          crc_reg    <= (others => '1');
 
-        elsif crc_to_inv = '1' then -- 
+        elsif crc_to_inv = '1' then
           crc_to_inv <= '0';
-          end_crc    <= '1'; 
+          end_crc    <= '1';
           for i in 0 to 15 loop
             crc_var(i) := crc_reg(15 - i); -- Bit-by-bit inversion
           end loop;
-          crc_reg <= crc_var; 
+          crc_reg <= crc_var;
 
         elsif END_FRAME_DWI = '1' and NEW_WORD_DWI = '1'then -- EDF detection
           crc_to_inv <= '1';
           for i in indices_dem'range loop -- calculates the crc 8 byte by byte
               crc_var := calculate_crc_16(DATA_DWI(7+ indices_dem(i) downto 0 + indices_dem(i)), crc_var);
           end loop;
-          crc_reg <= crc_var; 
+          crc_reg <= crc_var;
 
         elsif NEW_WORD_DWI = '1' then
           for i in indices'range loop -- calculates the crc 8 byte by byte
               crc_var := calculate_crc_16(DATA_DWI(7+ indices(i) downto 0 + indices(i)), crc_var);
           end loop;
-          crc_reg <= crc_var; 
+          crc_reg <= crc_var;
         end if;
       end if;
     end if;
@@ -116,7 +119,7 @@ end process p_CRC_16B_DWI;
 
 ---------------------------------------------------------
 -- Process: p_CRC_8B_DWI
--- Description: Compute the CRC for broadcast frame, 
+-- Description: Compute the CRC for broadcast frame,
 --              FCT, ACK, NACK and SIF
 ---------------------------------------------------------
 p_CRC_8B_DWI: process(CLK, RST_N)
@@ -136,28 +139,28 @@ begin
           if crc_reg_8b /= CRC_8B_DWI then
             crc_err_8b <= '1';
           end if;
-          crc_reg_8b    <= (others => '0'); 
+          crc_reg_8b    <= (others => '0');
 
         elsif crc_to_inv_8b = '1' then
           crc_to_inv_8b <= '0';
-          end_CRC_8B_DWI    <= '1'; 
+          end_CRC_8B_DWI    <= '1';
           for i in 0 to 7 loop
             crc_var(i) := crc_reg_8b(7 - i); -- Bit-by-bit inversion
           end loop;
-          crc_reg_8b <= crc_var; 
+          crc_reg_8b <= crc_var;
 
         elsif END_FRAME_DWI = '1'and NEW_WORD_DWI = '1'then
           crc_to_inv_8b <= '1';
           for i in indices_tier'range loop -- calculates the crc 8 byte by byte
               crc_var := calculate_crc_8(DATA_DWI(7+ indices_tier(i) downto 0 + indices_tier(i)), crc_var);
           end loop;
-          crc_reg_8b <= crc_var; 
+          crc_reg_8b <= crc_var;
 
         elsif NEW_WORD_DWI = '1' then
           for i in indices'range loop -- calculates the crc 8 byte by byte
               crc_var := calculate_crc_8(DATA_DWI(7+ indices(i) downto 0 + indices(i)), crc_var);
           end loop;
-          crc_reg_8b <= crc_var; 
+          crc_reg_8b <= crc_var;
         end if;
       end if;
     end if;
@@ -171,13 +174,15 @@ p_trans_ctrl_sig: process(CLK, RST_N)
   variable crc_var : std_logic_vector(7 downto 0);
 begin
   if RST_N = '0' then
-    SEQ_NUM_DCCHECK        <= (others => '0'); 
-    NEW_WORD_DCCHECK       <= '0'; 
+    SEQ_NUM_DCCHECK        <= (others => '0');
+    NEW_WORD_DCCHECK       <= '0';
     DATA_DCCHECK           <= (others => '0');
     VALID_K_CHARAC_DCCHECK <= (others => '0');
-    TYPE_FRAME_DCCHECK     <= (others => '0'); 
+    TYPE_FRAME_DCCHECK     <= (others => '0');
     CRC_ERR_DCCHECK        <= '0';
     END_FRAME_DCCHECK      <= '0';
+    CRC_LONG_ERR_DCCHECK   <= '0';
+    CRC_SHORT_ERR_DCCHECK  <= '0';
   elsif rising_edge(CLK) then
     SEQ_NUM_DCCHECK        <= SEQ_NUM_DWI;
     NEW_WORD_DCCHECK       <= NEW_WORD_DWI;
@@ -185,10 +190,12 @@ begin
     DATA_DCCHECK           <= DATA_DWI;
     VALID_K_CHARAC_DCCHECK <= VALID_K_CHARAC_DWI;
     TYPE_FRAME_DCCHECK     <= TYPE_FRAME_DWI;
-    if TYPE_FRAME_DWI = C_DATA_FRM then 
-      CRC_ERR_DCCHECK <= crc_err_16b;
+    if TYPE_FRAME_DWI = C_DATA_FRM then
+      CRC_ERR_DCCHECK        <= crc_err_16b;
+      CRC_LONG_ERR_DCCHECK   <= crc_err_16b;
     else
-      CRC_ERR_DCCHECK <= crc_err_8b;
+      CRC_ERR_DCCHECK        <= crc_err_8b;
+      CRC_SHORT_ERR_DCCHECK  <= crc_err_8b;
     end if;
   end if;
 end process p_trans_ctrl_sig;
