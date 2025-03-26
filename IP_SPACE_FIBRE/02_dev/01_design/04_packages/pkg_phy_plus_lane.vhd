@@ -58,4 +58,8 @@ package pkg_phy_plus_lane is
    --FIFOs size
    constant C_DWIDTH              : integer := 36;
    constant C_AWIDTH              : integer := 10; -- Nb of bit
+   constant C_DWIDTH_CTRL_TX      : integer := 9;
+   constant C_AWIDTH_CTRL_TX      : integer := 10;
+   constant C_DWIDTH_CTRL_RX      : integer := 9;
+   constant C_AWIDTH_CTRL_RX      : integer := 10;   
 end package pkg_phy_plus_lane;

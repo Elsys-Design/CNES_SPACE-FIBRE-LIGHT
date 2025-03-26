@@ -515,9 +515,9 @@ begin
    capability_tx_i <= ctrl_in_dl_sync(7 downto 0) when fifo_in_ctrl_data_valid ='1';
    inst_fifo_in_ctrl : FIFO_DC
    generic map(
-        G_DWIDTH                => C_DWIDTH,
-        G_AWIDTH                => C_AWIDTH,
-        G_THRESHOLD_HIGH        => 2**C_AWIDTH,
+        G_DWIDTH                => C_DWIDTH_CTRL_TX,
+        G_AWIDTH                => C_AWIDTH_CTRL_TX,
+        G_THRESHOLD_HIGH        => 2**C_AWIDTH_CTRL_TX,
         G_THRESHOLD_LOW         => 0
     )
     port map(
@@ -585,7 +585,7 @@ begin
       -- From DATA-LINK/TOP
       RD_DATA_FROM_DL                  => rd_data_en_from_lcwi,
       RD_DATA_VALID_FROM_DL            => fifo_tx_data_valid,
-      CAPABILITY_FROM_DL               => capability_tx_dl_i,
+      CAPABILITY_FROM_DL               => capability_tx_i,
       DATA_TX_FROM_DL                  => data_tx_from_fifo(31 downto 00),
       VALID_K_CHARAC_FROM_DL           => data_tx_from_fifo(35 downto 32),
       NO_DATA_FROM_DL                  => fifo_tx_empty,
@@ -753,9 +753,9 @@ begin
    FAR_END_CAPA_DL <= ctrl_out_dl_sync(7 downto 0) when fifo_out_ctrl_data_valid ='1';
    inst_fifo_out_ctrl : FIFO_DC
    generic map(
-        G_DWIDTH                => C_DWIDTH,
-        G_AWIDTH                => C_AWIDTH,
-        G_THRESHOLD_HIGH        => 2**C_AWIDTH,
+        G_DWIDTH                => C_DWIDTH_CTRL_RX,
+        G_AWIDTH                => C_AWIDTH_CTRL_RX,
+        G_THRESHOLD_HIGH        => 2**C_AWIDTH_CTRL_RX,
         G_THRESHOLD_LOW         => 0
     )
     port map(

@@ -26,6 +26,8 @@ try:
     import framework
     from framework import Data
     from tb2 import TB, Data_read_phy_config_parameters, Data_read_lane_config_parameters, Data_read_lane_config_status, \
+                    Data_read_general_control, Data_read_dl_config_parameters, Data_read_dl_config_status_1, \
+                    Data_read_dl_config_status_1, Data_read_dl_config_QoS_1, Data_read_dl_config_QoS_2, \
                     CLEARLINE, DISABLED, WAIT, STARTED, INVERTRXPOLARITY, CONNECTING, CONNECTED, \
                     ACTIVE, PREPARESTANDBY, LOSSOFSIGNAL, \
                     SpaceFibre_IP_freq, SpaceFibre_serial_port_freq, SpaceFibre_IP_period_ns, \
@@ -76,9 +78,9 @@ async def initialization_procedure(tb, monitor_path):
 
 
     #Enable LaneStart and wait to be in Started state
-    Enable_Lanestart = Data(0x04, 0x00000001)
+    Data_read_lane_config_parameters.data = bytearray([0x01, 0x00, 0x00, 0x00])
     time_out = 0
-    await tb.masters[0].write_data(Enable_Lanestart)
+    await tb.masters[0].write_data(Data_read_lane_config_parameters)
     while not_started==1 and time_out < 10000:
         await tb.masters[0].read_data(Data_read_lane_config_status)
         if format(Data_read_lane_config_status.data[0], '0>8b')[4:8] == STARTED:

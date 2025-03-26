@@ -44,6 +44,11 @@ entity CONFIGURATION_2_BENCH is
         RX_NEG                : in  std_logic;                                  -- Negative LVDS serial data received
 
         ---
+        -- Discret from Network layer
+        ---
+        CURRENT_TIME_SLOT     : in std_logic_vector(7 downto 0);
+
+        ---
         -- AXI4 Lite slave interface Configurator
         ---
         S_CON_AXI_AWADDR      : in std_logic_vector(G_ADDR_WIDTH-1 downto 0);    -- Write address from master to slave
@@ -487,7 +492,6 @@ architecture Behavioral of CONFIGURATION_2_BENCH is
     signal fct_counter_rx        : std_logic_vector(3 downto 0);
     signal full_counter_rx       : std_logic_vector(1 downto 0);
     signal retry_counter_rx      : std_logic_vector(1 downto 0);
-    signal current_time_slot     : std_logic_vector(7 downto 0);
     signal seq_number_tx         : std_logic_vector(7 downto 0);
     signal seq_number_rx         : std_logic_vector(7 downto 0);
     signal input_buffer_ovfl     : std_logic_vector(G_CHANNEL_NUMBER-1 downto 0);
@@ -500,7 +504,7 @@ architecture Behavioral of CONFIGURATION_2_BENCH is
     signal far_end_capa          : std_logic_vector(C_FAR_CAPA_WIDTH-1 downto 0);
     signal rx_polarity           : std_logic;
     signal rst_dut_n             : std_logic;
-
+    signal current_time_slot_i   : std_logic_vector(7 downto 0);
 
     -- Internal signals for each analyzer instance
     type t_internal_signals_ana is record
@@ -583,7 +587,9 @@ architecture Behavioral of CONFIGURATION_2_BENCH is
     signal axis_tdata_rx_dl          : vc_data_array(G_VC_NUM downto 0);
     signal axis_tuser_rx_dl          : vc_k_array(G_VC_NUM downto 0);
     signal axis_tlast_rx_dl          : std_logic_vector(G_VC_NUM downto 0);
-    signal axis_tvalid_rx_dl        : std_logic_vector(G_VC_NUM downto 0);
+    signal axis_tvalid_rx_dl         : std_logic_vector(G_VC_NUM downto 0);
+
+    signal current_time_slot_nw      : std_logic_vector(7 downto 0);
     --Spy and injection interface
     -- signal data_tx_ppl               : std_logic_vector(31 downto 0);
     -- signal lane_reset_dl_ppl        : std_logic;
@@ -631,6 +637,7 @@ architecture Behavioral of CONFIGURATION_2_BENCH is
            AXIS_TUSER_RX_DL                 : out vc_k_array(G_VC_NUM downto 0);
            AXIS_TLAST_RX_DL                 : out std_logic_vector(G_VC_NUM downto 0);
            AXIS_TVALID_RX_DL                : out std_logic_vector(G_VC_NUM downto 0);
+           CURRENT_TIME_SLOT_NW             : in  std_logic_vector(7 downto 0);
            -- Paramters signals
            INTERFACE_RESET                  : in  std_logic;
            LINK_RESET                       : in  std_logic;
@@ -764,7 +771,7 @@ architecture Behavioral of CONFIGURATION_2_BENCH is
             FCT_COUNTER_RX        => fct_counter_rx,
             FULL_COUNTER_RX       => full_counter_rx,
             RETRY_COUNTER_RX      => retry_counter_rx,
-            CURRENT_TIME_SLOT     => current_time_slot,
+            CURRENT_TIME_SLOT     => current_time_slot_i,
 
             LANE_STATE            => lane_state,
             RX_ERROR_CNT          => rx_error_cnt,
@@ -1174,8 +1181,6 @@ architecture Behavioral of CONFIGURATION_2_BENCH is
 
 
 
-        axis_arstn_rx_dl <= (others => rst_n);
-
         gen_data_link_tx: for i in 0 to 8 generate
             axis_aclk_tx_dl(i)                  <= clk;
             axis_arstn_tx_dl(i)                 <= rst_n;
@@ -1223,6 +1228,8 @@ port map (
     AXIS_TUSER_RX_DL                 => axis_tuser_rx_dl,
     AXIS_TLAST_RX_DL                 => axis_tlast_rx_dl,
     AXIS_TVALID_RX_DL                => axis_tvalid_rx_dl,
+    CURRENT_TIME_SLOT_NW             => CURRENT_TIME_SLOT,
+
     INTERFACE_RESET                  => interface_rst,
     LINK_RESET                       => link_rst,
     NACK_RST_EN                      => nack_rst_en,
@@ -1251,7 +1258,7 @@ port map (
     FCT_COUNTER_RX                   => fct_counter_rx,
     FULL_COUNTER_RX                  => full_counter_rx,
     RETRY_COUNTER_RX                 => retry_counter_rx,
-    CURRENT_TIME_SLOT                => current_time_slot,
+    CURRENT_TIME_SLOT                => current_time_slot_i,
 
     --interface spy and injector
     -- DATA_TX_PPL                      => data_tx_ppl,
