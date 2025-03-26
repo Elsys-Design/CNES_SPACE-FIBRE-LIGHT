@@ -308,11 +308,17 @@ architecture Behavioral of data_link is
       SEQ_ERR_DSCHECK          : in std_logic;                                --! Sequence error flag from sequence check
       FAR_END_RPF_DSCHECK      : in std_logic;                                --! Far-end RPF flag from sequence check
       NEAR_END_RPF_DERRM       : out std_logic;                               --! Near-end RPF flag to error management
+      FRAME_ERR_DSCHECK        : in std_logic;
       -- data_mac (DMAC) interface
       REQ_ACK_DERRM            : out std_logic;                               --! Acknowledge request to DMAC
       REQ_NACK_DERRM           : out std_logic;                               --! Non-acknowledge request to DMAC
       TRANS_POL_FLG_DERRM      : out std_logic;                               --! Transmission polarity flag to error management
-      REQ_ACK_DONE_DMAC        : in std_logic                                 --! Acknowledge done signal from DMAC
+      REQ_ACK_DONE_DMAC        : in std_logic;                                --! Acknowledge done signal from DMAC
+      -- data_link_reset (DLRE) interface
+      LINK_RESET_DERRM         : out std_logic;
+      -- MIB  interface
+      NACK_RST_EN_MIB          : in std_logic;                                --! Enable automatic link reset on NACK reception
+      NACK_RST_MODE_MIB        : in std_logic                                --! Up for instant link reset on NACK reception, down for link reset at the end of the current received frame on NACK reception
     );
     end component;
   component data_out_bc_buf is
@@ -730,10 +736,13 @@ begin
       SEQ_ERR_DSCHECK          => seq_num_err_dscheck,
       FAR_END_RPF_DSCHECK      => '0',
       NEAR_END_RPF_DERRM       => near_end_rpf_derrm,
+      FRAME_ERR_DSCHECK        => frame_err_dscheck,
       REQ_ACK_DERRM            => req_ack_derrm,
       REQ_NACK_DERRM           => req_nack_derrm,
       TRANS_POL_FLG_DERRM      => trans_pol_flg_derrm,
-      REQ_ACK_DONE_DMAC        => req_ack_done_dmac
+      REQ_ACK_DONE_DMAC        => req_ack_done_dmac,
+      NACK_RST_EN_MIB          => NACK_RST_EN_MIB,
+      NACK_RST_MODE_MIB        => NACK_RST_MODE_MIB
   );
   inst_data_link_reset: data_link_reset
   generic map (
