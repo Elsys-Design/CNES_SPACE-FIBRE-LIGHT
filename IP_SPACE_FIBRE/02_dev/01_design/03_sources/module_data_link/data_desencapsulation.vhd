@@ -49,12 +49,12 @@ begin
 ---------------------------------------------------------
 ---------------------------------------------------------
 -- Process: p_desencapsulation
--- Description: desencapsulate each frame 
+-- Description: desencapsulate each frame
 ---------------------------------------------------------
 p_desencapsulation : process(CLK, RST_N)     
 begin
   if RST_N = '0' then
-    FCT_FAR_END_DDES   <= (others => '0'); 
+    FCT_FAR_END_DDES   <= (others => '0');
     DATA_DDES          <= (others =>(others => '0'));
     M_VAL_DDES         <= (others =>(others => '0'));
     DATA_EN_DDES       <= (others => '0');
@@ -77,17 +77,17 @@ begin
         --                                 7 downto 0
         elsif DATA_DMBUF(C_BYTE_WIDTH - 1 downto 0) = C_K28_3_SYMB then --FCT
           --                                                       12 downto 8                                                          23 downto 21
-          M_VAL_DDES(to_integer(unsigned(DATA_DMBUF(C_BYTE_WIDTH +4 downto C_BYTE_WIDTH)))) <= std_logic_vector(to_unsigned(to_integer(unsigned(DATA_DMBUF(C_BYTE_WIDTH*2 -1 downto C_BYTE_WIDTH*2 - 3)))+1,4));
-          FCT_FAR_END_DDES (to_integer(unsigned(DATA_DMBUF(C_BYTE_WIDTH*2 +4 downto C_BYTE_WIDTH*2)))) <= '1';
+          M_VAL_DDES(to_integer(unsigned(DATA_DMBUF(C_BYTE_WIDTH +4 downto C_BYTE_WIDTH))))        <= std_logic_vector(to_unsigned(to_integer(unsigned(DATA_DMBUF(C_BYTE_WIDTH*2 -1 downto C_BYTE_WIDTH*2 - 3)))+1,4));
+          FCT_FAR_END_DDES (to_integer(unsigned(DATA_DMBUF(C_BYTE_WIDTH +4 downto C_BYTE_WIDTH)))) <= '1';
         elsif DATA_DMBUF(C_BYTE_WIDTH - 1 downto 0) = C_K28_0_SYMB then --EDF
-          data_detected                                 <= '0';
+          data_detected                              <= '0';
           DATA_EN_DDES                               <= (others => '0');
         elsif DATA_DMBUF(C_BYTE_WIDTH - 1 downto 0) = C_K28_2_SYMB then --EBF
-          broadcast_detected                            <= '0';
+          broadcast_detected                         <= '0';
           DATA_EN_DDES                               <= (others => '0');
         end if;
       else --just normal data
-        if data_detected = '1' or broadcast_detected = '1' then 
+        if data_detected = '1' or broadcast_detected = '1' then
           if broadcast_detected = '1' then
             DATA_DDES   (G_VC_NUM) <= DATA_DMBUF(C_DATA_K_WIDTH-1 downto 0);
             DATA_EN_DDES(G_VC_NUM) <= '1';
@@ -97,8 +97,8 @@ begin
           end if;
         end if;
       end if;
-    else --not valid 
-      FCT_FAR_END_DDES <= (others => '0'); 
+    else --not valid
+      FCT_FAR_END_DDES <= (others => '0');
       DATA_DDES        <= (others =>(others => '0'));
       M_VAL_DDES       <= (others =>(others => '0'));
       DATA_EN_DDES     <= (others => '0');

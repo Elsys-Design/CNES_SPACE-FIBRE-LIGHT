@@ -31,20 +31,26 @@ entity data_err_management is
     SEQ_ERR_DSCHECK          : in std_logic;                                --! Sequence error flag from sequence check
     FAR_END_RPF_DSCHECK      : in std_logic;                                --! Far-end RPF flag from sequence check
     NEAR_END_RPF_DERRM       : out std_logic;                               --! Near-end RPF flag to error management
+    FRAME_ERR_DSCHECK        : in std_logic;
     -- data_mac (DMAC) interface
     REQ_ACK_DERRM            : out std_logic;                               --! Acknowledge request to DMAC
     REQ_NACK_DERRM           : out std_logic;                               --! Non-acknowledge request to DMAC
     TRANS_POL_FLG_DERRM      : out std_logic;                               --! Transmission polarity flag to error management
-    REQ_ACK_DONE_DMAC        : in std_logic                                 --! Acknowledge done signal from DMAC
+    REQ_ACK_DONE_DMAC        : in std_logic;                                --! Acknowledge done signal from DMAC
+    -- data_link_reset (DLRE) interface
+    LINK_RESET_DERRM         : out std_logic;
+    -- MIB  interface
+    NACK_RST_EN_MIB          : in std_logic;                                --! Enable automatic link reset on NACK reception
+    NACK_RST_MODE_MIB        : in std_logic                                --! Up for instant link reset on NACK reception, down for link reset at the end of the current received frame on NACK reception
   );
 end data_err_management;
 
 architecture Behavioral of data_err_management is
 
   type state_type is (
-		VALID_POSITIVE_ST, 
-		VALID_NEGATIVE_ST, 
-		ERROR_POSITIVE_ST, 
+		VALID_POSITIVE_ST,
+		VALID_NEGATIVE_ST,
+		ERROR_POSITIVE_ST,
 		ERROR_NEGATIVE_ST
 	);
 
@@ -58,6 +64,7 @@ architecture Behavioral of data_err_management is
   signal ack_request_out     : std_logic;
   signal s_far_end_rpf       : std_logic;
   signal s_seq_err           : std_logic;
+  signal flg_nack_rst_flg    : std_logic;
 
 begin
 ---------------------------------------------------------
@@ -70,7 +77,7 @@ begin
 ---------------------------------------------------------
 ---------------------------------------------------------
 -- Process: p_fsm
--- Description: FSM to determine the polarity flags 
+-- Description: FSM to determine the polarity flags
 --							(TPF and RPF)
 ---------------------------------------------------------
   p_fsm : process (CLK, RST_N)
@@ -157,7 +164,7 @@ begin
   end process p_err;
 ---------------------------------------------------------
 -- Process: p_sync
--- Description: Output request management: priority to 
+-- Description: Output request management: priority to
 --							the latest, done handling, synchronization
 ---------------------------------------------------------
   p_sync : process (CLK, RST_N)
@@ -212,4 +219,37 @@ begin
       end if;
     end if;
   end process p_sync;
+
+  ---------------------------------------------------------
+-- Process: p_nack_rst_strat
+-- Description: Error detection, internal request management
+---------------------------------------------------------
+p_nack_rst_strat : process(CLK, RST_N)
+begin
+  if RST_N = '0' then
+    LINK_RESET_DERRM <= '0';
+    flg_nack_rst_flg <='0';
+  elsif rising_edge(CLK) then
+    if NACK_RST_EN_MIB = '1' then
+      if NACK_RST_MODE_MIB = '1' then
+        if FRAME_ERR_DSCHECK = '0' and (TYPE_FRAME_DSCHECK = C_NACK_FRM) and END_FRAME_DSCHECK = '1' then
+          LINK_RESET_DERRM <= '1';
+        else
+          LINK_RESET_DERRM <= '0';
+        end if;
+      else 
+        if FRAME_ERR_DSCHECK = '0' and (TYPE_FRAME_DSCHECK = C_NACK_FRM) and END_FRAME_DSCHECK = '1' then
+          flg_nack_rst_flg <= '1';
+          LINK_RESET_DERRM <= '0';
+        elsif (TYPE_FRAME_DSCHECK = C_DATA_FRM or TYPE_FRAME_DSCHECK = C_BC_FRM) and END_FRAME_DSCHECK = '1' and FRAME_ERR_DSCHECK = '0' and flg_nack_rst_flg = '1' then
+          LINK_RESET_DERRM <= '1';
+        else
+          LINK_RESET_DERRM <= '0';
+        end if;
+      end if;
+    else
+      LINK_RESET_DERRM <= '0';
+    end if;
+  end if;
+end process p_nack_rst_strat;
 end Behavioral;

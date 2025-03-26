@@ -27,6 +27,8 @@ entity data_link_reset is
     RESET_PARAM_DLRE        : out std_logic;
     -- DIBUF
     LINK_RESET_DIBUF        : in  std_logic_vector(G_VC_NUM-1 downto 0);
+    -- DERRM
+    LINK_RESET_DERRM        : in std_logic;
     -- Lane interface
     LANE_RESET_DLRE         : out std_logic;
     NEAR_END_CAPA_DLRE      : out std_logic_vector(7 downto 0);
@@ -104,7 +106,7 @@ begin
                                   NEAR_END_CAPA_DLRE(C_CAPA_LINK_RST) <= '1';
                                   if INTERFACE_RESET_MIB ='1' then
                                     current_state <= CONF_RST_ST;
-                                  elsif LINK_RESET_MIB  ='1' or (LINK_RESET_DIBUF /= std_logic_vector(to_unsigned(0,LINK_RESET_DIBUF'length)))  then
+                                  elsif LINK_RESET_MIB  ='1' or (LINK_RESET_DIBUF /= std_logic_vector(to_unsigned(0,LINK_RESET_DIBUF'length))) or LINK_RESET_DERRM='1' then
                                     current_state <= NEAR_END_RST_ST;
                                   end if;
       when LINK_INIT_ST         =>
@@ -115,7 +117,7 @@ begin
                                     current_state <= NEAR_END_RST_ST;
                                   elsif LANE_ACTIVE_PPL = '0' and FAR_END_CAPA_PPL(C_CAPA_LINK_RST) = '1' then
                                     current_state <= NEAR_END_RST_ST;
-                                  elsif LINK_RESET_DIBUF /= std_logic_vector(to_unsigned(0,LINK_RESET_DIBUF'length))  then
+                                  elsif LINK_RESET_DIBUF /= std_logic_vector(to_unsigned(0,LINK_RESET_DIBUF'length))  or LINK_RESET_DERRM ='1' then
                                     current_state <= NEAR_END_RST_ST;
                                   end if;
     end case;

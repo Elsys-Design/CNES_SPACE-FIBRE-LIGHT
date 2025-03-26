@@ -564,7 +564,7 @@ begin
         RD_DATA_EN              => rd_data_en_from_lcwi,
         RD_DATA_VLD             => fifo_tx_data_valid,
         -- Command port
-        CMD_FLUSH               => '0',
+        CMD_FLUSH               => LANE_RESET_DL,
         STATUS_BUSY_FLUSH       => open,
         -- Status port
         STATUS_THRESHOLD_HIGH   => open,
@@ -735,7 +735,7 @@ begin
            RD_DATA_EN              => FIFO_RX_RD_EN,
            RD_DATA_VLD             => FIFO_RX_DATA_VALID,
            -- Command port
-           CMD_FLUSH               => '0',
+           CMD_FLUSH               => LANE_RESET_DL,
            STATUS_BUSY_FLUSH       => open,
            -- Status port
            STATUS_THRESHOLD_HIGH   => open,
