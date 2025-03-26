@@ -99,7 +99,7 @@ package data_link_lib is
   function calculate_idle(data_idle : STD_LOGIC_VECTOR(15 downto 0)) return STD_LOGIC_VECTOR;
 end package data_link_lib;
 
-package body data_link_lib is  
+package body data_link_lib is
 
 function calculate_crc_16(data : STD_LOGIC_VECTOR(7 downto 0); crc_init : STD_LOGIC_VECTOR(15 downto 0)) return STD_LOGIC_VECTOR is
   variable crc : std_logic_vector(15 downto 0) := crc_init;
@@ -108,7 +108,7 @@ begin
   -- Traiter chaque bit du LSB au MSB
   for i in 0 to data'length - 1 loop
       feedback := crc(15) xor data(i); -- XOR du bit d'entrée avec le MSB du CRC
-      
+
       -- Décalage à gauche
       crc := crc(14 downto 0) & '0';
 
@@ -117,7 +117,7 @@ begin
       crc(5)  := crc(5) xor feedback;
       crc(0)  := feedback;
   end loop;
-  
+
   return crc;
 end function;
 
@@ -128,7 +128,7 @@ begin
   -- Traiter chaque bit du LSB au MSB
   for i in 0 to data'length - 1 loop
       feedback := crc(7) xor data(i); -- XOR du bit d'entrée avec le MSB du CRC
-      
+
       -- Décalage à gauche
       crc := crc(6 downto 0) & '0';
 
@@ -137,7 +137,7 @@ begin
       crc(1)  := crc(1) xor feedback;
       crc(0)  := feedback;
   end loop;
-  
+
   return crc;
 end function;
 
@@ -148,7 +148,7 @@ begin
   -- Traiter chaque bit du LSB au MSB
   data_idle_i:= data_idle;
       feedback := data_idle_i(15); -- XOR du bit d'entrée avec le MSB du CRC
-      
+
       -- Décalage à gauche
       data_idle_i := data_idle_i(14 downto 0) & '0';
 
