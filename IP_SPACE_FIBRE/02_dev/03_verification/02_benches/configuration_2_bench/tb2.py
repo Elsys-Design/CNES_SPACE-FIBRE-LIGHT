@@ -28,7 +28,7 @@ from framework import   AxiStreamSource, AxiStreamSink, AxiStreamMonitor, AxiBus
                         AxiMonitor, AxiLiteMonitor, Data
 
 from SpaceFibre_Driver import SpaceFibre_Driver
-from python_model_data_link.SpaceFibre_Random_Generator import SpaceFibre_Random_Generator as Data_Link_SpaceFibre_Random_Generator
+from python_model_data_link.SpaceFibre_Random_Generator_Data_Link import SpaceFibre_Random_Generator as Data_Link_SpaceFibre_Random_Generator
 from SpaceFibre_Sink import SpaceFibre_Sink
 from SpaceFibre_Loopback import SpaceFibre_Loopback
 
@@ -87,32 +87,32 @@ class TB(common.TB):
                 "S_GEN_LANE_AXI": [AxiLiteBus, AxiLiteMaster, AxiLiteMonitor], 
                 "S_ANA_LANE_AXI": [AxiLiteBus, AxiLiteMaster, AxiLiteMonitor],
 
-                "S_GEN_DL_1_AXI": [AxiLiteBus, AxiLiteMaster, AxiLiteMonitor], 
-                "S_ANA_DL_1_AXI": [AxiLiteBus, AxiLiteMaster, AxiLiteMonitor],
+                "S_GEN_0_AXI": [AxiLiteBus, AxiLiteMaster, AxiLiteMonitor], 
+                "S_ANA_0_AXI": [AxiLiteBus, AxiLiteMaster, AxiLiteMonitor],
 
-                "S_GEN_DL_2_AXI": [AxiLiteBus, AxiLiteMaster, AxiLiteMonitor], 
-                "S_ANA_DL_2_AXI": [AxiLiteBus, AxiLiteMaster, AxiLiteMonitor],
+                "S_GEN_1_AXI": [AxiLiteBus, AxiLiteMaster, AxiLiteMonitor], 
+                "S_ANA_1_AXI": [AxiLiteBus, AxiLiteMaster, AxiLiteMonitor],
 
-                "S_GEN_DL_3_AXI": [AxiLiteBus, AxiLiteMaster, AxiLiteMonitor], 
-                "S_ANA_DL_3_AXI": [AxiLiteBus, AxiLiteMaster, AxiLiteMonitor],
+                "S_GEN_2_AXI": [AxiLiteBus, AxiLiteMaster, AxiLiteMonitor], 
+                "S_ANA_2_AXI": [AxiLiteBus, AxiLiteMaster, AxiLiteMonitor],
 
-                "S_GEN_DL_4_AXI": [AxiLiteBus, AxiLiteMaster, AxiLiteMonitor], 
-                "S_ANA_DL_4_AXI": [AxiLiteBus, AxiLiteMaster, AxiLiteMonitor],
+                "S_GEN_3_AXI": [AxiLiteBus, AxiLiteMaster, AxiLiteMonitor], 
+                "S_ANA_3_AXI": [AxiLiteBus, AxiLiteMaster, AxiLiteMonitor],
 
-                "S_GEN_DL_5_AXI": [AxiLiteBus, AxiLiteMaster, AxiLiteMonitor], 
-                "S_ANA_DL_5_AXI": [AxiLiteBus, AxiLiteMaster, AxiLiteMonitor],
+                "S_GEN_4_AXI": [AxiLiteBus, AxiLiteMaster, AxiLiteMonitor], 
+                "S_ANA_4_AXI": [AxiLiteBus, AxiLiteMaster, AxiLiteMonitor],
 
-                "S_GEN_DL_6_AXI": [AxiLiteBus, AxiLiteMaster, AxiLiteMonitor], 
-                "S_ANA_DL_6_AXI": [AxiLiteBus, AxiLiteMaster, AxiLiteMonitor],
+                "S_GEN_5_AXI": [AxiLiteBus, AxiLiteMaster, AxiLiteMonitor], 
+                "S_ANA_5_AXI": [AxiLiteBus, AxiLiteMaster, AxiLiteMonitor],
 
-                "S_GEN_DL_7_AXI": [AxiLiteBus, AxiLiteMaster, AxiLiteMonitor], 
-                "S_ANA_DL_7_AXI": [AxiLiteBus, AxiLiteMaster, AxiLiteMonitor],
+                "S_GEN_6_AXI": [AxiLiteBus, AxiLiteMaster, AxiLiteMonitor], 
+                "S_ANA_6_AXI": [AxiLiteBus, AxiLiteMaster, AxiLiteMonitor],
 
-                "S_GEN_DL_8_AXI": [AxiLiteBus, AxiLiteMaster, AxiLiteMonitor], 
-                "S_ANA_DL_8_AXI": [AxiLiteBus, AxiLiteMaster, AxiLiteMonitor],
+                "S_GEN_7_AXI": [AxiLiteBus, AxiLiteMaster, AxiLiteMonitor], 
+                "S_ANA_7_AXI": [AxiLiteBus, AxiLiteMaster, AxiLiteMonitor],
 
-                "S_GEN_DL_BC_AXI": [AxiLiteBus, AxiLiteMaster, AxiLiteMonitor], 
-                "S_ANA_DL_BC_AXI": [AxiLiteBus, AxiLiteMaster, AxiLiteMonitor],
+                "S_GEN_8_AXI": [AxiLiteBus, AxiLiteMaster, AxiLiteMonitor], 
+                "S_ANA_8_AXI": [AxiLiteBus, AxiLiteMaster, AxiLiteMonitor],
                 
         }
 
@@ -135,7 +135,7 @@ class TB(common.TB):
         Data_read_general_control.data = bytearray( [0x01,0x00,0x00,0x00])
         await self.masters[0].write_data(Data_read_general_control)
         self.logger.info("sim_time %d ns: Wait reset completion", get_sim_time(units = 'ns') )
-        await RisingEdge(self.dut.I_DUT_PHY_LANE.inst_phy_plus_lane.RST_TX_DONE)
+        await RisingEdge(self.dut.spacefibre_instance.inst_phy_plus_lane.RST_TX_DONE)
         self.logger.info("sim_time %d ns: Reset completed", get_sim_time(units = 'ns') )
 
     async def reset_DUT(self):
@@ -148,5 +148,5 @@ class TB(common.TB):
         Data_read_general_control.data = bytearray( [0x01,0x00,0x00,0x00])
         await self.masters[0].write_data(Data_read_general_control)
         self.logger.info("sim_time %d ns: Wait reset completion", get_sim_time(units = 'ns') )
-        await RisingEdge(self.dut.I_DUT_PHY_LANE.inst_phy_plus_lane.RST_TX_DONE)
+        await RisingEdge(self.dut.spacefibre_instance.inst_phy_plus_lane.RST_TX_DONE)
         self.logger.info("sim_time %d ns: Reset completed", get_sim_time(units = 'ns') )

@@ -36,14 +36,14 @@ entity spacefibre_light_top is
       RX_NEG                           : in  std_logic;                          --! Negative LVDS serial data received
       ----------------------- Data-Link layer signals -----------------------
       -- Discret signals
-      AXIS_ARSTN_TX_DL                  : in  std_logic_vector(G_VC_NUM downto 0);
+      AXIS_ARSTN_TX_DL                 : in  std_logic_vector(G_VC_NUM downto 0);
       AXIS_ACLK_TX_DL                  : in  std_logic_vector(G_VC_NUM downto 0);
       AXIS_TREADY_TX_DL                : out std_logic_vector(G_VC_NUM downto 0);
       AXIS_TDATA_TX_DL                 : in  vc_data_array(G_VC_NUM downto 0);
       AXIS_TUSER_TX_DL                 : in  vc_k_array(G_VC_NUM downto 0);
       AXIS_TLAST_TX_DL                 : in  std_logic_vector(G_VC_NUM downto 0);
       AXIS_TVALID_TX_DL                : in  std_logic_vector(G_VC_NUM downto 0);
-      AXIS_ARSTN_RX_DL                  : in  std_logic_vector(G_VC_NUM downto 0);
+      AXIS_ARSTN_RX_DL                 : in  std_logic_vector(G_VC_NUM downto 0);
       AXIS_ACLK_RX_DL                  : in  std_logic_vector(G_VC_NUM downto 0);
       AXIS_TREADY_RX_DL                : in  std_logic_vector(G_VC_NUM downto 0);
       AXIS_TDATA_RX_DL                 : out vc_data_array(G_VC_NUM downto 0);

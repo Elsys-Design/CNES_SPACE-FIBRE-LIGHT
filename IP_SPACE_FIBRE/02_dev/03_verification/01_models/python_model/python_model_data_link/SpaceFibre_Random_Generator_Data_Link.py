@@ -77,7 +77,7 @@ class SpaceFibre_Random_Generator:
         """
         Return the CRC-8bit after the byte_input has been taken into acount
         """
-        for i in byte_input:
+        for i in range(8):
             input = int(byte_input[7-i])
             input = int(crc_8[7]) ^ input
             crc_8 = crc_8[1 : 8] + "0"
@@ -358,7 +358,9 @@ class SpaceFibre_Random_Generator:
                         log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
                         log_file.write("32;7F7FCEFC;0;0001;\n")
                         word_counter_for_skip = 0
-                
+                else :
+                    current_frame_size +=1
+
                 #send Data
                 for n in range(4):
                     if current_packet_size==packet_size-1:
@@ -518,7 +520,8 @@ class SpaceFibre_Random_Generator:
                     log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
                     log_file.write("32;7F7FCEFC;0;0001;\n")
                     word_counter_for_skip = 0
-
+            else :
+                current_frame_size += 1
 
             #Send last data_word
             last_packet_sent = (packet_number * packet_size)%4
@@ -931,6 +934,9 @@ class SpaceFibre_Random_Generator:
                     log_file.write("32;" + f"{(int(crc_8[0:8],2)): 0>2X}" + f"{(sequence):0>2X}" + "005C;0;0001;\n")
 
                     word_counter_for_skip += 1
+                
+                else: 
+                    current_frame_size += 1
 
                 #check if skip needed
                 if  word_counter_for_skip >= 5000:

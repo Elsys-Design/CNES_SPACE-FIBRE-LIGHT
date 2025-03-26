@@ -60,6 +60,7 @@ current_dir=$(realpath $current_dir)
 #Add models directories and bench directory to python path
 export PYTHONPATH=$current_dir:$PYTHONPATH
 export PYTHONPATH=$current_dir/../02_benches/configuration_1_bench:$PYTHONPATH
+export PYTHONPATH=$current_dir/../02_benches/configuration_2_bench:$PYTHONPATH
 export PYTHONPATH=$current_dir/../02_benches/common:$PYTHONPATH
 export PYTHONPATH=$current_dir/../01_models/python_model:$PYTHONPATH
 #add framework to pythonpath
@@ -87,14 +88,14 @@ else
     #execute test in its folder
 
     ## handle non existence of test
-    set -e  # Exit on any command failure
-    trap 'echo -e "\n###############\nTest (or folder): $MYSIM doesnt exist! \nExiting.\n###############\n"' ERR
+    # set -e  # Exit on any command failure
+    # trap 'echo -e "\n###############\nTest (or folder): $MYSIM doesnt exist! \nExiting.\n###############\n"' ERR
     cd $MYSIM # Will fail and trigger trap if doesn't exist
     
     #change error message 
-    trap 'echo -e "\n###############\nError Running test : $MYSIM (see previous error message from cocotb)! \nExiting.\n###############\n"' ERR
-    #clean sim build sometimes cocotb fail to refresh it
-    rm -r sim_build
+    # trap 'echo -e "\n###############\nError Running test : $MYSIM (see previous error message from cocotb)! \nExiting.\n###############\n"' ERR
+    # clean sim build sometimes cocotb fail to refresh it
+    # rm -r sim_build
 
     #run simulation with cocotb
     make -f ../Makefile

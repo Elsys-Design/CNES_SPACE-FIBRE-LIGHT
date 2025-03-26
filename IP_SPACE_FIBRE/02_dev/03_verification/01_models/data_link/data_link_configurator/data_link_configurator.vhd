@@ -4,10 +4,11 @@
 -- TITLE         : lane_configurator.vhd
 -- PROJECT       : SPACE FIBRE LIGHT
 --------------------------------------------------------------------------
--- AUTHOR        : Yvan DAURIAC
--- CREATED       : 31/08/2024
+-- AUTHOR        : Thomas Favre Felix
+-- CREATED       : 12/03/2024
 --------------------------------------------------------------------------
--- DESCRIPTION   : Model able to communicate with IP PHY/LANE MIB blocks
+-- DESCRIPTION   : Model able to communicate with IP PHY/LANE/DATA LINK
+--                 MIB blocks
 --------------------------------------------------------------------------
 -- History       : V1.0: Creation of the file
 --------------------------------------------------------------------------
@@ -24,7 +25,8 @@ use work.pkg_model.all;
 entity DATA_LINK_CONFIGURATOR is
     generic(
        G_ADDR_WIDTH : positive := C_AXI_ADDR_WIDTH;                              -- Generic for AXI address width
-       G_DATA_WIDTH : positive := C_AXI_DATA_WIDTH                               -- Generic for AXI data width
+       G_DATA_WIDTH : positive := C_AXI_DATA_WIDTH;                              -- Generic for AXI data width
+       G_CHANNEL_NUMBER : positive := C_CHANNEL_NUMBER                           -- Generic for number of channel
     );
     port(
    -- Clock and reset
@@ -89,11 +91,11 @@ entity DATA_LINK_CONFIGURATOR is
    FAR_END_LINK_RST      : in std_logic;                                         -- Far-end Link reset status
    SEQ_NUMBER_TX         : in std_logic_vector(7 downto 0);                      -- SEQ_NUMBER in transmission
    SEQ_NUMBER_RX         : in std_logic_vector(7 downto 0);                      -- SEQ_NUMBER in reception
-   INPUT_BUFFER_OVFL     : in std_logic_vector(G_CHANNEL_NUMBER-1 downto 0);     -- Up if the corresponding input buffer has overflowed
-   FRAME_TX              : in std_logic_vector(G_CHANNEL_NUMBER downto 0);       -- 
-   FRAME_FINISHED        : in std_logic_vector(G_CHANNEL_NUMBER downto 0);       -- 
-   DATA_CNT_TX           : in std_logic_vector(7 downto 0);                      -- 
-   DATA_CNT_RX           : in std_logic_vector(7 downto 0);                      --
+   INPUT_BUFFER_OVFL     : in std_logic_vector(7 downto 0);     -- Up if the corresponding input buffer has overflowed
+   FRAME_TX              : in std_logic_vector(8 downto 0);       -- 
+   FRAME_FINISHED        : in std_logic_vector(8 downto 0);       -- 
+   DATA_CNT_TX           : in std_logic_vector(6 downto 0);                      -- 
+   DATA_CNT_RX           : in std_logic_vector(6 downto 0);                      --
    ACK_COUNTER_TX        : in std_logic_vector(2 downto 0);
    NACK_COUNTER_TX       : in std_logic_vector(2 downto 0);
    FCT_COUNTER_TX        : in std_logic_vector(3 downto 0);
@@ -104,7 +106,6 @@ entity DATA_LINK_CONFIGURATOR is
    RETRY_COUNTER_RX      : in std_logic_vector(1 downto 0);
    CURRENT_TIME_SLOT     : in std_logic_vector(7 downto 0);
    LINK_RST_ASSERTED     : in std_logic;                                         -- Link has been reseted
-   RESET_PARAM_DL        : in std_logic;                                         -- Reset configuration parameters control
    
    
    -- from the LANE
@@ -114,9 +115,12 @@ entity DATA_LINK_CONFIGURATOR is
    LOSS_SIGNAL           : in std_logic;                                         -- Far-end lost Signal
    FAR_END_CAPA          : in std_logic_vector(C_FAR_CAPA_WIDTH-1 downto 0);     -- Far-end Capablities
    RX_POLARITY           : in std_logic;                                         -- RX Polarity
-
+   
    -- to the DUT
-   RST_DUT_N             : out std_logic                                         -- Reset DUT (active low)
+   RST_DUT_N             : out std_logic;                                         -- Reset DUT (active low)
+   
+   -- from the DUT
+   RESET_PARAM_DL        : in std_logic                                         -- Reset configuration parameters control
    );
 end DATA_LINK_CONFIGURATOR;
 
@@ -152,11 +156,12 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
    signal fct_credit_overflow_i :  std_logic_vector(G_CHANNEL_NUMBER-1 downto 0);     -- Up if each corresponding virtual channel credit counter overflowed
    signal crc_long_error_i      :  std_logic;                                         -- RX error in CRC-16bit
    signal crc_short_error_i     :  std_logic;                                         -- RX error in CRC-8bit
-   signal frame_errror_i        :  std_logic;                                         -- RX frame error
+   signal frame_error_i        :  std_logic;                                         -- RX frame error
    signal seq_error_i           :  std_logic;                                         -- RX SEQUENCE_NUMBER error
    signal far_end_link_rst_i    :  std_logic;                                         -- Far-end Link reset status
    signal seq_number_tx_i       :  std_logic_vector(7 downto 0);                      -- SEQ_NUMBER in transmission
    signal seq_number_rx_i       :  std_logic_vector(7 downto 0);                      -- SEQ_NUMBER in reception
+   signal input_buffer_ovfl_i   :  std_logic_vector(7 downto 0);                      -- Up if each corresponding virtual channel input buffer overflowed
    -- internal signals lane and phy
    ------------
    signal lane_start_pulse : std_logic;                                          -- SpaceFibre lane start initialization signal pulsed
@@ -168,16 +173,16 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
    signal far_end_capa_i   : std_logic_vector(C_FAR_CAPA_WIDTH-1 downto 0);     -- Far-end Capablities
    signal rx_polarity_i    : std_logic;                                         -- RX Polarity
    -- inputs resynchronization
-   signal outputs_to_sync  : std_logic_vector(G_CHANNEL_NUMBER + G_CHANNEL_NUMBER + 17 downto 0);
-   signal outputs_to_dut   : std_logic_vector(G_CHANNEL_NUMBER + G_CHANNEL_NUMBER + 17 downto 0);
+   signal outputs_to_sync  : std_logic_vector(34 downto 0);
+   signal outputs_to_dut   : std_logic_vector(34 downto 0);
    -- inputs resynchronization
-   signal inputs_to_sync   : std_logic_vector(G_CHANNEL_NUMBER + G_CHANNEL_NUMBER + 41 downto 0);
-   signal inputs_to_model  : std_logic_vector(G_CHANNEL_NUMBER + G_CHANNEL_NUMBER + 41 downto 0);
+   signal inputs_to_sync   : std_logic_vector(133 downto 0);
+   signal inputs_to_model  : std_logic_vector(133 downto 0);
 
-   signal frame_tx_i           : std_logic_vector(G_CHANNEL_NUMBER downto 0);    -- 
-   signal frame_finished_i     : std_logic_vector(G_CHANNEL_NUMBER downto 0);       -- 
-   signal data_cnt_tx_i        : std_logic_vector(7 downto 0);                      -- 
-   signal data_cnt_rx_i        : std_logic_vector(7 downto 0);                      --
+   signal frame_tx_i           : std_logic_vector(8 downto 0);    -- 
+   signal frame_finished_i     : std_logic_vector(8 downto 0);       -- 
+   signal data_cnt_tx_i        : std_logic_vector(6 downto 0);                      -- 
+   signal data_cnt_rx_i        : std_logic_vector(6 downto 0);                      --
    signal ack_counter_tx_i     : std_logic_vector(2 downto 0);
    signal nack_counter_tx_i    : std_logic_vector(2 downto 0);
    signal fct_counter_tx_i     : std_logic_vector(3 downto 0);
@@ -194,65 +199,122 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
 ---------------------------------------
 -- SIGNAL CONNECTION
 ---------------------------------------
-   outputs_to_sync(0)           <= reg_lane_param(C_LANESTART_BTFD) or lane_start_pulse;
-   outputs_to_sync(1)           <= reg_lane_param(C_AUTOSTART_BTFD);
-   outputs_to_sync(2)           <= reg_lane_param(C_LANERESET_BTFD);
-   outputs_to_sync(3)           <= reg_lane_param(C_PARALLEL_LPB_BTFD);
-   outputs_to_sync(11 downto 4) <= reg_lane_param(C_STDBREASON_MAX_BTFD downto C_PARALLEL_LPB_BTFD +1);
-   outputs_to_sync(12)          <= reg_phy_param(C_NEAR_END_LPB_BTFD);
-   outputs_to_sync(13)          <= reg_phy_param(C_FAR_END_LPB_BTFD);
-   outputs_to_sync(14)          <= reg_dl_param(C_INTERFACE_RST_BTFD);
-   outputs_to_sync(15)          <= reg_dl_param(C_LINK_RST_BTFD);
-   outputs_to_sync(16)          <= reg_dl_param(C_NACK_RST_EN_BTFD);
-   outputs_to_sync(G_CHANNEL_NUMBER + 16 downto 17) <= reg_dl_param(C_PAUSE_VC_BTFD downto C_NACK_RST_EN_BTFD + 1);
-   outputs_to_sync(G_CHANNEL_NUMBER + G_CHANNEL_NUMBER + 16 downto 17) <= reg_dl_param(C_CONTINUOUS_VC_BTFD downto C_PAUSE_VC_BTFD + 1);
+   
+    -- Parameter from Configurator to Lane
+    outputs_to_sync(0)           <= reg_lane_param(C_LANESTART_BTFD) or lane_start_pulse;
+    outputs_to_sync(1)           <= reg_lane_param(C_AUTOSTART_BTFD);
+    outputs_to_sync(2)           <= reg_lane_param(C_LANERESET_BTFD);
+    outputs_to_sync(3)           <= reg_lane_param(C_PARALLEL_LPB_BTFD);
+    outputs_to_sync(11 downto 4) <= reg_lane_param(C_STDBREASON_MAX_BTFD downto C_PARALLEL_LPB_BTFD +1);
+    
 
-   LANE_START                   <= outputs_to_dut(0);
-   AUTOSTART                    <= outputs_to_dut(1);
-   LANE_RESET                   <= outputs_to_dut(2);
-   PARALLEL_LOOPBACK_EN         <= outputs_to_dut(3);
-   STANDBY_REASON               <= outputs_to_dut(11 downto 4);
-   NEAR_END_SERIAL_LB_EN        <= outputs_to_dut(12);
-   FAR_END_SERIAL_LB_EN         <= outputs_to_dut(13);
-   INTERFACE_RST                <= outputs_to_dut(14);
-   LINK_RST                     <= outputs_to_dut(15);
-   NACK_RST_EN                  <= outputs_to_dut(16);
-   PAUSE_VC                     <= outputs_to_dut(G_CHANNEL_NUMBER + 16 downto 17);
-   CONTINUOUS_VC                <= outputs_to_dut(G_CHANNEL_NUMBER + G_CHANNEL_NUMBER + 16 downto 17);
+    LANE_START                   <= outputs_to_dut(0);    
+    AUTOSTART                    <= outputs_to_dut(1);                
+    LANE_RESET                   <= outputs_to_dut(2);    
+    PARALLEL_LOOPBACK_EN         <= outputs_to_dut(3);
+    STANDBY_REASON               <= outputs_to_dut(11 downto 4);    
 
-   inputs_to_sync(3 downto 0)                      <= LANE_STATE;
-   inputs_to_sync(11 downto 4)                     <= RX_ERROR_CNT;
-   inputs_to_sync(12)                              <= RX_ERROR_OVF;
-   inputs_to_sync(13)                              <= LOSS_SIGNAL;
-   inputs_to_sync(21 downto 14)                    <= FAR_END_CAPA;
-   inputs_to_sync(22)                              <= RX_POLARITY;
-   inputs_to_sync(29 downto 23)                    <= SEQ_NUMBER_RX;
-   inputs_to_sync(36 downto 30)                    <= SEQ_NUMBER_TX;
-   inputs_to_sync(37)                              <= CRC_LONG_ERROR;
-   inputs_to_sync(38)                              <= CRC_SHORT_ERROR;
-   inputs_to_sync(39)                              <= FRAME_ERROR;
-   inputs_to_sync(40)                              <= SEQ_ERROR;
-   inputs_to_sync(41)                              <= FAR_END_LINK_RST;
-   inputs_to_sync(G_CHANNEL_NUMBER + 41 downto 42) <= VC_CREDIT;
-   inputs_to_sync(G_CHANNEL_NUMBER + G_CHANNEL_NUMBER + 41 downto G_CHANNEL_NUMBER + 42) <= VC_CREDIT;
+    -- Parameter from Configurator to Phy
+    outputs_to_sync(12)          <= reg_phy_param(C_NEAR_END_LPB_BTFD);
+    outputs_to_sync(13)          <= reg_phy_param(C_FAR_END_LPB_BTFD);
+
+    NEAR_END_SERIAL_LB_EN        <= outputs_to_dut(12);  
+    FAR_END_SERIAL_LB_EN         <= outputs_to_dut(13); 
+
+    -- Parameter from Configurator to Data Link
+    outputs_to_sync(14)           <= reg_dl_param(C_INTERFACE_RST_BTFD);
+    outputs_to_sync(15)           <= reg_dl_param(C_LINK_RST_BTFD);
+    outputs_to_sync(16)           <= reg_dl_param(C_NACK_RST_EN_BTFD);
+    outputs_to_sync(17)           <= reg_dl_param(C_NACK_RST_EN_BTFD);
+    outputs_to_sync(26 downto 18) <= reg_dl_param(C_PAUSE_VC_BTFD downto C_NACK_RST_MODE_BTFD + 1);
+    outputs_to_sync(34 downto 27) <= reg_dl_param(C_CONTINUOUS_VC_BTFD downto C_PAUSE_VC_BTFD + 1);
+
+    INTERFACE_RST                <= outputs_to_dut(14);
+    LINK_RST                     <= outputs_to_dut(15);
+    NACK_RST_EN                  <= outputs_to_dut(16);
+    NACK_RST_MODE                <= outputs_to_dut(17);
+    PAUSE_VC                     <= outputs_to_dut(26 downto 18);
+    CONTINUOUS_VC                <= outputs_to_dut(34 downto 27);
 
 
 
-   lane_state_i                 <= inputs_to_model(3 downto 0);
-   rx_error_cnt_i               <= inputs_to_model(11 downto 4);
-   rx_error_ovf_i               <= inputs_to_model(12);
-   loss_signal_i                <= inputs_to_model(13);
-   far_end_capa_i               <= inputs_to_model(21 downto 14);
-   rx_polarity_i                <= inputs_to_model(22);
-   vc_credit_i                  <= inputs_to_sync(29 downto 23);
-   fct_credit_overflow_i        <= inputs_to_sync(36 downto 30);
-   crc_long_error_i             <= inputs_to_sync(37);
-   crc_short_error_i            <= inputs_to_sync(38);
-   frame_errror_i               <= inputs_to_sync(39);
-   seq_error_i                  <= inputs_to_sync(40);
-   far_end_link_rst_i           <= inputs_to_sync(41);
-   seq_number_tx_i              <= inputs_to_sync(G_CHANNEL_NUMBER + 41 downto 42);
-   seq_number_rx_i              <= inputs_to_sync(G_CHANNEL_NUMBER + G_CHANNEL_NUMBER + 41 downto G_CHANNEL_NUMBER + 42);
+   -- Status from Lane  to Configurator
+    inputs_to_sync(3 downto 0)              <= LANE_STATE;
+    inputs_to_sync(11 downto 4)             <= RX_ERROR_CNT;
+    inputs_to_sync(12)                      <= RX_ERROR_OVF;
+    inputs_to_sync(13)                      <= LOSS_SIGNAL;
+    inputs_to_sync(21 downto 14)            <= FAR_END_CAPA;
+    inputs_to_sync(22)                      <= RX_POLARITY;
+
+    lane_state_i                 <= inputs_to_model(3 downto 0);
+    rx_error_cnt_i               <= inputs_to_model(11 downto 4);
+    rx_error_ovf_i               <= inputs_to_model(12);
+    loss_signal_i                <= inputs_to_model(13);
+    far_end_capa_i               <= inputs_to_model(21 downto 14);
+    rx_polarity_i                <= inputs_to_model(22);
+
+
+   -- Status and QoS from Data Link to Configurator
+    inputs_to_sync(30 downto 23)                 <= VC_CREDIT;
+    inputs_to_sync(38 downto 31)                 <= FCT_CREDIT_OVERFLOW;
+    inputs_to_sync(39)                           <= CRC_LONG_ERROR;
+    inputs_to_sync(40)                           <= CRC_SHORT_ERROR;
+    inputs_to_sync(41)                           <= FRAME_ERROR;
+    inputs_to_sync(42)                           <= SEQ_ERROR;
+    inputs_to_sync(43)                           <= FAR_END_LINK_RST;
+    inputs_to_sync(51 downto 44)                 <= SEQ_NUMBER_TX;
+    inputs_to_sync(59 downto 52)                 <= SEQ_NUMBER_RX;
+    inputs_to_sync(67 downto 60)                 <= INPUT_BUFFER_OVFL;
+    inputs_to_sync(76 downto 68)                 <= FRAME_TX;
+    inputs_to_sync(85 downto 77)                 <= FRAME_FINISHED;
+    inputs_to_sync(92 downto 86)                 <= DATA_CNT_TX;
+    inputs_to_sync(99 downto 93)                 <= DATA_CNT_RX;
+    inputs_to_sync(102 downto 100)               <= ACK_COUNTER_TX;
+    inputs_to_sync(105 downto 103)               <= NACK_COUNTER_TX;
+    inputs_to_sync(109 downto 106)               <= FCT_COUNTER_TX;
+    inputs_to_sync(112 downto 110)               <= ACK_COUNTER_RX;
+    inputs_to_sync(115 downto 113)               <= NACK_COUNTER_RX;
+    inputs_to_sync(119 downto 116)               <= FCT_COUNTER_RX;
+    inputs_to_sync(121 downto 120)               <= FULL_COUNTER_RX;
+    inputs_to_sync(123 downto 122)               <= RETRY_COUNTER_RX;
+    inputs_to_sync(131 downto 124)               <= CURRENT_TIME_SLOT;
+    inputs_to_sync(132)                          <= LINK_RST_ASSERTED;
+
+    vc_credit_i                 <= inputs_to_model(30 downto 23);
+    fct_credit_overflow_i       <= inputs_to_model(38 downto 31);
+    crc_long_error_i            <= inputs_to_model(39);
+    crc_short_error_i           <= inputs_to_model(40);
+    frame_error_i               <= inputs_to_model(41);
+    seq_error_i                 <= inputs_to_model(42);
+    far_end_link_rst_i          <= inputs_to_model(44);
+    seq_number_tx_i             <= inputs_to_model(51 downto 44);
+    seq_number_rx_i             <= inputs_to_model(59 downto 52);
+    input_buffer_ovfl_i         <= inputs_to_model(67 downto 60);
+    frame_tx_i                  <= inputs_to_model(76 downto 68);
+    frame_finished_i            <= inputs_to_model(85 downto 77);
+    data_cnt_tx_i               <= inputs_to_model(92 downto 86);
+    data_cnt_rx_i               <= inputs_to_model(99 downto 93);
+    ack_counter_tx_i            <= inputs_to_model(102 downto 100);
+    nack_counter_tx_i           <= inputs_to_model(105 downto 103);
+    fct_counter_tx_i            <= inputs_to_model(109 downto 106);
+    ack_counter_rx_i            <= inputs_to_model(112 downto 110);
+    nack_counter_rx_i           <= inputs_to_model(115 downto 113);
+    fct_counter_rx_i            <= inputs_to_model(119 downto 116);
+    full_counter_rx_i           <= inputs_to_model(121 downto 120);
+    retry_counter_rx_i          <= inputs_to_model(123 downto 122);
+    current_time_slot_i         <= inputs_to_model(131 downto 124);
+    link_rst_asserted_i         <= inputs_to_model(132);
+
+    -- Parameters reset from Data Link to configurator
+    inputs_to_sync(133)         <= RESET_PARAM_DL;
+    
+    reset_param_dl_i            <= inputs_to_model(133);
+
+
+
+
+
+   
 
    lane_start_pulse             <= reg_lane_param(C_LANESTART_PULSE_BTFD);
    RST_DUT_N                    <= reg_global(C_RST_DUT_BTFD);
@@ -402,18 +464,22 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
    P_AXI_WRITE: process(CLK, RST_N)
    begin
       -- Reset
-      if (RST_N = '0') then
+      if (RST_N = '0' ) then
          axi_wr_state    <= IDLE_WAIT_WR_ADDR;
          S_AXI_AWREADY   <= '1';                 -- Ready for new request
          S_AXI_WREADY    <= '1';                 -- Ready to receive write data
          S_AXI_BRESP     <= "00";                -- OKAY default response
          S_AXI_BVALID    <= '0';                 -- Default write response validity
+         reg_dl_param    <= init_dl_dl_param;
          reg_lane_param  <= init_lc_lane_param;
          reg_phy_param   <= init_lc_phy_param;
          reg_global      <= init_lc_global;
       elsif rising_edge(CLK) then
          if (lane_start_pulse ='1') then
             reg_lane_param(C_LANESTART_PULSE_BTFD)  <= '0';  -- Reset model start bit
+         end if;
+         if (reset_param_dl_i = '1') then
+            reg_dl_param  <= init_dl_dl_param;
          end if;
          case axi_wr_state is
             -- Waiting for a write request
@@ -481,23 +547,42 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
    begin
       -- Reset
       if (RST_N ='0') then
-         reg_lane_status                                                       <= (others => '0');
+         reg_lane_status                                                                  <= (others => '0');
+         reg_dl_status_1                                                                  <= (others => '0');
+         reg_dl_status_2                                                                  <= (others => '0');
       elsif rising_edge(CLK) then
-         reg_lane_status(C_RX_POLARITY_BTFD)                                   <= rx_polarity_i;
-         reg_lane_status(C_FAR_CAPA_MAX_BTFD downto C_FAR_LOST_SIG_BTFD+1)     <= far_end_capa_i;
-         reg_lane_status(C_FAR_LOST_SIG_BTFD)                                  <= loss_signal_i;
-         reg_lane_status(C_RX_ERR_OVF_BTFD)                                    <= rx_error_ovf_i;
-         reg_lane_status(C_RX_ERR_CNT_MAX_BTFD downto C_LANESTATE_MAX_BTFD+1)  <= rx_error_cnt_i;
-         reg_lane_status(C_LANESTATE_MAX_BTFD downto 0)                        <= lane_state_i;
-         reg_dl_status(C_SEQ_NUMBER_TX_BTFD downto 0)                          <= seq_number_tx_i;
-         reg_dl_status(C_SEQ_NUMBER_RX_BTFD downto C_SEQ_NUMBER_TX_BTFD + 1)   <= seq_number_rx_i;
-         reg_dl_status(C_VC_CREDIT_BTFD downto C_SEQ_NUMBER_RX_BTFD + 1)       <= vc_credit_i;
-         reg_dl_status(C_FCT_CREDIT_OVERFLOW_BTFD downto C_VC_CREDIT_BTFD + 1) <= fct_credit_overflow_i;
-         reg_dl_status(C_CRC_LONG_ERROR_BTFD)                                  <= crc_long_error_i;
-         reg_dl_status(C_CRC_SHORT_ERROR_BTFD)                                 <= crc_short_error_i;
-         reg_dl_status(C_FRAME_ERROR_BTFD)                                     <= frame_errror_i;
-         reg_dl_status(C_SEQ_ERROR_BTFD)                                       <= seq_error_i;
-         reg_dl_status(C_FAR_END_LINK_RST_BTFD)                                <= far_end_link_rst_i;
+         reg_lane_status(C_RX_POLARITY_BTFD)                                              <= rx_polarity_i;
+         reg_lane_status(C_FAR_CAPA_MAX_BTFD downto C_FAR_LOST_SIG_BTFD+1)                <= far_end_capa_i;
+         reg_lane_status(C_FAR_LOST_SIG_BTFD)                                             <= loss_signal_i;
+         reg_lane_status(C_RX_ERR_OVF_BTFD)                                               <= rx_error_ovf_i;
+         reg_lane_status(C_RX_ERR_CNT_MAX_BTFD downto C_LANESTATE_MAX_BTFD+1)             <= rx_error_cnt_i;
+         reg_lane_status(C_LANESTATE_MAX_BTFD downto 0)                                   <= lane_state_i;
+         reg_dl_status_1(C_SEQ_NUMBER_TX_BTFD downto 0)                                   <= seq_number_tx_i;
+         reg_dl_status_1(C_SEQ_NUMBER_RX_BTFD downto C_SEQ_NUMBER_TX_BTFD + 1)            <= seq_number_rx_i;
+         reg_dl_status_1(C_VC_CREDIT_BTFD downto C_SEQ_NUMBER_RX_BTFD + 1)                <= vc_credit_i;
+         reg_dl_status_1(C_FCT_CREDIT_OVERFLOW_BTFD downto C_VC_CREDIT_BTFD + 1)          <= fct_credit_overflow_i;
+         reg_dl_status_2(C_CRC_LONG_ERROR_BTFD)                                           <= crc_long_error_i;
+         reg_dl_status_2(C_CRC_SHORT_ERROR_BTFD)                                          <= crc_short_error_i;
+         reg_dl_status_2(C_FRAME_ERROR_BTFD)                                              <= frame_error_i;
+         reg_dl_status_2(C_SEQ_ERROR_BTFD)                                                <= seq_error_i;
+         reg_dl_status_2(C_FAR_END_LINK_RST_BTFD)                                         <= far_end_link_rst_i;
+         reg_dl_status_2(C_INPUT_BUFFER_OVERFLW_BTFD downto C_FAR_END_LINK_RST_BTFD + 1)  <= input_buffer_ovfl_i;
+         reg_dl_qos_1(C_FRAME_FINISHED_BTFD downto 0)                                     <= frame_finished_i;
+         reg_dl_qos_1(C_FRAME_TX_BTFD downto C_FRAME_FINISHED_BTFD + 1)                   <= frame_tx_i;
+         reg_dl_qos_1(C_DATA_CNT_TX_BTFD downto C_FRAME_TX_BTFD + 1)                      <= data_cnt_tx_i;
+         reg_dl_qos_1(C_DATA_CNT_RX_BTFD downto C_DATA_CNT_TX_BTFD + 1)                   <= data_cnt_rx_i;
+         reg_dl_qos_2(C_ACK_COUNTER_TX_BTFD downto 0)                                     <= ack_counter_tx_i;
+         reg_dl_qos_2(C_NACK_COUNTER_TX_BTFD downto C_ACK_COUNTER_TX_BTFD +1)             <= nack_counter_tx_i;
+         reg_dl_qos_2(C_FCT_COUNTER_TX_BTFD downto C_NACK_COUNTER_TX_BTFD +1)             <= fct_counter_tx_i;
+         reg_dl_qos_2(C_ACK_COUNTER_RX_BTFD downto C_FCT_COUNTER_TX_BTFD +1)              <= ack_counter_rx_i;
+         reg_dl_qos_2(C_NACK_COUNTER_RX_BTFD downto C_ACK_COUNTER_RX_BTFD +1)             <= nack_counter_rx_i;
+         reg_dl_qos_2(C_FCT_COUNTER_RX_BTFD downto C_NACK_COUNTER_RX_BTFD +1)             <= fct_counter_rx_i;
+         reg_dl_qos_2(C_FULL_COUNTER_RX_BTFD downto C_FCT_COUNTER_RX_BTFD + 1)            <= full_counter_rx_i;
+         reg_dl_qos_2(C_RETRY_COUNTER_RX_BTFD downto C_FULL_COUNTER_RX_BTFD + 1)          <= retry_counter_rx_i;
+         reg_dl_qos_2(C_CURRENT_TIME_SLOT_BTFD downto C_RETRY_COUNTER_RX_BTFD + 1)        <= current_time_slot_i;
+         if link_rst_asserted_i = '1' then
+            reg_dl_param(C_LINK_RST_ASSERTED_BTFD)                                        <= link_rst_asserted_i;
+         end if;
       end if;
    end process P_STATUS;
 end rtl;

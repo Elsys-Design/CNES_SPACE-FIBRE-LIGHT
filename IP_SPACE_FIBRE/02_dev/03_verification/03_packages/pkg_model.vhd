@@ -20,6 +20,8 @@ library work;
 
 package pkg_model is
 
+
+  constant C_CHANNEL_NUMBER               : positive := 8;                                                      --- number of virtual channel
   constant C_AXI_DATA_WIDTH               : positive := 32;                                                     --- registers are 32 bits wide
   constant C_AXI_ADDR_WIDTH               : positive := 32;                                                     --- address is 32 bits wide
   constant C_SLAVE_ADDR_WIDTH             : positive := 8;                                                      --- AXI slave only analyzes 8 LSB
@@ -54,10 +56,11 @@ package pkg_model is
   constant C_ADDR_DL_PHY_PARAM            : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"04";           --- address parameters phy register lane_configurator
   constant C_ADDR_DL_LANE_PARAM           : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"08";           --- address parameters lane register lane_configurator
   constant C_ADDR_DL_LANE_STATUS          : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"0C";           --- address status lane register lane_configurator
-  constant C_ADDR_DL_DL_STATUS            : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"10";           --- address status lane register lane_configurator
-  constant C_ADDR_DL_DL_PARAM             : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"14";           --- address status lane register lane_configurator
-  constant C_ADDR_DL_DL_QOS               : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"18";           --- address status lane register lane_configurator
-  constant C_ADDR_DL_DL_ERROR_RECOVERY    : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"1C";           --- address status lane register lane_configurator
+  constant C_ADDR_DL_DL_PARAM             : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"10";           --- address status lane register lane_configurator
+  constant C_ADDR_DL_DL_STATUS_1          : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"14";           --- address status lane register lane_configurator
+  constant C_ADDR_DL_DL_STATUS_2          : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"18";           --- address status lane register lane_configurator
+  constant C_ADDR_DL_DL_QOS_1             : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"1C";           --- address status lane register lane_configurator
+  constant C_ADDR_DL_DL_QOS_2             : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"20";           --- address status lane register lane_configurator
   ------------------------------------------------------------------------
   -- data_link_generator
   constant C_ADDR_DG_CONFIG               : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"00";           --- address configuration lane register lane_generator
@@ -132,9 +135,11 @@ package pkg_model is
   -- Parameters data link register
   constant C_INTERFACE_RST_BTFD           : integer := 0;
   constant C_LINK_RST_BTFD                : integer := 1;
-  constant C_NACK_RST_EN_BTFD             : integer := 2;
-  constant C_PAUSE_VC_BTFD                : integer := 10;
-  constant C_CONTINUOUS_VC_BTFD           : integer := 18;
+  constant C_LINK_RST_ASSERTED_BTFD       : integer := 2;
+  constant C_NACK_RST_EN_BTFD             : integer := 3;
+  constant C_NACK_RST_MODE_BTFD           : integer := 4;
+  constant C_PAUSE_VC_BTFD                : integer := 13;
+  constant C_CONTINUOUS_VC_BTFD           : integer := 21;
 
   -- Status 1 data link register
   constant C_SEQ_NUMBER_TX_BTFD           : integer := 7;
@@ -143,11 +148,29 @@ package pkg_model is
   constant C_FCT_CREDIT_OVERFLOW_BTFD     : integer := 31;
 
   -- Status 2 data link register
-  constant C_CRC_LONG_ERROR_BTFD0         : integer := 0;
+  constant C_CRC_LONG_ERROR_BTFD          : integer := 0;
   constant C_CRC_SHORT_ERROR_BTFD         : integer := 1;
   constant C_FRAME_ERROR_BTFD             : integer := 2;
   constant C_SEQ_ERROR_BTFD               : integer := 3;
   constant C_FAR_END_LINK_RST_BTFD        : integer := 4;
+  constant C_INPUT_BUFFER_OVERFLW_BTFD    : integer := 12;
+
+  -- QoS 1 data link register
+  constant C_FRAME_FINISHED_BTFD          :integer := 8;
+  constant C_FRAME_TX_BTFD                :integer := 17;
+  constant C_DATA_CNT_TX_BTFD             :integer := 24;
+  constant C_DATA_CNT_RX_BTFD             :integer := 31;
+
+  -- QoS 2 data link register
+  constant C_ACK_COUNTER_TX_BTFD          :integer := 2;
+  constant C_NACK_COUNTER_TX_BTFD         :integer := 5;
+  constant C_FCT_COUNTER_TX_BTFD          :integer := 9;
+  constant C_ACK_COUNTER_RX_BTFD          :integer := 12;
+  constant C_NACK_COUNTER_RX_BTFD         :integer := 15;
+  constant C_FCT_COUNTER_RX_BTFD          :integer := 19;
+  constant C_FULL_COUNTER_RX_BTFD         :integer := 21;
+  constant C_RETRY_COUNTER_RX_BTFD        :integer := 23;
+  constant C_CURRENT_TIME_SLOT_BTFD       :integer := 31;
 
   -- Global register
   constant C_RST_DUT_BTFD                 : integer := 0;                                                       --- RST_DUT_N bitfield
@@ -235,7 +258,15 @@ package pkg_model is
   constant C_DEFAULT_LANERESET            : std_logic                                        := '0';            --- lane reset default value
   constant C_DEFAULT_PARALLEL_LPB         : std_logic                                        := '0';            --- parallel loopback enable default value
   constant C_DEFAULT_STDBREASON           : std_logic_vector(C_STDBYREASON_WIDTH-1 downto 0) := (others =>'0'); --- standby reason default value
--- Global register
+  -- Parameters data link register
+  constant C_DEFAULT_INTERFACE_RST        : std_logic                                        := '0';
+  constant C_DEFAULT_LINK_RST             : std_logic                                        := '0';
+  constant C_DEFAULT_LINK_RST_ASSERTED    : std_logic                                        := '0';
+  constant C_DEFAULT_NACK_RST_EN          : std_logic                                        := '0';
+  constant C_DEFAULT_NACK_RST_MODE        : std_logic                                        := '0';
+  constant C_DEFAULT_PAUSE_VC             : std_logic_vector(8 downto 0)                     := (others =>'0');
+  constant C_DEFAULT_CONTINUOUS_VC        : std_logic_vector(7 downto 0)                     := (others =>'0');
+  -- Global register
   constant C_DEFAULT_RST_DUT              : std_logic                                        := '0';            --- parallel loopback enable default value
 
   -- ### lane_generator ###
@@ -302,6 +333,7 @@ package pkg_model is
   -- ### lane_configurator ###
   function init_lc_phy_param  return std_logic_vector;
   function init_lc_lane_param return std_logic_vector;
+  function init_dl_dl_param return std_logic_vector;
   function init_lc_global     return std_logic_vector;
   -- ### lane_generator ###
   function init_lg_configuration return std_logic_vector;
@@ -345,6 +377,23 @@ package body pkg_model is
       temp(C_LANERESET_BTFD)                                    := C_DEFAULT_LANERESET;
       temp(C_AUTOSTART_BTFD)                                    := C_DEFAULT_AUTOSTART;
       temp(C_LANESTART_BTFD)                                    := C_DEFAULT_LANESTART;
+      return temp;
+   end function;
+
+   -------------------------------------------------------------------------------------
+   -- FUNCTION: init_dl_dl_param
+   -- Description : initializes the data_link_configurator data link parameters regsiter
+   -------------------------------------------------------------------------------------
+   function init_dl_dl_param return std_logic_vector is
+      variable temp : std_logic_vector(C_AXI_DATA_WIDTH-1 downto 0);
+   begin
+      temp(C_INTERFACE_RST_BTFD)                               := C_DEFAULT_INTERFACE_RST;
+      temp(C_LINK_RST_BTFD)                                    := C_DEFAULT_LINK_RST;
+      temp(C_LINK_RST_ASSERTED_BTFD)                           := C_DEFAULT_LINK_RST_ASSERTED;
+      temp(C_NACK_RST_EN_BTFD)                                 := C_DEFAULT_NACK_RST_EN;
+      temp(C_NACK_RST_MODE_BTFD)                               := C_DEFAULT_NACK_RST_MODE;
+      temp(C_PAUSE_VC_BTFD downto C_NACK_RST_MODE_BTFD+1)      := C_DEFAULT_PAUSE_VC;
+      temp(C_CONTINUOUS_VC_BTFD downto C_PAUSE_VC_BTFD+1)      := C_DEFAULT_CONTINUOUS_VC;
       return temp;
    end function;
 
