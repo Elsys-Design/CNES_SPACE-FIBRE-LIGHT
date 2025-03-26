@@ -564,7 +564,7 @@ begin
         RD_DATA_EN              => rd_data_en_from_lcwi,
         RD_DATA_VLD             => fifo_tx_data_valid,
         -- Command port
-        CMD_FLUSH               => '0',
+        CMD_FLUSH               => LANE_RESET_DL,
         STATUS_BUSY_FLUSH       => open,
         -- Status port
         STATUS_THRESHOLD_HIGH   => open,
@@ -585,7 +585,7 @@ begin
       -- From DATA-LINK/TOP
       RD_DATA_FROM_DL                  => rd_data_en_from_lcwi,
       RD_DATA_VALID_FROM_DL            => fifo_tx_data_valid,
-      CAPABILITY_FROM_DL               => capability_tx_dl_i,
+      CAPABILITY_FROM_DL               => capability_tx_i,
       DATA_TX_FROM_DL                  => data_tx_from_fifo(31 downto 00),
       VALID_K_CHARAC_FROM_DL           => data_tx_from_fifo(35 downto 32),
       NO_DATA_FROM_DL                  => fifo_tx_empty,
@@ -735,7 +735,7 @@ begin
            RD_DATA_EN              => FIFO_RX_RD_EN,
            RD_DATA_VLD             => FIFO_RX_DATA_VALID,
            -- Command port
-           CMD_FLUSH               => '0',
+           CMD_FLUSH               => LANE_RESET_DL,
            STATUS_BUSY_FLUSH       => open,
            -- Status port
            STATUS_THRESHOLD_HIGH   => open,

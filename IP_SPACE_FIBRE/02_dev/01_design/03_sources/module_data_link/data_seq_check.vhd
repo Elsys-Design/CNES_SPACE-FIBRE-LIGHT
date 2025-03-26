@@ -26,15 +26,18 @@ entity data_seq_check is
     END_FRAME_DCCHECK      : in  std_logic;
     TYPE_FRAME_DCCHECK     : in  std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);  --! Flag EMPTY of the FIFO RX
     NEW_WORD_DCCHECK       : in  std_logic;
+		CRC_ERR_DCCHECK        : in std_logic;
 		-- data_err_management (DERRM) interface
 		NEAR_END_RPF_DERRM     : in  std_logic;
 		SEQ_NUM_ERR_DSCHECK    : out std_logic;
+		END_FRAME_DSCHECK      : out std_logic;
     -- data_mid_buffer (DMBUF) interface
     DATA_DSCHECK           : out std_logic_vector(C_DATA_LENGTH-1 downto 0);    -- Data write bus
 		VALID_K_CHARAC_DSCHECK : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
     NEW_WORD_DSCHECK       : out std_logic;                                     -- Write command
-    END_FRAME_DSCHECK      : out std_logic;
+    END_FRAME_FIFO_DSCHECK : out std_logic;
     FIFO_FULL_DMBUF        : in  std_logic;
+		FRAME_ERR_DSCHECK      : out std_logic;
 		-- MIB
 		SEQ_NUM_DSCHECK        : out std_logic_vector(7 downto 0)
   );
@@ -46,7 +49,6 @@ architecture rtl of data_seq_check is
 ---------------------------------------------------------
 
 signal seq_num_cnt    : unsigned(6 downto 0);   --! Data parallel from Lane Layer
-signal seq_num_ok     : std_logic;              --! Data parallel from Lane Layer
 
 begin
 ---------------------------------------------------------
@@ -59,50 +61,80 @@ begin
 p_seq_num: process(CLK, RST_N)
 begin
 	if RST_N = '0' then
-	  seq_num_cnt    <= (others => '0'); -- Reset seq_num_cnt	on link reset
+	  seq_num_cnt            <= (others => '0'); -- Reset seq_num_cnt	on link reset
     SEQ_NUM_ERR_DSCHECK    <= '0';
 		SEQ_NUM_DSCHECK        <= (others => '0');
+		FRAME_ERR_DSCHECK        <= '0';
+		NEW_WORD_DSCHECK       <= '0';
+		DATA_DSCHECK           <= (others => '0');
+		VALID_K_CHARAC_DSCHECK <= (others => '0');
+		END_FRAME_FIFO_DSCHECK <= '0';
+		END_FRAME_DSCHECK      <= '0';
 	elsif rising_edge(CLK) then
 		SEQ_NUM_DSCHECK <= SEQ_NUM_DCCHECK;
 	  if (TYPE_FRAME_DCCHECK = C_DATA_FRM  or TYPE_FRAME_DCCHECK = C_BC_FRM or TYPE_FRAME_DCCHECK = C_FCT_FRM) and END_FRAME_DCCHECK = '1' then
 			if SEQ_NUM_DCCHECK /= (NEAR_END_RPF_DERRM & std_logic_vector(seq_num_cnt+1)) then
-				SEQ_NUM_ERR_DSCHECK <= '1';
+				SEQ_NUM_ERR_DSCHECK    <= '1';
+				NEW_WORD_DSCHECK       <= '0';
+				DATA_DSCHECK           <= (others => '0');
+				VALID_K_CHARAC_DSCHECK <= (others => '0');
+				END_FRAME_FIFO_DSCHECK <= END_FRAME_DCCHECK;
+				END_FRAME_DSCHECK      <= END_FRAME_DCCHECK;
+				FRAME_ERR_DSCHECK        <= '1';
+			elsif CRC_ERR_DCCHECK ='1' then
+				seq_num_cnt            <= seq_num_cnt+1;
+				SEQ_NUM_ERR_DSCHECK    <= '0';
+				NEW_WORD_DSCHECK       <= '0';
+				DATA_DSCHECK           <= (others => '0');
+				VALID_K_CHARAC_DSCHECK <= (others => '0');
+				END_FRAME_FIFO_DSCHECK <= END_FRAME_DCCHECK;
+				END_FRAME_DSCHECK      <= END_FRAME_DCCHECK;
+				FRAME_ERR_DSCHECK        <= '1';
 			else
-				seq_num_cnt <= seq_num_cnt+1;
-				SEQ_NUM_ERR_DSCHECK <= '0';
+				seq_num_cnt            <= seq_num_cnt+1;
+				SEQ_NUM_ERR_DSCHECK    <= '0';
+				NEW_WORD_DSCHECK       <= NEW_WORD_DCCHECK;
+				DATA_DSCHECK           <= DATA_DCCHECK;
+				VALID_K_CHARAC_DSCHECK <= VALID_K_CHARAC_DCCHECK;
+				END_FRAME_FIFO_DSCHECK <= END_FRAME_DCCHECK;
+				END_FRAME_DSCHECK      <= END_FRAME_DCCHECK;
+				FRAME_ERR_DSCHECK        <= '0';
       end if;
-	  elsif (TYPE_FRAME_DCCHECK = C_IDLE_FRM  or TYPE_FRAME_DCCHECK = C_FULL_FRM) and END_FRAME_DCCHECK = '1'then
+	  elsif (TYPE_FRAME_DCCHECK = C_IDLE_FRM  or TYPE_FRAME_DCCHECK = C_FULL_FRM or TYPE_FRAME_DCCHECK = C_ACK_FRM or TYPE_FRAME_DCCHECK = C_NACK_FRM) and END_FRAME_DCCHECK = '1'then
 			if SEQ_NUM_DCCHECK /= (NEAR_END_RPF_DERRM & std_logic_vector(seq_num_cnt)) then
-				SEQ_NUM_ERR_DSCHECK <= '1';
+				SEQ_NUM_ERR_DSCHECK    <= '1';
+				NEW_WORD_DSCHECK       <= '0';
+				DATA_DSCHECK           <= (others => '0');
+				VALID_K_CHARAC_DSCHECK <= (others => '0');
+				END_FRAME_FIFO_DSCHECK <= '0';
+				END_FRAME_DSCHECK      <= END_FRAME_DCCHECK;
+				FRAME_ERR_DSCHECK      <= '1';
+			elsif CRC_ERR_DCCHECK ='1' then
+				SEQ_NUM_ERR_DSCHECK    <= '0';
+				NEW_WORD_DSCHECK       <= '0';
+				DATA_DSCHECK           <= (others => '0');
+				VALID_K_CHARAC_DSCHECK <= (others => '0');
+				END_FRAME_FIFO_DSCHECK <= '0';
+				END_FRAME_DSCHECK      <= END_FRAME_DCCHECK;
+				FRAME_ERR_DSCHECK      <= '1';
 			else
-				SEQ_NUM_ERR_DSCHECK <= '0';
+				SEQ_NUM_ERR_DSCHECK    <= '0';
+				NEW_WORD_DSCHECK       <= '0';
+				DATA_DSCHECK           <= (others => '0');
+				VALID_K_CHARAC_DSCHECK <= (others => '0');
+				END_FRAME_FIFO_DSCHECK <= '0';
+				END_FRAME_DSCHECK      <= END_FRAME_DCCHECK;
+				FRAME_ERR_DSCHECK      <= '0';
       end if;
+		else
+			NEW_WORD_DSCHECK       <= NEW_WORD_DCCHECK;
+			DATA_DSCHECK           <= DATA_DCCHECK;
+			VALID_K_CHARAC_DSCHECK <= VALID_K_CHARAC_DCCHECK;
+			END_FRAME_FIFO_DSCHECK <= END_FRAME_DCCHECK;
+			END_FRAME_DSCHECK      <= END_FRAME_DCCHECK;
+			FRAME_ERR_DSCHECK       <= '0';
 	  end if;
 	end if;
 end process p_seq_num;
----------------------------------------------------------
--- Process: p_fifo_wr
--- Description: Write frames into the fifo
----------------------------------------------------------
-p_fifo_wr: process(CLK, RST_N)
-begin
-	if RST_N = '0' then
-	  DATA_DSCHECK           <= (others => '0');
-		VALID_K_CHARAC_DSCHECK <= (others => '0');
-		NEW_WORD_DSCHECK       <= '0';
-    END_FRAME_DSCHECK      <= '0';
-	elsif rising_edge(CLK) then
-    END_FRAME_DSCHECK <= END_FRAME_DCCHECK;
-		if NEW_WORD_DCCHECK ='1' and FIFO_FULL_DMBUF = '0' then
-			NEW_WORD_DSCHECK       <= '1';
-			DATA_DSCHECK           <= DATA_DCCHECK;
-			VALID_K_CHARAC_DSCHECK <= VALID_K_CHARAC_DCCHECK;
-		else
-			DATA_DSCHECK           <= (others => '0');
-			VALID_K_CHARAC_DSCHECK <= (others => '0');
-			NEW_WORD_DSCHECK       <= '0';
-		end if;
-	end if;
-end process p_fifo_wr;
 
 end architecture rtl;
