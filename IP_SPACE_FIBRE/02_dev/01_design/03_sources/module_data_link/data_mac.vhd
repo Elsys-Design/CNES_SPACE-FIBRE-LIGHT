@@ -792,6 +792,8 @@ begin
                         TYPE_FRAME_DMAC      <= type_frame;
                         current_state_req    <= REQ_SEND_ST;
       when REQ_SEND_ST =>
+                      NEW_WORD_DMAC        <= '1';
+                      END_PACKET_DMAC      <= '1';
                       current_state_req <= IDLE_ST;
                       if REQ_ACK_DERRM = '1' then
                         ack_counter        <= ack_counter + 1;
@@ -806,8 +808,8 @@ begin
                       elsif REQ_FCT_DIBUF /= std_logic_vector(to_unsigned(0,G_VC_NUM)) then
                         fct_counter <= fct_counter +1;
                         TYPE_FRAME_DMAC   <= C_FCT_FRM;
-                        if REQ_FCT_DIBUF(4) ='1' then
-                          REQ_FCT_DONE_DMAC(4) <= '1';
+                        if REQ_FCT_DIBUF(0) ='1' then
+                          REQ_FCT_DONE_DMAC(0) <= '1';
                           MULT_CHANNEL_DMAC  <= std_logic_vector(to_unsigned(0,MULT_CHANNEL_DMAC'length));
                         elsif REQ_FCT_DIBUF(1) ='1' then
                           REQ_FCT_DONE_DMAC(1) <= '1';

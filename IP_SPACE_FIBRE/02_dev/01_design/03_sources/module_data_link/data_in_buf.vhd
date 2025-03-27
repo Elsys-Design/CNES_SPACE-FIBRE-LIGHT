@@ -116,11 +116,10 @@ architecture rtl of data_in_buf is
   signal m_axis_tuser           : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
   -- FCT
   signal req_fct_done           : std_logic;
-  signal req_fct_done_reg1      : std_logic;
-  signal req_fct_done_reg2      : std_logic;
   signal req_fct_i              : std_logic;
-  signal req_fct_i_reg1         : std_logic;
-  signal req_fct_i_reg2         : std_logic;
+  signal axis_data_valid        : std_logic;
+  signal axis_data_valid_reg1   : std_logic;
+  signal axis_data_valid_reg2   : std_logic;
 
 begin
 ---------------------------------------------------------
@@ -235,14 +234,18 @@ end process p_data_in_fifo;
 p_last_char_read: process(M_AXIS_ACLK_NW, M_AXIS_ARSTN_NW)
 begin
   if M_AXIS_ARSTN_NW = '0' then
-    last_k_char <= '0';
+    last_k_char      <= '0';
+    axis_data_valid  <= '0';
   elsif rising_edge(M_AXIS_ACLK_NW) then
     if m_axis_tvalid = '1' and m_axis_tready ='1' then
+      axis_data_valid  <= '1';
       if m_axis_tuser(C_BYTE_BY_WORD_LENGTH-1)='1' then
         last_k_char <= '1';
       else
         last_k_char <= '0';
       end if;
+    else
+      axis_data_valid  <= '0';
     end if;
   end if;
 end process p_last_char_read;
@@ -250,30 +253,31 @@ end process p_last_char_read;
 -- Process: p_cnt_word
 -- Description: Count the number of word sent
 ---------------------------------------------------------
-p_cnt_word: process(M_AXIS_ACLK_NW, M_AXIS_ARSTN_NW)
+p_cnt_word: process(CLK, RST_N)
 begin
-  if M_AXIS_ARSTN_NW = '0' then
-    cnt_word_sent     <= (others =>'0');
-    req_fct_i         <= '0';
-    req_fct_done_reg1 <= '0';
-    req_fct_done_reg2 <= '0';
-  elsif rising_edge(M_AXIS_ACLK_NW) then
-    req_fct_done_reg1 <= req_fct_done;
-    req_fct_done_reg2 <= req_fct_done_reg1;
-    if m_axis_tvalid = '1' and m_axis_tready ='1' then
+  if RST_N = '0' then
+    cnt_word_sent        <= (others =>'0');
+    req_fct_i            <= '0';
+    axis_data_valid_reg1 <= '0';
+    axis_data_valid_reg2 <= '0';
+  elsif rising_edge(CLK) then
+    axis_data_valid_reg1 <= axis_data_valid;
+    axis_data_valid_reg2 <= axis_data_valid_reg1;
+    if axis_data_valid_reg2 = '1' then
       if cnt_word_sent > 62 then
         cnt_word_sent <= to_unsigned(1,cnt_word_sent'length);
         req_fct_i     <= '1';
-      elsif req_fct_done_reg2 <='1' then
+      elsif req_fct_done ='1' then
           req_fct_i     <= '0';
           cnt_word_sent <= cnt_word_sent + 1;
       else
+        req_fct_i     <= '0';
         cnt_word_sent <= cnt_word_sent + 1;
       end if;
     elsif cnt_word_sent > 62 then
       cnt_word_sent <= (others =>'0');
       req_fct_i     <= '1';
-    elsif req_fct_done_reg2 <='1' then
+    elsif req_fct_done ='1' then
       req_fct_i     <= '0';
     end if;
   end if;
@@ -285,38 +289,28 @@ end process p_cnt_word;
 p_req_fct: process(CLK, RST_N)
 begin
   if RST_N = '0' then
-    cnt_req_fct       <= (others => '0');
     current_state_fct <= IDLE_ST;
     REQ_FCT_DIBUF     <= '0';
     req_fct_done      <= '0';
   elsif rising_edge(CLK) then
     req_fct_done   <= '0';
-    req_fct_i_reg1 <= req_fct_i;
-    req_fct_i_reg2 <= req_fct_i_reg1;
     case current_state_fct is
       when IDLE_ST =>
                            if LINK_RESET_DLRE = '1' then
                              current_state_fct   <= REQ_FCT_ST;
-                           elsif req_fct_i_reg2 ='1' then
+                           elsif req_fct_i ='1' then
                              REQ_FCT_DIBUF   <= '1';
                            elsif REQ_FCT_DONE_DMAC = '1' then
                              REQ_FCT_DIBUF   <= '0';
                              req_fct_done    <= '1';
                            end if;
-
-
         when REQ_FCT_ST =>
                           if LINK_RESET_DLRE = '0' then
                             REQ_FCT_DIBUF   <= '1';
                             if REQ_FCT_DONE_DMAC= '1' then
-                              if cnt_req_fct > 2 then
-                                REQ_FCT_DIBUF       <= '0';
-                                cnt_req_fct         <= (others => '0');
-                                current_state_fct   <= IDLE_ST;
-                                req_fct_done        <= '1';
-                              else
-                                cnt_req_fct <= cnt_req_fct + 1;
-                              end if;
+                              REQ_FCT_DIBUF       <= '0';
+                              current_state_fct   <= IDLE_ST;
+                              req_fct_done        <= '1';
                             end if;
                           end if;
     end case;

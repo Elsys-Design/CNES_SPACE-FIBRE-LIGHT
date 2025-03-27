@@ -62,7 +62,7 @@ signal crc_err_16b     : std_logic;                         --! Data parallel fr
 
 signal crc_reg_8b      : std_logic_vector(8-1 downto 0);   --! Data parallel from Lane Layer
 signal crc_to_inv_8b   : std_logic;                        --! Data parallel from Lane Layer
-signal end_CRC_8B_DWI  : std_logic;                        --! Data parallel from Lane Layer
+signal end_crc_8b_dwi  : std_logic;                        --! Data parallel from Lane Layer
 signal crc_err_8b      : std_logic;                        --! Data parallel from Lane Layer
 
 begin
@@ -85,28 +85,20 @@ begin
       crc_var := crc_reg;
       crc_err_16b    <= '0';
       if (TYPE_FRAME_DWI = C_DATA_FRM) then
-        if end_crc = '1' then
-          end_crc <= '0';
-          if crc_reg /= CRC_16B_DWI then
-            crc_err_16b <= '1';
-          end if;
-          crc_reg    <= (others => '1');
-
-        elsif crc_to_inv = '1' then
-          crc_to_inv <= '0';
-          end_crc    <= '1';
-          for i in 0 to 15 loop
-            crc_var(i) := crc_reg(15 - i); -- Bit-by-bit inversion
-          end loop;
-          crc_reg <= crc_var;
-
-        elsif END_FRAME_DWI = '1' and NEW_WORD_DWI = '1'then -- EDF detection
-          crc_to_inv <= '1';
-          for i in indices_dem'range loop -- calculates the crc 8 byte by byte
+        if END_FRAME_DWI = '1' and NEW_WORD_DWI = '1'then -- EDF detection
+          -- calculates the crc 8 byte by byte
+          for i in indices_dem'range loop
               crc_var := calculate_crc_16(DATA_DWI(7+ indices_dem(i) downto 0 + indices_dem(i)), crc_var);
           end loop;
+          -- Bit-by-bit inversion
+          for i in 0 to 15 loop
+            crc_var(i) := crc_reg(15 - i);
+          end loop;
+          -- check validity of CRC
+          if crc_var /= CRC_16B_DWI then
+            crc_err_16b <= '1';
+          end if;
           crc_reg <= crc_var;
-
         elsif NEW_WORD_DWI = '1' then
           for i in indices'range loop -- calculates the crc 8 byte by byte
               crc_var := calculate_crc_16(DATA_DWI(7+ indices(i) downto 0 + indices(i)), crc_var);
@@ -129,35 +121,28 @@ begin
         crc_reg_8b    <= (others => '0'); -- Reset CRC to seed value
         crc_to_inv_8b <= '0';
         crc_err_8b    <= '0';
-        end_CRC_8B_DWI    <= '0';
+        end_crc_8b_dwi    <= '0';
     elsif rising_edge(CLK) then
       crc_var := crc_reg_8b;
       crc_err_8b <= '0';
       if TYPE_FRAME_DWI /= C_DATA_FRM then
-        if end_CRC_8B_DWI = '1' then
-          end_CRC_8B_DWI <= '0';
-          if crc_reg_8b /= CRC_8B_DWI then
+        if END_FRAME_DWI = '1'and NEW_WORD_DWI = '1'then
+          -- calculates the crc 8 byte by byte
+          for i in indices_tier'range loop
+            crc_var := calculate_crc_8(DATA_DWI(7+ indices_tier(i) downto 0 + indices_tier(i)), crc_var);
+          end loop;
+          -- Bit-by-bit inversion
+          for i in 0 to 7 loop
+            crc_var(i) := crc_reg_8b(7 - i);
+          end loop;
+          -- check validity of CRC
+          if crc_var /= CRC_8B_DWI then
             crc_err_8b <= '1';
           end if;
-          crc_reg_8b    <= (others => '0');
-
-        elsif crc_to_inv_8b = '1' then
-          crc_to_inv_8b <= '0';
-          end_CRC_8B_DWI    <= '1';
-          for i in 0 to 7 loop
-            crc_var(i) := crc_reg_8b(7 - i); -- Bit-by-bit inversion
-          end loop;
-          crc_reg_8b <= crc_var;
-
-        elsif END_FRAME_DWI = '1'and NEW_WORD_DWI = '1'then
-          crc_to_inv_8b <= '1';
-          for i in indices_tier'range loop -- calculates the crc 8 byte by byte
-              crc_var := calculate_crc_8(DATA_DWI(7+ indices_tier(i) downto 0 + indices_tier(i)), crc_var);
-          end loop;
-          crc_reg_8b <= crc_var;
-
+          crc_reg_8b   <= crc_var;
         elsif NEW_WORD_DWI = '1' then
-          for i in indices'range loop -- calculates the crc 8 byte by byte
+          -- calculates the crc 8 byte by byte
+          for i in indices'range loop
               crc_var := calculate_crc_8(DATA_DWI(7+ indices(i) downto 0 + indices(i)), crc_var);
           end loop;
           crc_reg_8b <= crc_var;
