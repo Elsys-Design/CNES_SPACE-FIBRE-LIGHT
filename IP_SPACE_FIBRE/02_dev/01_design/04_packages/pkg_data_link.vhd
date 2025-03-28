@@ -97,6 +97,7 @@ package data_link_lib is
   function calculate_crc_16(data : STD_LOGIC_VECTOR(7 downto 0); crc_init : STD_LOGIC_VECTOR(15 downto 0)) return STD_LOGIC_VECTOR;
   function calculate_crc_8(data : STD_LOGIC_VECTOR(7 downto 0); crc_init : STD_LOGIC_VECTOR(7 downto 0)) return STD_LOGIC_VECTOR;
   function calculate_idle(data_idle : STD_LOGIC_VECTOR(15 downto 0)) return STD_LOGIC_VECTOR;
+  function inv_crc(crc_to_inv : STD_LOGIC_VECTOR(7 downto 0)) return STD_LOGIC_VECTOR ;
 end package data_link_lib;
 
 package body data_link_lib is
@@ -137,7 +138,16 @@ begin
       crc(1)  := crc(1) xor feedback;
       crc(0)  := feedback;
   end loop;
+  return crc;
+end function;
 
+function inv_crc(crc_to_inv : STD_LOGIC_VECTOR(7 downto 0)) return STD_LOGIC_VECTOR is
+  variable crc : std_logic_vector(7 downto 0) := crc_to_inv;
+begin
+  -- Traiter chaque bit du LSB au MSB
+  for i in 0 to 7 loop
+    crc(i) := crc(7 - i);
+  end loop;
   return crc;
 end function;
 

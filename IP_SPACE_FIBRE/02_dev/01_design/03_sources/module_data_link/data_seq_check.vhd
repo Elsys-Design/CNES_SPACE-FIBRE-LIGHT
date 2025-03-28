@@ -37,7 +37,6 @@ entity data_seq_check is
     NEW_WORD_DSCHECK       : out std_logic;                                     -- Write command
     END_FRAME_FIFO_DSCHECK : out std_logic;
     FIFO_FULL_DMBUF        : in  std_logic;
-		FRAME_ERR_DSCHECK      : out std_logic;
 		-- MIB
 		SEQ_NUM_DSCHECK        : out std_logic_vector(7 downto 0)
   );
@@ -64,7 +63,6 @@ begin
 	  seq_num_cnt            <= (others => '0'); -- Reset seq_num_cnt	on link reset
     SEQ_NUM_ERR_DSCHECK    <= '0';
 		SEQ_NUM_DSCHECK        <= (others => '0');
-		FRAME_ERR_DSCHECK        <= '0';
 		NEW_WORD_DSCHECK       <= '0';
 		DATA_DSCHECK           <= (others => '0');
 		VALID_K_CHARAC_DSCHECK <= (others => '0');
@@ -80,16 +78,6 @@ begin
 				VALID_K_CHARAC_DSCHECK <= (others => '0');
 				END_FRAME_FIFO_DSCHECK <= END_FRAME_DCCHECK;
 				END_FRAME_DSCHECK      <= END_FRAME_DCCHECK;
-				FRAME_ERR_DSCHECK        <= '1';
-			elsif CRC_ERR_DCCHECK ='1' then
-				seq_num_cnt            <= seq_num_cnt+1;
-				SEQ_NUM_ERR_DSCHECK    <= '0';
-				NEW_WORD_DSCHECK       <= '0';
-				DATA_DSCHECK           <= (others => '0');
-				VALID_K_CHARAC_DSCHECK <= (others => '0');
-				END_FRAME_FIFO_DSCHECK <= END_FRAME_DCCHECK;
-				END_FRAME_DSCHECK      <= END_FRAME_DCCHECK;
-				FRAME_ERR_DSCHECK        <= '1';
 			else
 				seq_num_cnt            <= seq_num_cnt+1;
 				SEQ_NUM_ERR_DSCHECK    <= '0';
@@ -98,7 +86,6 @@ begin
 				VALID_K_CHARAC_DSCHECK <= VALID_K_CHARAC_DCCHECK;
 				END_FRAME_FIFO_DSCHECK <= END_FRAME_DCCHECK;
 				END_FRAME_DSCHECK      <= END_FRAME_DCCHECK;
-				FRAME_ERR_DSCHECK        <= '0';
       end if;
 	  elsif (TYPE_FRAME_DCCHECK = C_IDLE_FRM  or TYPE_FRAME_DCCHECK = C_FULL_FRM or TYPE_FRAME_DCCHECK = C_ACK_FRM or TYPE_FRAME_DCCHECK = C_NACK_FRM) and END_FRAME_DCCHECK = '1'then
 			if SEQ_NUM_DCCHECK /= (NEAR_END_RPF_DERRM & std_logic_vector(seq_num_cnt)) then
@@ -108,15 +95,6 @@ begin
 				VALID_K_CHARAC_DSCHECK <= (others => '0');
 				END_FRAME_FIFO_DSCHECK <= '0';
 				END_FRAME_DSCHECK      <= END_FRAME_DCCHECK;
-				FRAME_ERR_DSCHECK      <= '1';
-			elsif CRC_ERR_DCCHECK ='1' then
-				SEQ_NUM_ERR_DSCHECK    <= '0';
-				NEW_WORD_DSCHECK       <= '0';
-				DATA_DSCHECK           <= (others => '0');
-				VALID_K_CHARAC_DSCHECK <= (others => '0');
-				END_FRAME_FIFO_DSCHECK <= '0';
-				END_FRAME_DSCHECK      <= END_FRAME_DCCHECK;
-				FRAME_ERR_DSCHECK      <= '1';
 			else
 				SEQ_NUM_ERR_DSCHECK    <= '0';
 				NEW_WORD_DSCHECK       <= '0';
@@ -124,7 +102,6 @@ begin
 				VALID_K_CHARAC_DSCHECK <= (others => '0');
 				END_FRAME_FIFO_DSCHECK <= '0';
 				END_FRAME_DSCHECK      <= END_FRAME_DCCHECK;
-				FRAME_ERR_DSCHECK      <= '0';
       end if;
 		else
 			NEW_WORD_DSCHECK       <= NEW_WORD_DCCHECK;
@@ -132,7 +109,6 @@ begin
 			VALID_K_CHARAC_DSCHECK <= VALID_K_CHARAC_DCCHECK;
 			END_FRAME_FIFO_DSCHECK <= END_FRAME_DCCHECK;
 			END_FRAME_DSCHECK      <= END_FRAME_DCCHECK;
-			FRAME_ERR_DSCHECK       <= '0';
 	  end if;
 	end if;
 end process p_seq_num;
