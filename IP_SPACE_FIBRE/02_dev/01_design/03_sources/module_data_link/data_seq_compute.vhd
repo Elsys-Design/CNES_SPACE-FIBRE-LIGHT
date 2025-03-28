@@ -69,7 +69,7 @@ begin
 		VALID_K_CHARAC_DSCOM <= VALID_K_CHARAC_DENC;
 		TYPE_FRAME_DSCOM     <= TYPE_FRAME_DENC;
 		END_FRAME_DSCOM      <= END_FRAME_DENC;
-		if END_FRAME_DENC = '1' then
+		if END_FRAME_DENC = '1' then -- control word or EDF or EBF
 			if TYPE_FRAME_DENC = C_DATA_FRM then
 				DATA_DSCOM      <= C_RESERVED_SYMB & C_RESERVED_SYMB & trans_pol_flg & std_logic_vector(trans_seq_cnt+1) & DATA_DENC(7 downto 0);
 				SEQ_NUM_DSCOM   <= trans_pol_flg & std_logic_vector(trans_seq_cnt+1);
@@ -82,6 +82,9 @@ begin
 				DATA_DSCOM      <= C_RESERVED_SYMB & trans_pol_flg & std_logic_vector(trans_seq_cnt) & DATA_DENC(15 downto 0);
 				SEQ_NUM_DSCOM   <= trans_pol_flg & std_logic_vector(trans_seq_cnt);
 			end if;
+		elsif DATA_DENC(7 downto 0) = C_K28_7_SYMB and VALID_K_CHARAC_DENC(0)= '1' then -- SIF or SDF or SBF
+			DATA_DSCOM      <= C_RESERVED_SYMB & trans_pol_flg & std_logic_vector(trans_seq_cnt) & DATA_DENC(15 downto 0);
+			SEQ_NUM_DSCOM   <= trans_pol_flg & std_logic_vector(trans_seq_cnt);
 		else
       DATA_DSCOM      <= DATA_DENC;
 		end if;
