@@ -56,7 +56,7 @@ package data_link_lib is
   constant C_ACK_FRM   :std_logic_vector(3 downto 0):= "0101"; -- ACK Frame
   constant C_NACK_FRM  :std_logic_vector(3 downto 0):= "0110"; -- NACK Frame
   constant C_FULL_FRM  :std_logic_vector(3 downto 0):= "0111"; -- FULL Frame
-  constant C_RETRY_FRM :std_logic_vector(3 downto 0):= "1000"; -- RETRY Frame 
+  constant C_RETRY_FRM :std_logic_vector(3 downto 0):= "1000"; -- RETRY Frame
   -- SYMBOLS
   constant C_EEP_SYMB            : std_logic_vector(07 downto 00) := x"FE";  --! K30.7 EEP
   constant C_EOP_SYMB            : std_logic_vector(07 downto 00) := x"FD";  --! K29.7 EOP
@@ -67,11 +67,11 @@ package data_link_lib is
   constant C_FILL_SYMB           : std_logic_vector(07 downto 00) := x"FB";  --! K27.7
   constant C_SBF_SYMB            : std_logic_vector(07 downto 00) := x"5D";  --! D29.2 SBF
   constant C_NACK_SYMB           : std_logic_vector(07 downto 00) := x"A2";  --! D27.5
-  constant C_SDF_SYMB            : std_logic_vector(07 downto 00) := x"50";  --! D16.2  
+  constant C_SDF_SYMB            : std_logic_vector(07 downto 00) := x"50";  --! D16.2
   constant C_FULL_SYMB           : std_logic_vector(07 downto 00) := x"6F";  --! D15.3
   constant C_RETRY_SYMB          : std_logic_vector(07 downto 00) := x"87";  --! D7.4
   constant C_SIF_SYMB            : std_logic_vector(07 downto 00) := x"84";  --! D4.2 SIF
-  constant C_ACK_SYMB            : std_logic_vector(07 downto 00) := x"A6";  --! D2.5 
+  constant C_ACK_SYMB            : std_logic_vector(07 downto 00) := x"A6";  --! D2.5
   constant C_RESERVED_SYMB       : std_logic_vector(07 downto 00) := x"00";  --! D0.0
   -- DATA-LINK CONTROL WORDS
   constant C_SDF_WORD           : std_logic_vector(15 downto 00) := C_SDF_SYMB & C_K28_7_SYMB;   -- bits 23 downto 16 = Virtual channel and bits 31 downto 24 = Reserved

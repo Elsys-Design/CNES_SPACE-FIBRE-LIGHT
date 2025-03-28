@@ -56,7 +56,7 @@ type data_encapsulation_fsm_type is (
   );
 
 signal current_state                : data_encapsulation_fsm_type;                        --! Current state of the Dat Word Identification FSM
-
+signal current_state_r              : data_encapsulation_fsm_type;                        --! Current state of the Dat Word Identification FSM
 begin
 ---------------------------------------------------------
 -----                  Process                      -----
@@ -75,8 +75,10 @@ if RST_N = '0' then
   NEW_WORD_DENC       <= '0';
   END_FRAME_DENC      <= '0';
   current_state       <= START_FRAME_ST;
+  current_state_r     <= START_FRAME_ST;
 elsif rising_edge(CLK) and LANE_ACTIVE_PPL= '1' then
   TYPE_FRAME_DENC <= TYPE_FRAME_DMAC;
+  current_state_r <= current_state;
   case current_state is
     when START_FRAME_ST =>
                             END_FRAME_DENC      <= '0';
@@ -132,7 +134,7 @@ elsif rising_edge(CLK) and LANE_ACTIVE_PPL= '1' then
 			                        VALID_K_CHARAC_DENC <= VALID_K_CHAR_DMAC;
 			                        NEW_WORD_DENC       <= '1';
                               current_state       <= END_FRAME_ST;
-                            elsif NEW_WORD_DMAC = '1' then
+                            elsif NEW_WORD_DMAC = '1' or current_state_r= START_FRAME_ST then
                               DATA_DENC           <= DATA_DMAC;
                               VALID_K_CHARAC_DENC <= VALID_K_CHAR_DMAC;
                               NEW_WORD_DENC       <= '1';
