@@ -190,7 +190,6 @@ begin
                         elsif data_transfer= 0  then -- Request data transfers
                           VC_RD_EN_DMAC(0) <= '1';
                           data_transfer    <= to_unsigned(1,data_transfer'length);
-                          new_word         <= '1';
                           data_counter     <= (others => '0');
                         elsif data_transfer= 1  then -- Request data transfers
                           VC_RD_EN_DMAC(0) <= '0';
