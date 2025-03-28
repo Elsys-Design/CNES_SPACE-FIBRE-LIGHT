@@ -43,19 +43,18 @@ architecture rtl of data_crc_compute is
 type int_array      is array (0 to 3) of integer;
 type int_array_tier is array (0 to 2) of integer;
 type int_array_dem  is array (0 to 1) of integer;
-signal indices      : int_array      := (0, 8, 16, 24);
-signal indices_tier : int_array_tier := (0, 8, 16);
-signal indices_dem  : int_array_dem  := (0, 8);
+signal indices                : int_array      := (0, 8, 16, 24);
+signal indices_tier           : int_array_tier := (0, 8, 16);
+signal indices_dem            : int_array_dem  := (0, 8);
 -- CRC 16 Bits compute
-signal crc_reg_16b         : std_logic_vector(16-1 downto 0);
-signal crc_reg_16b_comp    : std_logic_vector(16-1 downto 0);
-signal crc_reg_16b_check   : std_logic_vector(16-1 downto 0);
-signal crc_to_inv_16b      : std_logic;
+signal crc_reg_16b            : std_logic_vector(16-1 downto 0);
+signal crc_reg_16b_comp       : std_logic_vector(16-1 downto 0);
+signal crc_reg_16b_check      : std_logic_vector(16-1 downto 0);
+signal crc_to_inv_16b         : std_logic;
 -- CRC 8 Bits compute
-signal crc_reg_8b          : std_logic_vector(8-1 downto 0);
-signal crc_reg_8b_comp    : std_logic_vector(8-1 downto 0);
-signal crc_reg_8b_check    : std_logic_vector(8-1 downto 0);
-signal crc_to_inv_8b       : std_logic;
+signal crc_reg_8b             : std_logic_vector(8-1 downto 0);
+signal crc_reg_8b_comp        : std_logic_vector(8-1 downto 0);
+signal crc_to_inv_8b          : std_logic;
 
 signal end_frame_dscom_prev   : std_logic;
 signal new_word_dccom_i       : std_logic;
@@ -81,7 +80,7 @@ begin
 			crc_reg_16b        <= (others => '1'); -- Reset CRC to seed value
 			crc_reg_16b_comp   <= (others => '1'); -- Reset CRC to seed value
 			crc_to_inv_16b     <= '0';
-	elsif rising_edge(CLK) then
+	elsif rising_edge(CLK) and LANE_ACTIVE_PPL= '1' then
 		crc_var        := crc_reg_16b_comp;
 		crc_to_inv_16b <= '0';
 		if (TYPE_FRAME_DSCOM = C_DATA_FRM) then
@@ -115,10 +114,10 @@ begin
 			crc_reg_8b      <= (others => '0'); -- Reset CRC to seed value
 			crc_reg_8b_comp <= (others => '0'); -- Reset CRC to seed value
 			crc_to_inv_8b   <= '0';
-	elsif rising_edge(CLK) then
+	elsif rising_edge(CLK) and LANE_ACTIVE_PPL= '1' then
 		crc_var       := crc_reg_8b_comp;
 		crc_to_inv_8b <= '0';
-		if TYPE_FRAME_DSCOM /= C_DATA_FRM then
+		if TYPE_FRAME_DSCOM = C_BC_FRM then
 			if END_FRAME_DSCOM = '1'and NEW_WORD_DSCOM = '1'then -- Last word
 			crc_to_inv_8b <= '1';
 			 -- calculates the crc 8 byte by byte
@@ -126,7 +125,7 @@ begin
 				 crc_var := calculate_crc_8(DATA_DSCOM(7+ indices_tier(i) downto 0 + indices_tier(i)), crc_var);
 			 end loop;
 			 crc_reg_8b_comp <= (others => '0'); -- Reset CRC to seed value
-			 crc_reg_8b   <= crc_var;
+			 crc_reg_8b      <= crc_var;
 			elsif NEW_WORD_DSCOM = '1' then
 			 -- calculates the crc 8 byte by byte
 			 for i in indices'range loop
@@ -134,6 +133,22 @@ begin
 			 end loop;
 			crc_reg_8b_comp <= crc_var;
 			end if;
+		elsif END_FRAME_DSCOM = '1'and NEW_WORD_DSCOM = '1'then -- control word 
+			crc_to_inv_8b <= '1';
+			 -- calculates the crc 8 byte by byte
+			 for i in indices_tier'range loop
+				 crc_var := calculate_crc_8(DATA_DSCOM(7+ indices_tier(i) downto 0 + indices_tier(i)), crc_var);
+			 end loop;
+			 crc_reg_8b_comp <= (others => '0'); -- Reset CRC to seed value
+			 crc_reg_8b      <= crc_var;
+		elsif DATA_DSCOM(15 downto 0) = C_SIF_WORD and VALID_K_CHARAC_DSCOM = "0001" and NEW_WORD_DSCOM = '1'then -- SIF
+			crc_to_inv_8b <= '1';
+			 -- calculates the crc 8 byte by byte
+			 for i in indices_tier'range loop
+				 crc_var := calculate_crc_8(DATA_DSCOM(7+ indices_tier(i) downto 0 + indices_tier(i)), crc_var);
+			 end loop;
+			 crc_reg_8b_comp <= (others => '0'); -- Reset CRC to seed value
+			 crc_reg_8b      <= crc_var;
 		end if;
 	end if;
 end process p_crc_8b;
@@ -142,7 +157,7 @@ end process p_crc_8b;
 
 ---------------------------------------------------------
 -- Process: p_crc_inv
--- Description: Last operation of the CRC calculation 
+-- Description: Last operation of the CRC calculation
 --              (Bit-by-bit inversion)
 ---------------------------------------------------------
 p_crc_inv: process(CLK, RST_N)
@@ -166,8 +181,9 @@ begin
 		NEW_WORD_DCCOM         <=  new_word_dccom_i;
 		if type_frame_dscom_r = C_DATA_FRM  and new_word_dccom_i = '1' then -- Data frame
 	    if crc_to_inv_16b = '1' then
+				-- Bit-by-bit inversion
 		  	for i in 0 to 15 loop
-		  		crc_var_16b(i) := crc_reg_16b(15 - i); -- Bit-by-bit inversion
+		  		crc_var_16b(i) := crc_reg_16b(15 - i);
 		  	end loop;
 				DATA_DCCOM <= crc_var_16b & data_dscom_r (15 downto 0);
 			else
@@ -175,8 +191,9 @@ begin
 			end if;
 		elsif new_word_dccom_i = '1' then
 			if crc_to_inv_8b = '1' then
+				-- Bit-by-bit inversion
 				for i in 0 to 7 loop
-					crc_var_8b(i) := crc_reg_8b(7 - i); -- Bit-by-bit inversion
+					crc_var_8b(i) := crc_reg_8b(7 - i);
 				end loop;
 				DATA_DCCOM <= crc_var_8b & data_dscom_r (23 downto 0);
 			else
