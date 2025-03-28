@@ -252,7 +252,6 @@ begin
                         elsif data_transfer= 0  then -- Request data transfers
                           VC_RD_EN_DMAC(1) <= '1';
                           data_transfer    <= to_unsigned(1,data_transfer'length);
-                          new_word         <= '1';
                           data_counter     <= (others => '0');
                         elsif data_transfer= 1  then -- Request data transfers
                           VC_RD_EN_DMAC(1) <= '0';
@@ -315,7 +314,6 @@ begin
                         elsif data_transfer= 0  then -- Request data transfers
                           VC_RD_EN_DMAC(2) <= '1';
                           data_transfer    <= to_unsigned(1,data_transfer'length);
-                          new_word         <= '1';
                           data_counter     <= (others => '0');
                         elsif data_transfer= 1  then -- Request data transfers
                           VC_RD_EN_DMAC(2) <= '0';
@@ -379,7 +377,6 @@ begin
                         elsif data_transfer= 0  then -- Request data transfers
                           VC_RD_EN_DMAC(3) <= '1';
                           data_transfer    <= to_unsigned(1,data_transfer'length);
-                          new_word         <= '1';
                           data_counter     <= (others => '0');
                         elsif data_transfer= 1  then -- Request data transfers
                           VC_RD_EN_DMAC(3) <= '0';
@@ -442,7 +439,6 @@ begin
                         elsif data_transfer= 0  then -- Request data transfers
                           VC_RD_EN_DMAC(4) <= '1';
                           data_transfer    <= to_unsigned(1,data_transfer'length);
-                          new_word         <= '1';
                           data_counter     <= (others => '0');
                         elsif data_transfer= 1  then -- Request data transfers
                           VC_RD_EN_DMAC(4) <= '0';
@@ -506,7 +502,6 @@ begin
                         elsif data_transfer= 0  then -- Request data transfers
                           VC_RD_EN_DMAC(5) <= '1';
                           data_transfer    <= to_unsigned(1,data_transfer'length);
-                          new_word         <= '1';
                           data_counter     <= (others => '0');
                         elsif data_transfer= 1  then -- Request data transfers
                           VC_RD_EN_DMAC(5) <= '0';
@@ -569,7 +564,6 @@ begin
                         elsif data_transfer= 0  then -- Request data transfers
                           VC_RD_EN_DMAC(6) <= '1';
                           data_transfer    <= to_unsigned(1,data_transfer'length);
-                          new_word         <= '1';
                           data_counter     <= (others => '0');
                         elsif data_transfer= 1  then -- Request data transfers
                           VC_RD_EN_DMAC(6) <= '0';
@@ -633,7 +627,6 @@ begin
                         elsif data_transfer= 0  then -- Request data transfers
                           VC_RD_EN_DMAC(7) <= '1';
                           data_transfer    <= to_unsigned(1,data_transfer'length);
-                          new_word         <= '1';
                           data_counter     <= (others => '0');
                         elsif data_transfer= 1  then -- Request data transfers
                           VC_RD_EN_DMAC(7) <= '0';
@@ -696,7 +689,6 @@ begin
                         elsif data_transfer= 0  then -- Request data transfers
                           VC_RD_EN_DMAC(G_VC_NUM) <= '1';
                           data_transfer    <= to_unsigned(1,data_transfer'length);
-                          new_word         <= '1';
                           data_counter     <= (others => '0');
                         elsif data_transfer= 1  then -- Request data transfers
                           VC_RD_EN_DMAC(G_VC_NUM) <= '0';
