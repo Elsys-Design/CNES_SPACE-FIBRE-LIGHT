@@ -136,7 +136,7 @@ type data_in_fsm is (
   signal vc_end_packet          : std_logic;
   signal cnt_word_sent          : unsigned(6-1 downto 0);     -- cnt_word sent, max= 64
 
-
+  signal m_value_for_credit     : std_logic_vector(C_M_SIZE + 5 downto 0);
 begin
 ---------------------------------------------------------
 -----                     Assignation               -----
@@ -149,6 +149,7 @@ begin
   VALID_K_CHARAC_DOBUF <= rd_data(C_DATA_LENGTH+C_BYTE_BY_WORD_LENGTH-1 downto C_DATA_LENGTH);
   DATA_VALID_DOBUF     <= rd_data_vld;
   END_PACKET_DOBUF     <= vc_end_packet;
+  m_value_for_credit   <= M_VAL_DDES & "000000";
 
 ---------------------------------------------------------
 -----                     Instanciation             -----
@@ -335,7 +336,7 @@ end process p_has_credit;
         fct_credit_cnt <= (others => '0');
       else
         if FCT_FAR_END_DDES = '1' and vc_end_packet = '1' then -- FCT received and packet sent
-          if C_FCT_CC_MAX > (fct_credit_cnt + (unsigned(M_VAL_DDES)*64)- cnt_word_sent) then -- FCT credit counter will not overflow
+          if C_FCT_CC_MAX > (fct_credit_cnt + unsigned(m_value_for_credit) - cnt_word_sent) then -- FCT credit counter will not overflow
             fct_credit_cnt <= fct_credit_cnt + (unsigned(M_VAL_DDES)*64) - cnt_word_sent;
           else
             FCT_CC_OVF_DOBUF <= '1';
@@ -348,12 +349,14 @@ end process p_has_credit;
             fct_credit_cnt <= (others => '0');
           end if;
         elsif FCT_FAR_END_DDES = '1' then -- FCT received
-          if C_FCT_CC_MAX > fct_credit_cnt + (unsigned(M_VAL_DDES)*64) then -- FCT credit counter will not overflow
-           fct_credit_cnt <= fct_credit_cnt + (unsigned(M_VAL_DDES)*64);
+          if C_FCT_CC_MAX > fct_credit_cnt + unsigned(m_value_for_credit) then -- FCT credit counter will not overflow
+            fct_credit_cnt <= fct_credit_cnt + unsigned(m_value_for_credit(C_FCT_CC_SIZE-1 downto 0));
           else
             FCT_CC_OVF_DOBUF <= '1';
             fct_credit_cnt   <= C_FCT_CC_MAX;
           end if;
+
+ 
         end if;
       end if;
     end if;
