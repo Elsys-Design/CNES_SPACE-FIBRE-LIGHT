@@ -31,7 +31,7 @@ package data_link_lib is
   -- Number of Virtual Channel
   constant C_VC_NUM              : integer              := 8;
   -- Output Buffer
-  constant C_OUT_BUF_SIZE        : integer              := 6; -- fifo depth = 2**6= 64 words of 32 bits
+  constant C_OUT_BUF_SIZE        : integer              := 7; -- fifo depth = 2**6= 64 words of 32 bits
   constant C_FCT_CC_SIZE         : integer              := 8;  -- FCT credit counter size: 4x64xM = 256
   constant C_FCT_CC_MAX          : unsigned             := to_unsigned(255, C_FCT_CC_SIZE);  -- FCT credit counter size: 4x64xM = 256
   constant C_M_SIZE              : integer              := 4;  -- Size of M which is multiplier +1

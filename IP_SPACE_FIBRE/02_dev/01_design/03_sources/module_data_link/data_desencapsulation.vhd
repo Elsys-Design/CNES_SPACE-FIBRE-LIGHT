@@ -64,6 +64,8 @@ begin
     vc_nb              <= (others => '0');
   elsif rising_edge(CLK) then
     DATA_RD_DDES      <= '1';
+    FCT_FAR_END_DDES  <= (others => '0');
+    M_VAL_DDES        <= (others =>(others => '0'));
     if DATA_VALID_DMBUF = '1' then
       --                      msb = 35
       if DATA_DMBUF(C_DATA_K_WIDTH - 3 downto C_DATA_K_WIDTH - 4) = "01" then --reading a K character
@@ -98,9 +100,7 @@ begin
         end if;
       end if;
     else --not valid
-      FCT_FAR_END_DDES <= (others => '0');
       DATA_DDES        <= (others =>(others => '0'));
-      M_VAL_DDES       <= (others =>(others => '0'));
       DATA_EN_DDES     <= (others => '0');
     end if;
   end if;
