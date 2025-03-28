@@ -96,16 +96,17 @@ begin
         wait for 2 * CLOCK_PERIOD;
         RST_N <= '1';
         TYPE_INCOM_FRAME <= C_FCT_FRM;
+        CRC_8B <= x"21";
         wait until rising_edge(CLK);
         -- COMMA SDF 0x01 0x00
-        DATA_FROM_DWI <= x"4F" & x"01" & x"01" & C_K28_3_SYMB;
+        DATA_FROM_DWI <= x"21" & x"02" & x"00" & C_K28_3_SYMB;
         new_word_dwi <= '1';
         end_frame_dwi <= '1';
         wait until rising_edge(CLK);
         
         end_frame_dwi <= '0';
         new_word_dwi <= '0';
-        CRC_8B <= x"4F";
+        CRC_8B <= x"21";
         wait until rising_edge(CLK);
         wait until rising_edge(CLK);
 
