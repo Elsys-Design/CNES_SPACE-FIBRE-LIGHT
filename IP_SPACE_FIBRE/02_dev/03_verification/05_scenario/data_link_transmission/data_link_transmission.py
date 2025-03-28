@@ -333,11 +333,12 @@ async def send_FCT(tb, vc, value, seq_num):
     """
     await tb.spacefibre_driver.write_to_Rx("01111100", delay = 0, k_encoding = 1)
     crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8("01111100")
-    await tb.spacefibre_driver.write_to_Rx(f"{(value):0>3b}" + f"{(vc):0>5b}", delay = 0, k_encoding = 1)
+    await tb.spacefibre_driver.write_to_Rx(f"{(value):0>3b}" + f"{(vc):0>5b}", delay = 0, k_encoding = 0)
     crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8(f"{(value):0>3b}" + f"{(vc):0>5b}", crc_8)
-    await tb.spacefibre_driver.write_to_Rx(seq_num, delay = 0, k_encoding = 1)
+    await tb.spacefibre_driver.write_to_Rx(seq_num, delay = 0, k_encoding = 0)
     crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8(seq_num , crc_8)
-    await tb.spacefibre_driver.write_to_Rx(crc_8, delay = 0, k_encoding = 1)
+    crc_8 = tb.spacefibre_random_generator_data_link.invert_string(crc_8)
+    await tb.spacefibre_driver.write_to_Rx(crc_8, delay = 0, k_encoding = 0)
 
 
 @cocotb.test()
@@ -348,6 +349,7 @@ async def cocotb_run(dut):
 
     #Instantiation of the testbench and first reset of the DUT
     tb = TB(dut)
+
     await tb.reset()
 
     #Specific variable for the scenario
@@ -372,6 +374,7 @@ async def cocotb_run(dut):
 
     #Send first FCT to each virtual channel
     for x in range(8):
+        print ("FCT is", x)
         await send_FCT(tb, x, 0, "0"+ f"{(x+1):0>7b}")
     
     await configure_gen_vc_dl(tb, [0xE1,0x1F,0x00,0x00], [0x00,0x00,0x00,0x00])

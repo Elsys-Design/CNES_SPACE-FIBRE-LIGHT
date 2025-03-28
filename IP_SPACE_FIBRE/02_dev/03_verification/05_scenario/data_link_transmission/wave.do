@@ -1,118 +1,118 @@
 onerror {resume}
 quietly WaveActivateNextPane {} 0
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/CLK
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/RST_N
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/CLK_TX
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/RST_TXCLK_N
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/S_AXI_AWADDR
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/S_AXI_AWVALID
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/S_AXI_AWREADY
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/S_AXI_WDATA
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/S_AXI_WSTRB
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/S_AXI_WVALID
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/S_AXI_WREADY
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/S_AXI_BREADY
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/S_AXI_BRESP
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/S_AXI_BVALID
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/S_AXI_ARADDR
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/S_AXI_ARVALID
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/S_AXI_ARREADY
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/S_AXI_RREADY
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/S_AXI_RDATA
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/S_AXI_RRESP
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/S_AXI_RVALID
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/INTERFACE_RST
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/LINK_RST
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/NACK_RST_EN
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/NACK_RST_MODE
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/PAUSE_VC
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/CONTINUOUS_VC
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/LANE_START
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/AUTOSTART
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/LANE_RESET
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/PARALLEL_LOOPBACK_EN
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/STANDBY_REASON
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/NEAR_END_SERIAL_LB_EN
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/FAR_END_SERIAL_LB_EN
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/VC_CREDIT
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/FCT_CREDIT_OVERFLOW
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/CRC_LONG_ERROR
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/CRC_SHORT_ERROR
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/FRAME_ERROR
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/SEQ_ERROR
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/FAR_END_LINK_RST
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/SEQ_NUMBER_TX
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/SEQ_NUMBER_RX
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/INPUT_BUFFER_OVFL
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/FRAME_TX
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/FRAME_FINISHED
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/DATA_CNT_TX
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/DATA_CNT_RX
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/ACK_COUNTER_TX
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/NACK_COUNTER_TX
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/FCT_COUNTER_TX
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/ACK_COUNTER_RX
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/NACK_COUNTER_RX
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/FCT_COUNTER_RX
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/FULL_COUNTER_RX
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/RETRY_COUNTER_RX
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/CURRENT_TIME_SLOT
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/LINK_RST_ASSERTED
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/LANE_STATE
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/RX_ERROR_CNT
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/RX_ERROR_OVF
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/LOSS_SIGNAL
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/FAR_END_CAPA
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/RX_POLARITY
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/RST_DUT_N
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/RESET_PARAM_DL
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/axi_wr_state
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/axi_rd_state
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/reg_dl_param
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/reg_dl_status_1
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/reg_dl_status_2
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/reg_dl_qos_1
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/reg_dl_qos_2
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/reg_lane_param
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/reg_lane_status
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/reg_phy_param
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/reg_global
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/vc_credit_i
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/fct_credit_overflow_i
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/crc_long_error_i
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/crc_short_error_i
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/frame_error_i
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/seq_error_i
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/far_end_link_rst_i
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/seq_number_tx_i
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/seq_number_rx_i
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/input_buffer_ovfl_i
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/lane_start_pulse
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/lane_state_i
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/rx_error_cnt_i
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/rx_error_ovf_i
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/loss_signal_i
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/far_end_capa_i
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/rx_polarity_i
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/outputs_to_sync
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/outputs_to_dut
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/inputs_to_sync
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/inputs_to_model
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/frame_tx_i
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/frame_finished_i
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/data_cnt_tx_i
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/data_cnt_rx_i
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/ack_counter_tx_i
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/nack_counter_tx_i
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/fct_counter_tx_i
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/ack_counter_rx_i
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/nack_counter_rx_i
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/fct_counter_rx_i
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/full_counter_rx_i
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/retry_counter_rx_i
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/current_time_slot_i
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/link_rst_asserted_i
-add wave -noupdate -expand -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/reset_param_dl_i
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/CLK
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/RST_N
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/CLK_TX
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/RST_TXCLK_N
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/S_AXI_AWADDR
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/S_AXI_AWVALID
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/S_AXI_AWREADY
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/S_AXI_WDATA
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/S_AXI_WSTRB
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/S_AXI_WVALID
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/S_AXI_WREADY
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/S_AXI_BREADY
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/S_AXI_BRESP
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/S_AXI_BVALID
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/S_AXI_ARADDR
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/S_AXI_ARVALID
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/S_AXI_ARREADY
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/S_AXI_RREADY
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/S_AXI_RDATA
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/S_AXI_RRESP
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/S_AXI_RVALID
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/INTERFACE_RST
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/LINK_RST
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/NACK_RST_EN
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/NACK_RST_MODE
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/PAUSE_VC
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/CONTINUOUS_VC
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/LANE_START
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/AUTOSTART
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/LANE_RESET
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/PARALLEL_LOOPBACK_EN
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/STANDBY_REASON
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/NEAR_END_SERIAL_LB_EN
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/FAR_END_SERIAL_LB_EN
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/VC_CREDIT
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/FCT_CREDIT_OVERFLOW
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/CRC_LONG_ERROR
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/CRC_SHORT_ERROR
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/FRAME_ERROR
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/SEQ_ERROR
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/FAR_END_LINK_RST
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/SEQ_NUMBER_TX
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/SEQ_NUMBER_RX
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/INPUT_BUFFER_OVFL
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/FRAME_TX
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/FRAME_FINISHED
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/DATA_CNT_TX
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/DATA_CNT_RX
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/ACK_COUNTER_TX
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/NACK_COUNTER_TX
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/FCT_COUNTER_TX
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/ACK_COUNTER_RX
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/NACK_COUNTER_RX
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/FCT_COUNTER_RX
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/FULL_COUNTER_RX
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/RETRY_COUNTER_RX
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/CURRENT_TIME_SLOT
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/LINK_RST_ASSERTED
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/LANE_STATE
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/RX_ERROR_CNT
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/RX_ERROR_OVF
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/LOSS_SIGNAL
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/FAR_END_CAPA
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/RX_POLARITY
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/RST_DUT_N
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/RESET_PARAM_DL
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/axi_wr_state
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/axi_rd_state
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/reg_dl_param
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/reg_dl_status_1
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/reg_dl_status_2
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/reg_dl_qos_1
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/reg_dl_qos_2
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/reg_lane_param
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/reg_lane_status
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/reg_phy_param
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/reg_global
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/vc_credit_i
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/fct_credit_overflow_i
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/crc_long_error_i
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/crc_short_error_i
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/frame_error_i
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/seq_error_i
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/far_end_link_rst_i
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/seq_number_tx_i
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/seq_number_rx_i
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/input_buffer_ovfl_i
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/lane_start_pulse
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/lane_state_i
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/rx_error_cnt_i
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/rx_error_ovf_i
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/loss_signal_i
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/far_end_capa_i
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/rx_polarity_i
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/outputs_to_sync
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/outputs_to_dut
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/inputs_to_sync
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/inputs_to_model
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/frame_tx_i
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/frame_finished_i
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/data_cnt_tx_i
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/data_cnt_rx_i
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/ack_counter_tx_i
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/nack_counter_tx_i
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/fct_counter_tx_i
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/ack_counter_rx_i
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/nack_counter_rx_i
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/fct_counter_rx_i
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/full_counter_rx_i
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/retry_counter_rx_i
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/current_time_slot_i
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/link_rst_asserted_i
+add wave -noupdate -group CON /configuration_2_bench/DATA_LINK_CONFIGURATOR_INST/reset_param_dl_i
 add wave -noupdate -group ANA -group ANA_8 /configuration_2_bench/gen_data_link_analyzer(8)/DATA_LINK_ANALYZER_INST/CLK
 add wave -noupdate -group ANA -group ANA_8 /configuration_2_bench/gen_data_link_analyzer(8)/DATA_LINK_ANALYZER_INST/RST_N
 add wave -noupdate -group ANA -group ANA_8 /configuration_2_bench/gen_data_link_analyzer(8)/DATA_LINK_ANALYZER_INST/S_AXI_AWADDR
@@ -1121,8 +1121,6 @@ add wave -noupdate -group IP_top /configuration_2_bench/spacefibre_instance/retr
 add wave -noupdate -group IP_top /configuration_2_bench/spacefibre_instance/current_time_slot_dl
 add wave -noupdate -group IP_top /configuration_2_bench/spacefibre_instance/reset_param_dl
 add wave -noupdate -group IP_top /configuration_2_bench/spacefibre_instance/link_rst_asserted_dl
-add wave -noupdate -group DL_top /configuration_2_bench/spacefibre_instance/inst_data_link/RST_N_PPL
-add wave -noupdate -group DL_top /configuration_2_bench/spacefibre_instance/inst_data_link/CLK_PPL
 add wave -noupdate -group DL_top /configuration_2_bench/spacefibre_instance/inst_data_link/AXIS_ARSTN_TX_NW
 add wave -noupdate -group DL_top /configuration_2_bench/spacefibre_instance/inst_data_link/AXIS_ACLK_TX_NW
 add wave -noupdate -group DL_top /configuration_2_bench/spacefibre_instance/inst_data_link/AXIS_TREADY_TX_DL
@@ -1213,14 +1211,12 @@ add wave -noupdate -group DL_top /configuration_2_bench/spacefibre_instance/inst
 add wave -noupdate -group DL_top /configuration_2_bench/spacefibre_instance/inst_data_link/data_dccheck
 add wave -noupdate -group DL_top /configuration_2_bench/spacefibre_instance/inst_data_link/valid_k_charac_dccheck
 add wave -noupdate -group DL_top /configuration_2_bench/spacefibre_instance/inst_data_link/crc_err_dccheck
-add wave -noupdate -group DL_top /configuration_2_bench/spacefibre_instance/inst_data_link/frame_err
 add wave -noupdate -group DL_top /configuration_2_bench/spacefibre_instance/inst_data_link/rxerr_dwi
 add wave -noupdate -group DL_top /configuration_2_bench/spacefibre_instance/inst_data_link/req_ack_derrm
 add wave -noupdate -group DL_top /configuration_2_bench/spacefibre_instance/inst_data_link/req_nack_derrm
 add wave -noupdate -group DL_top /configuration_2_bench/spacefibre_instance/inst_data_link/trans_pol_flg_derrm
 add wave -noupdate -group DL_top /configuration_2_bench/spacefibre_instance/inst_data_link/req_ack_done_dmac
 add wave -noupdate -group DL_top /configuration_2_bench/spacefibre_instance/inst_data_link/link_reset_dlre
-add wave -noupdate -group DL_top /configuration_2_bench/spacefibre_instance/inst_data_link/near_end_capa_dlre
 add wave -noupdate -group DL_top /configuration_2_bench/spacefibre_instance/inst_data_link/vc_ready_dobuf
 add wave -noupdate -group DL_top /configuration_2_bench/spacefibre_instance/inst_data_link/vc_data_dobuf
 add wave -noupdate -group DL_top /configuration_2_bench/spacefibre_instance/inst_data_link/vc_valid_k_charac_dobuf
@@ -1501,8 +1497,367 @@ add wave -noupdate -group Resync /configuration_2_bench/spacefibre_instance/inst
 add wave -noupdate -group Resync /configuration_2_bench/spacefibre_instance/inst_reset_sync_clk_from_GTY/reset_gen_r_n
 add wave -noupdate -group Resync /configuration_2_bench/spacefibre_instance/inst_reset_sync_clk_from_GTY/reset_gen_rr_n
 add wave -noupdate -group Resync /configuration_2_bench/spacefibre_instance/inst_reset_sync_clk_from_GTY/rst_tx_done_r
+add wave -noupdate -group CRC_Compute /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_compute/RST_N
+add wave -noupdate -group CRC_Compute /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_compute/CLK
+add wave -noupdate -group CRC_Compute /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_compute/NEW_WORD_DSCOM
+add wave -noupdate -group CRC_Compute /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_compute/DATA_DSCOM
+add wave -noupdate -group CRC_Compute /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_compute/VALID_K_CHARAC_DSCOM
+add wave -noupdate -group CRC_Compute /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_compute/TYPE_FRAME_DSCOM
+add wave -noupdate -group CRC_Compute /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_compute/END_FRAME_DSCOM
+add wave -noupdate -group CRC_Compute /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_compute/FIFO_FULL_TX_LANE
+add wave -noupdate -group CRC_Compute /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_compute/VALID_K_CHARAC_DCCOM
+add wave -noupdate -group CRC_Compute /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_compute/DATA_DCCOM
+add wave -noupdate -group CRC_Compute /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_compute/NEW_WORD_DCCOM
+add wave -noupdate -group CRC_Compute /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_compute/indices
+add wave -noupdate -group CRC_Compute /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_compute/indices_tier
+add wave -noupdate -group CRC_Compute /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_compute/indices_dem
+add wave -noupdate -group CRC_Compute /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_compute/crc_reg_16b
+add wave -noupdate -group CRC_Compute /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_compute/crc_to_inv_16b
+add wave -noupdate -group CRC_Compute /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_compute/crc_reg_8b
+add wave -noupdate -group CRC_Compute /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_compute/crc_to_inv_8b
+add wave -noupdate -group CRC_Compute /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_compute/end_frame_dscom_prev
+add wave -noupdate -group CRC_Compute /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_compute/new_word_dccom_i
+add wave -noupdate -group CRC_Compute /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_compute/type_frame_dscom_r
+add wave -noupdate -group CRC_Compute /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_compute/data_dscom_r
+add wave -noupdate -group CRC_Compute /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_compute/valid_k_charac_dscom_r
+add wave -noupdate -group SEQ_NUM_Compute /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_compute/RST_N
+add wave -noupdate -group SEQ_NUM_Compute /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_compute/CLK
+add wave -noupdate -group SEQ_NUM_Compute /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_compute/NEW_WORD_DENC
+add wave -noupdate -group SEQ_NUM_Compute /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_compute/DATA_DENC
+add wave -noupdate -group SEQ_NUM_Compute /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_compute/VALID_K_CHARAC_DENC
+add wave -noupdate -group SEQ_NUM_Compute /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_compute/TYPE_FRAME_DENC
+add wave -noupdate -group SEQ_NUM_Compute /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_compute/END_FRAME_DENC
+add wave -noupdate -group SEQ_NUM_Compute /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_compute/NEW_WORD_DSCOM
+add wave -noupdate -group SEQ_NUM_Compute /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_compute/DATA_DSCOM
+add wave -noupdate -group SEQ_NUM_Compute /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_compute/VALID_K_CHARAC_DSCOM
+add wave -noupdate -group SEQ_NUM_Compute /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_compute/TYPE_FRAME_DSCOM
+add wave -noupdate -group SEQ_NUM_Compute /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_compute/END_FRAME_DSCOM
+add wave -noupdate -group SEQ_NUM_Compute /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_compute/SEQ_NUM_DSCOM
+add wave -noupdate -group SEQ_NUM_Compute /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_compute/trans_seq_cnt
+add wave -noupdate -group SEQ_NUM_Compute /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_compute/trans_pol_flg
+add wave -noupdate -group Data_Encapsulation /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_encpasulation/RST_N
+add wave -noupdate -group Data_Encapsulation /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_encpasulation/CLK
+add wave -noupdate -group Data_Encapsulation /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_encpasulation/DATA_DMAC
+add wave -noupdate -group Data_Encapsulation /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_encpasulation/VALID_K_CHAR_DMAC
+add wave -noupdate -group Data_Encapsulation /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_encpasulation/NEW_WORD_DMAC
+add wave -noupdate -group Data_Encapsulation /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_encpasulation/END_PACKET_DMAC
+add wave -noupdate -group Data_Encapsulation /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_encpasulation/TYPE_FRAME_DMAC
+add wave -noupdate -group Data_Encapsulation /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_encpasulation/VIRTUAL_CHANNEL_DMAC
+add wave -noupdate -group Data_Encapsulation /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_encpasulation/BC_TYPE_DMAC
+add wave -noupdate -group Data_Encapsulation /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_encpasulation/BC_CHANNEL_DMAC
+add wave -noupdate -group Data_Encapsulation /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_encpasulation/BC_STATUS_DMAC
+add wave -noupdate -group Data_Encapsulation /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_encpasulation/MULT_CHANNEL_DMAC
+add wave -noupdate -group Data_Encapsulation /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_encpasulation/NEW_WORD_DENC
+add wave -noupdate -group Data_Encapsulation /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_encpasulation/DATA_DENC
+add wave -noupdate -group Data_Encapsulation /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_encpasulation/VALID_K_CHARAC_DENC
+add wave -noupdate -group Data_Encapsulation /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_encpasulation/TYPE_FRAME_DENC
+add wave -noupdate -group Data_Encapsulation /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_encpasulation/END_FRAME_DENC
+add wave -noupdate -group Data_Encapsulation /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_encpasulation/current_state
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/RST_N
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/CLK
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/REQ_ACK_DERRM
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/REQ_NACK_DERRM
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/TRANS_POL_FLG_DERRM
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/REQ_ACK_DONE_DMAC
+add wave -noupdate -group MAC -radix binary /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/REQ_FCT_DIBUF
+add wave -noupdate -group MAC -radix binary /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/REQ_FCT_DONE_DMAC
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/VC_READY_DOBUF
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/VC_DATA_DOBUF
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/VC_VALID_K_CHAR_DOBUF
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/VC_DATA_VALID_DOBUF
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/VC_END_PACKET_DOBUF
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/VC_RD_EN_DMAC
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/VC_PAUSE_MIB
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/VC_END_EMISSION_DMAC
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/VC_RUN_EMISSION_DMAC
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/DATA_COUNTER_TX_DMAC
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/ACK_COUNTER_TX_DMAC
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/NACK_COUNTER_TX_DMAC
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/FCT_COUNTER_TX_DMAC
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/DATA_DMAC
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/VALID_K_CHAR_DMAC
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/NEW_WORD_DMAC
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/END_PACKET_DMAC
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/TYPE_FRAME_DMAC
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/VIRTUAL_CHANNEL_DMAC
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/BC_TYPE_DMAC
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/BC_CHANNEL_DMAC
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/BC_STATUS_DMAC
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/MULT_CHANNEL_DMAC
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/TRANS_POL_FLG_DMAC
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/current_state_vc
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/current_state_req
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/data_vc
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/valid_k_char_vc
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/req_int
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/new_word
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/new_packet
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/end_packet
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/data_transfer
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/type_frame
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/virtual_channel
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/cnt_wait
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/idle_data
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/idle_cnt
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/ack_counter
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/nack_counter
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/fct_counter
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/data_counter
+add wave -noupdate -group MAC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac/vc_pause_i
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/RST_N
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/CLK
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/LINK_RESET_DLRE
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/S_AXIS_ARSTN_NW
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/S_AXIS_ACLK_NW
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/S_AXIS_TREADY_DL
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/S_AXIS_TDATA_NW
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/S_AXIS_TUSER_NW
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/S_AXIS_TLAST_NW
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/S_AXIS_TVALID_NW
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/VC_READY_DOBUF
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/DATA_DOBUF
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/VALID_K_CHARAC_DOBUF
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/DATA_VALID_DOBUF
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/END_PACKET_DOBUF
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/VC_RD_EN_DMAC
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/M_VAL_DDES
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/FCT_FAR_END_DDES
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/LANE_ACTIVE_ST_PPL
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/FCT_CC_OVF_DOBUF
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/CREDIT_VC_DOBUF
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/VC_CONT_MODE_MIB
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/current_state
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/rd_data
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/rd_data_vld
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/status_busy_flush
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/status_threshold_high
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/status_threshold_low
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/status_full
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/status_empty
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/s_axis_tdata_i
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/s_axis_tuser_i
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/s_axis_tlast_i
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/s_axis_tvalid_i
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/cont_mode_flg
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/last_k_char
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/cmd_flush
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/fct_credit_cnt
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/eip_out
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/eip_in_req
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/eip_in_ack
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/eip_in_ack_reg1
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/eip_in_ack_reg2
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/eip_out_ack
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/cnt_eip
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/cnt_eip_out
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/cnt_eip_in
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/cnt_eip_in_reg1
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/cnt_eip_in_reg2
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/data_out
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/valid_k_char_out
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/vc_end_packet
+add wave -noupdate -group Output_Buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/cnt_word_sent
+add wave -noupdate -group Link_Reset_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_link_reset/RST_N
+add wave -noupdate -group Link_Reset_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_link_reset/CLK
+add wave -noupdate -group Link_Reset_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_link_reset/LINK_RESET_DLRE
+add wave -noupdate -group Link_Reset_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_link_reset/RESET_PARAM_DLRE
+add wave -noupdate -group Link_Reset_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_link_reset/LINK_RESET_DIBUF
+add wave -noupdate -group Link_Reset_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_link_reset/LINK_RESET_DERRM
+add wave -noupdate -group Link_Reset_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_link_reset/LANE_RESET_DLRE
+add wave -noupdate -group Link_Reset_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_link_reset/NEAR_END_CAPA_DLRE
+add wave -noupdate -group Link_Reset_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_link_reset/LANE_ACTIVE_PPL
+add wave -noupdate -group Link_Reset_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_link_reset/FAR_END_CAPA_PPL
+add wave -noupdate -group Link_Reset_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_link_reset/INTERFACE_RESET_MIB
+add wave -noupdate -group Link_Reset_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_link_reset/LINK_RESET_MIB
+add wave -noupdate -group Link_Reset_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_link_reset/current_state
+add wave -noupdate -group Link_Reset_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_link_reset/cnt_link_reset
+add wave -noupdate -group Error_Mngmt /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_err_management/CLK
+add wave -noupdate -group Error_Mngmt /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_err_management/RST_N
+add wave -noupdate -group Error_Mngmt /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_err_management/TYPE_FRAME_DWI
+add wave -noupdate -group Error_Mngmt /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_err_management/RXERR_DWI
+add wave -noupdate -group Error_Mngmt /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_err_management/TYPE_FRAME_DCCHECK
+add wave -noupdate -group Error_Mngmt /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_err_management/CRC_ERR_DCCHECK
+add wave -noupdate -group Error_Mngmt /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_err_management/TYPE_FRAME_DSCHECK
+add wave -noupdate -group Error_Mngmt /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_err_management/END_FRAME_DSCHECK
+add wave -noupdate -group Error_Mngmt /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_err_management/SEQ_ERR_DSCHECK
+add wave -noupdate -group Error_Mngmt /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_err_management/FAR_END_RPF_DSCHECK
+add wave -noupdate -group Error_Mngmt /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_err_management/NEAR_END_RPF_DERRM
+add wave -noupdate -group Error_Mngmt /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_err_management/FRAME_ERR_DSCHECK
+add wave -noupdate -group Error_Mngmt /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_err_management/REQ_ACK_DERRM
+add wave -noupdate -group Error_Mngmt /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_err_management/REQ_NACK_DERRM
+add wave -noupdate -group Error_Mngmt /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_err_management/TRANS_POL_FLG_DERRM
+add wave -noupdate -group Error_Mngmt /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_err_management/REQ_ACK_DONE_DMAC
+add wave -noupdate -group Error_Mngmt /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_err_management/LINK_RESET_DERRM
+add wave -noupdate -group Error_Mngmt /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_err_management/NACK_RST_EN_MIB
+add wave -noupdate -group Error_Mngmt /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_err_management/NACK_RST_MODE_MIB
+add wave -noupdate -group Error_Mngmt /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_err_management/state
+add wave -noupdate -group Error_Mngmt /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_err_management/s_nack_request
+add wave -noupdate -group Error_Mngmt /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_err_management/s_ack_request
+add wave -noupdate -group Error_Mngmt /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_err_management/nack_request_fsm
+add wave -noupdate -group Error_Mngmt /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_err_management/ack_request_fsm
+add wave -noupdate -group Error_Mngmt /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_err_management/nack_request_out
+add wave -noupdate -group Error_Mngmt /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_err_management/ack_request_out
+add wave -noupdate -group Error_Mngmt /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_err_management/s_far_end_rpf
+add wave -noupdate -group Error_Mngmt /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_err_management/s_seq_err
+add wave -noupdate -group Error_Mngmt /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_err_management/flg_nack_rst_flg
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/RST_N
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/CLK
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/LINK_RESET_DLRE
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/FIFO_RX_DATA_VALID_PPL
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/FIFO_RX_RD_EN_DL
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/DATA_RX_PPL
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/VALID_K_CHARAC_PPL
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/TYPE_FRAME_DWI
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/NEW_WORD_DWI
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/END_FRAME_DWI
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/DATA_DWI
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/VALID_K_CHARAC_DWI
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/SEQ_NUM_DWI
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/CRC_16B_DWI
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/CRC_8B_DWI
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/CRC_ERR_DCCHECK
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/SEQ_ERR_DSCHECK
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/FRAME_ERR_DWI
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/RXERR_DWI
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/DATA_COUNTER_RX_DWI
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/ACK_COUNTER_RX_DWI
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/NACK_COUNTER_RX_DWI
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/FCT_COUNTER_RX_DWI
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/FULL_COUNTER_RX_DWI
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/RETRY_COUNTER_RX_DWI
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/current_state
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/current_state_r
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/receiving_frame
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/type_incom_frame
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/data_word_cnt
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/bc_word_cnt
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/detected_sdf
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/detected_edf
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/detected_sbf
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/detected_ebf
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/detected_sif
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/detected_fct
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/detected_ack
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/detected_nack
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/detected_full
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/detected_retry
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/detected_rxerr_i
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/ack_counter
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/nack_counter
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/fct_counter
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/full_counter
+add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/retry_counter
+add wave -noupdate -group CRC_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_check/RST_N
+add wave -noupdate -group CRC_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_check/CLK
+add wave -noupdate -group CRC_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_check/DATA_DWI
+add wave -noupdate -group CRC_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_check/VALID_K_CHARAC_DWI
+add wave -noupdate -group CRC_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_check/NEW_WORD_DWI
+add wave -noupdate -group CRC_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_check/END_FRAME_DWI
+add wave -noupdate -group CRC_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_check/SEQ_NUM_DWI
+add wave -noupdate -group CRC_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_check/CRC_16B_DWI
+add wave -noupdate -group CRC_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_check/CRC_8B_DWI
+add wave -noupdate -group CRC_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_check/TYPE_FRAME_DWI
+add wave -noupdate -group CRC_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_check/NEW_WORD_DCCHECK
+add wave -noupdate -group CRC_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_check/DATA_DCCHECK
+add wave -noupdate -group CRC_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_check/VALID_K_CHARAC_DCCHECK
+add wave -noupdate -group CRC_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_check/END_FRAME_DCCHECK
+add wave -noupdate -group CRC_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_check/TYPE_FRAME_DCCHECK
+add wave -noupdate -group CRC_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_check/SEQ_NUM_DCCHECK
+add wave -noupdate -group CRC_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_check/CRC_ERR_DCCHECK
+add wave -noupdate -group CRC_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_check/CRC_LONG_ERR_DCCHECK
+add wave -noupdate -group CRC_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_check/CRC_SHORT_ERR_DCCHECK
+add wave -noupdate -group CRC_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_check/indices
+add wave -noupdate -group CRC_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_check/indices_tier
+add wave -noupdate -group CRC_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_check/indices_dem
+add wave -noupdate -group CRC_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_check/crc_reg
+add wave -noupdate -group CRC_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_check/crc_to_inv
+add wave -noupdate -group CRC_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_check/end_crc
+add wave -noupdate -group CRC_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_check/crc_err_16b
+add wave -noupdate -group CRC_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_check/crc_reg_8b
+add wave -noupdate -group CRC_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_check/crc_to_inv_8b
+add wave -noupdate -group CRC_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_check/end_CRC_8B_DWI
+add wave -noupdate -group CRC_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_check/crc_err_8b
+add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/RST_N
+add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/CLK
+add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/DATA_DCCHECK
+add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/VALID_K_CHARAC_DCCHECK
+add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/SEQ_NUM_DCCHECK
+add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/END_FRAME_DCCHECK
+add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/TYPE_FRAME_DCCHECK
+add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/NEW_WORD_DCCHECK
+add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/CRC_ERR_DCCHECK
+add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/NEAR_END_RPF_DERRM
+add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/SEQ_NUM_ERR_DSCHECK
+add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/END_FRAME_DSCHECK
+add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/DATA_DSCHECK
+add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/VALID_K_CHARAC_DSCHECK
+add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/NEW_WORD_DSCHECK
+add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/END_FRAME_FIFO_DSCHECK
+add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/FIFO_FULL_DMBUF
+add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/FRAME_ERR_DSCHECK
+add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/SEQ_NUM_DSCHECK
+add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/seq_num_cnt
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/RST_N
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/WR_CLK
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/WR_DATA
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/WR_DATA_EN
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/FRAME_ERROR
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/END_FRAME
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/RD_CLK
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/RD_DATA
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/RD_DATA_EN
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/RD_DATA_VLD
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/CMD_FLUSH
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/STATUS_BUSY_FLUSH
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/STATUS_THRESHOLD_HIGH
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/STATUS_THRESHOLD_LOW
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/STATUS_FULL
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/STATUS_EMPTY
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/STATUS_LEVEL_WR
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/STATUS_LEVEL_RD
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/ram
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/ptr_wr
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/ptr_wr_inc
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/ptr_wr_inc2
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/ptr_rd
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/ptr_rd_inc
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/ptr_wr_gray
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/ptr_rd_gray
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/ptr_wr_in_rd
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/ptr_rd_in_wr
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/ram_level
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/cmd_flush_req
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/cmd_flush_inv
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/cmd_flush_inv_wr
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/cmd_flush_inv_rd
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/flush_ack_inv_wr
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/flush_ack_inv_wr_r
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/flush_ack_inv_rd
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/flush_ack_inv_rd_r
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/flush_ack_wr
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/flush_ack_rd
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/wr_en
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/rd_en
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/full
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/full_prev
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/empty
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/bad_frame
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/ptr_last_valid
+add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/ptr_last_valid_gray
+add wave -noupdate -group Data_Desencapsulation /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_desencapsulation/RST_N
+add wave -noupdate -group Data_Desencapsulation /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_desencapsulation/CLK
+add wave -noupdate -group Data_Desencapsulation /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_desencapsulation/DATA_DMBUF
+add wave -noupdate -group Data_Desencapsulation /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_desencapsulation/DATA_RD_DDES
+add wave -noupdate -group Data_Desencapsulation /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_desencapsulation/DATA_VALID_DMBUF
+add wave -noupdate -group Data_Desencapsulation /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_desencapsulation/FCT_FAR_END_DDES
+add wave -noupdate -group Data_Desencapsulation /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_desencapsulation/M_VAL_DDES
+add wave -noupdate -group Data_Desencapsulation /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_desencapsulation/DATA_DDES
+add wave -noupdate -group Data_Desencapsulation /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_desencapsulation/DATA_EN_DDES
+add wave -noupdate -group Data_Desencapsulation /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_desencapsulation/data_detected
+add wave -noupdate -group Data_Desencapsulation /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_desencapsulation/broadcast_detected
+add wave -noupdate -group Data_Desencapsulation /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_desencapsulation/vc_nb
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {61827511330 fs} 0}
+WaveRestoreCursors {{Cursor 1} {120058156 fs} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 210
 configure wave -valuecolwidth 100
@@ -1518,4 +1873,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits fs
 update
-WaveRestoreZoom {36118890499 fs} {127134718750 fs}
+WaveRestoreZoom {29858740 fs} {179923247 fs}
