@@ -369,7 +369,7 @@ architecture rtl of DATA_LINK_GENERATOR is
             when IDLE =>
 
                -- reset signals between the tests
-               TDATA                 <= (others=>'0');
+               TDATA                 <= std_logic_vector(init_val);
                val_data              <= init_val;
                prbs_data             <= std_logic_vector(init_val);
                reg_data_tx_frame     <= (others=>'0');
@@ -380,19 +380,29 @@ architecture rtl of DATA_LINK_GENERATOR is
                   test_end_frame    <= '0';                  -- reset for a new test
                   cnt_byte          <= unsigned(packet_size); -- number of bytes = frame size
                   err_counter_frame <= (others=>'0');
+                  -- select data tx in function of the number of bytes remaining in the frame
+                  if (gen_data = C_INCREMENTAL) then  -- incremental data
+                     val_data  <= val_data + C_INCR_VAL_DATA;
+                     reg_data_tx_frame <= std_logic_vector(val_data);-- push data in the register tx
+                     
+                  else -- PRBS data
+                     prbs_data <= prbs_data(C_INTERNAL_BUS_WIDTH-2 downto 0) & (prbs_data(C_INTERNAL_BUS_WIDTH-1) xor prbs_data(C_INTERNAL_BUS_WIDTH-2) xor prbs_data(C_INTERNAL_BUS_WIDTH-4) xor prbs_data(C_INTERNAL_BUS_WIDTH-5)); -- prbs data generation
+                     reg_data_tx_frame <= prbs_data; -- push PRBS data in the register tx
+                     
+                  end if;
                   generation_state  <= GEN_FRAME;
                end if;
 
             when GEN_FRAME =>
                -- select data tx in function of the number of bytes remaining in the frame
                if (gen_data = C_INCREMENTAL) then  -- incremental data
+                  val_data  <= val_data + C_INCR_VAL_DATA;
                   reg_data_tx_frame <= std_logic_vector(val_data);-- push data in the register tx
                   
-                  val_data  <= val_data + C_INCR_VAL_DATA;
                else -- PRBS data
+                  prbs_data <= prbs_data(C_INTERNAL_BUS_WIDTH-2 downto 0) & (prbs_data(C_INTERNAL_BUS_WIDTH-1) xor prbs_data(C_INTERNAL_BUS_WIDTH-2) xor prbs_data(C_INTERNAL_BUS_WIDTH-4) xor prbs_data(C_INTERNAL_BUS_WIDTH-5)); -- prbs data generation
                   reg_data_tx_frame <= prbs_data; -- push PRBS data in the register tx
                   
-                  prbs_data <= prbs_data(C_INTERNAL_BUS_WIDTH-2 downto 0) & (prbs_data(C_INTERNAL_BUS_WIDTH-1) xor prbs_data(C_INTERNAL_BUS_WIDTH-2) xor prbs_data(C_INTERNAL_BUS_WIDTH-4) xor prbs_data(C_INTERNAL_BUS_WIDTH-5)); -- prbs data generation
                end if;
                
                -- word management
@@ -451,23 +461,27 @@ architecture rtl of DATA_LINK_GENERATOR is
                   TLAST <= '0';
                end if;
                -- packet management
-               TVALID <= '1';
                if (TREADY = '1' and cnt_packet = packet_number) then
+                  TVALID <= '0';
                   generation_state <= END_TEST;
                elsif (TREADY = '1' and cnt_packet < packet_number) then
+                  TVALID <= '1';
                   generation_state <= GEN_FRAME;
                else
                   generation_state <= WAIT_TX;
+                  TVALID <= '1';
                end if;
 
             when WAIT_TX =>
                if (TREADY = '1' and cnt_packet = packet_number) then
                   generation_state <= END_TEST;
+                  TVALID <= '0';
                elsif (TREADY = '1' ) then
                   generation_state <= GEN_FRAME;
                else
                   generation_state <= WAIT_TX;
                end if;
+               
             when END_TEST =>
                TVALID                <= '0';
                TLAST                 <= '0';
