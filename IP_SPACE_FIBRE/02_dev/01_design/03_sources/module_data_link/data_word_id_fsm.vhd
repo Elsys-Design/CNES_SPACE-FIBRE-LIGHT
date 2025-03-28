@@ -238,11 +238,7 @@ begin
     END_FRAME_DWI    <= '0';
 		-- Frame treatment
 	  if (FIFO_RX_DATA_VALID_PPL ='1') then
-			if current_state = RX_IDLE_FRAME_ST or current_state= RX_NOTHING_ST then
-				DATA_DWI           <= (others=> '0');
-				VALID_K_CHARAC_DWI <= (others=> '0');
-        NEW_WORD_DWI       <= '0';
-	  	elsif DATA_RX_PPL(15 downto 0) = C_SDF_WORD and VALID_K_CHARAC_PPL = "0001" then -- SDF control word detected
+			if DATA_RX_PPL(15 downto 0) = C_SDF_WORD and VALID_K_CHARAC_PPL = "0001" then -- SDF control word detected
 	  		detected_sdf       <= '1';                                                -- Set SDF flag detected to '1'
 	  		TYPE_FRAME_DWI     <= C_DATA_FRM;
 	  		NEW_WORD_DWI       <= '1';
@@ -333,6 +329,10 @@ begin
 	  	elsif DATA_RX_PPL = C_RXERR_WORD and VALID_K_CHARAC_PPL = "0001" then -- RXERR control word detected
 	  	  detected_rxerr_i <= '1';                                         -- Set RXERR flag detected to '1'
         NEW_WORD_DWI   <= '0';
+			elsif current_state = RX_IDLE_FRAME_ST or current_state= RX_NOTHING_ST then
+					DATA_DWI           <= (others=> '0');
+					VALID_K_CHARAC_DWI <= (others=> '0');
+					NEW_WORD_DWI       <= '0';
       else
         DATA_DWI           <= DATA_RX_PPL;
 				VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
