@@ -3,7 +3,7 @@
 --
 -- Project : IP SpaceFibreLight
 --
--- Creation date : 24/02/2024
+-- Creation date : 24/02/2025
 --
 -- Description : This module checks the validity of the SEQ_num
 ----------------------------------------------------------------------------
@@ -55,7 +55,7 @@ begin
 ---------------------------------------------------------
 ---------------------------------------------------------
 -- Process: p_seq_num
--- Description: Check the SEQ_NUM for each frame 
+-- Description: Check the SEQ_NUM for each frame
 ---------------------------------------------------------
 p_seq_num: process(CLK, RST_N)
 begin

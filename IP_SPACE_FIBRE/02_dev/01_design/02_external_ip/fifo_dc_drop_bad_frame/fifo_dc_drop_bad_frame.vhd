@@ -8,10 +8,6 @@
 -- Description      : Module FIFO dual clock
 -- Modification     : Avec suppression des trames erron�es
 ----------------------------------------------------------------------------
--- Copyright (c) 2014 par ELSYS Design Group
--- Tous les droits sont reserves. Toute reproduction totale ou partielle est
--- interdite sans le consentement ecrit du proprietaire des droits d'auteur.
-----------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------
 -- DECLARATION DES LIBRAIRIES

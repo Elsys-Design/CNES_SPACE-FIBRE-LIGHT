@@ -3,9 +3,9 @@
 --
 -- Project : IP SpaceFibreLight
 --
--- Creation date : 24/02/2024
+-- Creation date : 24/02/2025
 --
--- Description : This module describe the Output Buffer & Flow control
+-- Description : This module describe the Output Broadcast Buffer
 ----------------------------------------------------------------------------
 
 library ieee;

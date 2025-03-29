@@ -1,3 +1,12 @@
+----------------------------------------------------------------------------
+-- Author(s) : Y. DAURIAC
+--
+-- Project : IP SpaceFibreLight
+--
+-- Creation date : 24/02/2025
+--
+-- Description : This module describe the top of the Data-Link layer
+----------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
