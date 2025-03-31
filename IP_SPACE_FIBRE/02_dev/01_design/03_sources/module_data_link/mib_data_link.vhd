@@ -3,16 +3,9 @@
 --
 -- Projet : IP SpaceFibre_Light Versal target
 --
--- Date de creation : 03/09/2024
+-- Date de creation : 03/03/2025
 --
--- Description : This module implement the Physical and Lane layer of an IP
--- SpaceFibre Light.
--- The Physical layer is carried by an Xilinx IP
--- The Lane layer is carried by owner's code and an Xilinx IP
-----------------------------------------------------------------------------
--- Copyright (c) 2014 par ELSYS Design Group
--- Tous les droits sont reserves. Toute reproduction totale ou partielle est
--- interdite sans le consentement ecrit du proprietaire des droits d'auteur.
+-- Description : This module manages the MIB signals
 ----------------------------------------------------------------------------
 
 library ieee;

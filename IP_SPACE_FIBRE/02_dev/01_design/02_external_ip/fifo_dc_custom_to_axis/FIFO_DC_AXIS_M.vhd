@@ -5,12 +5,8 @@
 --
 -- Date de creation : 
 --
--- Description      : Module FIFO dual clock avec interface AXIS MASTER 
+-- Description      : Module FIFO dual clock avec interface AXIS MASTER
 --                    Interface custom (write) et Interface AXIS Master (read)
-----------------------------------------------------------------------------
--- Copyright (c) 2014 par ELSYS Design Group
--- Tous les droits sont reserves. Toute reproduction totale ou partielle est
--- interdite sans le consentement ecrit du proprietaire des droits d'auteur.
 ----------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------

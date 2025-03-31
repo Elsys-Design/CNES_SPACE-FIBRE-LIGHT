@@ -13,8 +13,8 @@ entity AXIS_SLAVE is
 	);
 	port (
 		-- Users to add ports here
-        wr_data         : out std_logic_vector(G_DWIDTH-1 downto 0); 
-        wr_enable       : out std_logic; 
+        wr_data         : out std_logic_vector(G_DWIDTH-1 downto 0);
+        wr_enable       : out std_logic;
         status_full     : in std_logic;
 		-- User ports ends
 		-- Do not modify the ports beyond this line
@@ -32,7 +32,7 @@ architecture implementation of AXIS_SLAVE is
 begin
 	-- Add user logic here
     s00_axis_tready     <= not status_full;                 -- Ecriture permise si la fifo n'est pas pleine
-    wr_enable           <= s00_axis_tvalid;                 -- Ecriture si donnée valide
+    wr_enable           <= s00_axis_tvalid;                 -- Ecriture si donnï¿½e valide
     wr_data             <= s00_axis_tuser & s00_axis_tdata; -- Reconstruction du mot de 36 bits
 	-- User logic ends
 end implementation;

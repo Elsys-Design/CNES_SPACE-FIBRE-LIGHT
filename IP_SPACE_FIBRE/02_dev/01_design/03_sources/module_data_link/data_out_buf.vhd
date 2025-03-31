@@ -3,7 +3,7 @@
 --
 -- Project : IP SpaceFibreLight
 --
--- Creation date : 24/02/2024
+-- Creation date : 24/02/2025
 --
 -- Description : This module describe the Output Buffer & Flow control
 ----------------------------------------------------------------------------
@@ -218,7 +218,7 @@ begin
     current_state   <= IDLE_ST;
   elsif rising_edge(S_AXIS_ACLK_NW) then
     cmd_flush <= '0';
-    case current_state is 
+    case current_state is
       when IDLE_ST =>
                                   if LINK_RESET_DLRE = '1' then
                                     cmd_flush <= '1';
@@ -323,7 +323,7 @@ begin
 end process p_has_credit;
 ---------------------------------------------------------
 -- Process: p_fct_credit_cnt
--- Description: Manages the FCT credit counter 
+-- Description: Manages the FCT credit counter
 ---------------------------------------------------------
   p_fct_credit_cnt: process(CLK, RST_N)
   begin
@@ -355,8 +355,6 @@ end process p_has_credit;
             FCT_CC_OVF_DOBUF <= '1';
             fct_credit_cnt   <= C_FCT_CC_MAX;
           end if;
-
- 
         end if;
       end if;
     end if;

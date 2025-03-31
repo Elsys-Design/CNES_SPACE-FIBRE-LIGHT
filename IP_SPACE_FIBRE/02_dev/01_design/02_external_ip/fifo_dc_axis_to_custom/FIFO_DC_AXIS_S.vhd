@@ -8,10 +8,6 @@
 -- Description      : Module FIFO dual clock avec interface AXIS slave
 --                    Interface AXIS slave (write) et Interface custom (read)
 ----------------------------------------------------------------------------
--- Copyright (c) 2014 par ELSYS Design Group
--- Tous les droits sont reserves. Toute reproduction totale ou partielle est
--- interdite sans le consentement ecrit du proprietaire des droits d'auteur.
-----------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------
 -- DECLARATION DES LIBRAIRIES

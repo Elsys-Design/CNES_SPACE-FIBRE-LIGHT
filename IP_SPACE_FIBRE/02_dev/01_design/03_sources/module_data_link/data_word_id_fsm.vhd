@@ -3,7 +3,7 @@
 --
 -- Project : IP SpaceFibreLight
 --
--- Creation date : 24/02/2024
+-- Creation date : 24/02/2025
 --
 -- Description : This module describe the Data_word_id_fsm function
 ----------------------------------------------------------------------------
@@ -355,6 +355,6 @@ begin
 	elsif rising_edge(CLK) then
 		FIFO_RX_RD_EN_DL <= '1';
 	end if;
-end process p_fifo_rd_ppl;  
+end process p_fifo_rd_ppl;
 
 end architecture rtl;

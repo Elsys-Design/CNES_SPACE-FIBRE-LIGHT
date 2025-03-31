@@ -3,7 +3,7 @@
 --
 -- Project : IP SpaceFibreLight
 --
--- Creation date : 24/02/2024
+-- Creation date : 24/02/2025
 --
 -- Description : This module checks the validity of the SEQ_num
 ----------------------------------------------------------------------------
@@ -27,6 +27,7 @@ entity data_seq_check is
     TYPE_FRAME_DCCHECK     : in  std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);  --! Flag EMPTY of the FIFO RX
     NEW_WORD_DCCHECK       : in  std_logic;
 		CRC_ERR_DCCHECK        : in std_logic;
+		FRAME_ERR_DCCHECK      : in std_logic;
 		-- data_err_management (DERRM) interface
 		NEAR_END_RPF_DERRM     : in  std_logic;
 		SEQ_NUM_ERR_DSCHECK    : out std_logic;
@@ -37,6 +38,7 @@ entity data_seq_check is
     NEW_WORD_DSCHECK       : out std_logic;                                     -- Write command
     END_FRAME_FIFO_DSCHECK : out std_logic;
     FIFO_FULL_DMBUF        : in  std_logic;
+		FRAME_ERR_DSCHECK      : out std_logic;
 		-- MIB
 		SEQ_NUM_DSCHECK        : out std_logic_vector(7 downto 0)
   );
@@ -55,7 +57,7 @@ begin
 ---------------------------------------------------------
 ---------------------------------------------------------
 -- Process: p_seq_num
--- Description: Check the SEQ_NUM for each frame 
+-- Description: Check the SEQ_NUM for each frame
 ---------------------------------------------------------
 p_seq_num: process(CLK, RST_N)
 begin
@@ -68,8 +70,10 @@ begin
 		VALID_K_CHARAC_DSCHECK <= (others => '0');
 		END_FRAME_FIFO_DSCHECK <= '0';
 		END_FRAME_DSCHECK      <= '0';
+		FRAME_ERR_DSCHECK      <= '0';
 	elsif rising_edge(CLK) then
-		SEQ_NUM_DSCHECK <= SEQ_NUM_DCCHECK;
+    FRAME_ERR_DSCHECK  <= FRAME_ERR_DCCHECK;
+		SEQ_NUM_DSCHECK    <= SEQ_NUM_DCCHECK;
 	  if (TYPE_FRAME_DCCHECK = C_DATA_FRM  or TYPE_FRAME_DCCHECK = C_BC_FRM or TYPE_FRAME_DCCHECK = C_FCT_FRM) and END_FRAME_DCCHECK = '1' then
 			if SEQ_NUM_DCCHECK /= (NEAR_END_RPF_DERRM & std_logic_vector(seq_num_cnt+1)) then
 				SEQ_NUM_ERR_DSCHECK    <= '1';

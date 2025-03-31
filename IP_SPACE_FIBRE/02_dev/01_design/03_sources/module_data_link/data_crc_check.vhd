@@ -3,7 +3,7 @@
 --
 -- Project : IP SpaceFibreLight
 --
--- Creation date : 24/02/2024
+-- Creation date : 24/02/2025
 --
 -- Description : This module check the CRC validity
 ----------------------------------------------------------------------------
@@ -28,6 +28,7 @@ entity data_crc_check is
     CRC_16B_DWI            : in  std_logic_vector(15 downto 0);                       --! 16 bits CRC (data frame)  from data_word_id_fsm
     CRC_8B_DWI             : in  std_logic_vector(7 downto 0);                        --! 8 bits CRC from data_word_id_fsm
     TYPE_FRAME_DWI         : in  std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);    --! Current frame/control word type from data_word_id_fsm
+    FRAME_ERR_DWI          : in std_logic;
     -- data_seq_check (DSCHECK) interface
     NEW_WORD_DCCHECK       : out std_logic;                                           --! New word Flag from data_word_id_fsm
     DATA_DCCHECK           : out std_logic_vector(C_DATA_LENGTH-1 downto 0);          --! Data parallel from daata_word_id_fsm
@@ -36,6 +37,7 @@ entity data_crc_check is
     TYPE_FRAME_DCCHECK     : out std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);    --! Current frame/control word type from data_word_id_fsm
     SEQ_NUM_DCCHECK        : out std_logic_vector(7 downto 0);                        --! SEQ_NUM from data_word_id_fsm
     CRC_ERR_DCCHECK        : out std_logic;                                           --! CRC error flag
+    FRAME_ERR_DCCHECK      : out std_logic;
     -- MIB
     CRC_LONG_ERR_DCCHECK   : out std_logic;                                           --! CRC 16 bits error flag
     CRC_SHORT_ERR_DCCHECK  : out std_logic                                            --! CRC 16 bits error flag
@@ -204,6 +206,7 @@ begin
     VALID_K_CHARAC_DCCHECK <= (others => '0');
     TYPE_FRAME_DCCHECK     <= (others => '0');
     END_FRAME_DCCHECK      <= '0';
+    FRAME_ERR_DCCHECK      <= '0';
   elsif rising_edge(CLK) then
     SEQ_NUM_DCCHECK        <= SEQ_NUM_DWI;
     NEW_WORD_DCCHECK       <= NEW_WORD_DWI;
@@ -211,6 +214,7 @@ begin
     DATA_DCCHECK           <= DATA_DWI;
     VALID_K_CHARAC_DCCHECK <= VALID_K_CHARAC_DWI;
     TYPE_FRAME_DCCHECK     <= TYPE_FRAME_DWI;
+    FRAME_ERR_DCCHECK      <= FRAME_ERR_DWI;
   end if;
 end process p_trans_ctrl_sig;
 
