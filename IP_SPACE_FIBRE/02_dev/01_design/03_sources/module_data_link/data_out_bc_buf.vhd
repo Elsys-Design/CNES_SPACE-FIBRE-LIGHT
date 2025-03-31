@@ -178,7 +178,7 @@ begin
     vc_end_packet <= '0';
   elsif rising_edge(CLK) then
     vc_end_packet <= '0';
-    if cnt_word_sent > 1 and vc_end_packet ='0' then 
+    if cnt_word_sent > 1 and vc_end_packet ='0' then
       vc_end_packet <='1';
     elsif status_threshold_low = '1' and VC_RD_EN_DMAC='1' and vc_end_packet ='0'and cnt_word_sent > 0 then
       vc_end_packet <='1';

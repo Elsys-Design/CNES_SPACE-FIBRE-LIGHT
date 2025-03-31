@@ -145,7 +145,7 @@ begin
   DATA_DOBUF           <= rd_data(C_DATA_LENGTH-1 downto 0);
   VALID_K_CHARAC_DOBUF <= rd_data(C_DATA_LENGTH+C_BYTE_BY_WORD_LENGTH-1 downto C_DATA_LENGTH);
   DATA_VALID_DOBUF     <= rd_data_vld;
-  END_PACKET_DOBUF     <= vc_end_packet;
+  END_PACKET_DOBUF     <= vc_end_packet and rd_data_vld;
   m_value_for_credit   <= M_VAL_DDES & "000000";
   S_AXIS_TREADY_DL     <= s_axis_tready_i;
 
@@ -367,9 +367,9 @@ begin
     vc_end_packet <= '0';
   elsif rising_edge(CLK) then
     vc_end_packet <= '0';
-    if cnt_word_sent >= 63  and vc_end_packet ='0' then
+    if cnt_word_sent >= 63 then
       vc_end_packet <='1';
-    elsif status_threshold_low = '1' and VC_RD_EN_DMAC='1' and vc_end_packet ='0'and cnt_word_sent > 0 then
+    elsif status_threshold_low = '1' and VC_RD_EN_DMAC='1'and cnt_word_sent > 0 then
       vc_end_packet <='1';
     end if;
   end if;
@@ -401,13 +401,13 @@ begin
   if RST_N = '0' then
     eip_out <= '0';
   elsif rising_edge(CLK) then
-    if valid_k_char_out(0)='1' and (data_out(7 downto 0) = C_EEP_SYMB or data_out(7 downto 0) = C_EOP_SYMB) and  VC_RD_EN_DMAC='1' then
+    if valid_k_char_out(0)='1' and (data_out(7 downto 0) = C_EEP_SYMB or data_out(7 downto 0) = C_EOP_SYMB) and  rd_data_vld='1' then
       eip_out <= '1';
-    elsif valid_k_char_out(1)='1' and (data_out(15 downto 8) = C_EEP_SYMB or data_out(15 downto 8) = C_EOP_SYMB) and  VC_RD_EN_DMAC='1' then
+    elsif valid_k_char_out(1)='1' and (data_out(15 downto 8) = C_EEP_SYMB or data_out(15 downto 8) = C_EOP_SYMB) and  rd_data_vld='1' then
       eip_out <= '1';
-    elsif valid_k_char_out(2)='1' and (data_out(23 downto 16) = C_EEP_SYMB or data_out(23 downto 16) = C_EOP_SYMB) and  VC_RD_EN_DMAC='1' then
+    elsif valid_k_char_out(2)='1' and (data_out(23 downto 16) = C_EEP_SYMB or data_out(23 downto 16) = C_EOP_SYMB) and  rd_data_vld='1' then
       eip_out <= '1';
-    elsif valid_k_char_out(3)='1' and (data_out(31 downto 24) = C_EEP_SYMB or data_out(31 downto 24) = C_EOP_SYMB) and  VC_RD_EN_DMAC='1' then
+    elsif valid_k_char_out(3)='1' and (data_out(31 downto 24) = C_EEP_SYMB or data_out(31 downto 24) = C_EOP_SYMB) and  rd_data_vld='1' then
       eip_out <= '1';
     else
       eip_out <= '0';
@@ -478,10 +478,12 @@ end process p_eip_cnt;
     if RST_N = '0' then
       VC_READY_DOBUF <= '0';
     elsif rising_edge(CLK) then
-      if fct_credit_cnt > 0 and (status_full = '1' or cnt_eip > 0) then
-        VC_READY_DOBUF <= '1';
-      else
-        VC_READY_DOBUF <= '0';
+      if VC_RD_EN_DMAC='0' then
+        if fct_credit_cnt > 0 and (status_full = '1' or cnt_eip > 0) then
+          VC_READY_DOBUF <= '1';
+        else
+          VC_READY_DOBUF <= '0';
+        end if;
       end if;
     end if;
   end process p_vc_ready;
