@@ -82,7 +82,7 @@ begin
 				DATA_DSCOM      <= C_RESERVED_SYMB & trans_pol_flg & std_logic_vector(trans_seq_cnt) & DATA_DENC(15 downto 0);
 				SEQ_NUM_DSCOM   <= trans_pol_flg & std_logic_vector(trans_seq_cnt);
 			end if;
-		elsif DATA_DENC(7 downto 0) = C_K28_7_SYMB and VALID_K_CHARAC_DENC(0)= '1' then -- SIF or SDF or SBF
+		elsif DATA_DENC(15 downto 0) = C_SIF_WORD and VALID_K_CHARAC_DENC(0)= '1' then -- SIF
 			DATA_DSCOM      <= C_RESERVED_SYMB & trans_pol_flg & std_logic_vector(trans_seq_cnt) & DATA_DENC(15 downto 0);
 			SEQ_NUM_DSCOM   <= trans_pol_flg & std_logic_vector(trans_seq_cnt);
 		else
