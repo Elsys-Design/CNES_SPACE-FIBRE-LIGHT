@@ -147,7 +147,10 @@ begin
       when IDLE_ST =>
                     type_frame           <= C_IDLE_FRM;
                     VC_RUN_EMISSION_DMAC <= (others => '0');
-                    vc_pause_i             <= VC_PAUSE_MIB;
+                    vc_pause_i           <= VC_PAUSE_MIB;
+                    data_vc              <= std_logic_vector(idle_data);
+                    new_word             <= '1';
+                    valid_k_char_vc      <= (others => '0');
                     if VC_READY_DOBUF /= std_logic_vector(to_unsigned(0,G_VC_NUM+1)) then
                         current_state_vc <= VC_0_ST;
                     else
@@ -760,13 +763,8 @@ begin
     req_int           <= '0';
     case current_state_req is
       when IDLE_ST =>
-                      if type_frame = C_IDLE_FRM then
-                        DATA_DMAC            <= std_logic_vector(idle_data);
-                        VALID_K_CHAR_DMAC    <= (others => '0');
-                      else
-                        DATA_DMAC            <= data_vc;
-                        VALID_K_CHAR_DMAC    <= valid_k_char_vc;
-                      end if;
+                      DATA_DMAC            <= data_vc;
+                      VALID_K_CHAR_DMAC    <= valid_k_char_vc;
                       NEW_WORD_DMAC        <= new_word;
                       END_PACKET_DMAC      <= end_packet;
                       VIRTUAL_CHANNEL_DMAC <= std_logic_vector(virtual_channel);

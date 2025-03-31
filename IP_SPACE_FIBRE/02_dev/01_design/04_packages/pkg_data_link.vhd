@@ -76,7 +76,7 @@ package data_link_lib is
   -- DATA-LINK CONTROL WORDS
   constant C_SDF_WORD           : std_logic_vector(15 downto 00) := C_SDF_SYMB & C_K28_7_SYMB;   -- bits 23 downto 16 = Virtual channel and bits 31 downto 24 = Reserved
   constant C_SBF_WORD           : std_logic_vector(15 downto 00) := C_SBF_SYMB & C_K28_7_SYMB;   -- bits 23 downto 16 = Broadcast channel and bits 31 downto 24 = Broadcast Type
-  constant C_SIF_WORD           : std_logic_vector(15 downto 00) := C_SBF_SYMB & C_K28_7_SYMB;   -- bits 23 downto 16 = SEQ_NUM and bits 31 downto 24 = CRC
+  constant C_SIF_WORD           : std_logic_vector(15 downto 00) := C_SIF_SYMB & C_K28_7_SYMB;   -- bits 23 downto 16 = SEQ_NUM and bits 31 downto 24 = CRC
   constant C_ACK_WORD           : std_logic_vector(15 downto 00) := C_ACK_SYMB & C_K28_7_SYMB;   -- bits 23 downto 16 = SEQ_NUM and bits 31 downto 24 = CRC
   constant C_NACK_WORD          : std_logic_vector(15 downto 00) := C_NACK_SYMB & C_K28_7_SYMB;  -- bits 23 downto 16 = SEQ_NUM and bits 31 downto 24 = CRC
   constant C_FULL_WORD          : std_logic_vector(15 downto 00) := C_FULL_SYMB & C_K28_7_SYMB;  -- bits 23 downto 16 = SEQ_NUM and bits 31 downto 24 = CRC
