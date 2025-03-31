@@ -114,6 +114,7 @@ type data_in_fsm is (
   signal s_axis_tuser_i         : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
   signal s_axis_tlast_i         : std_logic;
   signal s_axis_tvalid_i        : std_logic;
+  signal s_axis_tready_i        : std_logic;
   -- continuous mode
   signal cont_mode_flg          : std_logic;
   signal last_k_char            : std_logic;
@@ -122,15 +123,11 @@ type data_in_fsm is (
   signal fct_credit_cnt         : unsigned(C_FCT_CC_SIZE-1 downto 0);
   signal eip_out                : std_logic;
   signal eip_in_req             : std_logic;
-  signal eip_in_ack             : std_logic;
-  signal eip_in_ack_reg1        : std_logic;
-  signal eip_in_ack_reg2        : std_logic;
+  signal eip_in_req_reg1        : std_logic;
+  signal eip_in_req_reg2        : std_logic;
   signal eip_out_ack            : std_logic;
   signal cnt_eip                : unsigned(6-1 downto 0);     -- cnt_word sent, max= 64
   signal cnt_eip_out            : unsigned(6-1 downto 0);     -- cnt_word sent, max= 64
-  signal cnt_eip_in             : unsigned(6-1 downto 0);     -- cnt_word sent, max= 64
-  signal cnt_eip_in_reg1        : unsigned(6-1 downto 0);     -- cnt_word sent, max= 64
-  signal cnt_eip_in_reg2        : unsigned(6-1 downto 0);     -- cnt_word sent, max= 64
   signal data_out               : std_logic_vector(C_DATA_LENGTH-1 downto 0);
   signal valid_k_char_out       : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
   signal vc_end_packet          : std_logic;
@@ -150,6 +147,7 @@ begin
   DATA_VALID_DOBUF     <= rd_data_vld;
   END_PACKET_DOBUF     <= vc_end_packet;
   m_value_for_credit   <= M_VAL_DDES & "000000";
+  S_AXIS_TREADY_DL     <= s_axis_tready_i;
 
 ---------------------------------------------------------
 -----                     Instanciation             -----
@@ -179,7 +177,7 @@ begin
     STATUS_LEVEL_WR       => open,
     STATUS_LEVEL_RD       => open,
     S_AXIS_ACLK           => S_AXIS_ACLK_NW,
-    S_AXIS_TREADY         => S_AXIS_TREADY_DL,
+    S_AXIS_TREADY         => s_axis_tready_i,
     S_AXIS_TDATA          => s_axis_tdata_i,
     S_AXIS_TUSER          => s_axis_tuser_i,
     S_AXIS_TLAST          => s_axis_tlast_i,
@@ -423,25 +421,11 @@ end process p_detect_eip_out;
 p_eip_in: process(S_AXIS_ARSTN_NW, S_AXIS_ACLK_NW)
 begin
   if S_AXIS_ARSTN_NW = '0' then
-    cnt_eip_in      <= (others =>'0');
-    cnt_eip_in_reg1 <= (others =>'0');
-    cnt_eip_in_reg2 <= (others =>'0');
     eip_in_req      <= '0';
-    eip_in_ack_reg1 <= '0';
-    eip_in_ack_reg2 <= '0';
   elsif rising_edge(S_AXIS_ACLK_NW) then
-    cnt_eip_in_reg1 <= cnt_eip_in;
-    cnt_eip_in_reg2 <= cnt_eip_in_reg1;
-    eip_in_ack_reg1 <= eip_in_ack;
-    eip_in_ack_reg2 <= eip_in_ack_reg1;
-    if S_AXIS_TLAST_NW = '1' and eip_in_ack_reg2 ='1' then
-      cnt_eip_in <= cnt_eip_in - cnt_eip_in_reg2 + 1;
-      eip_in_req <= '0';
-    elsif S_AXIS_TLAST_NW = '1' then
-      cnt_eip_in <= cnt_eip_in +1;
+    if s_axis_tlast_i = '1' and s_axis_tvalid_i= '1' and s_axis_tready_i= '1' then
       eip_in_req <= '1';
-    elsif eip_in_ack_reg2 ='1' then
-      cnt_eip_in <= cnt_eip_in - cnt_eip_in_reg2;
+    else
       eip_in_req <= '0';
     end if;
   end if;
@@ -470,14 +454,15 @@ p_eip_cnt: process(CLK, RST_N)
 begin
   if RST_N = '0' then
     cnt_eip     <= (others =>'0');
-    eip_in_ack  <= '0';
+    eip_in_req_reg1  <= '0';
+    eip_in_req_reg2  <= '0';
     eip_out_ack <= '0';
   elsif rising_edge(CLK) then
-    eip_in_ack  <= '0';
+    eip_in_req_reg1 <= eip_in_req;
+    eip_in_req_reg2 <= eip_in_req_reg1;
     eip_out_ack <= '0';
-    if eip_in_req = '1' then
-      cnt_eip     <= cnt_eip + cnt_eip_in;
-      eip_in_ack  <= '1';
+    if eip_in_req_reg2 = '1' then
+      cnt_eip     <= cnt_eip + 1;
     elsif cnt_eip_out > 0  then
       cnt_eip     <= cnt_eip - cnt_eip_out;
       eip_out_ack <= '1';
