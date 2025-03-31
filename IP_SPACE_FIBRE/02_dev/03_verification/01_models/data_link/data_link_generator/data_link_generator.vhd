@@ -453,7 +453,7 @@ architecture rtl of DATA_LINK_GENERATOR is
                   end if;
                   TLAST <= '1';
                elsif (cnt_byte <= 4) then  -- last packet of the frame
-                  cnt_byte  <= unsigned(packet_size)-(4-cnt_byte);  -- reset the counter of byte for the nexte frame
+                  cnt_byte  <= unsigned(packet_size) + cnt_byte;  -- reset the counter of byte for the nexte frame
                   cnt_packet <= cnt_packet+1;
                   TLAST <= '1';
                else
