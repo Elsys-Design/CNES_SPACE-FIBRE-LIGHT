@@ -146,7 +146,7 @@ begin
 ---------------------------------------------------------
 ---------------------------------------------------------
 -- Process: p_link_reset
--- Description: Flush management 
+-- Description: Flush management
 ---------------------------------------------------------
 p_link_reset: process(CLK, RST_N)
 begin
@@ -178,9 +178,9 @@ begin
     vc_end_packet <= '0';
   elsif rising_edge(CLK) then
     vc_end_packet <= '0';
-    if cnt_word_sent > 1 and vc_end_packet ='0' then
+    if cnt_word_sent > 0 then
       vc_end_packet <='1';
-    elsif status_threshold_low = '1' and VC_RD_EN_DMAC='1' and vc_end_packet ='0'and cnt_word_sent > 0 then
+    elsif status_threshold_low = '1' and VC_RD_EN_DMAC='1' and cnt_word_sent > 0 then
       vc_end_packet <='1';
     end if;
   end if;
@@ -198,7 +198,7 @@ begin
       cnt_word_sent      <= (others =>'0');
     elsif rd_data_vld = '1' then
       cnt_word_sent <= cnt_word_sent +1;
-    elsif cnt_word_sent > 3 then
+    elsif cnt_word_sent > 1 then
       cnt_word_sent      <= (others =>'0');
     end if;
   end if;
