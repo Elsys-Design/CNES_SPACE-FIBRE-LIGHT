@@ -463,7 +463,7 @@ begin
     eip_out_ack <= '0';
     if eip_in_req_reg2 = '1' then
       cnt_eip     <= cnt_eip + 1;
-    elsif cnt_eip_out > 0  then
+    elsif cnt_eip_out > 0 and eip_out_ack = '0' then
       cnt_eip     <= cnt_eip - cnt_eip_out;
       eip_out_ack <= '1';
     end if;
