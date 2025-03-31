@@ -760,8 +760,13 @@ begin
     req_int           <= '0';
     case current_state_req is
       when IDLE_ST =>
-                      DATA_DMAC            <= data_vc;
-                      VALID_K_CHAR_DMAC    <= valid_k_char_vc;
+                      if type_frame = C_IDLE_FRM then
+                        DATA_DMAC            <= std_logic_vector(idle_data);
+                        VALID_K_CHAR_DMAC    <= (others => '0');
+                      else
+                        DATA_DMAC            <= data_vc;
+                        VALID_K_CHAR_DMAC    <= valid_k_char_vc;
+                      end if;
                       NEW_WORD_DMAC        <= new_word;
                       END_PACKET_DMAC      <= end_packet;
                       VIRTUAL_CHANNEL_DMAC <= std_logic_vector(virtual_channel);
