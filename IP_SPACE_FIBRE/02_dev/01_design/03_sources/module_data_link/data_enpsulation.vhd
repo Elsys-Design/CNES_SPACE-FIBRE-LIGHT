@@ -55,8 +55,9 @@ type data_encapsulation_fsm_type is (
   END_FRAME_ST
   );
 
-signal current_state                : data_encapsulation_fsm_type;                        --! Current state of the Dat Word Identification FSM
-signal current_state_r              : data_encapsulation_fsm_type;                        --! Current state of the Dat Word Identification FSM
+signal current_state   : data_encapsulation_fsm_type; --! Current state of the Dat Word Identification FSM
+signal current_state_r : data_encapsulation_fsm_type; --! Current state of the Dat Word Identification FSM
+signal sif_done        : std_logic;                   --! SIF done flag
 begin
 ---------------------------------------------------------
 -----                  Process                      -----
@@ -76,6 +77,7 @@ if RST_N = '0' then
   END_FRAME_DENC      <= '0';
   current_state       <= START_FRAME_ST;
   current_state_r     <= START_FRAME_ST;
+  sif_done            <='0';
 elsif rising_edge(CLK) and LANE_ACTIVE_PPL= '1' then
   TYPE_FRAME_DENC <= TYPE_FRAME_DMAC;
   current_state_r <= current_state;
@@ -83,7 +85,13 @@ elsif rising_edge(CLK) and LANE_ACTIVE_PPL= '1' then
     when START_FRAME_ST =>
                             END_FRAME_DENC      <= '0';
                             NEW_WORD_DENC       <= '0';
-                            if NEW_WORD_DMAC = '1' then
+                            sif_done            <= '0';
+                            if TYPE_FRAME_DMAC = C_IDLE_FRM and sif_done ='1' then
+                              DATA_DENC           <= DATA_DMAC;
+                              VALID_K_CHARAC_DENC <= VALID_K_CHAR_DMAC;
+                              NEW_WORD_DENC       <= NEW_WORD_DMAC;
+                              sif_done            <= '1';
+                            elsif NEW_WORD_DMAC = '1' then
                               if TYPE_FRAME_DMAC = C_DATA_FRM then
 			                        	DATA_DENC          <= C_RESERVED_SYMB & VIRTUAL_CHANNEL_DMAC & C_SDF_WORD;
 			                        	VALID_K_CHARAC_DENC <= "0001";
@@ -102,6 +110,7 @@ elsif rising_edge(CLK) and LANE_ACTIVE_PPL= '1' then
 			                        	NEW_WORD_DENC       <= '1';
                                 END_FRAME_DENC      <= '0';
                                 current_state       <= START_FRAME_ST;
+                                sif_done            <= '1';
 			                        elsif TYPE_FRAME_DMAC = C_FCT_FRM then
 			                        	DATA_DENC           <= C_RESERVED_SYMB & C_RESERVED_SYMB & MULT_CHANNEL_DMAC & C_K28_3_SYMB;
 			                        	VALID_K_CHARAC_DENC <= "0001";
