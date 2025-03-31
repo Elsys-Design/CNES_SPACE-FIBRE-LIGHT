@@ -668,7 +668,7 @@ begin
       when BC_ST   =>
                       VC_RUN_EMISSION_DMAC(G_VC_NUM) <= '1';
                       virtual_channel        <= to_unsigned(G_VC_NUM,virtual_channel'length);
-                      type_frame             <= C_DATA_FRM;
+                      type_frame             <= C_BC_FRM;
                       if req_int = '1' then  -- Request ready to send
                         VC_RD_EN_DMAC <= (others => '0'); -- Pausing data transfers
                         if VC_DATA_VALID_DOBUF(G_VC_NUM) = '1' then -- if a transfer is in progress
