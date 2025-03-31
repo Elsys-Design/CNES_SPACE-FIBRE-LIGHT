@@ -430,7 +430,7 @@ begin
     eip_in_ack_reg1 <= '0';
     eip_in_ack_reg2 <= '0';
   elsif rising_edge(S_AXIS_ACLK_NW) then
-    cnt_eip_in      <= cnt_eip_in;
+    cnt_eip_in_reg1 <= cnt_eip_in;
     cnt_eip_in_reg2 <= cnt_eip_in_reg1;
     eip_in_ack_reg1 <= eip_in_ack;
     eip_in_ack_reg2 <= eip_in_ack_reg1;
