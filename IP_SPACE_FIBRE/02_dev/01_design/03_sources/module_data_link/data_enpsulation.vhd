@@ -60,7 +60,7 @@ signal current_state_r   : data_encapsulation_fsm_type;                         
 signal sif_done          : std_logic;                                           --! SIF done flag
 signal type_frame_denc_i : std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);    --! SIF done flag
 begin
-  TYPE_FRAME_DENC <= type_frame_denc_i;
+  
 ---------------------------------------------------------
 -----                  Process                      -----
 ---------------------------------------------------------
@@ -85,6 +85,7 @@ elsif rising_edge(CLK) and LANE_ACTIVE_PPL= '1' then
   current_state_r <= current_state;
   case current_state is
     when START_FRAME_ST =>
+                            TYPE_FRAME_DENC <= TYPE_FRAME_DMAC;
                             END_FRAME_DENC      <= '0';
                             NEW_WORD_DENC       <= '0';
                             sif_done            <= '0';
@@ -140,6 +141,7 @@ elsif rising_edge(CLK) and LANE_ACTIVE_PPL= '1' then
 			                        end if;
                             end if;
     when TRANSFER_ST    =>
+                            TYPE_FRAME_DENC <= type_frame_denc_i;
                             if END_PACKET_DMAC = '1' then
 			                        DATA_DENC           <= DATA_DMAC;
 			                        VALID_K_CHARAC_DENC <= VALID_K_CHAR_DMAC;
@@ -151,6 +153,7 @@ elsif rising_edge(CLK) and LANE_ACTIVE_PPL= '1' then
                               NEW_WORD_DENC       <= '1';
                             end if;
     when END_FRAME_ST   =>
+                            TYPE_FRAME_DENC <= type_frame_denc_i;
                             END_FRAME_DENC        <= '1';
                             current_state         <= START_FRAME_ST;
                             if type_frame_denc_i = C_DATA_FRM then
