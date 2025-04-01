@@ -380,6 +380,7 @@ architecture rtl of DATA_LINK_GENERATOR is
                   test_end_frame    <= '0';                  -- reset for a new test
                   cnt_byte          <= unsigned(packet_size); -- number of bytes = frame size
                   err_counter_frame <= (others=>'0');
+                  cnt_packet        <= (others=>'0');
                   -- select data tx in function of the number of bytes remaining in the frame
                   if (gen_data = C_INCREMENTAL) then  -- incremental data
                      val_data  <= val_data + C_INCR_VAL_DATA;
