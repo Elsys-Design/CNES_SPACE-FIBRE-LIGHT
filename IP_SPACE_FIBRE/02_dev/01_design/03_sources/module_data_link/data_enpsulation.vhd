@@ -80,6 +80,7 @@ if RST_N = '0' then
   current_state_r     <= START_FRAME_ST;
   sif_done            <='0';
   type_frame_denc_i   <= (others => '0');
+  TYPE_FRAME_DENC     <=(others => '0');
 elsif rising_edge(CLK) and LANE_ACTIVE_PPL= '1' then
   type_frame_denc_i <= TYPE_FRAME_DMAC;
   current_state_r <= current_state;
@@ -94,6 +95,9 @@ elsif rising_edge(CLK) and LANE_ACTIVE_PPL= '1' then
                               VALID_K_CHARAC_DENC <= VALID_K_CHAR_DMAC;
                               NEW_WORD_DENC       <= NEW_WORD_DMAC;
                               sif_done            <= '1';
+                              if END_PACKET_DMAC ='1' then
+                                sif_done            <= '0';
+                              end if;
                             elsif NEW_WORD_DMAC = '1' then
                               if TYPE_FRAME_DMAC = C_DATA_FRM then
 			                        	DATA_DENC          <= C_RESERVED_SYMB & VIRTUAL_CHANNEL_DMAC & C_SDF_WORD;
