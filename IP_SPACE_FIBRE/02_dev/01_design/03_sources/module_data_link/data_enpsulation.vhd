@@ -55,10 +55,12 @@ type data_encapsulation_fsm_type is (
   END_FRAME_ST
   );
 
-signal current_state   : data_encapsulation_fsm_type; --! Current state of the Dat Word Identification FSM
-signal current_state_r : data_encapsulation_fsm_type; --! Current state of the Dat Word Identification FSM
-signal sif_done        : std_logic;                   --! SIF done flag
+signal current_state     : data_encapsulation_fsm_type;                         --! Current state of the Dat Word Identification FSM
+signal current_state_r   : data_encapsulation_fsm_type;                         --! Current state of the Dat Word Identification FSM
+signal sif_done          : std_logic;                                           --! SIF done flag
+signal type_frame_denc_i : std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);    --! SIF done flag
 begin
+  
 ---------------------------------------------------------
 -----                  Process                      -----
 ---------------------------------------------------------
@@ -72,17 +74,18 @@ begin
 if RST_N = '0' then
   DATA_DENC           <= (others => '0');
   VALID_K_CHARAC_DENC <= (others => '0');
-  TYPE_FRAME_DENC     <= (others => '0');
   NEW_WORD_DENC       <= '0';
   END_FRAME_DENC      <= '0';
   current_state       <= START_FRAME_ST;
   current_state_r     <= START_FRAME_ST;
   sif_done            <='0';
+  type_frame_denc_i   <= (others => '0');
 elsif rising_edge(CLK) and LANE_ACTIVE_PPL= '1' then
-  TYPE_FRAME_DENC <= TYPE_FRAME_DMAC;
+  type_frame_denc_i <= TYPE_FRAME_DMAC;
   current_state_r <= current_state;
   case current_state is
     when START_FRAME_ST =>
+                            TYPE_FRAME_DENC <= TYPE_FRAME_DMAC;
                             END_FRAME_DENC      <= '0';
                             NEW_WORD_DENC       <= '0';
                             sif_done            <= '0';
@@ -138,6 +141,7 @@ elsif rising_edge(CLK) and LANE_ACTIVE_PPL= '1' then
 			                        end if;
                             end if;
     when TRANSFER_ST    =>
+                            TYPE_FRAME_DENC <= type_frame_denc_i;
                             if END_PACKET_DMAC = '1' then
 			                        DATA_DENC           <= DATA_DMAC;
 			                        VALID_K_CHARAC_DENC <= VALID_K_CHAR_DMAC;
@@ -149,13 +153,14 @@ elsif rising_edge(CLK) and LANE_ACTIVE_PPL= '1' then
                               NEW_WORD_DENC       <= '1';
                             end if;
     when END_FRAME_ST   =>
+                            TYPE_FRAME_DENC <= type_frame_denc_i;
                             END_FRAME_DENC        <= '1';
                             current_state         <= START_FRAME_ST;
-                            if TYPE_FRAME_DMAC = C_DATA_FRM then
+                            if type_frame_denc_i = C_DATA_FRM then
                               DATA_DENC           <= C_RESERVED_SYMB & C_RESERVED_SYMB & C_RESERVED_SYMB & C_K28_0_SYMB;
                               VALID_K_CHARAC_DENC <= "0001";
                               NEW_WORD_DENC       <= '1';
-                            elsif TYPE_FRAME_DMAC = C_BC_FRM then
+                            elsif type_frame_denc_i = C_BC_FRM then
                               DATA_DENC           <= C_RESERVED_SYMB & C_RESERVED_SYMB & "000000" & BC_STATUS_DMAC & C_K28_2_SYMB;
                               VALID_K_CHARAC_DENC <= "0001";
                               NEW_WORD_DENC       <= '1';
