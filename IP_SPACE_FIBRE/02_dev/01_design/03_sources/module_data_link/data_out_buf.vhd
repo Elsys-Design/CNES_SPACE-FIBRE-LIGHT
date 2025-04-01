@@ -128,11 +128,12 @@ type data_in_fsm is (
   signal eip_out_ack            : std_logic;
   signal cnt_eip                : unsigned(6-1 downto 0);     -- cnt_word sent, max= 64
   signal cnt_eip_out            : unsigned(6-1 downto 0);     -- cnt_word sent, max= 64
+  signal cnt_eip_out_reg        : unsigned(6-1 downto 0);     -- cnt_word sent, max= 64
   signal data_out               : std_logic_vector(C_DATA_LENGTH-1 downto 0);
   signal valid_k_char_out       : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
   signal vc_end_packet          : std_logic;
-  signal cnt_word_sent          : unsigned(6-1 downto 0);     -- cnt_word sent, max= 64
-
+  signal cnt_word_sent          : unsigned(7-1 downto 0);     -- cnt_word sent, max= 64
+  signal status_level_rd        : std_logic_vector(C_OUT_BUF_SIZE-1 downto 0);
   signal m_value_for_credit     : std_logic_vector(C_M_SIZE + 5 downto 0);
 begin
 ---------------------------------------------------------
@@ -145,7 +146,7 @@ begin
   DATA_DOBUF           <= rd_data(C_DATA_LENGTH-1 downto 0);
   VALID_K_CHARAC_DOBUF <= rd_data(C_DATA_LENGTH+C_BYTE_BY_WORD_LENGTH-1 downto C_DATA_LENGTH);
   DATA_VALID_DOBUF     <= rd_data_vld;
-  END_PACKET_DOBUF     <= vc_end_packet and rd_data_vld;
+  END_PACKET_DOBUF     <= rd_data_vld and status_threshold_low when (cnt_word_sent<62) else rd_data_vld;
   m_value_for_credit   <= M_VAL_DDES & "000000";
   S_AXIS_TREADY_DL     <= s_axis_tready_i;
 
@@ -158,7 +159,7 @@ begin
     G_DWIDTH              => C_DATA_LENGTH + C_BYTE_BY_WORD_LENGTH,
     G_AWIDTH              => C_OUT_BUF_SIZE,
     G_THRESHOLD_HIGH      => (2**C_OUT_BUF_SIZE)-3,
-    G_THRESHOLD_LOW       => 2,
+    G_THRESHOLD_LOW       => 1,
     S_AXIS_TDATA_WIDTH    => C_DATA_LENGTH,
     S_AXIS_TUSER_WIDTH    => C_BYTE_BY_WORD_LENGTH
   )
@@ -175,7 +176,7 @@ begin
     STATUS_FULL           => status_full,
     STATUS_EMPTY          => status_empty,
     STATUS_LEVEL_WR       => open,
-    STATUS_LEVEL_RD       => open,
+    STATUS_LEVEL_RD       => status_level_rd,
     S_AXIS_ACLK           => S_AXIS_ACLK_NW,
     S_AXIS_TREADY         => s_axis_tready_i,
     S_AXIS_TDATA          => s_axis_tdata_i,
@@ -358,23 +359,6 @@ end process p_has_credit;
     end if;
   end process p_fct_credit_cnt;
 ---------------------------------------------------------
--- Process: p_vc_end_packet
--- Description: EIP output detection
----------------------------------------------------------
-p_vc_end_packet: process(CLK, RST_N)
-begin
-  if RST_N = '0' then
-    vc_end_packet <= '0';
-  elsif rising_edge(CLK) then
-    vc_end_packet <= '0';
-    if cnt_word_sent >= 63 then
-      vc_end_packet <='1';
-    elsif status_threshold_low = '1' and VC_RD_EN_DMAC='1'and cnt_word_sent > 0 then
-      vc_end_packet <='1';
-    end if;
-  end if;
-end process p_vc_end_packet;
----------------------------------------------------------
 -- Process: p_cnt_word
 -- Description: Count the number of word sent
 ---------------------------------------------------------
@@ -382,13 +366,16 @@ p_cnt_word: process(CLK, RST_N)
 begin
   if RST_N = '0' then
     cnt_word_sent      <= (others =>'0');
+    vc_end_packet <= '0';
   elsif rising_edge(CLK) then
-    if rd_data_vld = '1' and  vc_end_packet='1' then
-      cnt_word_sent      <= (others =>'0');
+    vc_end_packet <= '0';
+    if status_threshold_low = '1' and rd_data_vld='1' then
+      cnt_word_sent  <= (others =>'0');
     elsif rd_data_vld = '1' then
       cnt_word_sent <= cnt_word_sent +1;
-    elsif cnt_word_sent > 63 then
-      cnt_word_sent      <= (others =>'0');
+    elsif cnt_word_sent >= 63 then
+      vc_end_packet <='1';
+      cnt_word_sent <= (others =>'0');
     end if;
   end if;
 end process p_cnt_word;
@@ -437,12 +424,16 @@ end process p_eip_in;
 p_eip_cnt_out: process(CLK, RST_N)
 begin
   if RST_N = '0' then
-    cnt_eip_out   <= (others =>'0');
+    cnt_eip_out      <= (others =>'0');
+    cnt_eip_out_reg  <= (others =>'0');
   elsif rising_edge(CLK) then
-    if eip_out = '1' then
-      cnt_eip_out    <= cnt_eip_out + 1;
+    cnt_eip_out_reg <= cnt_eip_out;
+    if eip_out = '1' and eip_out_ack='1'  then
+      cnt_eip_out    <= to_unsigned(1,cnt_eip_out'length);
     elsif eip_out_ack='1' then
       cnt_eip_out   <= (others =>'0');
+    elsif eip_out = '1' then
+      cnt_eip_out <= cnt_eip_out+1;
     end if;
   end if;
 end process p_eip_cnt_out;
@@ -479,7 +470,7 @@ end process p_eip_cnt;
       VC_READY_DOBUF <= '0';
     elsif rising_edge(CLK) then
       if VC_RD_EN_DMAC='0' then
-        if fct_credit_cnt > 0 and (status_full = '1' or cnt_eip > 0) then
+        if fct_credit_cnt > 0 and (unsigned(status_level_rd) > 62 or cnt_eip > 0) then
           VC_READY_DOBUF <= '1';
         else
           VC_READY_DOBUF <= '0';
