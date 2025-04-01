@@ -439,7 +439,7 @@ async def cocotb_run(dut):
     monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_1", number_of_word = 20))
 
 
-    await configure_model_dl(tb, 19, [0x82,0x00,0x00,0x00], [0x00,0x00,0x00,0x42])
+    await configure_model_dl(tb, 19, [0x01,0x01,0x00,0x00], [0x00,0x00,0x00,0x42])
     await start_model_dl(tb, 19)
 
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16)
@@ -456,7 +456,7 @@ async def cocotb_run(dut):
     await configure_model_dl(tb, 3, [0xE1,0x1F,0x00,0x00], [0x00,0x00,0x00,0x00])
     await start_model_dl(tb, 3)
 
-    await configure_model_dl(tb, 19, [0x82,0x00,0x00,0x00], [0x00,0x00,0x00,0x02])
+    await configure_model_dl(tb, 19, [0x01,0x01,0x00,0x00], [0x00,0x00,0x00,0x43])
     await start_model_dl(tb, 19)
     
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16)
@@ -483,7 +483,7 @@ async def cocotb_run(dut):
 
     monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_1", number_of_word = 55))
 
-    await configure_model_dl(tb, 19, [0x82,0x00,0x00,0x00], [0x00,0x00,0x00,0x02])
+    await configure_model_dl(tb, 19, [0x01,0x01,0x00,0x00], [0x00,0x00,0x00,0x42])
     await start_model_dl(tb, 19)
 
     #wait for idle frame (32 words)

@@ -341,7 +341,7 @@ class SpaceFibre_Sink:
             self.dut_Tx_disparity[0] -=2
         elif ms_encoded_data == "1001" :
             if k_encoded == 1 :
-                if self.dut_Tx_disparity[0] <= 0 :
+                if self.dut_Tx_disparity[0] >= 0 :
                     ms_decoded_data = "110"
                 else :
                     ms_decoded_data = "001"
@@ -349,7 +349,7 @@ class SpaceFibre_Sink:
                 ms_decoded_data = "001"
         elif ms_encoded_data == "0101" :
             if k_encoded == 1 :
-                if self.dut_Tx_disparity[0] <= 0 :
+                if self.dut_Tx_disparity[0] >= 0 :
                     ms_decoded_data = "101"
                 else :
                     ms_decoded_data = "010"
@@ -367,7 +367,7 @@ class SpaceFibre_Sink:
             self.dut_Tx_disparity[0] -=2
         elif ms_encoded_data == "1010" :
             if k_encoded == 1 :
-                if self.dut_Tx_disparity[0] <= 0 :
+                if self.dut_Tx_disparity[0] >= 0 :
                     ms_decoded_data = "010"
                 else :
                     ms_decoded_data = "101"
@@ -375,7 +375,7 @@ class SpaceFibre_Sink:
                 ms_decoded_data = "101"
         elif ms_encoded_data == "0110" :
             if k_encoded == 1 :
-                if self.dut_Tx_disparity[0] <= 0 :
+                if self.dut_Tx_disparity[0] >= 0 :
                     ms_decoded_data = "001"
                 else :
                     ms_decoded_data = "110"
