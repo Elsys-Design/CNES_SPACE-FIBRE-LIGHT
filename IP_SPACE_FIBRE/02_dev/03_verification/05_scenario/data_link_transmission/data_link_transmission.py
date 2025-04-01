@@ -340,6 +340,38 @@ async def send_FCT(tb, vc, value, seq_num):
     crc_8 = tb.spacefibre_random_generator_data_link.invert_string(crc_8)
     await tb.spacefibre_driver.write_to_Rx(crc_8, delay = 0, k_encoding = 0)
 
+def check_last_broadcast_frame(tb, path):
+    """
+    Check that a broadcast frame was sent within the last two frames
+    """
+    if os.path.exists(path):
+        tb.logger.info("sim_time %d ns: Source file %s to check does exist, open in read mode", get_sim_time(units = "ns"), path)
+        file = open(path, "r")
+    else:
+        tb.logger.error("sim_time %d ns: File %s to check doesn't exist", get_sim_time(units = "ns"), path)
+
+    #store all line in a list
+    lines = []
+    for line in file:
+        input_splitted = line.split(';')
+        if input_splitted[-1] == "\n":
+            input_splitted.remove("\n")
+        elif '\n' in input_splitted[-1]:
+            input_splitted[-1] = input_splitted[-1].replace("\n", "")
+        lines+=[input_splitted]
+    
+    #store last broadcast frame and count data frame before it
+    bc_stored = 0
+    counter_data_frame = 0
+    index = 1
+    while bc_stored == 0 and index <= len(lines) :
+        if lines[-index][1] == "0001" and lines[-index][0][4:8] == "5DFC":  #detect SBF
+            if lines[-index+3][1] == "0001" and lines[-index+3][0][4:8] == "005C": #detect EBF
+                return 0
+
+
+
+
 
 @cocotb.test()
 async def cocotb_run(dut):
@@ -498,17 +530,27 @@ async def cocotb_run(dut):
     
     await monitor
 
-    monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_1", number_of_word = 85))
+    monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_1", number_of_word = 20+66*8+23))
 
     await configure_gen_vc_dl(tb, [0xE1,0x1F,0x00,0x00], [0x00,0x00,0x00,0x00])
 
     await start_gen_vc_dl(tb)
 
-    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16)
+    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/100_IDLE.dat", file_format = 16)
+    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/100_IDLE.dat", file_format = 16)
+    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/100_IDLE.dat", file_format = 16)
+    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/100_IDLE.dat", file_format = 16)
+    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/100_IDLE.dat", file_format = 16)
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16)
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16)
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16)
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16)
+    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16)
+    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16)
+    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16)
+    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16)
+    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16)
+    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/3_IDLE.dat", file_format = 16)
 
     await monitor
 

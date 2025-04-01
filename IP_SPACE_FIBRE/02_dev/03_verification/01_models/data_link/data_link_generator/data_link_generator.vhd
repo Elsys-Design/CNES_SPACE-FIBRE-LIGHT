@@ -454,7 +454,7 @@ architecture rtl of DATA_LINK_GENERATOR is
                   end if;
                   TLAST <= '1';
                elsif (cnt_byte <= 4) then  -- last packet of the frame
-                  cnt_byte  <= unsigned(packet_size) + cnt_byte;  -- reset the counter of byte for the nexte frame
+                  cnt_byte  <= unsigned(packet_size) + cnt_byte -4;  -- reset the counter of byte for the nexte frame
                   cnt_packet <= cnt_packet+1;
                   TLAST <= '1';
                else
@@ -462,7 +462,7 @@ architecture rtl of DATA_LINK_GENERATOR is
                   TLAST <= '0';
                end if;
                -- packet management
-               if (TREADY = '1' and cnt_packet = packet_number) then
+               if (TREADY = '1' and cnt_packet >= packet_number) then
                   TVALID <= '0';
                   generation_state <= END_TEST;
                elsif (TREADY = '1' and cnt_packet < packet_number) then
@@ -474,7 +474,7 @@ architecture rtl of DATA_LINK_GENERATOR is
                end if;
 
             when WAIT_TX =>
-               if (TREADY = '1' and cnt_packet = packet_number) then
+               if (TREADY = '1' and cnt_packet >= packet_number) then
                   generation_state <= END_TEST;
                   TVALID <= '0';
                elsif (TREADY = '1' ) then
