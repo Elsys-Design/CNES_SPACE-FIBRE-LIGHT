@@ -146,7 +146,7 @@ begin
   DATA_DOBUF           <= rd_data(C_DATA_LENGTH-1 downto 0);
   VALID_K_CHARAC_DOBUF <= rd_data(C_DATA_LENGTH+C_BYTE_BY_WORD_LENGTH-1 downto C_DATA_LENGTH);
   DATA_VALID_DOBUF     <= rd_data_vld;
-  END_PACKET_DOBUF     <= rd_data_vld and status_threshold_low when (cnt_word_sent<62) else rd_data_vld;
+  END_PACKET_DOBUF     <= rd_data_vld and status_threshold_low when (cnt_word_sent<63) else rd_data_vld;
   m_value_for_credit   <= M_VAL_DDES & "000000";
   S_AXIS_TREADY_DL     <= s_axis_tready_i;
 
