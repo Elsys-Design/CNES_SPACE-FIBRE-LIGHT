@@ -33,6 +33,7 @@ entity data_seq_check is
 		SEQ_NUM_ERR_DSCHECK    : out std_logic;
 		SEQ_NUM_ACK_DSCHECK    : out std_logic_vector(6 downto 0);
 		END_FRAME_DSCHECK      : out std_logic;
+		TYPE_FRAME_DSCHECK     : out  std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);  --! Flag EMPTY of the FIFO RX
     -- data_mid_buffer (DMBUF) interface
     DATA_DSCHECK           : out std_logic_vector(C_DATA_LENGTH-1 downto 0);    -- Data write bus
 		VALID_K_CHARAC_DSCHECK : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
@@ -74,7 +75,9 @@ begin
 		END_FRAME_FIFO_DSCHECK <= '0';
 		END_FRAME_DSCHECK      <= '0';
 		FRAME_ERR_DSCHECK      <= '0';
+		TYPE_FRAME_DSCHECK     <= (others => '0');
 	elsif rising_edge(CLK) then
+		TYPE_FRAME_DSCHECK <= TYPE_FRAME_DCCHECK;
     FRAME_ERR_DSCHECK  <= FRAME_ERR_DCCHECK;
 		SEQ_NUM_DSCHECK    <= SEQ_NUM_DCCHECK;
 	  if (TYPE_FRAME_DCCHECK = C_DATA_FRM  or TYPE_FRAME_DCCHECK = C_BC_FRM or TYPE_FRAME_DCCHECK = C_FCT_FRM) and END_FRAME_DCCHECK = '1' then

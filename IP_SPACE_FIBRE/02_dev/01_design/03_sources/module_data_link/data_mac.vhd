@@ -110,12 +110,14 @@ type data_dmac_fsm is (
   signal fct_counter     : unsigned(3 downto 0);          --! FCT counter TX
   signal data_counter    : unsigned(6 downto 0);          --! FCT counter TX
   signal vc_pause_i      : std_logic_vector(G_VC_NUM downto 0);
-
+  signal req_ack_done    : std_logic;
+  signal cnt_wait_ack    : unsigned(3 downto 0);
 begin
   DATA_COUNTER_TX_DMAC <= std_logic_vector(data_counter);
   ACK_COUNTER_TX_DMAC  <= std_logic_vector(ack_counter);
   NACK_COUNTER_TX_DMAC <= std_logic_vector(nack_counter);
   FCT_COUNTER_TX_DMAC  <= std_logic_vector(fct_counter);
+  REQ_ACK_DONE_DMAC    <= req_ack_done;
 ---------------------------------------------------------
 -----                     Process                   -----
 ---------------------------------------------------------
@@ -750,7 +752,7 @@ begin
     BC_CHANNEL_DMAC      <= (others => '0');
     BC_STATUS_DMAC       <= (others => '0');
     MULT_CHANNEL_DMAC    <= (others => '0');
-    REQ_ACK_DONE_DMAC    <= '0';
+    req_ack_done         <= '0';
     REQ_FCT_DONE_DMAC    <= (others => '0');
     TRANS_POL_FLG_DMAC   <= '0';
     SEQ_NUM_ACK_DMAC     <= (others => '0');
@@ -758,7 +760,7 @@ begin
     nack_counter         <= (others => '0');
     fct_counter          <= (others => '0');
   elsif rising_edge(CLK) and LANE_ACTIVE_PPL= '1' then
-    REQ_ACK_DONE_DMAC  <= '0';
+    req_ack_done       <= '0';
     REQ_FCT_DONE_DMAC  <= (others => '0');
     req_int            <= '0';
     TRANS_POL_FLG_DMAC <= TRANS_POL_FLG_DERRM;
@@ -772,7 +774,7 @@ begin
                       VIRTUAL_CHANNEL_DMAC <= std_logic_vector(virtual_channel);
                       BC_CHANNEL_DMAC      <= std_logic_vector(virtual_channel);
                       TYPE_FRAME_DMAC      <= type_frame;
-                      if (REQ_ACK_DERRM = '1' or REQ_NACK_DERRM = '1' or REQ_FCT_DIBUF /= std_logic_vector(to_unsigned(0,G_VC_NUM))) and cnt_wait > 1 then -- Request pending
+                      if (((REQ_ACK_DERRM = '1' or REQ_NACK_DERRM = '1' )and cnt_wait_ack = 15) or REQ_FCT_DIBUF /= std_logic_vector(to_unsigned(0,G_VC_NUM))) and cnt_wait > 1 then -- Request pending
                         req_int           <= '1';
                         cnt_wait          <= (others =>'0');
                         current_state_req <= REQ_ASK_ST;
@@ -790,18 +792,22 @@ begin
                         TYPE_FRAME_DMAC      <= type_frame;
                         current_state_req    <= REQ_SEND_ST;
       when REQ_SEND_ST =>
-                      NEW_WORD_DMAC        <= '1';
-                      END_PACKET_DMAC      <= '1';
                       current_state_req <= IDLE_ST;
-                      if REQ_ACK_DERRM = '1' then
+                      if REQ_ACK_DERRM = '1' and cnt_wait_ack = 15 then
+                        NEW_WORD_DMAC        <= '1';
+                        END_PACKET_DMAC      <= '1';
                         ack_counter        <= ack_counter + 1;
-                        REQ_ACK_DONE_DMAC  <= '1';
+                        req_ack_done       <= '1';
                         TYPE_FRAME_DMAC    <= C_ACK_FRM;
-                      elsif REQ_NACK_DERRM = '1' then
+                      elsif REQ_NACK_DERRM = '1' and cnt_wait_ack = 15 then
+                        NEW_WORD_DMAC        <= '1';
+                        END_PACKET_DMAC      <= '1';
                         nack_counter       <= nack_counter + 1;
-                        REQ_ACK_DONE_DMAC  <= '1';
+                        req_ack_done       <= '1';
                         TYPE_FRAME_DMAC    <= C_NACK_FRM;
                       elsif REQ_FCT_DIBUF /= std_logic_vector(to_unsigned(0,G_VC_NUM)) then
+                        NEW_WORD_DMAC        <= '1';
+                        END_PACKET_DMAC      <= '1';
                         fct_counter <= fct_counter +1;
                         TYPE_FRAME_DMAC   <= C_FCT_FRM;
                         if REQ_FCT_DIBUF(0) ='1' then
@@ -829,9 +835,27 @@ begin
                           REQ_FCT_DONE_DMAC(7) <= '1';
                           MULT_CHANNEL_DMAC  <= std_logic_vector(to_unsigned(7,MULT_CHANNEL_DMAC'length));
                         end if;
+                      else
+                        NEW_WORD_DMAC        <= '0';
+                        END_PACKET_DMAC      <= '0';
                       end if;
     end case;
   end if;
 end process p_compete;
-
+---------------------------------------------------------
+-- Process: p_request
+-- Description: manage 15 words minimum beetween 2 ACK or NACK
+---------------------------------------------------------
+p_cnt_wait_ack: process(CLK, RST_N)
+begin
+  if RST_N = '0' then
+    cnt_wait_ack <= (others => '0');
+  elsif rising_edge(CLK) then
+    if req_ack_done = '1' then
+      cnt_wait_ack <= (others => '0');
+    elsif cnt_wait_ack < 15 then
+      cnt_wait_ack <= cnt_wait_ack + 1;
+    end if;
+  end if;
+end process p_cnt_wait_ack;
 end architecture rtl;
