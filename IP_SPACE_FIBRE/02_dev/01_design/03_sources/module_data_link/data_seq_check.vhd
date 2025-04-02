@@ -85,6 +85,13 @@ begin
 				VALID_K_CHARAC_DSCHECK <= (others => '0');
 				END_FRAME_FIFO_DSCHECK <= END_FRAME_DCCHECK;
 				END_FRAME_DSCHECK      <= END_FRAME_DCCHECK;
+			elsif CRC_ERR_DCCHECK ='1' then
+				SEQ_NUM_ERR_DSCHECK    <= '0';
+				NEW_WORD_DSCHECK       <= '0';
+				DATA_DSCHECK           <= (others => '0');
+				VALID_K_CHARAC_DSCHECK <= (others => '0');
+				END_FRAME_FIFO_DSCHECK <= END_FRAME_DCCHECK;
+				END_FRAME_DSCHECK      <= END_FRAME_DCCHECK;
 			else
 				seq_num_cnt            <= seq_num_cnt+1;
 				SEQ_NUM_ERR_DSCHECK    <= '0';
