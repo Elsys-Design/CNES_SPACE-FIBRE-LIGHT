@@ -154,17 +154,13 @@ begin
                     if VC_READY_DOBUF /= std_logic_vector(to_unsigned(0,G_VC_NUM+1)) then
                         current_state_vc <= VC_0_ST;
                     else
-                      if idle_cnt = 0 then
+                      if idle_cnt /= 0 then
+                        idle_data <= idle_data -1;
                         idle_cnt  <= idle_cnt +1;
                       elsif idle_cnt= 63 then
                         end_packet <= '1';
-                        new_word   <= '1';
                         idle_data  <= idle_data -1;
                         idle_cnt   <= (others => '0');
-                      else
-                        new_word         <= '1';
-                        idle_data <= idle_data -1;
-                        idle_cnt  <= idle_cnt +1;
                       end if;
                     end if;
       when VC_0_ST =>
