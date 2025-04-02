@@ -29,6 +29,7 @@ entity data_mac is
     REQ_NACK_DERRM       : in  std_logic;
     TRANS_POL_FLG_DERRM  : in  std_logic;
     REQ_ACK_DONE_DMAC    : out std_logic;
+    SEQ_NUM_ACK_DERRM    : in  std_logic_vector(7 downto 0);
     -- DIBUF interface
     REQ_FCT_DIBUF        : in  std_logic_vector(G_VC_NUM-1 downto 0);                                    --! Flag DATA_VALID of the FIFO RX from Lane layer
     REQ_FCT_DONE_DMAC    : out std_logic_vector(G_VC_NUM-1 downto 0);
@@ -58,7 +59,8 @@ entity data_mac is
     BC_CHANNEL_DMAC      : out std_logic_vector(G_VC_NUM-1 downto 0);
     BC_STATUS_DMAC       : out std_logic_vector(2-1 downto 0);
     MULT_CHANNEL_DMAC    : out std_logic_vector(G_VC_NUM-1 downto 0);
-    TRANS_POL_FLG_DMAC   : out std_logic
+    TRANS_POL_FLG_DMAC   : out std_logic;
+    SEQ_NUM_ACK_DMAC     : out std_logic_vector(7 downto 0)
   );
 end data_mac;
 
@@ -751,13 +753,16 @@ begin
     REQ_ACK_DONE_DMAC    <= '0';
     REQ_FCT_DONE_DMAC    <= (others => '0');
     TRANS_POL_FLG_DMAC   <= '0';
+    SEQ_NUM_ACK_DMAC     <= (others => '0');
     ack_counter          <= (others => '0');
     nack_counter         <= (others => '0');
     fct_counter          <= (others => '0');
   elsif rising_edge(CLK) and LANE_ACTIVE_PPL= '1' then
-    REQ_ACK_DONE_DMAC <= '0';
-    REQ_FCT_DONE_DMAC <= (others => '0');
-    req_int           <= '0';
+    REQ_ACK_DONE_DMAC  <= '0';
+    REQ_FCT_DONE_DMAC  <= (others => '0');
+    req_int            <= '0';
+    TRANS_POL_FLG_DMAC <= TRANS_POL_FLG_DERRM;
+    SEQ_NUM_ACK_DMAC   <= SEQ_NUM_ACK_DERRM;
     case current_state_req is
       when IDLE_ST =>
                       DATA_DMAC            <= data_vc;
@@ -792,12 +797,10 @@ begin
                         ack_counter        <= ack_counter + 1;
                         REQ_ACK_DONE_DMAC  <= '1';
                         TYPE_FRAME_DMAC    <= C_ACK_FRM;
-                        TRANS_POL_FLG_DMAC <= TRANS_POL_FLG_DERRM;
                       elsif REQ_NACK_DERRM = '1' then
                         nack_counter       <= nack_counter + 1;
                         REQ_ACK_DONE_DMAC  <= '1';
                         TYPE_FRAME_DMAC    <= C_NACK_FRM;
-                        TRANS_POL_FLG_DMAC <= TRANS_POL_FLG_DERRM;
                       elsif REQ_FCT_DIBUF /= std_logic_vector(to_unsigned(0,G_VC_NUM)) then
                         fct_counter <= fct_counter +1;
                         TYPE_FRAME_DMAC   <= C_FCT_FRM;

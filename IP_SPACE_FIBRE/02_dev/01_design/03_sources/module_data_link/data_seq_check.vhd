@@ -31,6 +31,7 @@ entity data_seq_check is
 		-- data_err_management (DERRM) interface
 		NEAR_END_RPF_DERRM     : in  std_logic;
 		SEQ_NUM_ERR_DSCHECK    : out std_logic;
+		SEQ_NUM_ACK_DSCHECK    : out std_logic_vector(6 downto 0);
 		END_FRAME_DSCHECK      : out std_logic;
     -- data_mid_buffer (DMBUF) interface
     DATA_DSCHECK           : out std_logic_vector(C_DATA_LENGTH-1 downto 0);    -- Data write bus
@@ -52,6 +53,8 @@ architecture rtl of data_seq_check is
 signal seq_num_cnt    : unsigned(6 downto 0);   --! Data parallel from Lane Layer
 
 begin
+
+	SEQ_NUM_ACK_DSCHECK <= std_logic_vector(seq_num_cnt);
 ---------------------------------------------------------
 -----                     Process                   -----
 ---------------------------------------------------------
@@ -108,6 +111,7 @@ begin
 				END_FRAME_DSCHECK      <= END_FRAME_DCCHECK;
       end if;
 		else
+			SEQ_NUM_ERR_DSCHECK    <= '0';
 			NEW_WORD_DSCHECK       <= NEW_WORD_DCCHECK;
 			DATA_DSCHECK           <= DATA_DCCHECK;
 			VALID_K_CHARAC_DSCHECK <= VALID_K_CHARAC_DCCHECK;
