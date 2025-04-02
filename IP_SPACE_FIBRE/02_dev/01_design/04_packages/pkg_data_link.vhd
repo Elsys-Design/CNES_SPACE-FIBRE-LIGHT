@@ -66,12 +66,12 @@ package data_link_lib is
   constant C_K28_0_SYMB          : std_logic_vector(07 downto 00) := x"1C";  --! K28.0 EDF
   constant C_FILL_SYMB           : std_logic_vector(07 downto 00) := x"FB";  --! K27.7
   constant C_SBF_SYMB            : std_logic_vector(07 downto 00) := x"5D";  --! D29.2 SBF
-  constant C_NACK_SYMB           : std_logic_vector(07 downto 00) := x"A2";  --! D27.5
+  constant C_NACK_SYMB           : std_logic_vector(07 downto 00) := x"BB";  --! D27.5
   constant C_SDF_SYMB            : std_logic_vector(07 downto 00) := x"50";  --! D16.2
   constant C_FULL_SYMB           : std_logic_vector(07 downto 00) := x"6F";  --! D15.3
   constant C_RETRY_SYMB          : std_logic_vector(07 downto 00) := x"87";  --! D7.4
   constant C_SIF_SYMB            : std_logic_vector(07 downto 00) := x"84";  --! D4.2 SIF
-  constant C_ACK_SYMB            : std_logic_vector(07 downto 00) := x"A6";  --! D2.5
+  constant C_ACK_SYMB            : std_logic_vector(07 downto 00) := x"A2";  --! D2.5
   constant C_RESERVED_SYMB       : std_logic_vector(07 downto 00) := x"00";  --! D0.0
   -- DATA-LINK CONTROL WORDS
   constant C_SDF_WORD           : std_logic_vector(15 downto 00) := C_SDF_SYMB & C_K28_7_SYMB;   -- bits 23 downto 16 = Virtual channel and bits 31 downto 24 = Reserved

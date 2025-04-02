@@ -155,7 +155,7 @@ begin
   elsif rising_edge(CLK) then
     crc_reg_8b_check  <= CRC_8B_DWI;
     crc_reg_16b_check <= CRC_16B_DWI;
-    if TYPE_FRAME_DWI = C_DATA_FRM then
+    if TYPE_FRAME_DWI = C_DATA_FRM and crc_to_inv_16b ='1'then
       -- Bit-by-bit inversion
       for i in 0 to 15 loop
         crc_var_16b(i) := crc_reg_16b(15 - i);
@@ -170,7 +170,7 @@ begin
         CRC_LONG_ERR_DCCHECK  <= '0';
         CRC_SHORT_ERR_DCCHECK <= '0';
       end if;
-    elsif crc_to_inv_8b ='1' then
+    elsif TYPE_FRAME_DWI /= C_DATA_FRM and crc_to_inv_8b ='1' then
       -- Bit-by-bit inversion
       for i in 0 to 7 loop
         crc_var_8b(i) := crc_reg_8b(7 - i);
