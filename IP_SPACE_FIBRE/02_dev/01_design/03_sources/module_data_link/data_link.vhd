@@ -205,6 +205,7 @@ architecture Behavioral of data_link is
       SEQ_NUM_ERR_DSCHECK    : out std_logic;
       SEQ_NUM_ACK_DSCHECK    : out std_logic_vector(6 downto 0);
       END_FRAME_DSCHECK      : out std_logic;
+      TYPE_FRAME_DSCHECK     : out  std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);
       -- data_mid_buffer (DMBUF) interface
       DATA_DSCHECK           : out std_logic_vector(C_DATA_LENGTH-1 downto 0);    -- Data write bus
       VALID_K_CHARAC_DSCHECK : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
@@ -582,7 +583,7 @@ architecture Behavioral of data_link is
   signal valid_k_charac_dscom       : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
   signal type_frame_dscom           : std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);
   signal end_frame_dscom            : std_logic;
-
+  
   signal wr_data_dmbuf             : std_logic_vector(C_DATA_K_WIDTH-1 downto 0);
   signal link_reset_dibuf          : std_logic_vector(G_VC_NUM-1 downto 0);
 
@@ -595,6 +596,7 @@ architecture Behavioral of data_link is
   signal  seq_num_ack_dmac         : std_logic_vector(7 downto 0);
   signal  seq_num_ack_derrm        : std_logic_vector(7 downto 0);
   signal  seq_num_ack_dscheck      : std_logic_vector(6 downto 0);
+  signal type_frame_dscheck : std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);
 
 
 begin
@@ -702,6 +704,7 @@ begin
       SEQ_NUM_ERR_DSCHECK    => seq_num_err_dscheck,
       SEQ_NUM_ACK_DSCHECK    => seq_num_ack_dscheck,
       END_FRAME_DSCHECK      => end_frame_dscheck,
+      TYPE_FRAME_DSCHECK     => type_frame_dscheck,
       DATA_DSCHECK           => data_dscheck,
       VALID_K_CHARAC_DSCHECK => valid_k_charac_dscheck,
       NEW_WORD_DSCHECK       => new_word_dscheck,
@@ -771,7 +774,7 @@ begin
       RXERR_DWI                => rxerr_dwi,
       TYPE_FRAME_DCCHECK       => type_frame_dccheck,
       CRC_ERR_DCCHECK          => crc_err_dccheck,
-      TYPE_FRAME_DSCHECK       => (others =>'0'),
+      TYPE_FRAME_DSCHECK       => type_frame_dscheck,
       END_FRAME_DSCHECK        => end_frame_dscheck,
       SEQ_ERR_DSCHECK          => seq_num_err_dscheck,
       SEQ_NUM_ACK_DSCHECK      => seq_num_ack_dscheck,
