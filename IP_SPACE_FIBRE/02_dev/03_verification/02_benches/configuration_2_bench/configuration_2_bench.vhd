@@ -1205,7 +1205,7 @@ architecture Behavioral of CONFIGURATION_2_BENCH is
 -- Instantiation of the spacefibre_light_top module
 spacefibre_instance : spacefibre_light_top
 port map (
-    RST_N                            => rst_n,
+    RST_N                            => rst_dut_n,
     CLK                              => clk,
     CLK_TX                           => clk_tx,
     RST_TXCLK_N                      => rst_txclk_n,

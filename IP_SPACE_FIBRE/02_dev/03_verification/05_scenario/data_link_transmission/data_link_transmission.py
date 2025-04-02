@@ -306,7 +306,7 @@ async def start_model_dl(tb, model):
     await stimuli
 
 
-async def write_10b_to_Rx(tb, encoded_data, delay, invert_polarity = 0):
+async def write_10b_to_Rx(tb, encoded_data, delay = 0, invert_polarity = 0):
     """
     Writes the given data encoded on 10bits to the Rx port
     of the SpaceFibreLight IP after serializing the data.
@@ -331,6 +331,14 @@ async def send_FCT(tb, vc, value, seq_num):
     """
     Send an FCT control word to the RX port of the SpaceFibreLight IP
     """
+    await tb.spacefibre_driver.write_to_Rx("11111100", delay = 0, k_encoding = 1)
+    await tb.spacefibre_driver.write_to_Rx("11001110", delay = 0, k_encoding = 0)
+    await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
+    await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
+    await tb.spacefibre_driver.write_to_Rx("11111100", delay = 0, k_encoding = 1)
+    await tb.spacefibre_driver.write_to_Rx("11001110", delay = 0, k_encoding = 0)
+    await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
+    await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
     await tb.spacefibre_driver.write_to_Rx("01111100", delay = 0, k_encoding = 1)
     crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8("01111100")
     await tb.spacefibre_driver.write_to_Rx(f"{(value):0>3b}" + f"{(vc):0>5b}", delay = 0, k_encoding = 0)
@@ -369,14 +377,19 @@ def check_last_broadcast_frame(tb, path):
             if lines[-index+3][1] == "0001" and lines[-index+3][0][4:8] == "005C": #detect EBF
                 return 0
 
-
-
+async def send_idle_ctrl_word(tb, number_of_words):
+    for x in range(number_of_words):
+        await tb.spacefibre_driver.write_to_Rx("11111100", delay = 0, k_encoding = 1)
+        await tb.spacefibre_driver.write_to_Rx("11001110", delay = 0, k_encoding = 0)
+        await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
+        await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
 
 
 @cocotb.test()
 async def cocotb_run(dut):
 
     dir_path = os.path.dirname(os.path.realpath(__file__))
+
     clean_dir(os.path.join(dir_path,"reference/spacefibre_serial"))
 
     #Instantiation of the testbench and first reset of the DUT
@@ -396,9 +409,9 @@ async def cocotb_run(dut):
     ##########################################################################
     ##########################################################################
 
-
     step_1_failed = 0
     #Sets DUT lane initialisation FSM to Active
+
     
     await initialization_procedure(tb, "reference/spacefibre_serial/monitor_step_1")
 
@@ -406,7 +419,6 @@ async def cocotb_run(dut):
 
     #Send first FCT to each virtual channel
     for x in range(8):
-        print ("FCT is", x)
         await send_FCT(tb, x, 0, "0"+ f"{(x+1):0>7b}")
     
     await configure_gen_vc_dl(tb, [0xE1,0x1F,0x00,0x00], [0x00,0x00,0x00,0x00])
@@ -541,6 +553,9 @@ async def cocotb_run(dut):
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/100_IDLE.dat", file_format = 16)
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/100_IDLE.dat", file_format = 16)
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/100_IDLE.dat", file_format = 16)
+    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/100_IDLE.dat", file_format = 16)
+    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/100_IDLE.dat", file_format = 16)
+    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/100_IDLE.dat", file_format = 16)
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16)
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16)
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16)
@@ -579,107 +594,130 @@ async def cocotb_run(dut):
     for x in range(8):
         await send_FCT(tb, x, 0, "0"+ f"{(x+1):0>7b}")
 
+    #send 64 word on each virtual buffer on TX
     await configure_gen_vc_dl(tb, [0xE1,0x1F,0x00,0x00], [0x00,0x00,0x00,0x00])
 
-
+    #Receive 1 packet of 64 word on each virtual buffer on RX
     for model in range(8):
-        await configure_model_dl(tb, 3+2*model, [0xE1,0x1F,0x00,0x01], [0x2A,0x00,0x00,0x00])
-        await start_model_dl(tb, 3+2*model)
+        await configure_model_dl(tb, 4+2*model, [0xE1,0x1F,0x00,0x01], [0x2A,0x00,0x00,0x00])
+        await start_model_dl(tb, 4+2*model)
 
     await start_gen_vc_dl(tb)
 
-
+    #Send 1 packet of 64 word in frames of 64 word on each virtual buffer to RX
     for target in range(8):
         await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_1_" + str(target), 255, 1, 64, 0, target, target + 8, delay = 0, invert_polarity = 0, seed = 42)
 
-    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16)
-    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16)
-    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16)
-    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16)
+    await send_idle_ctrl_word(tb, 20)
 
     await monitor
 
     # Check ACK Request
 
-    monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_2", number_of_word = 143+40*8*15+20))
+    monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_2", number_of_word = 143+1008+20))
 
+    #Send FCT
     for x in range(8):
         await send_FCT(tb, x, 0, "0"+ f"{(x+17):0>7b}")
 
+    #send 64 word on each virtual buffer on TX
     await configure_gen_vc_dl(tb,[0xE1,0x1F,0x00,0x00], [0x00,0x00,0x00,0x00])
 
 
+    #Receive 3 packet of 30 word on each virtual buffer on RX
     for model in range(8):
-        await configure_model_dl(tb, 3+2*model, [0x01,0x14,0x00,0x01], [0x2B,0x00,0x00,0x00])
-        await start_model_dl(tb, 3+2*model)
+        await configure_model_dl(tb, 4+2*model, [0xE3,0x01,0x00,0x01], [0x2B,0x00,0x00,0x00])
+        await start_model_dl(tb, 4+2*model)
 
     await start_gen_vc_dl(tb)
 
+    #Send 3 packet of 30 word in frames of 5 words on each virtual buffer to RX
     for target in range(8):
-        await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_2_" + str(target), 20, 15, 5, 0, target, 15*target + 24, delay = 0, invert_polarity = 0, seed = 43)
-
-    #Check ACK Request (every 15 word)
-
-    for x in range(8):
-        await send_FCT(tb, x, 0, "0"+ f"{(x+145):0>7b}")
-
-    for model in range(8):
-        await configure_model_dl(tb, 3+2*model, [0x01,0x14,0x00,0x01], [0x2C,0x00,0x00,0x00])
-        await start_model_dl(tb, 3+2*model)
+        await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_2_" + str(target), 120, 3, 5, 0, target, (18*target + 24)%128, delay = 0, invert_polarity = 0, seed = 43)
 
 
-    for target in range(8):
-        await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_3_" + str(target), 20, 15, 5, 0, target, 15*target + 152, delay = 0, invert_polarity = 0, seed = 44)
+    await send_idle_ctrl_word(tb, 20)
 
-    #Check ACK Request (every 15 word)
-
-    await configure_model_dl(tb, 3, [0x81,0x0C,0x00,0x01], [0x2D,0x00,0x00,0x00])
-    await start_model_dl(tb, 3)
-
-    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_4_" + str(0), 20, 1, 5, 0, 0, 272, delay = 0, invert_polarity = 0, seed = 45)
-
-    for x in range(8):
-        await send_FCT(tb, x, 0, "0"+ f"{(x+113):0>7b}")
     
-    await tb.spacefibre_driver.write_from_file("stimulus/spacefibre_serial/CRC_error.dat")
+    #Check ACK Request (every 15 word)
+
+    #Send FCT
+    for x in range(8):
+        await send_FCT(tb, x, 0, "0"+ f"{((x+167)%128):0>7b}")
+
+    #Receive 3 packet of 30 word on each virtual buffer on RX
+    for model in range(8):
+        await configure_model_dl(tb, 4+2*model, [0xE3,0x01,0x00,0x01], [0x2B,0x00,0x00,0x00])
+        await start_model_dl(tb, 4+2*model)
+
+
+
+    #Send 3 packet of 30 word in frames of 5 words on each virtual buffer to RX
+    for target in range(8):
+        await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_3_" + str(target), 120, 3, 5, 0, target, (18*target + 174)%128, delay = 0, invert_polarity = 0, seed = 43)
+
+
+    await send_idle_ctrl_word(tb, 20)
+
+    #Check ACK Request (every 15 word)
+
+
+    #Receive 1 packet of 25 words on virtual channel 0 on RX 
+    await configure_model_dl(tb, 4, [0x21,0x03,0x00,0x01], [0x2D,0x00,0x00,0x00])
+    await start_model_dl(tb, 4)
+
+    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_4_" + str(0), 100, 1, 5, 0, 0, 318%128, delay = 0, invert_polarity = 0, seed = 45)
+
+    #Check ACK Request (every 15 word)
+
+    #Send FCT
+    for x in range(8):
+        await send_FCT(tb, x, 0, "0"+ f"{((x+324)%128):0>7b}")
+
+    #Send a data frame with a wrong CRC    
+    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/CRC_error.dat")
 
     #Check NACK request
 
-    await configure_model_dl(tb, 3, [0x81,0x01,0x00,0x01], [0x2E,0x00,0x00,0x00])
-    await start_model_dl(tb, 3)
+    #Receive 1 packet of 30 words on virtual channel 0 on RX
+    await configure_model_dl(tb, 4, [0xE3,0x01,0x00,0x01], [0x2E,0x00,0x00,0x00])
+    await start_model_dl(tb, 4)
 
-    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_5_" + str(0), 12, 10, 3, 0, 0, 120, delay = 0, invert_polarity = 0, seed = 46)
+    #Send 1 packet of 30 word in frames of 3 words on virtual channel 0 to RX
+    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_5_" + str(0), 120, 1, 3, 0, 0, 331, delay = 0, invert_polarity = 0, seed = 46)
 
     #Check ACK
 
+    #Send FCT
     for x in range(8):
-        await send_FCT(tb, x, 0, "0"+ f"{(x+131):0>7b}")
+        await send_FCT(tb, x, 0, "0"+ f"{(x+342):0>7b}")
 
-    await tb.spacefibre_driver.write_from_file("stimulus/spacefibre_serial/SEQ_NUM_error.dat")
+    #Send a data frame with a wrong SEQ_NUM
+    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/SEQ_NUM_error.dat")
 
     #Check NACK
 
-    await configure_model_dl(tb, 3, [0x81,0x01,0x00,0x01], [0x2E,0x00,0x00,0x00])
-    await start_model_dl(tb, 3)
+    await configure_model_dl(tb, 4, [0xE3,0x01,0x00,0x01], [0x2F,0x00,0x00,0x00])
+    await start_model_dl(tb, 4)
 
-    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_6_" + str(0), 12, 10, 3, 0, 0, 138, delay = 0, invert_polarity = 0, seed = 46)
+    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_6_" + str(0), 120, 1, 3, 0, 0, 349%128, delay = 0, invert_polarity = 0, seed = 47)
 
     #Check ACK
 
     for x in range(8):
-        await send_FCT(tb, x, 0, "0"+ f"{(x+131):0>7b}")
+        await send_FCT(tb, x, 0, "0"+ f"{(x+360):0>7b}")
 
-    await tb.spacefibre_driver.write_from_file("stimulus/spacefibre_serial/RXERR_error_1.dat")
+    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/RXERR_error_1.dat")
     await write_10b_to_Rx(tb, "1101110111")
-    await tb.spacefibre_driver.write_from_file("stimulus/spacefibre_serial/RXERR_error_2.dat")
+    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/RXERR_error_2.dat")
 
     #Check NACK
 
-    await tb.spacefibre_driver.write_from_file("stimulus/spacefibre_serial/Pos_seq_error.dat")
+    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/Pos_seq_error.dat")
 
     #Check NACK
 
-    await tb.spacefibre_driver.write_from_file("stimulus/spacefibre_serial/Neg_seq_error.dat")
+    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/Neg_seq_error.dat")
 
     #Check NACK
 
@@ -725,7 +763,7 @@ async def cocotb_run(dut):
     for x in range(8):
         await send_FCT(tb, x, 0, "0"+ f"{(x+9):0>7b}")
     
-    await tb.spacefibre_driver.write_from_file("stimulus/spacefibre_serial/CRC_error_bis.dat")
+    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/CRC_error_bis.dat")
 
 
     #Check NACK SEQ NUM and CRC

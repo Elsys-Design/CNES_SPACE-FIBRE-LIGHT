@@ -82,7 +82,7 @@ class SpaceFibre_Random_Generator:
             input = int(crc_8[0]) ^ input
             crc_8 = crc_8[1 : 8] + "0"
             crc_8 = crc_8[0 : 5] + str(input^int(crc_8[5])) + str(input^int(crc_8[6])) + str(input)
-            self.logger.info("sim_time %d ns: CRC-8bit computation number %d : %s", get_sim_time(units = "ns"), i, crc_8)
+            self.logger.debug("sim_time %d ns: CRC-8bit computation number %d : %s", get_sim_time(units = "ns"), i, crc_8)
         return crc_8
     
     async def write_to_Rx(self, data, delay, k_encoding = 0, invert_polarity = 0):
@@ -111,7 +111,7 @@ class SpaceFibre_Random_Generator:
         self.logger.debug("sim_time %d ns: Data encoded sent : %d", get_sim_time(units = "ns"), encoded_data)
         return encoded_data, k_encoding
 
-    async def write_random_inputs(self, file_path, packet_size, packet_number, frame_size, frame_type, target, sequence, delay = 0, invert_polarity = 0, seed = 42):
+    async def write_random_inputs(self, file_path, packet_size, packet_number, frame_size, frame_type, target, sequence, sequence_polarity = 0, delay = 0, invert_polarity = 0, seed = 42):
         """
         Writes the given number of inputs data randomly generated based on the given seed to the Rx port
         of the SpaceFibreLight IP. A log file at file_path is created to record the generated data.
@@ -216,7 +216,7 @@ class SpaceFibre_Random_Generator:
             crc_16 = self.compute_crc_16("00000000", crc_16)
 
             log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
-            log_file.write("32;00"+f"{(target):0>2X}"+"50FC;0;0001;\n")
+            log_file.write("32;00"+f"{(int(target, 2)):0>2X}"+"50FC;0;0001;\n")
             word_counter_for_skip += 1
             current_packet_size = 0
             #send the number of packet needed
@@ -261,10 +261,10 @@ class SpaceFibre_Random_Generator:
                     k_encoded_to_log = str(k_encoded) + k_encoded_to_log
                     crc_16 = self.compute_crc_16("00011100", crc_16)
 
-                    data_10b, k_encoded  = await self.write_to_Rx(f"{(sequence):0>8b}", 0, 0, invert_polarity = invert_polarity)
+                    data_10b, k_encoded  = await self.write_to_Rx(str(sequence_polarity) + f"{(sequence%128):0>7b}", 0, 0, invert_polarity = invert_polarity)
                     data_to_log = data_10b + "_" + data_to_log
                     k_encoded_to_log = str(k_encoded) + k_encoded_to_log
-                    crc_16 = self.compute_crc_16(f"{(sequence):0>8b}", crc_16)
+                    crc_16 = self.compute_crc_16(str(sequence_polarity) + f"{(sequence%128):0>7b}", crc_16)
 
                     crc_16 = self.invert_string(crc_16)
 
@@ -277,7 +277,7 @@ class SpaceFibre_Random_Generator:
                     k_encoded_to_log = str(k_encoded) + k_encoded_to_log
 
                     log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
-                    log_file.write("32;00"+f"{(target):0>2X}"+"50FC;0;0001;\n")
+                    log_file.write("32;00"+f"{(int(crc_16, 2)):0>4X}"+f"{(sequence%128 + 128 * sequence_polarity):0>2X}" + "1C;0;0001;\n")
 
                     word_counter_for_skip += 1
                 
@@ -331,7 +331,7 @@ class SpaceFibre_Random_Generator:
                     crc_16 = self.compute_crc_16("00000000", crc_16)
 
                     log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
-                    log_file.write("32;00"+f"{(target):0>2X}"+"50FC;0;0001;\n")
+                    log_file.write("32;00"+f"{(int(target, 2)):0>2X}"+"50FC;0;0001;\n")
 
                     word_counter_for_skip += 1
 
@@ -423,10 +423,10 @@ class SpaceFibre_Random_Generator:
                 k_encoded_to_log = str(k_encoded) + k_encoded_to_log
                 crc_16 = self.compute_crc_16("00011100", crc_16)
 
-                data_10b, k_encoded  = await self.write_to_Rx(f"{(sequence):0>8b}", 0, 0, invert_polarity = invert_polarity)
+                data_10b, k_encoded  = await self.write_to_Rx(str(sequence_polarity) + f"{(sequence%128):0>7b}", 0, 0, invert_polarity = invert_polarity)
                 data_to_log = data_10b + "_" + data_to_log
                 k_encoded_to_log = str(k_encoded) + k_encoded_to_log
-                crc_16 = self.compute_crc_16(f"{(sequence):0>8b}", crc_16)
+                crc_16 = self.compute_crc_16(str(sequence_polarity) + f"{(sequence%128):0>7b}", crc_16)
 
                 crc_16 = self.invert_string(crc_16)
 
@@ -439,7 +439,7 @@ class SpaceFibre_Random_Generator:
                 k_encoded_to_log = str(k_encoded) + k_encoded_to_log
 
                 log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
-                log_file.write("32;00"+f"{(target):0>2X}"+"50FC;0;0001;\n")
+                log_file.write("32;00" + f"{(int(crc_16, 2)):0>4X}" + f"{(sequence%128 + 128 * sequence_polarity):0>2X}" + "1C;0;0001;\n")
 
                 word_counter_for_skip += 1
             
@@ -493,7 +493,7 @@ class SpaceFibre_Random_Generator:
                 crc_16 = self.compute_crc_16("00000000", crc_16)
 
                 log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
-                log_file.write("32;00"+f"{(target):0>2X}"+"50FC;0;0001;\n")
+                log_file.write("32;00"+f"{(int(target, 2)):0>2X}"+"50FC;0;0001;\n")
 
                 word_counter_for_skip += 1
 
@@ -540,7 +540,7 @@ class SpaceFibre_Random_Generator:
                     data_10b, k_encoded  = await self.write_to_Rx(word_binary[32-8*(n+1):32-8*n], 0, 0, invert_polarity = invert_polarity)
                     data_to_log = data_10b + "_" + data_to_log
                     k_encoded_to_log = str(k_encoded) + k_encoded_to_log
-                    crc_16 = self.compute_crc_16("word_binary[32-8*(n+1):32-8*n]", crc_16)
+                    crc_16 = self.compute_crc_16(word_binary[32-8*(n+1):32-8*n], crc_16)
                 else :
                     #send FILL 
                     data_10b, k_encoded  = await self.write_to_Rx("11111011", 0, 1, invert_polarity = invert_polarity)
@@ -583,10 +583,10 @@ class SpaceFibre_Random_Generator:
             k_encoded_to_log = str(k_encoded) + k_encoded_to_log
             crc_16 = self.compute_crc_16("00011100", crc_16)
 
-            data_10b, k_encoded  = await self.write_to_Rx(f"{(sequence):0>8b}", 0, 0, invert_polarity = invert_polarity)
+            data_10b, k_encoded  = await self.write_to_Rx(str(sequence_polarity) + f"{(sequence%128):0>7b}", 0, 0, invert_polarity = invert_polarity)
             data_to_log = data_10b + "_" + data_to_log
             k_encoded_to_log = str(k_encoded) + k_encoded_to_log
-            crc_16 = self.compute_crc_16(f"{(sequence):0>8b}", crc_16)
+            crc_16 = self.compute_crc_16(str(sequence_polarity) + f"{(sequence%128):0>7b}", crc_16)
 
             crc_16 = self.invert_string(crc_16)
 
@@ -599,7 +599,7 @@ class SpaceFibre_Random_Generator:
             k_encoded_to_log = str(k_encoded) + k_encoded_to_log
 
             log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
-            log_file.write("32;00"+f"{(target):0>2X}"+"50FC;0;0001;\n")
+            log_file.write("32;00"+f"{(int(crc_16, 2)):0>4X}"+ f"{(sequence%128 + 128 * sequence_polarity):0>2X}" + "1C;0;0001;\n")
 
             word_counter_for_skip += 1
         
@@ -678,7 +678,7 @@ class SpaceFibre_Random_Generator:
                 crc_8 = self.compute_crc_8("00101010", crc_8)
 
                 log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
-                log_file.write("32;2A"+f"{(target):0>2X}"+"5DFC;0;0001;\n")
+                log_file.write("32;2A"+f"{(int(target, 2)):0>2X}"+"5DFC;0;0001;\n")
                 
                 word_counter_for_skip += 1
 
@@ -811,10 +811,10 @@ class SpaceFibre_Random_Generator:
                 k_encoded_to_log = str(k_encoded) + k_encoded_to_log
                 crc_8 = self.compute_crc_8("00000000", crc_8)
 
-                data_10b, k_encoded  = await self.write_to_Rx(f"{(sequence):0>8b}", 0, 0, invert_polarity = invert_polarity)
+                data_10b, k_encoded  = await self.write_to_Rx(str(sequence_polarity) + f"{(sequence%128):0>7b}", 0, 0, invert_polarity = invert_polarity)
                 data_to_log = data_10b + "_" + data_to_log
                 k_encoded_to_log = str(k_encoded) + k_encoded_to_log
-                crc_8 = self.compute_crc_8(f"{(sequence):0>8b}", crc_8)
+                crc_8 = self.compute_crc_8(str(sequence_polarity) + f"{(sequence%128):0>7b}", crc_8)
 
                 crc_8 = self.invert_string(crc_8)
 
@@ -823,7 +823,7 @@ class SpaceFibre_Random_Generator:
                 k_encoded_to_log = str(k_encoded) + k_encoded_to_log
 
                 log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
-                log_file.write("32;" + f"{(int(crc_8,2)): 0>2X}" + f"{(sequence):0>2X}" + "005C;0;0001;\n")
+                log_file.write("32;" + f"{(int(crc_8,2)): 0>2X}" + f"{(sequence%128 + 128 * sequence_polarity):0>2X}" + "005C;0;0001;\n")
 
                 word_counter_for_skip += 1
 
@@ -867,10 +867,10 @@ class SpaceFibre_Random_Generator:
             k_encoded_to_log = str(k_encoded) + k_encoded_to_log
             crc_8 = self.compute_crc_8("01000100", crc_8)
 
-            data_10b, k_encoded  = await self.write_to_Rx(f"{(sequence):0>8b}", 0, 0, invert_polarity = invert_polarity)
+            data_10b, k_encoded  = await self.write_to_Rx(str(sequence_polarity) + f"{(sequence%128):0>7b}", 0, 0, invert_polarity = invert_polarity)
             data_to_log = data_10b + "_" + data_to_log
             k_encoded_to_log = str(k_encoded) + k_encoded_to_log
-            crc_8 = self.compute_crc_8(f"{(sequence):0>8b}", crc_8)
+            crc_8 = self.compute_crc_8(str(sequence_polarity) + f"{(sequence%128):0>7b}", crc_8)
 
             crc_8 = self.invert_string(crc_8)
 
@@ -879,7 +879,7 @@ class SpaceFibre_Random_Generator:
             k_encoded_to_log = str(k_encoded) + k_encoded_to_log
 
             log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
-            log_file.write("32;" + f"{(int(crc_8[0:8],2)): 0>2X}" + f"{(sequence):0>2X}" + "005C;0;0001;\n")
+            log_file.write("32;" + f"{(int(crc_8[0:8],2)): 0>2X}" + f"{(sequence%128 +128 * sequence_polarity):0>2X}" + "005C;0;0001;\n")
 
             word_counter_for_skip += 1
             
@@ -920,10 +920,10 @@ class SpaceFibre_Random_Generator:
                     k_encoded_to_log = str(k_encoded) + k_encoded_to_log
                     crc_8 = self.compute_crc_8("01000100", crc_8)
 
-                    data_10b, k_encoded  = await self.write_to_Rx(f"{(sequence):0>8b}", 0, 0, invert_polarity = invert_polarity)
+                    data_10b, k_encoded  = await self.write_to_Rx(str(sequence_polarity) + f"{(sequence%128):0>7b}", 0, 0, invert_polarity = invert_polarity)
                     data_to_log = data_10b + "_" + data_to_log
                     k_encoded_to_log = str(k_encoded) + k_encoded_to_log
-                    crc_8 = self.compute_crc_8(f"{(sequence):0>8b}", crc_8)
+                    crc_8 = self.compute_crc_8(str(sequence_polarity) + f"{(sequence%128):0>7b}", crc_8)
 
                     crc_8 = self.invert_string(crc_8)
 
@@ -932,7 +932,7 @@ class SpaceFibre_Random_Generator:
                     k_encoded_to_log = str(k_encoded) + k_encoded_to_log
 
                     log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
-                    log_file.write("32;" + f"{(int(crc_8[0:8],2)): 0>2X}" + f"{(sequence):0>2X}" + "005C;0;0001;\n")
+                    log_file.write("32;" + f"{(int(crc_8[0:8],2)): 0>2X}" + f"{(sequence%128 + sequence_polarity*128):0>2X}" + "005C;0;0001;\n")
 
                     word_counter_for_skip += 1
                 

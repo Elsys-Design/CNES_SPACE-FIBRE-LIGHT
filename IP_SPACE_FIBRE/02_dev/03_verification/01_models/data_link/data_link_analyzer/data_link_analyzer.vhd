@@ -446,7 +446,7 @@ architecture rtl of DATA_LINK_ANALYZER is
                -- packet management
                TREADY <= '1';
 
-               if (TVALID = '1' and tdata_i /= TDATA) then
+               if (TVALID = '1' and tdata_i /= TDATA and err_counter_frame < 2**C_LG_CNT_ERR_MAX_WIDTH-1) then
                   err_counter_frame <= err_counter_frame + 1;
                end if;
 
@@ -461,7 +461,7 @@ architecture rtl of DATA_LINK_ANALYZER is
             when WAIT_RX =>
                TREADY <= '1';
 
-               if (TVALID = '1' and tdata_i /= TDATA) then
+               if (TVALID = '1' and tdata_i /= TDATA and err_counter_frame < 2**C_LG_CNT_ERR_MAX_WIDTH-1) then
                   err_counter_frame <= err_counter_frame + 1;
                end if;
 
