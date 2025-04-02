@@ -194,11 +194,11 @@ begin
 	end if;
 end process p_comb_state;
 
+detected_sdf <= '1' when (FIFO_RX_DATA_VALID_PPL ='1' and DATA_RX_PPL(15 downto 0) = C_SDF_WORD and VALID_K_CHARAC_PPL = "0001" ) else '0'; -- Set SDF flag detected to '1'
 -- Data Word Identification FSM action on state process
 p_data_word_detection : process(CLK,RST_N)
 begin
 	if RST_N = '0' then
-		detected_sdf       <= '0';
 		NEW_WORD_DWI       <= '0';
 		detected_edf       <= '0';
 		detected_sbf       <= '0';
@@ -224,7 +224,6 @@ begin
 		retry_counter      <= (others =>'0');
 	elsif rising_edge(CLK) then
 		-- Reset of signals
-		detected_sdf     <= '0';
 		detected_edf     <= '0';
 		detected_sbf     <= '0';
 		detected_ebf     <= '0';
@@ -239,7 +238,6 @@ begin
 		-- Frame treatment
 	  if (FIFO_RX_DATA_VALID_PPL ='1') then
 			if DATA_RX_PPL(15 downto 0) = C_SDF_WORD and VALID_K_CHARAC_PPL = "0001" then -- SDF control word detected
-	  		detected_sdf       <= '1';                                                -- Set SDF flag detected to '1'
 	  		TYPE_FRAME_DWI     <= C_DATA_FRM;
 	  		NEW_WORD_DWI       <= '1';
 				DATA_DWI           <= DATA_RX_PPL;

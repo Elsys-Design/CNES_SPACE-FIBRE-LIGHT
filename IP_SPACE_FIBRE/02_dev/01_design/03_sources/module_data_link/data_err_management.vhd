@@ -122,8 +122,8 @@ begin
             									end if;
 
         when ERROR_POSITIVE_ST =>
-            									near_end_rpf        <= '0';
-            									TRANS_POL_FLG_DERRM <= '1';
+            									near_end_rpf        <= '1';
+            									TRANS_POL_FLG_DERRM <= '0';
             									if s_ack_request = '1' then
             									    state <= VALID_POSITIVE_ST;
             									elsif s_far_end_rpf = '0' and s_seq_err = '1' then
@@ -131,8 +131,8 @@ begin
             									end if;
 
         when ERROR_NEGATIVE_ST  =>
-            									near_end_rpf         <= '1';
-            									TRANS_POL_FLG_DERRM  <= '0';
+            									near_end_rpf         <= '0';
+            									TRANS_POL_FLG_DERRM  <= '1';
             									if s_ack_request = '1' then
             									    state <= VALID_NEGATIVE_ST;
             									elsif s_far_end_rpf = '1' and s_seq_err = '1' then
