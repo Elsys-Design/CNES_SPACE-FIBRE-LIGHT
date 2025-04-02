@@ -98,7 +98,7 @@ begin
       ack_request_fsm     <= '0';
       s_far_end_rpf       <= '0';
       s_seq_err           <= '0';
-      s_seq_num_request   <= (others => '0');
+      s_seq_num_fsm       <= (others => '0');
     elsif rising_edge(CLK) then
       -- Synchronization for the FSM
       s_far_end_rpf    <= FAR_END_RPF_DSCHECK;
