@@ -27,6 +27,7 @@ port (
 	VALID_K_CHARAC_DENC   : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
 	TYPE_FRAME_DENC       : in  std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);
 	END_FRAME_DENC        : in  std_logic;
+	SEQ_NUM_ACK_DENC      : in std_logic_vector(7 downto 0);
 	-- DENC interface
 	NEW_WORD_DSCOM        : out  std_logic;                                    --! Flag DATA_VALID of the FIFO RX from Lane layer
 	DATA_DSCOM            : out  std_logic_vector(C_DATA_LENGTH-1 downto 0);   --! Data parallel from Lane Layer
@@ -78,6 +79,9 @@ begin
 				DATA_DSCOM      <= C_RESERVED_SYMB & trans_pol_flg & std_logic_vector(trans_seq_cnt+1) & DATA_DENC(15 downto 0);
 				SEQ_NUM_DSCOM   <= trans_pol_flg & std_logic_vector(trans_seq_cnt+1);
 				trans_seq_cnt   <= trans_seq_cnt +1;
+			elsif TYPE_FRAME_DENC = C_ACK_FRM or TYPE_FRAME_DENC = C_NACK_FRM then
+				DATA_DSCOM      <= C_RESERVED_SYMB & SEQ_NUM_ACK_DENC & DATA_DENC(15 downto 0);
+				SEQ_NUM_DSCOM   <= trans_pol_flg & std_logic_vector(trans_seq_cnt);
 			else
 				DATA_DSCOM      <= C_RESERVED_SYMB & trans_pol_flg & std_logic_vector(trans_seq_cnt) & DATA_DENC(15 downto 0);
 				SEQ_NUM_DSCOM   <= trans_pol_flg & std_logic_vector(trans_seq_cnt);
