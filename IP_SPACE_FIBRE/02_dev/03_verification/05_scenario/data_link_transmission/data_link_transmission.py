@@ -376,6 +376,82 @@ def check_last_broadcast_frame(tb, path):
         if lines[-index][1] == "0001" and lines[-index][0][4:8] == "5DFC":  #detect SBF
             if lines[-index+3][1] == "0001" and lines[-index+3][0][4:8] == "005C": #detect EBF
                 return 0
+            
+def check_ACK(tb, number_of_line_to_check, number_of_ack, path):
+    """
+    Check that the right number of ACK word were sent within the last frames
+    """
+    if os.path.exists(path):
+        tb.logger.info("sim_time %d ns: Source file %s to check does exist, open in read mode", get_sim_time(units = "ns"), path)
+        file = open(path, "r")
+    else:
+        tb.logger.error("sim_time %d ns: File %s to check doesn't exist", get_sim_time(units = "ns"), path)
+
+    #store all line in a list
+    lines = []
+    for line in file:
+        input_splitted = line.split(';')
+        if input_splitted[-1] == "\n":
+            input_splitted.remove("\n")
+        elif '\n' in input_splitted[-1]:
+            input_splitted[-1] = input_splitted[-1].replace("\n", "")
+        lines+=[input_splitted]
+    
+    index = 1
+    ACK_counter = 0
+    data_counter = 0
+    while index <= number_of_line_to_check :
+        data_counter += 1
+        if lines[-index][1] == "0001" and lines[-index][0][4:8] == "A2FC":  #detect ACK
+            ACK_counter +=1
+            if data_counter>=15:
+                return 1
+            data_counter = 0
+        index += 1
+    if ACK_counter < number_of_ack:
+        return 2
+    elif ACK_counter > number_of_ack:
+        return 3
+    else:
+        return 0      
+
+def check_NACK(tb, number_of_line_to_check, number_of_nack, path):
+    """
+    Check that the right number of ACK word were sent within the last frames
+    """
+    if os.path.exists(path):
+        tb.logger.info("sim_time %d ns: Source file %s to check does exist, open in read mode", get_sim_time(units = "ns"), path)
+        file = open(path, "r")
+    else:
+        tb.logger.error("sim_time %d ns: File %s to check doesn't exist", get_sim_time(units = "ns"), path)
+
+    #store all line in a list
+    lines = []
+    for line in file:
+        input_splitted = line.split(';')
+        if input_splitted[-1] == "\n":
+            input_splitted.remove("\n")
+        elif '\n' in input_splitted[-1]:
+            input_splitted[-1] = input_splitted[-1].replace("\n", "")
+        lines+=[input_splitted]
+    
+    index = 1
+    ACK_counter = 0
+    data_counter = 0
+    while index <= number_of_line_to_check :
+        data_counter += 1
+        if lines[-index][1] == "0001" and lines[-index][0][4:8] == "BBFC":  #detect ACK
+            ACK_counter +=1
+            if data_counter>=15:
+                return 1
+            data_counter = 0
+        index += 1
+    if ACK_counter < number_of_nack:
+        return 2
+    elif ACK_counter > number_of_nack:
+        return 3
+    else:
+        return 0       
 
 async def send_idle_ctrl_word(tb, number_of_words):
     for x in range(number_of_words):
@@ -396,6 +472,19 @@ async def cocotb_run(dut):
     tb = TB(dut)
 
     await tb.reset()
+
+    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_16("11111100")
+    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_16("01010000", crc_16)
+    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_16("00000001", crc_16)
+    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_16("00000000", crc_16)
+    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_16("00000000", crc_16)
+    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_16("11111101", crc_16)
+    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_16("11111011", crc_16)
+    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_16("11111011", crc_16)
+    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_16("00011100", crc_16)
+    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_16("01111101", crc_16)
+
+
 
     #Specific variable for the scenario
     global test_failed 
@@ -591,7 +680,7 @@ async def cocotb_run(dut):
     monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_2", number_of_word = 143+66*8+20))
 
     #Send first FCT to each virtual channel
-    for x in range(8):
+    for x in range(7):
         await send_FCT(tb, x, 0, "0"+ f"{(x+1):0>7b}")
 
     #send 64 word on each virtual buffer on TX
@@ -606,7 +695,7 @@ async def cocotb_run(dut):
 
     #Send 1 packet of 64 word in frames of 64 word on each virtual buffer to RX
     for target in range(8):
-        await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_1_" + str(target), 255, 1, 64, 0, target, target + 8, delay = 0, invert_polarity = 0, seed = 42)
+        await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_1_" + str(target), 255, 1, 64, 0, target, target + 7, delay = 0, invert_polarity = 0, seed = 42)
 
     await send_idle_ctrl_word(tb, 20)
 
@@ -720,6 +809,13 @@ async def cocotb_run(dut):
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/Neg_seq_error.dat")
 
     #Check NACK
+
+    await configure_model_dl(tb, 20, [0x01,0x02,0x00,0x01], [0x2F,0x00,0x00,0x00])
+    await start_model_dl(tb, 20)
+
+    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_6_" + str(0), 120, 1, 3, 0, 0, 367%128, delay = 0, invert_polarity = 0, seed = 47)
+
+    #Check ACK
 
     await monitor
 

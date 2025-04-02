@@ -71,6 +71,9 @@ class SpaceFibre_Random_Generator:
             input = int(crc_16[0]) ^ input
             crc_16 = crc_16[1 : 16] + "0"
             crc_16 = crc_16[0 : 3] + str(input^int(crc_16[3]))+crc_16[4:10] + str(input^int(crc_16[10])) + crc_16[11:15] + str(input)
+        # output_file_bin = open("CRC_16_compute_step.debug", "a")
+        # output_file_bin.write(f"{int(crc_16, base = 2):0>4X}" + "_" + str(get_sim_time(units = "ns")) + "\n")  
+        # output_file_bin.close()      
         return crc_16
     
     def compute_crc_8(self, byte_input, crc_8 = "00000000"):
@@ -203,7 +206,7 @@ class SpaceFibre_Random_Generator:
             data_10b, k_encoded  = await self.write_to_Rx("01010000", 0, 0, invert_polarity = invert_polarity)
             data_to_log = data_10b + "_" + data_to_log
             k_encoded_to_log = str(k_encoded) + k_encoded_to_log
-            crc_16 = self.compute_crc_16("11111100", crc_16)
+            crc_16 = self.compute_crc_16("01010000", crc_16)
 
             data_10b, k_encoded  = await self.write_to_Rx(target, 0, 0, invert_polarity = invert_polarity)
             data_to_log = data_10b + "_" + data_to_log
@@ -525,7 +528,7 @@ class SpaceFibre_Random_Generator:
                 current_frame_size += 1
 
             #Send last data_word
-            last_packet_sent = (packet_number * packet_size)%4
+            last_packet_sent = (packet_number * packet_size-1)%4
             for n in range(4):
                 if current_packet_size==packet_size-1:
                     current_packet_size = 0
