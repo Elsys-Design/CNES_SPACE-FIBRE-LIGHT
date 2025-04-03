@@ -234,7 +234,7 @@ begin
 	  		NEW_WORD_DWI       <= '1';
 				DATA_DWI           <= DATA_RX_PPL;
 				VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
-	  	elsif DATA_RX_PPL(7 downto 0) = C_K28_0_SYMB and VALID_K_CHARAC_PPL = "0001" then -- EDF control word detected
+	  	elsif DATA_RX_PPL(7 downto 0) = C_K28_0_SYMB and VALID_K_CHARAC_PPL = "0001" and current_state /= RX_NOTHING_ST then -- EDF control word detected
 	  		TYPE_FRAME_DWI 		 <= C_DATA_FRM;
 	  		NEW_WORD_DWI   		 <= '1';
         END_FRAME_DWI  		 <= '1';
@@ -247,7 +247,7 @@ begin
 	  		NEW_WORD_DWI   		 <= '1';
 				DATA_DWI       		 <= DATA_RX_PPL;
 				VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
-	  	elsif DATA_RX_PPL(7 downto 0) = C_K28_2_SYMB and VALID_K_CHARAC_PPL = "0001" then -- EBF control word detected
+	  	elsif DATA_RX_PPL(7 downto 0) = C_K28_2_SYMB and VALID_K_CHARAC_PPL = "0001" and current_state /= RX_NOTHING_ST then -- EBF control word detected
 	  		TYPE_FRAME_DWI		 <= C_BC_FRM;
 	  		NEW_WORD_DWI  		 <= '1';
         END_FRAME_DWI 		 <= '1';
