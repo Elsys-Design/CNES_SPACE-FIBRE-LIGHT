@@ -90,6 +90,9 @@ signal full_counter      : unsigned(1 downto 0);
 signal retry_counter     : unsigned(1 downto 0);
 
 begin
+	--------------------------------------------------------
+	--                  ASSIGNATION
+	--------------------------------------------------------
 	DATA_COUNTER_RX_DWI  <= std_logic_vector(data_word_cnt);
 	ACK_COUNTER_RX_DWI   <= std_logic_vector(ack_counter);
 	NACK_COUNTER_RX_DWI  <= std_logic_vector(nack_counter);
@@ -97,6 +100,17 @@ begin
 	FULL_COUNTER_RX_DWI  <= std_logic_vector(full_counter);
 	RETRY_COUNTER_RX_DWI <= std_logic_vector(retry_counter);
 	RXERR_DWI            <= detected_rxerr_i;
+	detected_sdf         <= '1' when (FIFO_RX_DATA_VALID_PPL ='1' and DATA_RX_PPL(15 downto 0) = C_SDF_WORD and VALID_K_CHARAC_PPL = "0001" )  else '0'; -- SDF control word detected
+	detected_edf         <= '1' when (FIFO_RX_DATA_VALID_PPL ='1' and DATA_RX_PPL(7 downto 0)  = C_K28_0_SYMB and VALID_K_CHARAC_PPL = "0001") else '0'; -- EDF control word detected
+	detected_sbf         <= '1' when (FIFO_RX_DATA_VALID_PPL ='1' and DATA_RX_PPL(15 downto 0) = C_SBF_WORD and VALID_K_CHARAC_PPL = "0001")   else '0'; -- SBF control word detected
+	detected_ebf         <= '1' when (FIFO_RX_DATA_VALID_PPL ='1' and DATA_RX_PPL(7 downto 0)  = C_K28_2_SYMB and VALID_K_CHARAC_PPL = "0001") else '0'; -- EBF control word detected
+	detected_sif         <= '1' when (FIFO_RX_DATA_VALID_PPL ='1' and DATA_RX_PPL(15 downto 0) = C_SIF_WORD and VALID_K_CHARAC_PPL = "0001")   else '0'; -- SIF control word detected
+	detected_fct         <= '1' when (FIFO_RX_DATA_VALID_PPL ='1' and DATA_RX_PPL(7 downto 0)  = C_K28_3_SYMB and VALID_K_CHARAC_PPL = "0001") else '0'; -- FCT control word detected
+	detected_ack         <= '1' when (FIFO_RX_DATA_VALID_PPL ='1' and DATA_RX_PPL(15 downto 0) = C_ACK_WORD and VALID_K_CHARAC_PPL = "0001")   else '0'; -- ACK control word detected
+	detected_nack        <= '1' when (FIFO_RX_DATA_VALID_PPL ='1' and DATA_RX_PPL(15 downto 0) = C_NACK_WORD and VALID_K_CHARAC_PPL = "0001")  else '0'; -- NACK control word detected
+	detected_full        <= '1' when (FIFO_RX_DATA_VALID_PPL ='1' and DATA_RX_PPL(15 downto 0) = C_FULL_WORD and VALID_K_CHARAC_PPL = "0001")  else '0'; -- FULL control word detected
+	detected_retry       <= '1' when (FIFO_RX_DATA_VALID_PPL ='1' and DATA_RX_PPL(15 downto 0) = C_RETRY_WORD and VALID_K_CHARAC_PPL = "0001") else '0'; -- RETRY control word detected
+	detected_rxerr_i     <= '1' when (FIFO_RX_DATA_VALID_PPL ='1' and DATA_RX_PPL = C_RXERR_WORD and VALID_K_CHARAC_PPL = "0001"  ) else '0';            -- RXERR control word detected
 -------------------------------------------------------------------------------------------
 -- Data Word Identification FSM transition conditions process
 p_fsm_data_word_id_transition : process(CLK,RST_N)
@@ -117,7 +131,7 @@ begin
                                                 elsif detected_sif ='1' then
                                                    current_state  <= RX_IDLE_FRAME_ST;
                                                 end if;
-         when RX_DATA_FRAME_ST               => if LINK_RESET_DLRE = '1' or detected_edf = '1' or detected_retry = '1' or detected_retry = '1' or CRC_ERR_DCCHECK = '1' or SEQ_ERR_DSCHECK = '1' then
+         when RX_DATA_FRAME_ST               => if LINK_RESET_DLRE = '1' or detected_edf = '1' or detected_retry = '1' or detected_rxerr_i = '1' or CRC_ERR_DCCHECK = '1' or SEQ_ERR_DSCHECK = '1' then
                                                   current_state  <= RX_NOTHING_ST;
                                                 elsif detected_sdf = '1' or detected_sif = '1' or detected_ebf = '1' or data_word_cnt > C_MAX_DATA_FRAME then
                                                   FRAME_ERR_DWI      <= '1';
@@ -125,14 +139,14 @@ begin
                                                 elsif detected_sbf ='1' then
                                                   current_state  <= RX_BROADCAST_AND_DATA_FRAME_ST;
                                                 end if;
-         when RX_BROADCAST_FRAME_ST          => if LINK_RESET_DLRE = '1' or (detected_ebf = '1' and bc_word_cnt = C_WORD_BC_FRAME) or detected_retry = '1' or detected_retry = '1' or CRC_ERR_DCCHECK = '1' or SEQ_ERR_DSCHECK = '1' then
+         when RX_BROADCAST_FRAME_ST          => if LINK_RESET_DLRE = '1' or (detected_ebf = '1' and bc_word_cnt = C_WORD_BC_FRAME) or detected_retry = '1' or detected_rxerr_i = '1' or CRC_ERR_DCCHECK = '1' or SEQ_ERR_DSCHECK = '1' then
                                                   current_state  <= RX_NOTHING_ST;
                                                 elsif detected_sdf = '1' or detected_sbf = '1' or detected_sif = '1' or detected_edf = '1' or (detected_ebf = '1' and bc_word_cnt /= C_WORD_BC_FRAME) or bc_word_cnt > C_WORD_BC_FRAME then
                                                    FRAME_ERR_DWI      <= '1';
                                                    current_state  <= RX_NOTHING_ST;
                                                 end if;
 
-         when RX_BROADCAST_AND_DATA_FRAME_ST => if LINK_RESET_DLRE = '1' or detected_retry = '1' or detected_retry = '1' or CRC_ERR_DCCHECK = '1' or SEQ_ERR_DSCHECK = '1' then
+         when RX_BROADCAST_AND_DATA_FRAME_ST => if LINK_RESET_DLRE = '1' or detected_rxerr_i = '1' or detected_retry = '1' or CRC_ERR_DCCHECK = '1' or SEQ_ERR_DSCHECK = '1' then
                                                   current_state  <= RX_NOTHING_ST;
                                                 elsif (detected_ebf = '1' and bc_word_cnt = C_WORD_BC_FRAME) then
                                                    current_state  <= RX_DATA_FRAME_ST;
@@ -141,7 +155,7 @@ begin
                                                    current_state  <= RX_NOTHING_ST;
                                                 end if;
 
-         when RX_IDLE_FRAME_ST               => if LINK_RESET_DLRE = '1' or detected_retry = '1' or detected_retry = '1' or CRC_ERR_DCCHECK = '1' or SEQ_ERR_DSCHECK = '1' then
+         when RX_IDLE_FRAME_ST               => if LINK_RESET_DLRE = '1' or detected_rxerr_i = '1' or detected_retry = '1' or CRC_ERR_DCCHECK = '1' or SEQ_ERR_DSCHECK = '1' then
                                                   current_state  <= RX_NOTHING_ST;
                                                 elsif detected_sbf ='1' then
                                                    current_state  <= RX_BROADCAST_FRAME_ST;
@@ -194,22 +208,11 @@ begin
 	end if;
 end process p_comb_state;
 
-detected_sdf <= '1' when (FIFO_RX_DATA_VALID_PPL ='1' and DATA_RX_PPL(15 downto 0) = C_SDF_WORD and VALID_K_CHARAC_PPL = "0001" ) else '0'; -- Set SDF flag detected to '1'
 -- Data Word Identification FSM action on state process
 p_data_word_detection : process(CLK,RST_N)
 begin
 	if RST_N = '0' then
 		NEW_WORD_DWI       <= '0';
-		detected_edf       <= '0';
-		detected_sbf       <= '0';
-		detected_ebf       <= '0';
-		detected_sif       <= '0';
-		detected_fct       <= '0';
-		detected_ack       <= '0';
-		detected_nack      <= '0';
-		detected_full      <= '0';
-		detected_retry     <= '0';
-		detected_rxerr_i   <= '0';
     SEQ_NUM_DWI        <= (others=> '0');
     CRC_16B_DWI        <= (others=> '0');
     CRC_8B_DWI         <= (others=> '0');
@@ -223,17 +226,6 @@ begin
 		full_counter       <= (others =>'0');
 		retry_counter      <= (others =>'0');
 	elsif rising_edge(CLK) then
-		-- Reset of signals
-		detected_edf     <= '0';
-		detected_sbf     <= '0';
-		detected_ebf     <= '0';
-		detected_sif     <= '0';
-		detected_fct     <= '0';
-		detected_ack     <= '0';
-		detected_nack    <= '0';
-		detected_full    <= '0';
-		detected_retry   <= '0';
-		detected_rxerr_i <= '0';
     END_FRAME_DWI    <= '0';
 		-- Frame treatment
 	  if (FIFO_RX_DATA_VALID_PPL ='1') then
@@ -243,8 +235,7 @@ begin
 				DATA_DWI           <= DATA_RX_PPL;
 				VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
 	  	elsif DATA_RX_PPL(7 downto 0) = C_K28_0_SYMB and VALID_K_CHARAC_PPL = "0001" then -- EDF control word detected
-	  		detected_edf   		 <= '1';
-	  		TYPE_FRAME_DWI 		 <= C_DATA_FRM;                                                   -- Set EDF flag detected to '1'
+	  		TYPE_FRAME_DWI 		 <= C_DATA_FRM;
 	  		NEW_WORD_DWI   		 <= '1';
         END_FRAME_DWI  		 <= '1';
 				DATA_DWI       		 <= DATA_RX_PPL;
@@ -252,13 +243,11 @@ begin
 	  		CRC_16B_DWI    		 <= DATA_RX_PPL(31 downto 16);
 				VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
 	  	elsif DATA_RX_PPL(15 downto 0) = C_SBF_WORD and VALID_K_CHARAC_PPL = "0001" then -- SBF control word detected
-	  		detected_sbf   		 <= '1';
-	  		TYPE_FRAME_DWI 		 <= C_BC_FRM;                                                  -- Set SBF flag detected to '1'
+	  		TYPE_FRAME_DWI 		 <= C_BC_FRM;
 	  		NEW_WORD_DWI   		 <= '1';
 				DATA_DWI       		 <= DATA_RX_PPL;
 				VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
 	  	elsif DATA_RX_PPL(7 downto 0) = C_K28_2_SYMB and VALID_K_CHARAC_PPL = "0001" then -- EBF control word detected
-	  		detected_ebf  		 <= '1';                                                    -- Set EBF flag detected to '1'
 	  		TYPE_FRAME_DWI		 <= C_BC_FRM;
 	  		NEW_WORD_DWI  		 <= '1';
         END_FRAME_DWI 		 <= '1';
@@ -267,7 +256,6 @@ begin
 	  		CRC_8B_DWI    		 <= DATA_RX_PPL(31 downto 24);
 				VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
 	  	elsif DATA_RX_PPL(15 downto 0) = C_SIF_WORD and VALID_K_CHARAC_PPL = "0001" then -- SIF control word detected
-	  		detected_sif   		 <= '1';                                                   -- Set SIF flag detected to '1'
 	  		TYPE_FRAME_DWI 		 <= C_IDLE_FRM;
 	  		NEW_WORD_DWI   		 <= '1';
         END_FRAME_DWI  		 <= '1';
@@ -276,7 +264,6 @@ begin
 	  		CRC_8B_DWI     		 <= DATA_RX_PPL(31 downto 24);
 				VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
 	  	elsif DATA_RX_PPL(7 downto 0) = C_K28_3_SYMB and VALID_K_CHARAC_PPL = "0001" then -- FCT control word detected
-	  		detected_fct   		 <= '1';                                                    -- Set FCT flag detected to '1'
 	  		TYPE_FRAME_DWI 		 <= C_FCT_FRM;
 	  		NEW_WORD_DWI   		 <= '1';
         END_FRAME_DWI  		 <= '1';
@@ -286,7 +273,6 @@ begin
 				VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
 				fct_counter        <= fct_counter + 1;
 	  	elsif DATA_RX_PPL(15 downto 0) = C_ACK_WORD and VALID_K_CHARAC_PPL = "0001" then -- ACK control word detected
-	  	  detected_ack   		 <= '1';                                                   -- Set ACK flag detected to '1'
 	  	  TYPE_FRAME_DWI 		 <= C_ACK_FRM;
 	  	  NEW_WORD_DWI   		 <= '1';
         END_FRAME_DWI  		 <= '1';
@@ -296,7 +282,6 @@ begin
 				VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
 				ack_counter        <= ack_counter + 1;
 	  	elsif DATA_RX_PPL(15 downto 0) = C_NACK_WORD and VALID_K_CHARAC_PPL = "0001" then -- NACK control word detected
-	  	  detected_nack  		 <= '1';                                                    -- Set NACK flag detected to '1'
 	  	  TYPE_FRAME_DWI 		 <= C_NACK_FRM;
 	  	  NEW_WORD_DWI   		 <= '1';
         END_FRAME_DWI  		 <= '1';
@@ -306,7 +291,6 @@ begin
 				VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
 				nack_counter       <= nack_counter + 1;
 	  	elsif DATA_RX_PPL(15 downto 0) = C_FULL_WORD and VALID_K_CHARAC_PPL = "0001" then -- FULL control word detected
-	  	  detected_full      <= '1';                                                    -- Set FULL flag detected to '1'
 	  	  TYPE_FRAME_DWI     <= C_FULL_FRM;
 	  	  NEW_WORD_DWI       <= '1';
         END_FRAME_DWI      <= '1';
@@ -316,7 +300,6 @@ begin
 				VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
 				full_counter       <= full_counter + 1;
 	  	elsif DATA_RX_PPL(15 downto 0) = C_RETRY_WORD and VALID_K_CHARAC_PPL = "0001" then -- RETRY control word detected
-	  	  detected_retry 		 <= '1';                                                     -- Set RETRY flag detected to '1'
 	  	  TYPE_FRAME_DWI 		 <= C_RETRY_FRM;
 	  	  NEW_WORD_DWI   		 <= '1';
 				DATA_DWI       		 <= DATA_RX_PPL;
@@ -325,7 +308,6 @@ begin
 				VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
 				retry_counter      <= retry_counter + 1;
 	  	elsif DATA_RX_PPL = C_RXERR_WORD and VALID_K_CHARAC_PPL = "0001" then -- RXERR control word detected
-	  	  detected_rxerr_i <= '1';                                         -- Set RXERR flag detected to '1'
         NEW_WORD_DWI   <= '0';
 			elsif current_state = RX_IDLE_FRAME_ST or current_state= RX_NOTHING_ST then
 					DATA_DWI           <= (others=> '0');
