@@ -206,6 +206,7 @@ architecture Behavioral of data_link is
       SEQ_NUM_ACK_DSCHECK    : out std_logic_vector(6 downto 0);
       END_FRAME_DSCHECK      : out std_logic;
       TYPE_FRAME_DSCHECK     : out  std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);
+      TRANS_POL_FLG_DERRM    : in std_logic;                               --! Transmission polarity flag to error management
       -- data_mid_buffer (DMBUF) interface
       DATA_DSCHECK           : out std_logic_vector(C_DATA_LENGTH-1 downto 0);    -- Data write bus
       VALID_K_CHARAC_DSCHECK : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
@@ -462,13 +463,15 @@ architecture Behavioral of data_link is
       BC_STATUS_DMAC                    : in std_logic_vector (2-1 downto 0);
       MULT_CHANNEL_DMAC                 : in std_logic_vector (G_VC_NUM-1 downto 0);
       SEQ_NUM_ACK_DMAC                  : in std_logic_vector(7 downto 0);
+      TRANS_POL_FLG_DMAC                : in std_logic;
       -- DSCC interface
       NEW_WORD_DENC                     : out std_logic;                                          --! New word Flag from data_encapsulation
       DATA_DENC                         : out std_logic_vector(C_DATA_LENGTH-1 downto 0);         --! Data parallel from data_encapsulation
       VALID_K_CHARAC_DENC               : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! K charachter valid in the 32-bit DATA_DENC vector
       TYPE_FRAME_DENC                   : out std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);   --! End frame/control word from data_encapsulation
       END_FRAME_DENC                    : out std_logic;
-      SEQ_NUM_ACK_DENC                  : out std_logic_vector(7 downto 0)
+      SEQ_NUM_ACK_DENC                  : out std_logic_vector(7 downto 0);
+      TRANS_POL_FLG_DENC                : out std_logic
     );
   end component;
 
@@ -484,8 +487,9 @@ architecture Behavioral of data_link is
       VALID_K_CHARAC_DENC   : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
       TYPE_FRAME_DENC       : in  std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);
       END_FRAME_DENC        : in  std_logic;
-      SEQ_NUM_ACK_DENC      : in std_logic_vector(7 downto 0);
-      -- DENC interface
+      SEQ_NUM_ACK_DENC      : in  std_logic_vector(7 downto 0);
+      TRANS_POL_FLG_DENC    : in  std_logic;
+      -- DCCHECK interface
       NEW_WORD_DSCOM        : out  std_logic;                                    --! Flag DATA_VALID of the FIFO RX from Lane layer
       DATA_DSCOM            : out  std_logic_vector(C_DATA_LENGTH-1 downto 0);   --! Data parallel from Lane Layer
       VALID_K_CHARAC_DSCOM  : out  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
@@ -583,7 +587,7 @@ architecture Behavioral of data_link is
   signal valid_k_charac_dscom       : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
   signal type_frame_dscom           : std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);
   signal end_frame_dscom            : std_logic;
-  
+
   signal wr_data_dmbuf             : std_logic_vector(C_DATA_K_WIDTH-1 downto 0);
   signal link_reset_dibuf          : std_logic_vector(G_VC_NUM-1 downto 0);
 
@@ -597,6 +601,7 @@ architecture Behavioral of data_link is
   signal  seq_num_ack_derrm        : std_logic_vector(7 downto 0);
   signal  seq_num_ack_dscheck      : std_logic_vector(6 downto 0);
   signal type_frame_dscheck : std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);
+  signal trans_pol_flg_denc         : std_logic;
 
 
 begin
@@ -701,6 +706,7 @@ begin
       CRC_ERR_DCCHECK        => crc_err_dccheck,
       FRAME_ERR_DCCHECK      => frame_err_dccheck,
       NEAR_END_RPF_DERRM     => near_end_rpf_derrm,
+      TRANS_POL_FLG_DERRM      => trans_pol_flg_derrm,
       SEQ_NUM_ERR_DSCHECK    => seq_num_err_dscheck,
       SEQ_NUM_ACK_DSCHECK    => seq_num_ack_dscheck,
       END_FRAME_DSCHECK      => end_frame_dscheck,
@@ -914,12 +920,14 @@ begin
       BC_STATUS_DMAC        => bc_status_dmac,
       MULT_CHANNEL_DMAC     => mult_channel_dmac,
       SEQ_NUM_ACK_DMAC      => seq_num_ack_dmac,
+      TRANS_POL_FLG_DMAC    => trans_pol_flg_dmac,
       NEW_WORD_DENC         => new_word_denc,
       DATA_DENC             => data_denc,
       VALID_K_CHARAC_DENC   => valid_k_charac_denc,
       TYPE_FRAME_DENC       => type_frame_denc,
       END_FRAME_DENC        => end_frame_denc,
-      SEQ_NUM_ACK_DENC      => seq_num_ack_denc
+      SEQ_NUM_ACK_DENC      => seq_num_ack_denc,
+      TRANS_POL_FLG_DENC    => trans_pol_flg_denc
     );
 
   inst_data_seq_compute: data_seq_compute
@@ -933,6 +941,7 @@ begin
       TYPE_FRAME_DENC       => type_frame_denc,
       END_FRAME_DENC        => end_frame_denc,
       SEQ_NUM_ACK_DENC      => seq_num_ack_denc,
+      TRANS_POL_FLG_DENC    => trans_pol_flg_denc,
       NEW_WORD_DSCOM        => new_word_dscom,
       DATA_DSCOM            => data_dscom,
       VALID_K_CHARAC_DSCOM  => valid_k_charac_dscom,

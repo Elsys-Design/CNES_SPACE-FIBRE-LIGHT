@@ -34,6 +34,7 @@ entity data_seq_check is
 		SEQ_NUM_ACK_DSCHECK    : out std_logic_vector(6 downto 0);
 		END_FRAME_DSCHECK      : out std_logic;
 		TYPE_FRAME_DSCHECK     : out  std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);  --! Flag EMPTY of the FIFO RX
+		TRANS_POL_FLG_DERRM    : in std_logic;                               --! Transmission polarity flag to error management
     -- data_mid_buffer (DMBUF) interface
     DATA_DSCHECK           : out std_logic_vector(C_DATA_LENGTH-1 downto 0);    -- Data write bus
 		VALID_K_CHARAC_DSCHECK : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
@@ -104,7 +105,7 @@ begin
 				END_FRAME_FIFO_DSCHECK <= END_FRAME_DCCHECK;
 				END_FRAME_DSCHECK      <= END_FRAME_DCCHECK;
       end if;
-	  elsif (TYPE_FRAME_DCCHECK = C_IDLE_FRM  or TYPE_FRAME_DCCHECK = C_FULL_FRM or TYPE_FRAME_DCCHECK = C_ACK_FRM or TYPE_FRAME_DCCHECK = C_NACK_FRM) and END_FRAME_DCCHECK = '1'then
+	  elsif (TYPE_FRAME_DCCHECK = C_IDLE_FRM  or TYPE_FRAME_DCCHECK = C_FULL_FRM ) and END_FRAME_DCCHECK = '1'then
 			if SEQ_NUM_DCCHECK /= (NEAR_END_RPF_DERRM & std_logic_vector(seq_num_cnt)) then
 				SEQ_NUM_ERR_DSCHECK    <= '1';
 				NEW_WORD_DSCHECK       <= '0';
@@ -120,6 +121,22 @@ begin
 				END_FRAME_FIFO_DSCHECK <= '0';
 				END_FRAME_DSCHECK      <= END_FRAME_DCCHECK;
       end if;
+		elsif (TYPE_FRAME_DCCHECK = C_NACK_FRM or TYPE_FRAME_DCCHECK = C_ACK_FRM) and  END_FRAME_DCCHECK = '1'then
+			if SEQ_NUM_DCCHECK /= (TRANS_POL_FLG_DERRM & std_logic_vector(seq_num_cnt)) then
+				SEQ_NUM_ERR_DSCHECK    <= '1';
+				NEW_WORD_DSCHECK       <= '0';
+				DATA_DSCHECK           <= (others => '0');
+				VALID_K_CHARAC_DSCHECK <= (others => '0');
+				END_FRAME_FIFO_DSCHECK <= '0';
+				END_FRAME_DSCHECK      <= END_FRAME_DCCHECK;
+			else
+				SEQ_NUM_ERR_DSCHECK    <= '0';
+				NEW_WORD_DSCHECK       <= '0';
+				DATA_DSCHECK           <= (others => '0');
+				VALID_K_CHARAC_DSCHECK <= (others => '0');
+				END_FRAME_FIFO_DSCHECK <= '0';
+				END_FRAME_DSCHECK      <= END_FRAME_DCCHECK;
+			end if;
 		else
 			SEQ_NUM_ERR_DSCHECK    <= '0';
 			NEW_WORD_DSCHECK       <= NEW_WORD_DCCHECK;
