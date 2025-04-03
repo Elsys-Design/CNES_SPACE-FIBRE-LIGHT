@@ -36,13 +36,15 @@ entity data_encpasulation is
 	  BC_STATUS_DMAC                    : in std_logic_vector (2-1 downto 0);
     MULT_CHANNEL_DMAC                 : in std_logic_vector (G_VC_NUM-1 downto 0);
     SEQ_NUM_ACK_DMAC                  : in std_logic_vector(7 downto 0);
+    TRANS_POL_FLG_DMAC                : in std_logic;
     -- DSCC interface
     NEW_WORD_DENC                     : out std_logic;                                          --! New word Flag from data_encapsulation
     DATA_DENC                         : out std_logic_vector(C_DATA_LENGTH-1 downto 0);         --! Data parallel from data_encapsulation
     VALID_K_CHARAC_DENC               : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! K charachter valid in the 32-bit DATA_DENC vector
     TYPE_FRAME_DENC                   : out std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);   --! End frame/control word from data_encapsulation
     END_FRAME_DENC                    : out std_logic;
-    SEQ_NUM_ACK_DENC                  : out std_logic_vector(7 downto 0)
+    SEQ_NUM_ACK_DENC                  : out std_logic_vector(7 downto 0);
+    TRANS_POL_FLG_DENC                : out std_logic
   );
 end data_encpasulation;
 
@@ -83,8 +85,10 @@ if RST_N = '0' then
   type_frame_denc_i   <= (others => '0');
   TYPE_FRAME_DENC     <= (others => '0');
   SEQ_NUM_ACK_DENC    <= (others => '0');
+  TRANS_POL_FLG_DENC  <= '0';
 elsif rising_edge(CLK) and LANE_ACTIVE_PPL= '1' then
-  type_frame_denc_i <= TYPE_FRAME_DMAC;
+  type_frame_denc_i  <= TYPE_FRAME_DMAC;
+  TRANS_POL_FLG_DENC <= TRANS_POL_FLG_DMAC;
   current_state_r <= current_state;
   case current_state is
     when START_FRAME_ST =>

@@ -41,6 +41,7 @@ entity data_err_management is
     REQ_ACK_DONE_DMAC        : in std_logic;                                --! Acknowledge done signal from DMAC
     -- data_link_reset (DLRE) interface
     LINK_RESET_DERRM         : out std_logic;
+    -- DSCOM
     -- MIB  interface
     NACK_RST_EN_MIB          : in std_logic;                                --! Enable automatic link reset on NACK reception
     NACK_RST_MODE_MIB        : in std_logic                                 --! Up for instant link reset on NACK reception, down for link reset at the end of the current received frame on NACK reception
@@ -71,15 +72,17 @@ architecture Behavioral of data_err_management is
   signal s_seq_num_fsm       : std_logic_vector(6 downto 0);
   signal s_seq_num_out       : std_logic_vector(6 downto 0);
   signal near_end_rpf        : std_logic;
-
+  signal trans_pol_flg       : std_logic;
+  signal ack_pol_flg       : std_logic;
 begin
 ---------------------------------------------------------
 -----                     Assignation               -----
 ---------------------------------------------------------
   REQ_NACK_DERRM     <= nack_request_out;
   REQ_ACK_DERRM      <= ack_request_out;
-  SEQ_NUM_ACK_DERRM  <= near_end_rpf & s_seq_num_fsm;
+  SEQ_NUM_ACK_DERRM  <= ack_pol_flg & s_seq_num_fsm;
   NEAR_END_RPF_DERRM <= near_end_rpf;
+  TRANS_POL_FLG_DERRM <= trans_pol_flg;
 ---------------------------------------------------------
 -----                     Process                   -----
 ---------------------------------------------------------
@@ -93,12 +96,12 @@ begin
     if RST_N = '0' then
       state               <= VALID_POSITIVE_ST;
       near_end_rpf        <= '0';
-      TRANS_POL_FLG_DERRM <= '0';
       nack_request_fsm    <= '0';
       ack_request_fsm     <= '0';
       s_far_end_rpf       <= '0';
       s_seq_err           <= '0';
       s_seq_num_fsm       <= (others => '0');
+      ack_pol_flg         <= '0';
     elsif rising_edge(CLK) then
       -- Synchronization for the FSM
       s_far_end_rpf    <= FAR_END_RPF_DSCHECK;
@@ -109,21 +112,21 @@ begin
       case state is
         when VALID_POSITIVE_ST =>
             									near_end_rpf        <= '0';
-            									TRANS_POL_FLG_DERRM <= '0';
+                              ack_pol_flg         <= '0';
             									if s_nack_request = '1' then
             									    state <= ERROR_NEGATIVE_ST;
             									end if;
 
         when VALID_NEGATIVE_ST =>
             									near_end_rpf        <= '1';
-            									TRANS_POL_FLG_DERRM <= '1';
+                              ack_pol_flg         <= '1';
             									if s_nack_request = '1' then
             									    state <= ERROR_POSITIVE_ST;
             									end if;
 
         when ERROR_POSITIVE_ST =>
-            									near_end_rpf        <= '1';
-            									TRANS_POL_FLG_DERRM <= '0';
+            									near_end_rpf        <= '0';
+                              ack_pol_flg         <= '1';
             									if s_ack_request = '1' then
             									    state <= VALID_POSITIVE_ST;
             									elsif s_far_end_rpf = '0' and s_seq_err = '1' then
@@ -131,8 +134,8 @@ begin
             									end if;
 
         when ERROR_NEGATIVE_ST  =>
-            									near_end_rpf         <= '0';
-            									TRANS_POL_FLG_DERRM  <= '1';
+            									near_end_rpf         <= '1';
+                              ack_pol_flg         <= '0';
             									if s_ack_request = '1' then
             									    state <= VALID_NEGATIVE_ST;
             									elsif s_far_end_rpf = '1' and s_seq_err = '1' then
@@ -236,8 +239,21 @@ begin
       end if;
     end if;
   end process p_sync;
-
-  ---------------------------------------------------------
+---------------------------------------------------------
+-- Process: p_tpf
+-- Description: Transmit polarity flag management
+---------------------------------------------------------
+p_tpf : process(CLK, RST_N)
+begin
+  if RST_N = '0' then
+    trans_pol_flg <= '0';
+  elsif rising_edge(CLK) then
+    if (TYPE_FRAME_DSCHECK = C_NACK_FRM) and END_FRAME_DSCHECK = '1' and CRC_ERR_DCCHECK ='0' then
+      trans_pol_flg <= not(trans_pol_flg);
+    end if;
+  end if;
+end process p_tpf;  
+---------------------------------------------------------
 -- Process: p_nack_rst_strat
 -- Description: Error detection, internal request management
 ---------------------------------------------------------

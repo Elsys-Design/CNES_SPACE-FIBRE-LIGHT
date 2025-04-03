@@ -27,8 +27,9 @@ port (
 	VALID_K_CHARAC_DENC   : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
 	TYPE_FRAME_DENC       : in  std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);
 	END_FRAME_DENC        : in  std_logic;
-	SEQ_NUM_ACK_DENC      : in std_logic_vector(7 downto 0);
-	-- DENC interface
+	SEQ_NUM_ACK_DENC      : in  std_logic_vector(7 downto 0);
+	TRANS_POL_FLG_DENC    : in  std_logic;
+	-- DCCHECK interface
 	NEW_WORD_DSCOM        : out  std_logic;                                    --! Flag DATA_VALID of the FIFO RX from Lane layer
 	DATA_DSCOM            : out  std_logic_vector(C_DATA_LENGTH-1 downto 0);   --! Data parallel from Lane Layer
 	VALID_K_CHARAC_DSCOM  : out  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
@@ -45,7 +46,6 @@ architecture rtl of data_seq_compute is
 ---------------------------------------------------------
 
 signal trans_seq_cnt    : unsigned(6 downto 0);   --! Data parallel from Lane Layer
-signal trans_pol_flg    : std_logic;               --! Data parallel from Lane Layer
 begin
 ---------------------------------------------------------
 -----                     Process                   -----
@@ -58,7 +58,6 @@ p_seq_num_comp: process(CLK, RST_N)
 begin
 	if RST_N = '0' then
 	  trans_seq_cnt        <= (others => '0'); -- Reset seq_num_cnt	on link reset
-		trans_pol_flg        <= '0';
 		NEW_WORD_DSCOM       <= '0';
 		VALID_K_CHARAC_DSCOM <= (others => '0');
 		TYPE_FRAME_DSCOM     <= (others => '0');
@@ -72,23 +71,23 @@ begin
 		END_FRAME_DSCOM      <= END_FRAME_DENC;
 		if END_FRAME_DENC = '1' then -- control word or EDF or EBF
 			if TYPE_FRAME_DENC = C_DATA_FRM then
-				DATA_DSCOM      <= C_RESERVED_SYMB & C_RESERVED_SYMB & trans_pol_flg & std_logic_vector(trans_seq_cnt+1) & DATA_DENC(7 downto 0);
-				SEQ_NUM_DSCOM   <= trans_pol_flg & std_logic_vector(trans_seq_cnt+1);
+				DATA_DSCOM      <= C_RESERVED_SYMB & C_RESERVED_SYMB & TRANS_POL_FLG_DENC & std_logic_vector(trans_seq_cnt+1) & DATA_DENC(7 downto 0);
+				SEQ_NUM_DSCOM   <= TRANS_POL_FLG_DENC & std_logic_vector(trans_seq_cnt+1);
 				trans_seq_cnt   <= trans_seq_cnt +1;
 			elsif TYPE_FRAME_DENC = C_BC_FRM or TYPE_FRAME_DENC = C_FCT_FRM then
-				DATA_DSCOM      <= C_RESERVED_SYMB & trans_pol_flg & std_logic_vector(trans_seq_cnt+1) & DATA_DENC(15 downto 0);
-				SEQ_NUM_DSCOM   <= trans_pol_flg & std_logic_vector(trans_seq_cnt+1);
+				DATA_DSCOM      <= C_RESERVED_SYMB & TRANS_POL_FLG_DENC & std_logic_vector(trans_seq_cnt+1) & DATA_DENC(15 downto 0);
+				SEQ_NUM_DSCOM   <= TRANS_POL_FLG_DENC & std_logic_vector(trans_seq_cnt+1);
 				trans_seq_cnt   <= trans_seq_cnt +1;
 			elsif TYPE_FRAME_DENC = C_ACK_FRM or TYPE_FRAME_DENC = C_NACK_FRM then
 				DATA_DSCOM      <= C_RESERVED_SYMB & SEQ_NUM_ACK_DENC & DATA_DENC(15 downto 0);
-				SEQ_NUM_DSCOM   <= trans_pol_flg & std_logic_vector(trans_seq_cnt);
+				SEQ_NUM_DSCOM   <= SEQ_NUM_ACK_DENC;
 			else
-				DATA_DSCOM      <= C_RESERVED_SYMB & trans_pol_flg & std_logic_vector(trans_seq_cnt) & DATA_DENC(15 downto 0);
-				SEQ_NUM_DSCOM   <= trans_pol_flg & std_logic_vector(trans_seq_cnt);
+				DATA_DSCOM      <= C_RESERVED_SYMB & TRANS_POL_FLG_DENC & std_logic_vector(trans_seq_cnt) & DATA_DENC(15 downto 0);
+				SEQ_NUM_DSCOM   <= TRANS_POL_FLG_DENC & std_logic_vector(trans_seq_cnt);
 			end if;
 		elsif DATA_DENC(15 downto 0) = C_SIF_WORD and VALID_K_CHARAC_DENC(0)= '1' then -- SIF
-			DATA_DSCOM      <= C_RESERVED_SYMB & trans_pol_flg & std_logic_vector(trans_seq_cnt) & DATA_DENC(15 downto 0);
-			SEQ_NUM_DSCOM   <= trans_pol_flg & std_logic_vector(trans_seq_cnt);
+			DATA_DSCOM      <= C_RESERVED_SYMB & TRANS_POL_FLG_DENC & std_logic_vector(trans_seq_cnt) & DATA_DENC(15 downto 0);
+			SEQ_NUM_DSCOM   <= TRANS_POL_FLG_DENC & std_logic_vector(trans_seq_cnt);
 		else
       DATA_DSCOM      <= DATA_DENC;
 		end if;
