@@ -59,13 +59,18 @@ signal crc_reg_16b         : std_logic_vector(16-1 downto 0);
 signal crc_reg_16b_comp    : std_logic_vector(16-1 downto 0);
 signal crc_reg_16b_check   : std_logic_vector(16-1 downto 0);
 signal crc_to_inv_16b      : std_logic;
+signal crc_long_err        : std_logic;
 -- CRC 8 Bits compute
 signal crc_reg_8b          : std_logic_vector(8-1 downto 0);
 signal crc_reg_8b_comp    : std_logic_vector(8-1 downto 0);
 signal crc_reg_8b_check    : std_logic_vector(8-1 downto 0);
 signal crc_to_inv_8b       : std_logic;
+signal crc_short_err        : std_logic;
 
 begin
+  CRC_LONG_ERR_DCCHECK  <= crc_long_err;
+  CRC_SHORT_ERR_DCCHECK <= crc_short_err;
+  CRC_ERR_DCCHECK       <= crc_short_err or crc_long_err;
 ---------------------------------------------------------
 -----                     Process                   -----
 ---------------------------------------------------------
@@ -75,23 +80,31 @@ begin
 ---------------------------------------------------------
  p_crc_16b: process(CLK, RST_N)
     variable crc_var : std_logic_vector(15 downto 0);
+    variable crc_in : std_logic_vector(15 downto 0);
 begin
     if RST_N = '0' then
         crc_reg_16b        <= (others => '1'); -- Reset CRC to seed value
         crc_reg_16b_comp   <= (others => '1'); -- Reset CRC to seed value
-        crc_to_inv_16b     <= '0';
+        crc_long_err       <= '0';
     elsif rising_edge(CLK) then
-      crc_var        := crc_reg_16b_comp;
-      crc_to_inv_16b <= '0';
+      crc_var           := crc_reg_16b_comp;
+      crc_long_err       <= '0';
       if (TYPE_FRAME_DWI = C_DATA_FRM) then
         if END_FRAME_DWI = '1' and NEW_WORD_DWI = '1'then -- Last word
-          crc_to_inv_16b <='1';
           -- calculates the crc 8 byte by byte
           for i in indices_dem'range loop
               crc_var := calculate_crc_16(DATA_DWI(7+ indices_dem(i) downto 0 + indices_dem(i)), crc_var);
           end loop;
+          -- Bit-by-bit inversion (CRC Input)
+          for i in 0 to 15 loop
+            crc_in(i) := CRC_16B_DWI(15 - i);
+          end loop;
+          if crc_in /= crc_var then
+            crc_long_err  <= '1';
+          else
+            crc_long_err  <= '0';
+          end if;
           crc_reg_16b_comp   <= (others => '1'); -- Reset CRC to seed value
-          crc_reg_16b        <= crc_var;
         elsif NEW_WORD_DWI = '1' then
           -- calculates the crc 8 byte by byte
           for i in indices'range loop
@@ -147,48 +160,25 @@ p_crc_check: process(CLK, RST_N)
   variable crc_var_16b : std_logic_vector(15 downto 0);
 begin
   if RST_N = '0' then
-    CRC_ERR_DCCHECK        <= '0';
-    CRC_LONG_ERR_DCCHECK   <= '0';
-    CRC_SHORT_ERR_DCCHECK  <= '0';
+    crc_short_err  <= '0';
     crc_reg_8b_check       <= (others => '0');
     crc_reg_16b_check      <= (others => '0');
   elsif rising_edge(CLK) then
     crc_reg_8b_check  <= CRC_8B_DWI;
     crc_reg_16b_check <= CRC_16B_DWI;
-    if TYPE_FRAME_DWI = C_DATA_FRM and crc_to_inv_16b ='1'then
-      -- Bit-by-bit inversion
-      for i in 0 to 15 loop
-        crc_var_16b(i) := crc_reg_16b(15 - i);
-      end loop;
-      -- Checks CRC validity
-      if crc_var_16b /= crc_reg_16b_check then
-        CRC_ERR_DCCHECK       <= '1';
-        CRC_LONG_ERR_DCCHECK  <= '1';
-        CRC_SHORT_ERR_DCCHECK <= '0';
-      else
-        CRC_ERR_DCCHECK       <= '0';
-        CRC_LONG_ERR_DCCHECK  <= '0';
-        CRC_SHORT_ERR_DCCHECK <= '0';
-      end if;
-    elsif TYPE_FRAME_DWI /= C_DATA_FRM and crc_to_inv_8b ='1' then
+    if TYPE_FRAME_DWI /= C_DATA_FRM and crc_to_inv_8b ='1' then
       -- Bit-by-bit inversion
       for i in 0 to 7 loop
         crc_var_8b(i) := crc_reg_8b(7 - i);
       end loop;
       -- Checks CRC validity
       if crc_var_8b /= crc_reg_8b_check then
-        CRC_ERR_DCCHECK       <= '1';
-        CRC_SHORT_ERR_DCCHECK <= '1';
-        CRC_LONG_ERR_DCCHECK  <= '0';
+        crc_short_err <= '1';
       else
-        CRC_ERR_DCCHECK       <= '0';
-        CRC_SHORT_ERR_DCCHECK <= '0';
-        CRC_LONG_ERR_DCCHECK  <= '0';
+        crc_short_err <= '0';
       end if;
     else
-      CRC_ERR_DCCHECK       <= '0';
-      CRC_SHORT_ERR_DCCHECK <= '0';
-      CRC_LONG_ERR_DCCHECK  <= '0';
+      crc_short_err <= '0';
     end if;
   end if;
 end process p_crc_check;
