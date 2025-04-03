@@ -29,6 +29,12 @@
 #define DEFAULT_TIMEOUT 2000000U
 
 /* These could be macro constants, if space is an issue. */
+static volatile uint32_t * const CONF_PHY_PARAMETERS_REGISTER =
+    (volatile uint32_t *)
+    (
+        MODEL_CONFIGURATOR_ADDR + MOD_CONF_PARAM_PHY_REG_OFFSET
+    );
+
 static volatile uint32_t * const CONF_PARAMETERS_REGISTER =
     (volatile uint32_t *)
     (
@@ -287,7 +293,6 @@ static uint32_t _wait_end_test (void)
     }
 }
 
-#define STEP1_TESTS_COUNT 4
 #define SETTINGS_COUNT 4
 
 const uint32_t address_and_offset[SETTINGS_COUNT][2] =
@@ -298,6 +303,7 @@ const uint32_t address_and_offset[SETTINGS_COUNT][2] =
         {MODEL_ANALYZER_ADDR, MOD_ANA_INIT_VALUE_REG_OFFSET}
     };
 
+#define STEP1_TESTS_COUNT 4
 const uint8_t step1_test[STEP1_TESTS_COUNT][SETTINGS_COUNT][4] =
     {
         { // Test 1
@@ -319,6 +325,41 @@ const uint8_t step1_test[STEP1_TESTS_COUNT][SETTINGS_COUNT][4] =
             {0x00, 0x00, 0x00, 0x02}, // Analyzer Initial Value
         },
         { // Test 4
+            {0xA1, 0x08, 0x00, 0x01}, // Generator Config
+            {0xA1, 0x08, 0x00, 0x01}, // Analyzer Config
+            {0x00, 0x00, 0x00, 0x03}, // Generator Initial Value
+            {0x00, 0x00, 0x00, 0x03}, // Analyzer Initial Value
+        },
+    };
+
+#define STEP2_TESTS_COUNT 5
+const uint8_t step2_test[STEP2_TESTS_COUNT][SETTINGS_COUNT][4] =
+    {
+        { // Test 1
+            {0x84, 0x00, 0x00, 0x00}, // Generator Config
+            {0x84, 0x00, 0x00, 0x00}, // Analyzer Config
+            {0x00, 0x00, 0x00, 0x00}, // Generator Initial Value
+            {0x00, 0x00, 0x00, 0x00}, // Analyzer Initial Value
+        },
+        { // Test 2
+            {0x9F, 0x00, 0x00, 0x01}, // Generator Config
+            {0x9F, 0x00, 0x00, 0x01}, // Analyzer Config
+            {0x00, 0x00, 0x00, 0x00}, // Generator Initial Value
+            {0x00, 0x00, 0x00, 0x00}, // Analyzer Initial Value
+        },
+        { // Test 3
+            {0x9F, 0x20, 0x00, 0x01}, // Generator Config
+            {0x9F, 0x20, 0x00, 0x01}, // Analyzer Config
+            {0x01, 0x00, 0x00, 0x00}, // Generator Initial Value
+            {0x01, 0x00, 0x00, 0x00}, // Analyzer Initial Value
+        },
+        { // Test 4
+            {0x82, 0x20, 0x00, 0x01}, // Generator Config
+            {0x82, 0x20, 0x00, 0x01}, // Analyzer Config
+            {0x00, 0x00, 0x00, 0x02}, // Generator Initial Value
+            {0x00, 0x00, 0x00, 0x02}, // Analyzer Initial Value
+        },
+        { // Test 5
             {0xA1, 0x08, 0x00, 0x01}, // Generator Config
             {0xA1, 0x08, 0x00, 0x01}, // Analyzer Config
             {0x00, 0x00, 0x00, 0x03}, // Generator Initial Value
@@ -349,6 +390,8 @@ static enum action_result run_tests
     const uint8_t test[const static test_count][SETTINGS_COUNT][4]
 )
 {
+    unsigned int successes = 0;
+
     if
     (
         (initialize() != OK)
@@ -360,46 +403,65 @@ static enum action_result run_tests
 
     for (unsigned int i = 0; i < test_count; ++i)
     {
-         for (int j = 0; j < SETTINGS_COUNT; ++j)
-         {
-              const uint8_t * const config = test[i][j];
+        for (int j = 0; j < SETTINGS_COUNT; ++j)
+        {
+             const uint8_t * const config = test[i][j];
 
-              mod_write_all
-              (
-                  address_and_offset[j][0],
-                  address_and_offset[j][1],
-                  bytearray(config[0], config[1], config[2], config[3])
-              );
-         }
-
-         start_test();
-
-         if (_wait_end_test() == OK)
-         {
-             debug_printf
+             mod_write_all
              (
-                 "\r\n Test %d completed with %d errors out.\r\n",
-                 ANA_STATUS_GET(ERROR_COUNTER, *ANA_STATUS_REGISTER)
+                 address_and_offset[j][0],
+                 address_and_offset[j][1],
+                 bytearray(config[0], config[1], config[2], config[3])
              );
-         }
-         else
-         {
-             debug_printf("\r\nTest %d timed out.\r\n", i);
-         }
+        }
+
+        start_test();
+
+        if (_wait_end_test() == OK)
+        {
+            int errors = ANA_STATUS_GET(ERROR_COUNTER, *ANA_STATUS_REGISTER);
+
+            debug_printf
+            (
+                "\r\n Test %d completed with %d errors out.\r\n",
+                errors
+            );
+
+            if (errors == 0)
+            {
+                successes++;
+            }
+        }
+        else
+        {
+            debug_printf("\r\nTest %d timed out.\r\n", i);
+        }
     }
+
+    debug_printf
+    (
+        "\r\nTest suite: %d out of %d tests succeeded.\r\n",
+        successes,
+        test_count
+    );
 
     return OK;
 }
 
-void scenario_loopback (void)
+void alt_scenario_loopback_step_1 (void)
 {
-
     debug_printf("\r\n Start scenario loopback\r\n");
     debug_printf("\r\n Step 1: Parallel loopback START \r\n");
 
+    CONF_PARAMETER_SET_IN_PLACE
+    (
+        PARALLEL_LOOPBACK_ENABLES,
+        *CONF_PARAMETERS_REGISTER,
+        1
+    );
+
     run_tests(STEP1_TESTS_COUNT, step1_test);
 
-    debug_printf("\r\n Step 1: Parallel loopback END \r\n");
     // Disable parallel loopback
     CONF_PARAMETER_SET_IN_PLACE
     (
@@ -407,4 +469,29 @@ void scenario_loopback (void)
         *CONF_PARAMETERS_REGISTER,
         0
     );
+
+    debug_printf("\r\n Step 1: Parallel loopback END \r\n");
+}
+
+void alt_scenario_loopback_step_2 (void)
+{
+    debug_printf("\r\n Step 2 START \r\n");
+
+    CONF_PHY_PARAMETER_SET_IN_PLACE
+    (
+        NEAR_END_SERIAL_LOOPBACK,
+        *CONF_PHY_PARAMETERS_REGISTER,
+        1
+    );
+
+    run_tests(STEP2_TESTS_COUNT, step2_test);
+
+    CONF_PHY_PARAMETER_SET_IN_PLACE
+    (
+        NEAR_END_SERIAL_LOOPBACK,
+        *CONF_PHY_PARAMETERS_REGISTER,
+        0
+    );
+
+    debug_printf("\r\n Step 2 END \r\n");
 }

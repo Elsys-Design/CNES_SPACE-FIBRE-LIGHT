@@ -17,3 +17,5 @@ void started_to_active(void);
 void scenario_loopback_step2(void);
 void scenario_loopback_step1(void);
 
+void alt_scenario_loopback_step_1 (void);
+void alt_scenario_loopback_step_2 (void);
