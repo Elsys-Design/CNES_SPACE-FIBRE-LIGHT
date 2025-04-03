@@ -35,6 +35,7 @@ entity data_seq_check is
 		END_FRAME_DSCHECK      : out std_logic;
 		TYPE_FRAME_DSCHECK     : out  std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);  --! Flag EMPTY of the FIFO RX
 		TRANS_POL_FLG_DERRM    : in std_logic;                               --! Transmission polarity flag to error management
+		CRC_ERR_DSCHECK        : out std_logic;
     -- data_mid_buffer (DMBUF) interface
     DATA_DSCHECK           : out std_logic_vector(C_DATA_LENGTH-1 downto 0);    -- Data write bus
 		VALID_K_CHARAC_DSCHECK : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
@@ -77,7 +78,9 @@ begin
 		END_FRAME_DSCHECK      <= '0';
 		FRAME_ERR_DSCHECK      <= '0';
 		TYPE_FRAME_DSCHECK     <= (others => '0');
+		CRC_ERR_DSCHECK        <= '0';
 	elsif rising_edge(CLK) then
+		CRC_ERR_DSCHECK    <= CRC_ERR_DCCHECK;
 		TYPE_FRAME_DSCHECK <= TYPE_FRAME_DCCHECK;
     FRAME_ERR_DSCHECK  <= FRAME_ERR_DCCHECK;
 		SEQ_NUM_DSCHECK    <= SEQ_NUM_DCCHECK;
@@ -122,7 +125,7 @@ begin
 				END_FRAME_DSCHECK      <= END_FRAME_DCCHECK;
       end if;
 		elsif (TYPE_FRAME_DCCHECK = C_NACK_FRM or TYPE_FRAME_DCCHECK = C_ACK_FRM) and  END_FRAME_DCCHECK = '1'then
-			if SEQ_NUM_DCCHECK /= (TRANS_POL_FLG_DERRM & std_logic_vector(seq_num_cnt)) then
+			if SEQ_NUM_DCCHECK(7) /= TRANS_POL_FLG_DERRM then
 				SEQ_NUM_ERR_DSCHECK    <= '1';
 				NEW_WORD_DSCHECK       <= '0';
 				DATA_DSCHECK           <= (others => '0');
