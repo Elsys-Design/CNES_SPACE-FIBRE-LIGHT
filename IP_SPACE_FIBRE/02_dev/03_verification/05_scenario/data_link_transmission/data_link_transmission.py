@@ -335,14 +335,39 @@ async def send_FCT(tb, vc, value, seq_num):
     await tb.spacefibre_driver.write_to_Rx("11001110", delay = 0, k_encoding = 0)
     await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
     await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
+
     await tb.spacefibre_driver.write_to_Rx("11111100", delay = 0, k_encoding = 1)
     await tb.spacefibre_driver.write_to_Rx("11001110", delay = 0, k_encoding = 0)
     await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
     await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
+
     await tb.spacefibre_driver.write_to_Rx("01111100", delay = 0, k_encoding = 1)
     crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8("01111100")
     await tb.spacefibre_driver.write_to_Rx(f"{(value):0>3b}" + f"{(vc):0>5b}", delay = 0, k_encoding = 0)
     crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8(f"{(value):0>3b}" + f"{(vc):0>5b}", crc_8)
+    await tb.spacefibre_driver.write_to_Rx(seq_num, delay = 0, k_encoding = 0)
+    crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8(seq_num , crc_8)
+    crc_8 = tb.spacefibre_random_generator_data_link.invert_string(crc_8)
+    await tb.spacefibre_driver.write_to_Rx(crc_8, delay = 0, k_encoding = 0)
+
+async def send_full(tb, seq_num):
+    """
+    Send an FCT control word to the RX port of the SpaceFibreLight IP
+    """
+    await tb.spacefibre_driver.write_to_Rx("11111100", delay = 0, k_encoding = 1)
+    await tb.spacefibre_driver.write_to_Rx("11001110", delay = 0, k_encoding = 0)
+    await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
+    await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
+
+    await tb.spacefibre_driver.write_to_Rx("11111100", delay = 0, k_encoding = 1)
+    await tb.spacefibre_driver.write_to_Rx("11001110", delay = 0, k_encoding = 0)
+    await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
+    await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
+
+    await tb.spacefibre_driver.write_to_Rx("11111100", delay = 0, k_encoding = 1)
+    crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8("11111100")
+    await tb.spacefibre_driver.write_to_Rx("01101111", delay = 0, k_encoding = 0)
+    crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8("01101111", crc_8)
     await tb.spacefibre_driver.write_to_Rx(seq_num, delay = 0, k_encoding = 0)
     crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8(seq_num , crc_8)
     crc_8 = tb.spacefibre_random_generator_data_link.invert_string(crc_8)
@@ -472,19 +497,6 @@ async def cocotb_run(dut):
     tb = TB(dut)
 
     await tb.reset()
-
-    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_16("11111100")
-    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_16("01010000", crc_16)
-    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_16("00000001", crc_16)
-    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_16("00000000", crc_16)
-    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_16("00000000", crc_16)
-    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_16("11111101", crc_16)
-    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_16("11111011", crc_16)
-    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_16("11111011", crc_16)
-    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_16("00011100", crc_16)
-    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_16("01111101", crc_16)
-
-
 
     #Specific variable for the scenario
     global test_failed 
@@ -680,7 +692,7 @@ async def cocotb_run(dut):
     monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_2", number_of_word = 143+66*8+20))
 
     #Send first FCT to each virtual channel
-    for x in range(7):
+    for x in range(8):
         await send_FCT(tb, x, 0, "0"+ f"{(x+1):0>7b}")
 
     #send 64 word on each virtual buffer on TX
@@ -695,7 +707,7 @@ async def cocotb_run(dut):
 
     #Send 1 packet of 64 word in frames of 64 word on each virtual buffer to RX
     for target in range(8):
-        await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_1_" + str(target), 255, 1, 64, 0, target, target + 7, delay = 0, invert_polarity = 0, seed = 42)
+        await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_1_" + str(target), 255, 1, 64, 0, target, target + 8, delay = 0, invert_polarity = 0, seed = 42)
 
     await send_idle_ctrl_word(tb, 20)
 
@@ -732,7 +744,7 @@ async def cocotb_run(dut):
 
     #Send FCT
     for x in range(8):
-        await send_FCT(tb, x, 0, "0"+ f"{((x+167)%128):0>7b}")
+        await send_FCT(tb, x, 0, "0"+ f"{((x+169)%128):0>7b}")
 
     #Receive 3 packet of 30 word on each virtual buffer on RX
     for model in range(8):
@@ -743,7 +755,7 @@ async def cocotb_run(dut):
 
     #Send 3 packet of 30 word in frames of 5 words on each virtual buffer to RX
     for target in range(8):
-        await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_3_" + str(target), 120, 3, 5, 0, target, (18*target + 174)%128, delay = 0, invert_polarity = 0, seed = 43)
+        await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_3_" + str(target), 120, 3, 5, 0, target, (18*target + 176)%128, delay = 0, invert_polarity = 0, seed = 43)
 
 
     await send_idle_ctrl_word(tb, 20)
@@ -755,13 +767,13 @@ async def cocotb_run(dut):
     await configure_model_dl(tb, 4, [0x21,0x03,0x00,0x01], [0x2D,0x00,0x00,0x00])
     await start_model_dl(tb, 4)
 
-    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_4_" + str(0), 100, 1, 5, 0, 0, 318%128, delay = 0, invert_polarity = 0, seed = 45)
+    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_4_" + str(0), 100, 1, 5, 0, 0, 320%128, delay = 0, invert_polarity = 0, seed = 45)
 
     #Check ACK Request (every 15 word)
 
     #Send FCT
     for x in range(8):
-        await send_FCT(tb, x, 0, "0"+ f"{((x+324)%128):0>7b}")
+        await send_FCT(tb, x, 0, "0"+ f"{((x+326)%128):0>7b}")
 
     #Send a data frame with a wrong CRC    
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/CRC_error.dat")
@@ -773,13 +785,13 @@ async def cocotb_run(dut):
     await start_model_dl(tb, 4)
 
     #Send 1 packet of 30 word in frames of 3 words on virtual channel 0 to RX
-    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_5_" + str(0), 120, 1, 3, 0, 0, 331, delay = 0, invert_polarity = 0, seed = 46)
+    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_5_" + str(0), 120, 1, 3, 0, 0, 333%128, sequence_polarity = 1, delay = 0, invert_polarity = 0, seed = 46)
 
     #Check ACK
 
     #Send FCT
     for x in range(8):
-        await send_FCT(tb, x, 0, "0"+ f"{(x+342):0>7b}")
+        await send_FCT(tb, x, 0, "1"+ f"{(x+344%128):0>7b}")
 
     #Send a data frame with a wrong SEQ_NUM
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/SEQ_NUM_error.dat")
@@ -789,18 +801,25 @@ async def cocotb_run(dut):
     await configure_model_dl(tb, 4, [0xE3,0x01,0x00,0x01], [0x2F,0x00,0x00,0x00])
     await start_model_dl(tb, 4)
 
-    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_6_" + str(0), 120, 1, 3, 0, 0, 349%128, delay = 0, invert_polarity = 0, seed = 47)
+    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_6_" + str(0), 120, 1, 3, 0, 0, 351%128, delay = 0, invert_polarity = 0, seed = 47)
 
     #Check ACK
 
     for x in range(8):
-        await send_FCT(tb, x, 0, "0"+ f"{(x+360):0>7b}")
+        await send_FCT(tb, x, 0, "0"+ f"{(x+362%128):0>7b}")
 
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/RXERR_error_1.dat")
     await write_10b_to_Rx(tb, "1101110111")
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/RXERR_error_2.dat")
 
     #Check NACK
+
+    await configure_model_dl(tb, 4, [0xE3,0x01,0x00,0x01], [0x2F,0x00,0x00,0x00])
+    await start_model_dl(tb, 4)
+
+    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_7_" + str(0), 120, 1, 3, 0, 0, 369%128, sequence_polarity = 1, delay = 0, invert_polarity = 0, seed = 47)
+
+    #Check ACK
 
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/Pos_seq_error.dat")
 
@@ -810,12 +829,21 @@ async def cocotb_run(dut):
 
     #Check NACK
 
-    await configure_model_dl(tb, 20, [0x01,0x02,0x00,0x01], [0x2F,0x00,0x00,0x00])
+    await configure_model_dl(tb, 20, [0x01,0x02,0x00,0x00], [0x2F,0x00,0x00,0x00])
     await start_model_dl(tb, 20)
 
-    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_6_" + str(0), 120, 1, 3, 0, 0, 367%128, delay = 0, invert_polarity = 0, seed = 47)
+    #Send Broadcast Frame
+    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_8_" + str(0), 0x000000300000002F, 1, 0, 1, 0, 379%128, sequence_polarity = 1, delay = 0, invert_polarity = 0, seed = 47)
 
     #Check ACK
+
+    #Send FULL controle word
+    await send_full(tb, "1"+ f"{(381%128):0>7b}")
+
+    #Check ACK
+
+    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/100_IDLE.dat", file_format = 16)
+    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/100_IDLE.dat", file_format = 16)
 
     await monitor
 
@@ -839,11 +867,12 @@ async def cocotb_run(dut):
 
     await initialization_procedure(tb, "reference/spacefibre_serial/monitor_step_3")
 
+    monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_1", number_of_word = 20))
     #Send first FCT to each virtual channel
     for x in range(8):
         await send_FCT(tb, x, 0, "0"+ f"{(x+1):0>7b}")
     
-    #Check FCT and SEQ num and CRC
+    #Check FCT and SEQ NUM and CRC
 
     await configure_gen_vc_dl(tb, [0xE1,0x1F,0x00,0x00], [0x00,0x00,0x00,0x00])
 

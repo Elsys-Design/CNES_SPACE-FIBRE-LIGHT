@@ -71,9 +71,9 @@ class SpaceFibre_Random_Generator:
             input = int(crc_16[0]) ^ input
             crc_16 = crc_16[1 : 16] + "0"
             crc_16 = crc_16[0 : 3] + str(input^int(crc_16[3]))+crc_16[4:10] + str(input^int(crc_16[10])) + crc_16[11:15] + str(input)
-        # output_file_bin = open("CRC_16_compute_step.debug", "a")
-        # output_file_bin.write(f"{int(crc_16, base = 2):0>4X}" + "_" + str(get_sim_time(units = "ns")) + "\n")  
-        # output_file_bin.close()      
+        output_file_bin = open("CRC_16_compute_step.debug", "a")
+        output_file_bin.write(f"{int(crc_16, base = 2):0>4X}" + "_" + str(get_sim_time(units = "ns")) + "\n")  
+        output_file_bin.close()      
         return crc_16
     
     def compute_crc_8(self, byte_input, crc_8 = "00000000"):
@@ -253,6 +253,7 @@ class SpaceFibre_Random_Generator:
 
                 #check if EDF and SDF to be sent
                 if current_frame_size == frame_size:
+                    current_frame_size = 1
                     data_to_log = ""
                     k_encoded_to_log = ""
                     sequence += 1
@@ -415,6 +416,7 @@ class SpaceFibre_Random_Generator:
                 
             #check if EDF and SDF to be sent
             if current_frame_size == frame_size:
+                current_frame_size = 1
                 data_to_log = ""
                 k_encoded_to_log = ""
                 sequence += 1
@@ -478,7 +480,7 @@ class SpaceFibre_Random_Generator:
                 data_10b, k_encoded  = await self.write_to_Rx("11111100", 0, 1, invert_polarity = invert_polarity)
                 data_to_log = data_10b + "_" + data_to_log
                 k_encoded_to_log = str(k_encoded) + k_encoded_to_log
-                crc_16 = self.compute_crc_16("11111100", crc_16)
+                crc_16 = self.compute_crc_16("11111100")
 
                 data_10b, k_encoded  = await self.write_to_Rx("01010000", 0, 0, invert_polarity = invert_polarity)
                 data_to_log = data_10b + "_" + data_to_log
@@ -670,10 +672,10 @@ class SpaceFibre_Random_Generator:
                 k_encoded_to_log = str(k_encoded) + k_encoded_to_log
                 crc_8 = self.compute_crc_8("01011101", crc_8)
 
-                data_10b, k_encoded  = await self.write_to_Rx(f"{(target):0>8b}", 0, 0, invert_polarity = invert_polarity)
+                data_10b, k_encoded  = await self.write_to_Rx(target, 0, 0, invert_polarity = invert_polarity)
                 data_to_log = data_10b + "_" + data_to_log
                 k_encoded_to_log = str(k_encoded) + k_encoded_to_log
-                crc_8 = self.compute_crc_8(f"{(target):0>8b}", crc_8)
+                crc_8 = self.compute_crc_8(target, crc_8)
 
                 data_10b, k_encoded  = await self.write_to_Rx("00101010", 0, 0, invert_polarity = invert_polarity)
                 data_to_log = data_10b + "_" + data_to_log
@@ -826,7 +828,7 @@ class SpaceFibre_Random_Generator:
                 k_encoded_to_log = str(k_encoded) + k_encoded_to_log
 
                 log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
-                log_file.write("32;" + f"{(int(crc_8,2)): 0>2X}" + f"{(sequence%128 + 128 * sequence_polarity):0>2X}" + "005C;0;0001;\n")
+                log_file.write("32;" + f"{(int(crc_8,2)):0>2X}" + f"{(sequence%128 + 128 * sequence_polarity):0>2X}" + "005C;0;0001;\n")
 
                 word_counter_for_skip += 1
 
@@ -913,6 +915,7 @@ class SpaceFibre_Random_Generator:
                     word_counter_for_skip = 0
                 #check if SIF needed
                 if current_frame_size == 64:
+                    current_frame_size =0
                     data_10b, k_encoded  = await self.write_to_Rx("11111100", 0, 1, invert_polarity = invert_polarity)
                     data_to_log = data_10b + "_" + data_to_log
                     k_encoded_to_log = str(k_encoded) + k_encoded_to_log
