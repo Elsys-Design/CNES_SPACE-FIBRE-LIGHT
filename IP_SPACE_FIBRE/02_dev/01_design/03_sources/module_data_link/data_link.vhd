@@ -207,6 +207,7 @@ architecture Behavioral of data_link is
       END_FRAME_DSCHECK      : out std_logic;
       TYPE_FRAME_DSCHECK     : out  std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);
       TRANS_POL_FLG_DERRM    : in std_logic;                               --! Transmission polarity flag to error management
+      CRC_ERR_DSCHECK        : out std_logic;
       -- data_mid_buffer (DMBUF) interface
       DATA_DSCHECK           : out std_logic_vector(C_DATA_LENGTH-1 downto 0);    -- Data write bus
       VALID_K_CHARAC_DSCHECK : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
@@ -316,7 +317,6 @@ architecture Behavioral of data_link is
       RXERR_DWI                : in std_logic;                                --! Receive error flag from DWI
       -- crc_check (DCCHECK) Interface
       TYPE_FRAME_DCCHECK       : in std_logic_vector(3 downto 0);             --! Type of frame from CRC check
-      CRC_ERR_DCCHECK          : in std_logic;                                --! CRC error flag from CRC check
       -- seq_check (DSCHECK) interface
       TYPE_FRAME_DSCHECK       : in std_logic_vector(3 downto 0);             --! Type of frame from sequence check
       END_FRAME_DSCHECK        : in std_logic;                                --! End of frame flag from sequence check
@@ -325,6 +325,7 @@ architecture Behavioral of data_link is
       FAR_END_RPF_DSCHECK      : in std_logic;                                --! Far-end RPF flag from sequence check
       NEAR_END_RPF_DERRM       : out std_logic;                               --! Near-end RPF flag to error management
       FRAME_ERR_DSCHECK        : in std_logic;
+      CRC_ERR_DSCHECK          : in std_logic;                                --! CRC error flag from CRC check
       -- data_mac (DMAC) interface
       REQ_ACK_DERRM            : out std_logic;                               --! Acknowledge request to DMAC
       REQ_NACK_DERRM           : out std_logic;                               --! Non-acknowledge request to DMAC
@@ -602,7 +603,7 @@ architecture Behavioral of data_link is
   signal  seq_num_ack_dscheck      : std_logic_vector(6 downto 0);
   signal type_frame_dscheck : std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);
   signal trans_pol_flg_denc         : std_logic;
-
+  signal crc_err_dscheck            : std_logic;
 
 begin
 --------------------------------------------------------
@@ -715,6 +716,7 @@ begin
       VALID_K_CHARAC_DSCHECK => valid_k_charac_dscheck,
       NEW_WORD_DSCHECK       => new_word_dscheck,
       END_FRAME_FIFO_DSCHECK => end_frame_fifo_dscheck,
+      CRC_ERR_DSCHECK        => crc_err_dscheck,
       FIFO_FULL_DMBUF        => fifo_full_dmbuf,
       FRAME_ERR_DSCHECK      => frame_err_dscheck,
       SEQ_NUM_DSCHECK        => SEQ_NUMBER_RX_DL
@@ -779,7 +781,7 @@ begin
       TYPE_FRAME_DWI           => type_frame_dwi,
       RXERR_DWI                => rxerr_dwi,
       TYPE_FRAME_DCCHECK       => type_frame_dccheck,
-      CRC_ERR_DCCHECK          => crc_err_dccheck,
+      CRC_ERR_DSCHECK          => crc_err_dscheck,
       TYPE_FRAME_DSCHECK       => type_frame_dscheck,
       END_FRAME_DSCHECK        => end_frame_dscheck,
       SEQ_ERR_DSCHECK          => seq_num_err_dscheck,

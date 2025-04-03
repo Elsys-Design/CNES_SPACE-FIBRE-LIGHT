@@ -24,7 +24,6 @@ entity data_err_management is
     RXERR_DWI                : in std_logic;                                --! Receive error flag from DWI
     -- crc_check (DCCHECK) Interface
     TYPE_FRAME_DCCHECK       : in std_logic_vector(3 downto 0);             --! Type of frame from CRC check
-    CRC_ERR_DCCHECK          : in std_logic;                                --! CRC error flag from CRC check
     -- seq_check (DSCHECK) interface
     TYPE_FRAME_DSCHECK       : in std_logic_vector(3 downto 0);             --! Type of frame from sequence check
     END_FRAME_DSCHECK        : in std_logic;                                --! End of frame flag from sequence check
@@ -32,6 +31,7 @@ entity data_err_management is
     SEQ_NUM_ACK_DSCHECK      : in std_logic_vector(6 downto 0);
     FAR_END_RPF_DSCHECK      : in std_logic;                                --! Far-end RPF flag from sequence check
     NEAR_END_RPF_DERRM       : out std_logic;                               --! Near-end RPF flag to error management
+    CRC_ERR_DSCHECK          : in std_logic;                                --! CRC error flag from CRC check
     FRAME_ERR_DSCHECK        : in std_logic;
     -- data_mac (DMAC) interface
     REQ_ACK_DERRM            : out std_logic;                               --! Acknowledge request to DMAC
@@ -78,10 +78,10 @@ begin
 ---------------------------------------------------------
 -----                     Assignation               -----
 ---------------------------------------------------------
-  REQ_NACK_DERRM     <= nack_request_out;
-  REQ_ACK_DERRM      <= ack_request_out;
-  SEQ_NUM_ACK_DERRM  <= ack_pol_flg & s_seq_num_fsm;
-  NEAR_END_RPF_DERRM <= near_end_rpf;
+  REQ_NACK_DERRM      <= nack_request_out;
+  REQ_ACK_DERRM       <= ack_request_out;
+  SEQ_NUM_ACK_DERRM   <= ack_pol_flg & s_seq_num_fsm;
+  NEAR_END_RPF_DERRM  <= near_end_rpf;
   TRANS_POL_FLG_DERRM <= trans_pol_flg;
 ---------------------------------------------------------
 -----                     Process                   -----
@@ -159,7 +159,7 @@ begin
       if RXERR_DWI = '1' and (TYPE_FRAME_DWI = C_DATA_FRM or TYPE_FRAME_DWI = C_BC_FRM) then
         s_nack_request <= '1';
         s_ack_request  <= '0';
-      elsif CRC_ERR_DCCHECK = '1' and (TYPE_FRAME_DCCHECK = C_DATA_FRM or TYPE_FRAME_DCCHECK = C_BC_FRM) then
+      elsif CRC_ERR_DSCHECK = '1' and (TYPE_FRAME_DSCHECK = C_DATA_FRM or TYPE_FRAME_DSCHECK = C_BC_FRM) then
         s_nack_request <= '1';
         s_ack_request  <= '0';
       -- Nack requested for broadcast, data, FCT, and FULL frames if seq_err
@@ -248,11 +248,11 @@ begin
   if RST_N = '0' then
     trans_pol_flg <= '0';
   elsif rising_edge(CLK) then
-    if (TYPE_FRAME_DSCHECK = C_NACK_FRM) and END_FRAME_DSCHECK = '1' and CRC_ERR_DCCHECK ='0' then
+    if (TYPE_FRAME_DSCHECK = C_NACK_FRM) and END_FRAME_DSCHECK = '1' and CRC_ERR_DSCHECK ='0' and SEQ_ERR_DSCHECK = '0' then
       trans_pol_flg <= not(trans_pol_flg);
     end if;
   end if;
-end process p_tpf;  
+end process p_tpf;
 ---------------------------------------------------------
 -- Process: p_nack_rst_strat
 -- Description: Error detection, internal request management
