@@ -171,27 +171,23 @@ elsif rising_edge(CLK) and LANE_ACTIVE_PPL= '1' then
 			                        	VALID_K_CHARAC_DENC <= "0001";
 			                        	NEW_WORD_DENC       <= '1';
                                 END_FRAME_DENC      <= '1';
-                                current_state       <= START_FRAME_ST;
 			                        elsif TYPE_FRAME_DMAC = C_ACK_FRM then
 			                        	DATA_DENC           <= C_RESERVED_SYMB & C_RESERVED_SYMB & C_ACK_WORD;
 			                        	VALID_K_CHARAC_DENC <= "0001";
 			                        	NEW_WORD_DENC       <= '1';
                                 END_FRAME_DENC      <= '1';
                                 SEQ_NUM_ACK_DENC    <= SEQ_NUM_ACK_DMAC;
-                                current_state       <= START_FRAME_ST;
 			                        elsif TYPE_FRAME_DMAC = C_NACK_FRM then
 			                        	DATA_DENC           <=  C_RESERVED_SYMB & C_RESERVED_SYMB & C_NACK_WORD;
 			                        	VALID_K_CHARAC_DENC <= "0001";
 			                        	NEW_WORD_DENC       <= '1';
                                 END_FRAME_DENC      <= '1';
                                 SEQ_NUM_ACK_DENC    <= SEQ_NUM_ACK_DMAC;
-                                current_state       <= START_FRAME_ST;
 			                        elsif TYPE_FRAME_DMAC = C_FULL_FRM then
 			                        	DATA_DENC      <=  C_RESERVED_SYMB & C_RESERVED_SYMB & C_FULL_WORD;
 			                        	VALID_K_CHARAC_DENC <= "0001";
 			                        	NEW_WORD_DENC       <= '1';
                                 END_FRAME_DENC      <= '1';
-                                current_state       <= START_FRAME_ST;
 			                        end if;
                             end if;
     when END_FRAME_ST   =>
