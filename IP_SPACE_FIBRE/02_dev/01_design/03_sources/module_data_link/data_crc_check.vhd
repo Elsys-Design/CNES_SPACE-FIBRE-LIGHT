@@ -29,6 +29,7 @@ entity data_crc_check is
     CRC_8B_DWI             : in  std_logic_vector(7 downto 0);                        --! 8 bits CRC from data_word_id_fsm
     TYPE_FRAME_DWI         : in  std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);    --! Current frame/control word type from data_word_id_fsm
     FRAME_ERR_DWI          : in std_logic;
+    RXNOTHING_ACTIVE_DWI   : in std_logic;
     -- data_seq_check (DSCHECK) interface
     NEW_WORD_DCCHECK       : out std_logic;                                           --! New word Flag from data_word_id_fsm
     DATA_DCCHECK           : out std_logic_vector(C_DATA_LENGTH-1 downto 0);          --! Data parallel from daata_word_id_fsm
@@ -82,7 +83,9 @@ begin
     elsif rising_edge(CLK) then
       crc_var           := crc_reg_16b_comp;
       crc_long_err       <= '0';
-      if (TYPE_FRAME_DWI = C_DATA_FRM) then
+      if RXNOTHING_ACTIVE_DWI ='1' then
+        crc_reg_16b_comp   <= (others => '1'); -- Reset CRC to seed value
+      elsif (TYPE_FRAME_DWI = C_DATA_FRM) then
         if END_FRAME_DWI = '1' and NEW_WORD_DWI = '1'then -- Last word
           -- calculates the crc 8 byte by byte
           for i in indices_dem'range loop
@@ -125,7 +128,9 @@ begin
     elsif rising_edge(CLK) then
       crc_var       := crc_reg_8b_comp;
       crc_short_err <= '0';
-      if TYPE_FRAME_DWI /= C_DATA_FRM then
+      if RXNOTHING_ACTIVE_DWI ='1' then
+        crc_reg_8b_comp   <= (others => '1'); -- Reset CRC to seed value
+      elsif TYPE_FRAME_DWI /= C_DATA_FRM then
         if END_FRAME_DWI = '1'and NEW_WORD_DWI = '1'then -- Last word
           -- calculates the crc 8 byte by byte
           for i in indices_tier'range loop
@@ -142,6 +147,8 @@ begin
             crc_short_err  <= '0';
           end if;
           crc_reg_8b_comp <= (others => '0'); -- Reset CRC to seed value
+        elsif RXERR_DWI ='1' then
+          crc_reg_16b_comp   <= (others => '1'); -- Reset CRC to seed value
         elsif NEW_WORD_DWI = '1' then
           -- calculates the crc 8 byte by byte
           for i in indices'range loop

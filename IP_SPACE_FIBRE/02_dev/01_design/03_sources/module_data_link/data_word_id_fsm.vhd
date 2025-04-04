@@ -35,6 +35,7 @@ entity data_word_id_fsm is
     SEQ_NUM_DWI             : out std_logic_vector(7 downto 0);                 --! Flag EMPTY of the FIFO RX
     CRC_16B_DWI             : out std_logic_vector(15 downto 0);                --! Flag EMPTY of the FIFO RX
     CRC_8B_DWI              : out std_logic_vector(7 downto 0);                 --! Flag EMPTY of the FIFO RX
+		RXNOTHING_ACTIVE_DWI    : out std_logic;
     -- OTHER
     CRC_ERR_DCCHECK         : in  std_logic;
     SEQ_ERR_DSCHECK         : in  std_logic;
@@ -174,12 +175,15 @@ end process p_fsm_data_word_id_transition;
 p_comb_state : process(CLK,RST_N)
 begin
 	if RST_N = '0' then
-	   receiving_frame         <= '0';
-	   type_incom_frame        <= (others =>'0');
-	   data_word_cnt           <= (others =>'0');
-	   bc_word_cnt             <= (others =>'0');
+	  receiving_frame         <= '0';
+	  type_incom_frame        <= (others =>'0');
+	  data_word_cnt           <= (others =>'0');
+	  bc_word_cnt             <= (others =>'0');
+		RXNOTHING_ACTIVE_DWI   <= '0';
 	elsif rising_edge(CLK) then
+		RXNOTHING_ACTIVE_DWI   <= '0';
 		if current_state = RX_NOTHING_ST then
+		  RXNOTHING_ACTIVE_DWI <= '1';
 		  receiving_frame      <= '0';
 		  data_word_cnt        <= (others =>'0');
 		  bc_word_cnt          <= (others =>'0');
