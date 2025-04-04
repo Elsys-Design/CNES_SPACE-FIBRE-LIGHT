@@ -206,9 +206,9 @@ end process p_continuous_mode;
 -- Process: p_data_in_fifo
 -- Description: Manages the data written into the fifo
 ---------------------------------------------------------
-p_data_in_fifo: process(S_AXIS_ARSTN_NW, S_AXIS_ACLK_NW)
+p_data_in_fifo: process(S_AXIS_ARSTN_NW, S_AXIS_ACLK_NW, RST_N)
 begin
-  if S_AXIS_ARSTN_NW = '0' then
+  if S_AXIS_ARSTN_NW = '0' or RST_N='0' then
     s_axis_tdata_i  <= (others => '0');
     s_axis_tuser_i  <= (others => '0');
     s_axis_tlast_i  <= '0';
@@ -292,9 +292,9 @@ end process p_data_in_fifo;
 -- Description: Analyses if the last character written into
 --              the fifo was an EOP, EEP or Fill
 ---------------------------------------------------------
-p_last_char_written: process(S_AXIS_ARSTN_NW, S_AXIS_ACLK_NW)
+p_last_char_written: process(S_AXIS_ARSTN_NW, S_AXIS_ACLK_NW, RST_N)
 begin
-  if S_AXIS_ARSTN_NW = '0' then
+  if S_AXIS_ARSTN_NW = '0' or RST_N='0'  then
     last_k_char <= '0';
   elsif rising_edge(S_AXIS_ACLK_NW) then
     if S_AXIS_TUSER_NW(C_BYTE_BY_WORD_LENGTH-1)='1' and S_AXIS_TVALID_NW='1' then
@@ -405,9 +405,9 @@ end process p_detect_eip_out;
 -- Process: p_eip_cnt
 -- Description: Detection of EIP in the buffer
 ---------------------------------------------------------
-p_eip_in: process(S_AXIS_ARSTN_NW, S_AXIS_ACLK_NW)
+p_eip_in: process(S_AXIS_ARSTN_NW, S_AXIS_ACLK_NW, RST_N)
 begin
-  if S_AXIS_ARSTN_NW = '0' then
+  if S_AXIS_ARSTN_NW = '0' or RST_N='0'  then
     eip_in_req      <= '0';
   elsif rising_edge(S_AXIS_ACLK_NW) then
     if s_axis_tlast_i = '1' and s_axis_tvalid_i= '1' and s_axis_tready_i= '1' then
