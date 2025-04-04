@@ -112,12 +112,14 @@ type data_dmac_fsm is (
   signal vc_pause_i      : std_logic_vector(G_VC_NUM downto 0);
   signal req_ack_done    : std_logic;
   signal cnt_wait_ack    : unsigned(3 downto 0);
+  signal vc_rd_en        : std_logic_vector(G_VC_NUM downto 0);
 begin
   DATA_COUNTER_TX_DMAC <= std_logic_vector(data_counter);
   ACK_COUNTER_TX_DMAC  <= std_logic_vector(ack_counter);
   NACK_COUNTER_TX_DMAC <= std_logic_vector(nack_counter);
   FCT_COUNTER_TX_DMAC  <= std_logic_vector(fct_counter);
   REQ_ACK_DONE_DMAC    <= req_ack_done;
+  VC_RD_EN_DMAC        <= vc_rd_en and not(req_int);
 ---------------------------------------------------------
 -----                     Process                   -----
 ---------------------------------------------------------
@@ -128,7 +130,7 @@ begin
 p_arbiter: process(CLK, RST_N)
 begin
   if RST_N = '0' then
-    VC_RD_EN_DMAC        <= (others => '0');
+    vc_rd_en        <= (others => '0');
     new_word             <= '0';
     end_packet           <= '0';
     data_transfer        <= (others => '0');
@@ -172,7 +174,6 @@ begin
                       virtual_channel        <= to_unsigned(0,virtual_channel'length);
                       type_frame             <= C_DATA_FRM;
                       if req_int = '1' then  -- Request ready to send
-                        VC_RD_EN_DMAC <= (others => '0'); -- Pausing data transfers
                         if VC_DATA_VALID_DOBUF(0) = '1' then -- if a transfer is in progress
                           data_vc         <= VC_DATA_DOBUF(0);
                           valid_k_char_vc <= VC_VALID_K_CHAR_DOBUF(0);
@@ -183,7 +184,7 @@ begin
                         if VC_END_PACKET_DOBUF(0) = '1' then -- Last data of a transfer
                           data_vc                <= VC_DATA_DOBUF(0);
                           valid_k_char_vc        <= VC_VALID_K_CHAR_DOBUF(0);
-                          VC_RD_EN_DMAC          <= (others => '0');
+                          vc_rd_en          <= (others => '0');
                           data_transfer          <= to_unsigned(0,data_transfer'length);
                           new_word               <= '1';
                           end_packet             <= '1';
@@ -192,11 +193,11 @@ begin
                           vc_pause_i             <= VC_PAUSE_MIB;
                           current_state_vc       <= VC_1_ST;
                         elsif data_transfer= 0  then -- Request data transfers
-                          VC_RD_EN_DMAC(0) <= '1';
+                          vc_rd_en(0) <= '1';
                           data_transfer    <= to_unsigned(1,data_transfer'length);
                           data_counter     <= (others => '0');
                         elsif data_transfer= 1  then -- Request data transfers
-                          VC_RD_EN_DMAC(0) <= '0';
+                          vc_rd_en(0) <= '0';
                           data_transfer    <= to_unsigned(2,data_transfer'length);
                           if VC_DATA_VALID_DOBUF(0)='1' then
                             data_vc          <= VC_DATA_DOBUF(0);
@@ -205,7 +206,7 @@ begin
                             data_counter     <= data_counter + 1;
                           end if;
                         elsif data_transfer= 2  then -- Request data transfers
-                          VC_RD_EN_DMAC(0) <= '1';
+                          vc_rd_en(0) <= '1';
                           data_transfer    <= to_unsigned(3,data_transfer'length);
                           if VC_DATA_VALID_DOBUF(0)='1' then
                             data_vc          <= VC_DATA_DOBUF(0);
@@ -214,17 +215,17 @@ begin
                             data_counter     <= data_counter + 1;
                           end if;
                         elsif data_transfer=3 and VC_DATA_VALID_DOBUF(0)='1'then -- data transfer
-                          VC_RD_EN_DMAC(0) <= '1';
+                          vc_rd_en(0) <= '1';
                           data_vc          <= VC_DATA_DOBUF(0);
                           valid_k_char_vc  <= VC_VALID_K_CHAR_DOBUF(0);
                           new_word         <= '1';
                           data_counter     <= data_counter + 1;
                         else -- Request data transfers
-                          VC_RD_EN_DMAC(0) <= '1';
+                          vc_rd_en(0) <= '1';
                           new_word         <= '0';
                         end if;
                       else -- VC changement
-                        VC_RD_EN_DMAC <= (others => '0');
+                        vc_rd_en <= (others => '0');
                         VC_RUN_EMISSION_DMAC <= (others => '0');
                         data_transfer <= (others => '0');
                         current_state_vc <= VC_1_ST;
@@ -234,7 +235,6 @@ begin
                       virtual_channel        <= to_unsigned(1,virtual_channel'length);
                       type_frame             <= C_DATA_FRM;
                       if req_int = '1' then  -- Request ready to send
-                        VC_RD_EN_DMAC <= (others => '0'); -- Pausing data transfers
                         if VC_DATA_VALID_DOBUF(1) = '1' then -- if a transfer is in progress
                           data_vc         <= VC_DATA_DOBUF(1);
                           valid_k_char_vc <= VC_VALID_K_CHAR_DOBUF(1);
@@ -245,7 +245,7 @@ begin
                         if VC_END_PACKET_DOBUF(1) = '1' then -- Last data of a transfer
                           data_vc                <= VC_DATA_DOBUF(1);
                           valid_k_char_vc        <= VC_VALID_K_CHAR_DOBUF(1);
-                          VC_RD_EN_DMAC          <= (others => '0');
+                          vc_rd_en          <= (others => '0');
                           data_transfer          <= to_unsigned(0,data_transfer'length);
                           new_word               <= '1';
                           end_packet             <= '1';
@@ -254,11 +254,11 @@ begin
                           vc_pause_i             <= VC_PAUSE_MIB;
                           current_state_vc       <= VC_2_ST;
                         elsif data_transfer= 0  then -- Request data transfers
-                          VC_RD_EN_DMAC(1) <= '1';
+                          vc_rd_en(1) <= '1';
                           data_transfer    <= to_unsigned(1,data_transfer'length);
                           data_counter     <= (others => '0');
                         elsif data_transfer= 1  then -- Request data transfers
-                          VC_RD_EN_DMAC(1) <= '0';
+                          vc_rd_en(1) <= '0';
                           data_transfer    <= to_unsigned(2,data_transfer'length);
                           if VC_DATA_VALID_DOBUF(1)='1' then
                             data_vc          <= VC_DATA_DOBUF(1);
@@ -267,7 +267,7 @@ begin
                             data_counter     <= data_counter + 1;
                           end if;
                         elsif data_transfer= 2  then -- Request data transfers
-                          VC_RD_EN_DMAC(1) <= '1';
+                          vc_rd_en(1) <= '1';
                           data_transfer    <= to_unsigned(3,data_transfer'length);
                           if VC_DATA_VALID_DOBUF(1)='1' then
                             data_vc          <= VC_DATA_DOBUF(1);
@@ -276,17 +276,17 @@ begin
                             data_counter     <= data_counter + 1;
                           end if;
                         elsif data_transfer=3 and VC_DATA_VALID_DOBUF(1)='1'then -- data transfer
-                          VC_RD_EN_DMAC(1) <= '1';
+                          vc_rd_en(1) <= '1';
                           data_vc          <= VC_DATA_DOBUF(1);
                           valid_k_char_vc  <= VC_VALID_K_CHAR_DOBUF(1);
                           new_word         <= '1';
                           data_counter     <= data_counter + 1;
                         else -- Request data transfers
-                          VC_RD_EN_DMAC(1) <= '1';
+                          vc_rd_en(1) <= '1';
                           new_word         <= '0';
                         end if;
                       else -- VC changement
-                        VC_RD_EN_DMAC <= (others => '0');
+                        vc_rd_en <= (others => '0');
                         data_transfer <= (others => '0');
                         VC_RUN_EMISSION_DMAC <= (others => '0');
                         current_state_vc <= VC_2_ST;
@@ -296,7 +296,6 @@ begin
                       virtual_channel        <= to_unsigned(2,virtual_channel'length);
                       type_frame             <= C_DATA_FRM;
                       if req_int = '1' then  -- Request ready to send
-                        VC_RD_EN_DMAC <= (others => '0'); -- Pausing data transfers
                         if VC_DATA_VALID_DOBUF(2) = '1' then -- if a transfer is in progress
                           data_vc         <= VC_DATA_DOBUF(2);
                           valid_k_char_vc <= VC_VALID_K_CHAR_DOBUF(2);
@@ -307,7 +306,7 @@ begin
                         if VC_END_PACKET_DOBUF(2) = '1' then -- Last data of a transfer
                           data_vc                <= VC_DATA_DOBUF(2);
                           valid_k_char_vc        <= VC_VALID_K_CHAR_DOBUF(2);
-                          VC_RD_EN_DMAC          <= (others => '0');
+                          vc_rd_en          <= (others => '0');
                           data_transfer          <= to_unsigned(0,data_transfer'length);
                           new_word               <= '1';
                           end_packet             <= '1';
@@ -316,11 +315,11 @@ begin
                           vc_pause_i             <= VC_PAUSE_MIB;
                           current_state_vc       <= VC_3_ST;
                         elsif data_transfer= 0  then -- Request data transfers
-                          VC_RD_EN_DMAC(2) <= '1';
+                          vc_rd_en(2) <= '1';
                           data_transfer    <= to_unsigned(1,data_transfer'length);
                           data_counter     <= (others => '0');
                         elsif data_transfer= 1  then -- Request data transfers
-                          VC_RD_EN_DMAC(2) <= '0';
+                          vc_rd_en(2) <= '0';
                           data_transfer    <= to_unsigned(2,data_transfer'length);
                           if VC_DATA_VALID_DOBUF(2)='1' then
                             data_vc          <= VC_DATA_DOBUF(2);
@@ -329,7 +328,7 @@ begin
                             data_counter     <= data_counter + 1;
                           end if;
                         elsif data_transfer= 2  then -- Request data transfers
-                          VC_RD_EN_DMAC(2) <= '1';
+                          vc_rd_en(2) <= '1';
                           data_transfer    <= to_unsigned(3,data_transfer'length);
                           if VC_DATA_VALID_DOBUF(2)='1' then
                             data_vc          <= VC_DATA_DOBUF(2);
@@ -338,17 +337,17 @@ begin
                             data_counter     <= data_counter + 1;
                           end if;
                         elsif data_transfer=3 and VC_DATA_VALID_DOBUF(2)='1'then -- data transfer
-                          VC_RD_EN_DMAC(2) <= '1';
+                          vc_rd_en(2) <= '1';
                           data_vc          <= VC_DATA_DOBUF(2);
                           valid_k_char_vc  <= VC_VALID_K_CHAR_DOBUF(2);
                           new_word         <= '1';
                           data_counter     <= data_counter + 1;
                         else -- Request data transfers
-                          VC_RD_EN_DMAC(2) <= '1';
+                          vc_rd_en(2) <= '1';
                           new_word         <= '0';
                         end if;
                       else -- VC changement
-                        VC_RD_EN_DMAC <= (others => '0');
+                        vc_rd_en <= (others => '0');
                         data_transfer <= (others => '0');
                         VC_RUN_EMISSION_DMAC <= (others => '0');
                         current_state_vc <= VC_3_ST;
@@ -359,7 +358,6 @@ begin
                       virtual_channel        <= to_unsigned(3,virtual_channel'length);
                       type_frame             <= C_DATA_FRM;
                       if req_int = '1' then  -- Request ready to send
-                        VC_RD_EN_DMAC <= (others => '0'); -- Pausing data transfers
                         if VC_DATA_VALID_DOBUF(3) = '1' then -- if a transfer is in progress
                           data_vc         <= VC_DATA_DOBUF(3);
                           valid_k_char_vc <= VC_VALID_K_CHAR_DOBUF(3);
@@ -370,7 +368,7 @@ begin
                         if VC_END_PACKET_DOBUF(3) = '1' then -- Last data of a transfer
                           data_vc                <= VC_DATA_DOBUF(3);
                           valid_k_char_vc        <= VC_VALID_K_CHAR_DOBUF(3);
-                          VC_RD_EN_DMAC          <= (others => '0');
+                          vc_rd_en          <= (others => '0');
                           data_transfer          <= to_unsigned(0,data_transfer'length);
                           new_word               <= '1';
                           end_packet             <= '1';
@@ -379,11 +377,11 @@ begin
                           vc_pause_i             <= VC_PAUSE_MIB;
                           current_state_vc       <= VC_4_ST;
                         elsif data_transfer= 0  then -- Request data transfers
-                          VC_RD_EN_DMAC(3) <= '1';
+                          vc_rd_en(3) <= '1';
                           data_transfer    <= to_unsigned(1,data_transfer'length);
                           data_counter     <= (others => '0');
                         elsif data_transfer= 1  then -- Request data transfers
-                          VC_RD_EN_DMAC(3) <= '0';
+                          vc_rd_en(3) <= '0';
                           data_transfer    <= to_unsigned(2,data_transfer'length);
                           if VC_DATA_VALID_DOBUF(3)='1' then
                             data_vc          <= VC_DATA_DOBUF(3);
@@ -392,7 +390,7 @@ begin
                             data_counter     <= data_counter + 1;
                           end if;
                         elsif data_transfer= 2  then -- Request data transfers
-                          VC_RD_EN_DMAC(3) <= '1';
+                          vc_rd_en(3) <= '1';
                           data_transfer    <= to_unsigned(3,data_transfer'length);
                           if VC_DATA_VALID_DOBUF(3)='1' then
                             data_vc          <= VC_DATA_DOBUF(3);
@@ -401,17 +399,17 @@ begin
                             data_counter     <= data_counter + 1;
                           end if;
                         elsif data_transfer=3 and VC_DATA_VALID_DOBUF(3)='1'then -- data transfer
-                          VC_RD_EN_DMAC(3) <= '1';
+                          vc_rd_en(3) <= '1';
                           data_vc          <= VC_DATA_DOBUF(3);
                           valid_k_char_vc  <= VC_VALID_K_CHAR_DOBUF(3);
                           new_word         <= '1';
                           data_counter     <= data_counter + 1;
                         else -- Request data transfers
-                          VC_RD_EN_DMAC(3) <= '1';
+                          vc_rd_en(3) <= '1';
                           new_word         <= '0';
                         end if;
                       else -- VC changement
-                        VC_RD_EN_DMAC <= (others => '0');
+                        vc_rd_en <= (others => '0');
                         data_transfer <= (others => '0');
                         VC_RUN_EMISSION_DMAC <= (others => '0');
                         current_state_vc <= VC_4_ST;
@@ -421,7 +419,6 @@ begin
                       virtual_channel        <= to_unsigned(4,virtual_channel'length);
                       type_frame             <= C_DATA_FRM;
                       if req_int = '1' then  -- Request ready to send
-                        VC_RD_EN_DMAC <= (others => '0'); -- Pausing data transfers
                         if VC_DATA_VALID_DOBUF(4) = '1' then -- if a transfer is in progress
                           data_vc         <= VC_DATA_DOBUF(4);
                           valid_k_char_vc <= VC_VALID_K_CHAR_DOBUF(4);
@@ -432,7 +429,7 @@ begin
                         if VC_END_PACKET_DOBUF(4) = '1' then -- Last data of a transfer
                           data_vc                <= VC_DATA_DOBUF(4);
                           valid_k_char_vc        <= VC_VALID_K_CHAR_DOBUF(4);
-                          VC_RD_EN_DMAC          <= (others => '0');
+                          vc_rd_en          <= (others => '0');
                           data_transfer          <= to_unsigned(0,data_transfer'length);
                           new_word               <= '1';
                           end_packet             <= '1';
@@ -441,11 +438,11 @@ begin
                           vc_pause_i             <= VC_PAUSE_MIB;
                           current_state_vc       <= VC_5_ST;
                         elsif data_transfer= 0  then -- Request data transfers
-                          VC_RD_EN_DMAC(4) <= '1';
+                          vc_rd_en(4) <= '1';
                           data_transfer    <= to_unsigned(1,data_transfer'length);
                           data_counter     <= (others => '0');
                         elsif data_transfer= 1  then -- Request data transfers
-                          VC_RD_EN_DMAC(4) <= '0';
+                          vc_rd_en(4) <= '0';
                           data_transfer    <= to_unsigned(2,data_transfer'length);
                           if VC_DATA_VALID_DOBUF(4)='1' then
                             data_vc          <= VC_DATA_DOBUF(4);
@@ -454,7 +451,7 @@ begin
                             data_counter     <= data_counter + 1;
                           end if;
                         elsif data_transfer= 2  then -- Request data transfers
-                          VC_RD_EN_DMAC(4) <= '1';
+                          vc_rd_en(4) <= '1';
                           data_transfer    <= to_unsigned(3,data_transfer'length);
                           if VC_DATA_VALID_DOBUF(4)='1' then
                             data_vc          <= VC_DATA_DOBUF(4);
@@ -463,17 +460,17 @@ begin
                             data_counter     <= data_counter + 1;
                           end if;
                         elsif data_transfer=3 and VC_DATA_VALID_DOBUF(4)='1'then -- data transfer
-                          VC_RD_EN_DMAC(4) <= '1';
+                          vc_rd_en(4) <= '1';
                           data_vc          <= VC_DATA_DOBUF(4);
                           valid_k_char_vc  <= VC_VALID_K_CHAR_DOBUF(4);
                           new_word         <= '1';
                           data_counter     <= data_counter + 1;
                         else -- Request data transfers
-                          VC_RD_EN_DMAC(4) <= '1';
+                          vc_rd_en(4) <= '1';
                           new_word         <= '0';
                         end if;
                       else -- VC changement
-                        VC_RD_EN_DMAC <= (others => '0');
+                        vc_rd_en <= (others => '0');
                         data_transfer <= (others => '0');
                         VC_RUN_EMISSION_DMAC <= (others => '0');
                         current_state_vc <= VC_5_ST;
@@ -484,7 +481,6 @@ begin
                       virtual_channel        <= to_unsigned(5,virtual_channel'length);
                       type_frame             <= C_DATA_FRM;
                       if req_int = '1' then  -- Request ready to send
-                        VC_RD_EN_DMAC <= (others => '0'); -- Pausing data transfers
                         if VC_DATA_VALID_DOBUF(5) = '1' then -- if a transfer is in progress
                           data_vc         <= VC_DATA_DOBUF(5);
                           valid_k_char_vc <= VC_VALID_K_CHAR_DOBUF(5);
@@ -495,7 +491,7 @@ begin
                         if VC_END_PACKET_DOBUF(5) = '1' then -- Last data of a transfer
                           data_vc                <= VC_DATA_DOBUF(5);
                           valid_k_char_vc        <= VC_VALID_K_CHAR_DOBUF(5);
-                          VC_RD_EN_DMAC          <= (others => '0');
+                          vc_rd_en          <= (others => '0');
                           data_transfer          <= to_unsigned(0,data_transfer'length);
                           new_word               <= '1';
                           end_packet             <= '1';
@@ -504,11 +500,11 @@ begin
                           vc_pause_i             <= VC_PAUSE_MIB;
                           current_state_vc       <= VC_6_ST;
                         elsif data_transfer= 0  then -- Request data transfers
-                          VC_RD_EN_DMAC(5) <= '1';
+                          vc_rd_en(5) <= '1';
                           data_transfer    <= to_unsigned(1,data_transfer'length);
                           data_counter     <= (others => '0');
                         elsif data_transfer= 1  then -- Request data transfers
-                          VC_RD_EN_DMAC(5) <= '0';
+                          vc_rd_en(5) <= '0';
                           data_transfer    <= to_unsigned(2,data_transfer'length);
                           if VC_DATA_VALID_DOBUF(5)='1' then
                             data_vc          <= VC_DATA_DOBUF(5);
@@ -517,7 +513,7 @@ begin
                             data_counter     <= data_counter + 1;
                           end if;
                         elsif data_transfer= 2  then -- Request data transfers
-                          VC_RD_EN_DMAC(5) <= '1';
+                          vc_rd_en(5) <= '1';
                           data_transfer    <= to_unsigned(3,data_transfer'length);
                           if VC_DATA_VALID_DOBUF(5)='1' then
                             data_vc          <= VC_DATA_DOBUF(5);
@@ -526,17 +522,17 @@ begin
                             data_counter     <= data_counter + 1;
                           end if;
                         elsif data_transfer=3 and VC_DATA_VALID_DOBUF(5)='1'then -- data transfer
-                          VC_RD_EN_DMAC(5) <= '1';
+                          vc_rd_en(5) <= '1';
                           data_vc          <= VC_DATA_DOBUF(5);
                           valid_k_char_vc  <= VC_VALID_K_CHAR_DOBUF(5);
                           new_word         <= '1';
                           data_counter     <= data_counter + 1;
                         else -- Request data transfers
-                          VC_RD_EN_DMAC(5) <= '1';
+                          vc_rd_en(5) <= '1';
                           new_word         <= '0';
                         end if;
                       else -- VC changement
-                        VC_RD_EN_DMAC <= (others => '0');
+                        vc_rd_en <= (others => '0');
                         data_transfer <= (others => '0');
                         VC_RUN_EMISSION_DMAC <= (others => '0');
                         current_state_vc <= VC_6_ST;
@@ -546,7 +542,6 @@ begin
                       virtual_channel        <= to_unsigned(6,virtual_channel'length);
                       type_frame             <= C_DATA_FRM;
                       if req_int = '1' then  -- Request ready to send
-                        VC_RD_EN_DMAC <= (others => '0'); -- Pausing data transfers
                         if VC_DATA_VALID_DOBUF(6) = '1' then -- if a transfer is in progress
                           data_vc         <= VC_DATA_DOBUF(6);
                           valid_k_char_vc <= VC_VALID_K_CHAR_DOBUF(6);
@@ -557,7 +552,7 @@ begin
                         if VC_END_PACKET_DOBUF(6) = '1' then -- Last data of a transfer
                           data_vc                <= VC_DATA_DOBUF(6);
                           valid_k_char_vc        <= VC_VALID_K_CHAR_DOBUF(6);
-                          VC_RD_EN_DMAC          <= (others => '0');
+                          vc_rd_en          <= (others => '0');
                           data_transfer          <= to_unsigned(0,data_transfer'length);
                           new_word               <= '1';
                           end_packet             <= '1';
@@ -566,11 +561,11 @@ begin
                           vc_pause_i             <= VC_PAUSE_MIB;
                           current_state_vc       <= VC_7_ST;
                         elsif data_transfer= 0  then -- Request data transfers
-                          VC_RD_EN_DMAC(6) <= '1';
+                          vc_rd_en(6) <= '1';
                           data_transfer    <= to_unsigned(1,data_transfer'length);
                           data_counter     <= (others => '0');
                         elsif data_transfer= 1  then -- Request data transfers
-                          VC_RD_EN_DMAC(6) <= '0';
+                          vc_rd_en(6) <= '0';
                           data_transfer    <= to_unsigned(2,data_transfer'length);
                           if VC_DATA_VALID_DOBUF(6)='1' then
                             data_vc          <= VC_DATA_DOBUF(6);
@@ -579,7 +574,7 @@ begin
                             data_counter     <= data_counter + 1;
                           end if;
                         elsif data_transfer= 2  then -- Request data transfers
-                          VC_RD_EN_DMAC(6) <= '1';
+                          vc_rd_en(6) <= '1';
                           data_transfer    <= to_unsigned(3,data_transfer'length);
                           if VC_DATA_VALID_DOBUF(6)='1' then
                             data_vc          <= VC_DATA_DOBUF(6);
@@ -588,17 +583,17 @@ begin
                             data_counter     <= data_counter + 1;
                           end if;
                         elsif data_transfer=3 and VC_DATA_VALID_DOBUF(6)='1'then -- data transfer
-                          VC_RD_EN_DMAC(6) <= '1';
+                          vc_rd_en(6) <= '1';
                           data_vc          <= VC_DATA_DOBUF(6);
                           valid_k_char_vc  <= VC_VALID_K_CHAR_DOBUF(6);
                           new_word         <= '1';
                           data_counter     <= data_counter + 1;
                         else -- Request data transfers
-                          VC_RD_EN_DMAC(6) <= '1';
+                          vc_rd_en(6) <= '1';
                           new_word         <= '0';
                         end if;
                       else -- VC changement
-                        VC_RD_EN_DMAC <= (others => '0');
+                        vc_rd_en <= (others => '0');
                         data_transfer <= (others => '0');
                         VC_RUN_EMISSION_DMAC <= (others => '0');
                         current_state_vc <= VC_7_ST;
@@ -609,7 +604,6 @@ begin
                       virtual_channel        <= to_unsigned(7,virtual_channel'length);
                       type_frame             <= C_DATA_FRM;
                       if req_int = '1' then  -- Request ready to send
-                        VC_RD_EN_DMAC <= (others => '0'); -- Pausing data transfers
                         if VC_DATA_VALID_DOBUF(7) = '1' then -- if a transfer is in progress
                           data_vc         <= VC_DATA_DOBUF(7);
                           valid_k_char_vc <= VC_VALID_K_CHAR_DOBUF(7);
@@ -620,7 +614,7 @@ begin
                         if VC_END_PACKET_DOBUF(7) = '1' then -- Last data of a transfer
                           data_vc                <= VC_DATA_DOBUF(7);
                           valid_k_char_vc        <= VC_VALID_K_CHAR_DOBUF(7);
-                          VC_RD_EN_DMAC          <= (others => '0');
+                          vc_rd_en          <= (others => '0');
                           data_transfer          <= to_unsigned(0,data_transfer'length);
                           new_word               <= '1';
                           end_packet             <= '1';
@@ -629,11 +623,11 @@ begin
                           vc_pause_i             <= VC_PAUSE_MIB;
                           current_state_vc       <= BC_ST;
                         elsif data_transfer= 0  then -- Request data transfers
-                          VC_RD_EN_DMAC(7) <= '1';
+                          vc_rd_en(7) <= '1';
                           data_transfer    <= to_unsigned(1,data_transfer'length);
                           data_counter     <= (others => '0');
                         elsif data_transfer= 1  then -- Request data transfers
-                          VC_RD_EN_DMAC(7) <= '0';
+                          vc_rd_en(7) <= '0';
                           data_transfer    <= to_unsigned(2,data_transfer'length);
                           if VC_DATA_VALID_DOBUF(7)='1' then
                             data_vc          <= VC_DATA_DOBUF(7);
@@ -642,7 +636,7 @@ begin
                             data_counter     <= data_counter + 1;
                           end if;
                         elsif data_transfer= 2  then -- Request data transfers
-                          VC_RD_EN_DMAC(7) <= '1';
+                          vc_rd_en(7) <= '1';
                           data_transfer    <= to_unsigned(3,data_transfer'length);
                           if VC_DATA_VALID_DOBUF(7)='1' then
                             data_vc          <= VC_DATA_DOBUF(7);
@@ -651,17 +645,17 @@ begin
                             data_counter     <= data_counter + 1;
                           end if;
                         elsif data_transfer=3 and VC_DATA_VALID_DOBUF(7)='1'then -- data transfer
-                          VC_RD_EN_DMAC(7) <= '1';
+                          vc_rd_en(7) <= '1';
                           data_vc          <= VC_DATA_DOBUF(7);
                           valid_k_char_vc  <= VC_VALID_K_CHAR_DOBUF(7);
                           new_word         <= '1';
                           data_counter     <= data_counter + 1;
                         else -- Request data transfers
-                          VC_RD_EN_DMAC(7) <= '1';
+                          vc_rd_en(7) <= '1';
                           new_word         <= '0';
                         end if;
                       else -- VC changement
-                        VC_RD_EN_DMAC <= (others => '0');
+                        vc_rd_en <= (others => '0');
                         data_transfer <= (others => '0');
                         VC_RUN_EMISSION_DMAC <= (others => '0');
                         current_state_vc <= BC_ST;
@@ -671,7 +665,6 @@ begin
                       virtual_channel        <= to_unsigned(G_VC_NUM,virtual_channel'length);
                       type_frame             <= C_BC_FRM;
                       if req_int = '1' then  -- Request ready to send
-                        VC_RD_EN_DMAC <= (others => '0'); -- Pausing data transfers
                         if VC_DATA_VALID_DOBUF(G_VC_NUM) = '1' then -- if a transfer is in progress
                           data_vc         <= VC_DATA_DOBUF(G_VC_NUM);
                           valid_k_char_vc <= VC_VALID_K_CHAR_DOBUF(G_VC_NUM);
@@ -682,7 +675,7 @@ begin
                         if VC_END_PACKET_DOBUF(G_VC_NUM) = '1' then -- Last data of a transfer
                           data_vc                <= VC_DATA_DOBUF(G_VC_NUM);
                           valid_k_char_vc        <= VC_VALID_K_CHAR_DOBUF(G_VC_NUM);
-                          VC_RD_EN_DMAC          <= (others => '0');
+                          vc_rd_en               <= (others => '0');
                           data_transfer          <= to_unsigned(0,data_transfer'length);
                           new_word               <= '1';
                           end_packet             <= '1';
@@ -691,11 +684,11 @@ begin
                           vc_pause_i             <= VC_PAUSE_MIB;
                           current_state_vc       <= IDLE_ST;
                         elsif data_transfer= 0  then -- Request data transfers
-                          VC_RD_EN_DMAC(G_VC_NUM) <= '1';
+                          vc_rd_en(G_VC_NUM) <= '1';
                           data_transfer    <= to_unsigned(1,data_transfer'length);
                           data_counter     <= (others => '0');
                         elsif data_transfer= 1  then -- Request data transfers
-                          VC_RD_EN_DMAC(G_VC_NUM) <= '0';
+                          vc_rd_en(G_VC_NUM) <= '0';
                           data_transfer    <= to_unsigned(2,data_transfer'length);
                           if VC_DATA_VALID_DOBUF(G_VC_NUM)='1' then
                             data_vc          <= VC_DATA_DOBUF(G_VC_NUM);
@@ -704,7 +697,7 @@ begin
                             data_counter     <= data_counter + 1;
                           end if;
                         elsif data_transfer= 2  then -- Request data transfers
-                          VC_RD_EN_DMAC(G_VC_NUM) <= '1';
+                          vc_rd_en(G_VC_NUM) <= '1';
                           data_transfer    <= to_unsigned(3,data_transfer'length);
                           if VC_DATA_VALID_DOBUF(G_VC_NUM)='1' then
                             data_vc          <= VC_DATA_DOBUF(G_VC_NUM);
@@ -713,17 +706,17 @@ begin
                             data_counter     <= data_counter + 1;
                           end if;
                         elsif data_transfer=3 and VC_DATA_VALID_DOBUF(G_VC_NUM)='1'then -- data transfer
-                          VC_RD_EN_DMAC(G_VC_NUM) <= '1';
+                          vc_rd_en(G_VC_NUM) <= '1';
                           data_vc          <= VC_DATA_DOBUF(G_VC_NUM);
                           valid_k_char_vc  <= VC_VALID_K_CHAR_DOBUF(G_VC_NUM);
                           new_word         <= '1';
                           data_counter     <= data_counter + 1;
                         else -- Request data transfers
-                          VC_RD_EN_DMAC(G_VC_NUM) <= '1';
+                          vc_rd_en(G_VC_NUM) <= '1';
                           new_word         <= '0';
                         end if;
                       else -- VC changement
-                        VC_RD_EN_DMAC        <= (others => '0');
+                        vc_rd_en        <= (others => '0');
                         data_transfer        <= (others => '0');
                         VC_RUN_EMISSION_DMAC <= (others => '0');
                         current_state_vc     <= IDLE_ST;
