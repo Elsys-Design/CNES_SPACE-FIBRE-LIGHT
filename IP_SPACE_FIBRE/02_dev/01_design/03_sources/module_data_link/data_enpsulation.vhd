@@ -89,7 +89,7 @@ if RST_N = '0' then
 elsif rising_edge(CLK) and LANE_ACTIVE_PPL= '1' then
   type_frame_denc_i  <= TYPE_FRAME_DMAC;
   TRANS_POL_FLG_DENC <= TRANS_POL_FLG_DMAC;
-  current_state_r <= current_state;
+  current_state_r    <= current_state;
   case current_state is
     when START_FRAME_ST =>
                             TYPE_FRAME_DENC <= TYPE_FRAME_DMAC;
@@ -153,7 +153,9 @@ elsif rising_edge(CLK) and LANE_ACTIVE_PPL= '1' then
 			                        end if;
                             end if;
     when TRANSFER_ST    =>
-                            TYPE_FRAME_DENC <= type_frame_denc_i;
+                            END_FRAME_DENC      <= '0';
+                            NEW_WORD_DENC       <= '0';
+                            TYPE_FRAME_DENC <= TYPE_FRAME_DMAC;
                             if TYPE_FRAME_DMAC = C_DATA_FRM or TYPE_FRAME_DMAC = C_BC_FRM then
                               if END_PACKET_DMAC = '1' then
 			                          DATA_DENC           <= DATA_DMAC;
@@ -192,8 +194,8 @@ elsif rising_edge(CLK) and LANE_ACTIVE_PPL= '1' then
                             end if;
     when END_FRAME_ST   =>
                             TYPE_FRAME_DENC <= type_frame_denc_i;
-                            END_FRAME_DENC        <= '1';
-                            current_state         <= START_FRAME_ST;
+                            END_FRAME_DENC  <= '1';
+                            current_state   <= START_FRAME_ST;
                             if type_frame_denc_i = C_DATA_FRM then
                               DATA_DENC           <= C_RESERVED_SYMB & C_RESERVED_SYMB & C_RESERVED_SYMB & C_K28_0_SYMB;
                               VALID_K_CHARAC_DENC <= "0001";
