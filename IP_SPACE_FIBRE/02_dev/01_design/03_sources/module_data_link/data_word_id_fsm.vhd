@@ -170,7 +170,19 @@ begin
       end case;
    end if;
 end process p_fsm_data_word_id_transition;
-
+-- RXNOTHING_ACTIVE process
+p_rxnothing_active : process(CLK,RST_N)
+begin
+	if RST_N = '0' then
+		RXNOTHING_ACTIVE_DWI   <= '0';
+	elsif rising_edge(CLK) then
+		if current_state_r = RX_NOTHING_ST then
+			RXNOTHING_ACTIVE_DWI   <= '1';
+		else
+			RXNOTHING_ACTIVE_DWI   <= '0';
+		end if;
+	end if;
+end process p_rxnothing_active;
 -- Data Word Identification FSM action on state process
 p_comb_state : process(CLK,RST_N)
 begin
@@ -179,11 +191,8 @@ begin
 	  type_incom_frame        <= (others =>'0');
 	  data_word_cnt           <= (others =>'0');
 	  bc_word_cnt             <= (others =>'0');
-		RXNOTHING_ACTIVE_DWI   <= '0';
 	elsif rising_edge(CLK) then
-		RXNOTHING_ACTIVE_DWI   <= '0';
 		if current_state = RX_NOTHING_ST then
-		  RXNOTHING_ACTIVE_DWI <= '1';
 		  receiving_frame      <= '0';
 		  data_word_cnt        <= (others =>'0');
 		  bc_word_cnt          <= (others =>'0');
