@@ -234,6 +234,7 @@ architecture Behavioral of data_link is
       CRC_8B_DWI             : in  std_logic_vector(7 downto 0);                        --! 8 bits CRC from data_word_id_fsm
       TYPE_FRAME_DWI         : in  std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);    --! Current frame/control word type from data_word_id_fsm
       FRAME_ERR_DWI          : in std_logic;
+      RXNOTHING_ACTIVE_DWI   : in std_logic;
       -- data_seq_check (DSCHECK) interface
       NEW_WORD_DCCHECK       : out std_logic;                                           --! New word Flag from data_word_id_fsm
       DATA_DCCHECK           : out std_logic_vector(C_DATA_LENGTH-1 downto 0);          --! Data parallel from daata_word_id_fsm
@@ -269,6 +270,7 @@ architecture Behavioral of data_link is
       SEQ_NUM_DWI             : out std_logic_vector(7 downto 0);                 --! Flag EMPTY of the FIFO RX
       CRC_16B_DWI             : out std_logic_vector(15 downto 0);                --! Flag EMPTY of the FIFO RX
       CRC_8B_DWI              : out std_logic_vector(7 downto 0);                 --! Flag EMPTY of the FIFO RX
+      RXNOTHING_ACTIVE_DWI    : out std_logic;
       -- OTHER
       CRC_ERR_DCCHECK         : in  std_logic;
       SEQ_ERR_DSCHECK         : in  std_logic;
@@ -604,6 +606,7 @@ architecture Behavioral of data_link is
   signal type_frame_dscheck : std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);
   signal trans_pol_flg_denc         : std_logic;
   signal crc_err_dscheck            : std_logic;
+  signal  rxnothing_active_dwi      : std_logic;
 
 begin
 --------------------------------------------------------
@@ -735,6 +738,7 @@ begin
       CRC_8B_DWI             => crc_8b_dwi,
       TYPE_FRAME_DWI         => type_frame_dwi,
       FRAME_ERR_DWI          => frame_err_dwi,
+      RXNOTHING_ACTIVE_DWI   => rxnothing_active_dwi,
       NEW_WORD_DCCHECK       => new_word_dccheck,
       DATA_DCCHECK           => data_dccheck,
       VALID_K_CHARAC_DCCHECK => valid_k_charac_dccheck,
@@ -763,6 +767,7 @@ begin
       SEQ_NUM_DWI             => seq_num_dwi,
       CRC_16B_DWI             => crc_16b_dwi,
       CRC_8B_DWI              => crc_8b_dwi,
+      RXNOTHING_ACTIVE_DWI   => rxnothing_active_dwi,
       CRC_ERR_DCCHECK         => crc_err_dccheck,
       SEQ_ERR_DSCHECK         => seq_num_err_dscheck,
       FRAME_ERR_DWI           => frame_err_dwi,
