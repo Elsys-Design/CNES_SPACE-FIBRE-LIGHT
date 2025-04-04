@@ -878,10 +878,14 @@ async def cocotb_run(dut):
 
     await start_gen_vc_dl(tb)
 
+    await send_idle_ctrl_word(tb, 64*8+20)
+
     #Check data frame SEQ NUM and CRC
 
     await configure_model_dl(tb, 19, [0x01,0x01,0x00,0x01], [0x2E,0x00,0x00,0x00])
     await start_model_dl(tb, 19)
+
+    await send_idle_ctrl_word(tb, 24)
 
     #Check broadcast frame SEQ NUM and CRC
 
@@ -893,27 +897,35 @@ async def cocotb_run(dut):
 
     #Check NACK SEQ NUM and CRC
 
-    await configure_model_dl(tb, 3, [0x81,0x01,0x00,0x01], [0x2E,0x00,0x00,0x00])
+    await configure_model_dl(tb, 3, [0xE1,0x1F,0x00,0x01], [0x2E,0x00,0x00,0x00])
     await start_model_dl(tb, 3)
 
-    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_3_1_" + str(0), 12, 10, 3, 0, 0, 16, delay = 0, invert_polarity = 0, seed = 46)
+    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_3_1_" + str(0), 255, 1, 64, 0, 0, 16, sequence_polarity = 1, delay = 0, invert_polarity = 0, seed = 0x2E)
+
+    await send_idle_ctrl_word(tb, 20)
 
     #Check ACK SEQ NUM and CRC
 
     for x in range(8):
-        await send_FCT(tb, x, 0, "0"+ f"{(x+18):0>7b}")
+        await send_FCT(tb, x, 0, "1"+ f"{(x+19):0>7b}")
 
 
     await configure_gen_vc_dl(tb,[0xE1,0x1F,0x00,0x00], [0x00,0x00,0x00,0x00])
 
     await start_gen_vc_dl(tb)
 
+    await send_idle_ctrl_word(tb, 64*8+20)
+
     #Check data frame SEQ NUM and CRC
 
     await configure_model_dl(tb, 19, [0x01,0x01,0x00,0x01], [0x2E,0x00,0x00,0x00])
     await start_model_dl(tb, 19)
 
+    await send_idle_ctrl_word(tb, 24)
+
     #Check broadcast frame SEQ NUM and CRC
+
+    await send_idle_ctrl_word(tb, 100)
 
     
     await monitor

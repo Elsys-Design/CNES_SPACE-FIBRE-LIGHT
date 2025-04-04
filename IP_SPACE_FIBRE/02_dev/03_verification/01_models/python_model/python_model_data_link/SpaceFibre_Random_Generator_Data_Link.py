@@ -85,7 +85,9 @@ class SpaceFibre_Random_Generator:
             input = int(crc_8[0]) ^ input
             crc_8 = crc_8[1 : 8] + "0"
             crc_8 = crc_8[0 : 5] + str(input^int(crc_8[5])) + str(input^int(crc_8[6])) + str(input)
-            self.logger.debug("sim_time %d ns: CRC-8bit computation number %d : %s", get_sim_time(units = "ns"), i, crc_8)
+        output_file_bin = open("CRC_8_compute_step.debug", "a")
+        output_file_bin.write(f"{int(crc_8, base = 2):0>2X}" + "_" + str(get_sim_time(units = "ns")) + "\n")  
+        output_file_bin.close()   
         return crc_8
     
     async def write_to_Rx(self, data, delay, k_encoding = 0, invert_polarity = 0):
