@@ -124,7 +124,7 @@ begin
       FRAME_ERR_DWI     <= '0';
    elsif rising_edge(CLK) then
       current_state_r   <= current_state;
-			current_state_r_r <= current_state_r_r;
+			current_state_r_r <= current_state_r;
       case current_state is
          when RX_NOTHING_ST                  => if LINK_RESET_DLRE = '1' then
                                                    current_state  <= RX_NOTHING_ST;
