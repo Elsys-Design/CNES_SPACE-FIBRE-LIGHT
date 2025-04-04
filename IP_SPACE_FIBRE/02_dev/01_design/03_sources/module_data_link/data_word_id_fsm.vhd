@@ -176,7 +176,7 @@ begin
 	if RST_N = '0' then
 		RXNOTHING_ACTIVE_DWI   <= '0';
 	elsif rising_edge(CLK) then
-		if current_state_r = RX_NOTHING_ST then
+		if current_state = RX_NOTHING_ST then
 			RXNOTHING_ACTIVE_DWI   <= '1';
 		else
 			RXNOTHING_ACTIVE_DWI   <= '0';
