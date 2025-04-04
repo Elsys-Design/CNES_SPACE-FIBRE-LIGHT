@@ -794,7 +794,7 @@ begin
 
       when REQ_SEND_ST =>
                       current_state_req <= IDLE_ST;
-                      if type_frame = C_BC_FRM then
+                      if type_frame /= C_BC_FRM then
                         if REQ_ACK_DERRM = '1' and cnt_wait_ack = 15 then
                           NEW_WORD_DMAC        <= '1';
                           END_PACKET_DMAC      <= '1';
