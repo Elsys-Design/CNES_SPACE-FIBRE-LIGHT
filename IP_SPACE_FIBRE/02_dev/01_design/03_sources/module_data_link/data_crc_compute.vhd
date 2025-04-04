@@ -131,7 +131,7 @@ begin
 			 end loop;
 			crc_reg_8b_comp <= crc_var;
 			end if;
-		elsif END_FRAME_DSCOM = '1'and NEW_WORD_DSCOM = '1'then -- Control word 
+		elsif END_FRAME_DSCOM = '1'and NEW_WORD_DSCOM = '1'then -- Control word
 			crc_to_inv_8b <= '1';
 			 -- calculates the crc 8 byte by byte
 			 for i in indices_tier'range loop

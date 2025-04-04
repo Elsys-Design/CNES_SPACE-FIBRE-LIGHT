@@ -154,15 +154,45 @@ elsif rising_edge(CLK) and LANE_ACTIVE_PPL= '1' then
                             end if;
     when TRANSFER_ST    =>
                             TYPE_FRAME_DENC <= type_frame_denc_i;
-                            if END_PACKET_DMAC = '1' then
-			                        DATA_DENC           <= DATA_DMAC;
-			                        VALID_K_CHARAC_DENC <= VALID_K_CHAR_DMAC;
-			                        NEW_WORD_DENC       <= '1';
-                              current_state       <= END_FRAME_ST;
-                            elsif NEW_WORD_DMAC = '1' or current_state_r= START_FRAME_ST then
-                              DATA_DENC           <= DATA_DMAC;
-                              VALID_K_CHARAC_DENC <= VALID_K_CHAR_DMAC;
-                              NEW_WORD_DENC       <= '1';
+                            if TYPE_FRAME_DMAC = C_DATA_FRM or TYPE_FRAME_DMAC = C_BC_FRM then
+                              if END_PACKET_DMAC = '1' then
+			                          DATA_DENC           <= DATA_DMAC;
+			                          VALID_K_CHARAC_DENC <= VALID_K_CHAR_DMAC;
+			                          NEW_WORD_DENC       <= '1';
+                                current_state       <= END_FRAME_ST;
+                              elsif NEW_WORD_DMAC = '1' or current_state_r= START_FRAME_ST then
+                                DATA_DENC           <= DATA_DMAC;
+                                VALID_K_CHARAC_DENC <= VALID_K_CHAR_DMAC;
+                                NEW_WORD_DENC       <= '1';
+                              end if;
+                            elsif NEW_WORD_DMAC = '1' then
+			                        if TYPE_FRAME_DMAC = C_FCT_FRM then
+			                        	DATA_DENC           <= C_RESERVED_SYMB & C_RESERVED_SYMB & MULT_CHANNEL_DMAC & C_K28_3_SYMB;
+			                        	VALID_K_CHARAC_DENC <= "0001";
+			                        	NEW_WORD_DENC       <= '1';
+                                END_FRAME_DENC      <= '1';
+                                current_state       <= START_FRAME_ST;
+			                        elsif TYPE_FRAME_DMAC = C_ACK_FRM then
+			                        	DATA_DENC           <= C_RESERVED_SYMB & C_RESERVED_SYMB & C_ACK_WORD;
+			                        	VALID_K_CHARAC_DENC <= "0001";
+			                        	NEW_WORD_DENC       <= '1';
+                                END_FRAME_DENC      <= '1';
+                                SEQ_NUM_ACK_DENC    <= SEQ_NUM_ACK_DMAC;
+                                current_state       <= START_FRAME_ST;
+			                        elsif TYPE_FRAME_DMAC = C_NACK_FRM then
+			                        	DATA_DENC           <=  C_RESERVED_SYMB & C_RESERVED_SYMB & C_NACK_WORD;
+			                        	VALID_K_CHARAC_DENC <= "0001";
+			                        	NEW_WORD_DENC       <= '1';
+                                END_FRAME_DENC      <= '1';
+                                SEQ_NUM_ACK_DENC    <= SEQ_NUM_ACK_DMAC;
+                                current_state       <= START_FRAME_ST;
+			                        elsif TYPE_FRAME_DMAC = C_FULL_FRM then
+			                        	DATA_DENC      <=  C_RESERVED_SYMB & C_RESERVED_SYMB & C_FULL_WORD;
+			                        	VALID_K_CHARAC_DENC <= "0001";
+			                        	NEW_WORD_DENC       <= '1';
+                                END_FRAME_DENC      <= '1';
+                                current_state       <= START_FRAME_ST;
+			                        end if;
                             end if;
     when END_FRAME_ST   =>
                             TYPE_FRAME_DENC <= type_frame_denc_i;
