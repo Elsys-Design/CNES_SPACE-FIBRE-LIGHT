@@ -114,14 +114,6 @@ begin
 	detected_retry       <= '1' when (FIFO_RX_DATA_VALID_PPL ='1' and DATA_RX_PPL(15 downto 0) = C_RETRY_WORD and VALID_K_CHARAC_PPL = "0001")  else '0';                                   -- RETRY control word detected
 	detected_rxerr_i     <= '1' when (FIFO_RX_DATA_VALID_PPL ='1' and DATA_RX_PPL = C_RXERR_WORD              and VALID_K_CHARAC_PPL = "0001" and current_state /= RX_NOTHING_ST) else '0'; -- RXERR control word detected
 
-p_test : process(detected_edf,RST_N)
-begin
-	if RST_N = '0' then
-		toto <='0';
-	elsif rising_edge(detected_edf) then
-		toto <= not(toto);
-	end if;
-end process p_test;
 -------------------------------------------------------------------------------------------
 -- Data Word Identification FSM transition conditions process
 p_fsm_data_word_id_transition : process(CLK,RST_N)
