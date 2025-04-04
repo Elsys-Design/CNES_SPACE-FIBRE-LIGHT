@@ -129,7 +129,7 @@ begin
       crc_var       := crc_reg_8b_comp;
       crc_short_err <= '0';
       if RXNOTHING_ACTIVE_DWI ='1' then
-        crc_reg_8b_comp   <= (others => '1'); -- Reset CRC to seed value
+        crc_reg_8b_comp   <= (others => '0'); -- Reset CRC to seed value
       elsif TYPE_FRAME_DWI /= C_DATA_FRM then
         if END_FRAME_DWI = '1'and NEW_WORD_DWI = '1'then -- Last word
           -- calculates the crc 8 byte by byte
@@ -147,8 +147,6 @@ begin
             crc_short_err  <= '0';
           end if;
           crc_reg_8b_comp <= (others => '0'); -- Reset CRC to seed value
-        elsif RXERR_DWI ='1' then
-          crc_reg_16b_comp   <= (others => '1'); -- Reset CRC to seed value
         elsif NEW_WORD_DWI = '1' then
           -- calculates the crc 8 byte by byte
           for i in indices'range loop
