@@ -117,7 +117,7 @@ end process p_crc_16b;
 ---------------------------------------------------------
 p_crc_8b: process(CLK, RST_N)
     variable crc_var : std_logic_vector(7 downto 0);
-    variable crc_in : std_logic_vector(15 downto 0);
+    variable crc_in  : std_logic_vector(7 downto 0);
 begin
     if RST_N = '0' then
       crc_reg_8b_comp <= (others => '0'); -- Reset CRC to seed value
