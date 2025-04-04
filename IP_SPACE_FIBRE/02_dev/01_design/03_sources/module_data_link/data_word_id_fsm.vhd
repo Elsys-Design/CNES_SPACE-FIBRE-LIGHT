@@ -67,7 +67,6 @@ type data_word_id_fsm_type is (
    -- Signals
 signal current_state                : data_word_id_fsm_type;                        --! Current state of the Dat Word Identification FSM
 signal current_state_r              : data_word_id_fsm_type;                        --! Current state register
-signal current_state_r_r            : data_word_id_fsm_type;                        --! Current state register
 signal receiving_frame    : std_logic;
 signal type_incom_frame   : std_logic_vector(1 downto 0);
 signal data_word_cnt      : unsigned(6 downto 0);
@@ -118,13 +117,13 @@ begin
 p_fsm_data_word_id_transition : process(CLK,RST_N)
 begin
    if RST_N = '0' then
-      current_state     <= RX_NOTHING_ST;
-      current_state_r   <= RX_NOTHING_ST;
-			current_state_r_r <= RX_NOTHING_ST;
-      FRAME_ERR_DWI     <= '0';
+      current_state          <= RX_NOTHING_ST;
+      current_state_r        <= RX_NOTHING_ST;
+      FRAME_ERR_DWI          <= '0';
+			RXNOTHING_ACTIVE_DWI   <= '0';
    elsif rising_edge(CLK) then
-      current_state_r   <= current_state;
-			current_state_r_r <= current_state_r;
+      current_state_r       <= current_state;
+			RXNOTHING_ACTIVE_DWI  <= '0';
       case current_state is
          when RX_NOTHING_ST                  => if LINK_RESET_DLRE = '1' then
                                                    current_state  <= RX_NOTHING_ST;
@@ -135,28 +134,40 @@ begin
                                                 elsif detected_sif ='1' then
                                                    current_state  <= RX_IDLE_FRAME_ST;
                                                 end if;
-         when RX_DATA_FRAME_ST               => if LINK_RESET_DLRE = '1' or detected_edf = '1' or detected_retry = '1' or detected_rxerr_i = '1' or CRC_ERR_DCCHECK = '1' or SEQ_ERR_DSCHECK = '1' then
+         when RX_DATA_FRAME_ST               => if LINK_RESET_DLRE = '1' or detected_edf = '1' or detected_retry = '1' or CRC_ERR_DCCHECK = '1' or SEQ_ERR_DSCHECK = '1' then
                                                   current_state  <= RX_NOTHING_ST;
+				                                        elsif detected_rxerr_i = '1' then
+																									RXNOTHING_ACTIVE_DWI   <= '1';
+																									current_state         <= RX_NOTHING_ST;
                                                 elsif detected_sdf = '1' or detected_sif = '1' or detected_ebf = '1' or data_word_cnt > C_MAX_DATA_FRAME then
-                                                  FRAME_ERR_DWI      <= '1';
-                                                  current_state  <= RX_NOTHING_ST;
+																									RXNOTHING_ACTIVE_DWI   <= '1';
+                                                  FRAME_ERR_DWI          <= '1';
+                                                  current_state          <= RX_NOTHING_ST;
                                                 elsif detected_sbf ='1' then
                                                   current_state  <= RX_BROADCAST_AND_DATA_FRAME_ST;
                                                 end if;
-         when RX_BROADCAST_FRAME_ST          => if LINK_RESET_DLRE = '1' or (detected_ebf = '1' and bc_word_cnt = C_WORD_BC_FRAME) or detected_retry = '1' or detected_rxerr_i = '1' or CRC_ERR_DCCHECK = '1' or SEQ_ERR_DSCHECK = '1' then
+         when RX_BROADCAST_FRAME_ST          => if LINK_RESET_DLRE = '1' or (detected_ebf = '1' and bc_word_cnt = C_WORD_BC_FRAME) or detected_retry = '1' or CRC_ERR_DCCHECK = '1' or SEQ_ERR_DSCHECK = '1' then
                                                   current_state  <= RX_NOTHING_ST;
+				                                        elsif detected_rxerr_i = '1' then
+																									RXNOTHING_ACTIVE_DWI  <= '1';
+																									current_state         <= RX_NOTHING_ST;
                                                 elsif detected_sdf = '1' or detected_sbf = '1' or detected_sif = '1' or detected_edf = '1' or (detected_ebf = '1' and bc_word_cnt /= C_WORD_BC_FRAME) or bc_word_cnt > C_WORD_BC_FRAME then
-                                                   FRAME_ERR_DWI      <= '1';
-                                                   current_state  <= RX_NOTHING_ST;
+                                                  RXNOTHING_ACTIVE_DWI  <= '1'; 
+																									FRAME_ERR_DWI         <= '1';
+                                                  current_state         <= RX_NOTHING_ST;
                                                 end if;
 
-         when RX_BROADCAST_AND_DATA_FRAME_ST => if LINK_RESET_DLRE = '1' or detected_rxerr_i = '1' or detected_retry = '1' or CRC_ERR_DCCHECK = '1' or SEQ_ERR_DSCHECK = '1' then
+         when RX_BROADCAST_AND_DATA_FRAME_ST => if LINK_RESET_DLRE = '1' or detected_retry = '1' or CRC_ERR_DCCHECK = '1' or SEQ_ERR_DSCHECK = '1' then
                                                   current_state  <= RX_NOTHING_ST;
+				                                        elsif detected_rxerr_i = '1' then
+																									RXNOTHING_ACTIVE_DWI  <= '1';
+																									current_state         <= RX_NOTHING_ST;
                                                 elsif (detected_ebf = '1' and bc_word_cnt = C_WORD_BC_FRAME) then
                                                    current_state  <= RX_DATA_FRAME_ST;
                                                 elsif detected_sdf = '1' or detected_sbf = '1' or detected_sif = '1' or detected_edf = '1' or (detected_ebf = '1' and bc_word_cnt /= C_WORD_BC_FRAME) or bc_word_cnt > C_WORD_BC_FRAME then
-                                                   FRAME_ERR_DWI      <= '1';
-                                                   current_state  <= RX_NOTHING_ST;
+                                                  RXNOTHING_ACTIVE_DWI <= '1';
+																									FRAME_ERR_DWI        <= '1';
+                                                   current_state       <= RX_NOTHING_ST;
                                                 end if;
 
          when RX_IDLE_FRAME_ST               => if LINK_RESET_DLRE = '1' or detected_rxerr_i = '1' or detected_retry = '1' or CRC_ERR_DCCHECK = '1' or SEQ_ERR_DSCHECK = '1' then
@@ -173,19 +184,7 @@ begin
       end case;
    end if;
 end process p_fsm_data_word_id_transition;
--- RXNOTHING_ACTIVE process
-p_rxnothing_active : process(CLK,RST_N)
-begin
-	if RST_N = '0' then
-		RXNOTHING_ACTIVE_DWI   <= '0';
-	elsif rising_edge(CLK) then
-		if current_state_r = RX_NOTHING_ST and current_state_r_r /= RX_NOTHING_ST then
-			RXNOTHING_ACTIVE_DWI   <= '1';
-		else
-			RXNOTHING_ACTIVE_DWI   <= '0';
-		end if;
-	end if;
-end process p_rxnothing_active;
+
 -- Data Word Identification FSM action on state process
 p_comb_state : process(CLK,RST_N)
 begin
