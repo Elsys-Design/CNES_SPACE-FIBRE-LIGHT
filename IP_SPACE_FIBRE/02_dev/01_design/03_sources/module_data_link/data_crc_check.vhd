@@ -133,7 +133,7 @@ begin
           end loop;
           -- Bit-by-bit inversion
           for i in 0 to 7 loop
-            crc_in(i) := CRC_16B_DWI(7 - i);
+            crc_in(i) := CRC_8B_DWI(7 - i);
           end loop;
           -- Checks CRC validity
           if crc_in /= crc_var then

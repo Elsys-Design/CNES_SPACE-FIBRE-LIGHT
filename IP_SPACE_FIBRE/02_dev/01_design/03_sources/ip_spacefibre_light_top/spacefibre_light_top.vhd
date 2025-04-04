@@ -85,6 +85,18 @@ entity spacefibre_light_top is
       RESET_PARAM                      : out std_logic;
       LINK_RST_ASSERTED                : out std_logic;
       ----------------------- Phy + Lane layer signals -----------------------
+      -- -- Interface injector
+      -- DATA_TX_INJ                      : in  std_logic_vector(31 downto 00);     --! Data parallel to be send from injector
+      -- CAPABILITY_TX_INJ                : in  std_logic_vector(07 downto 00);     --! Capability send on TX link in INIT3 control word from injector
+      -- NEW_DATA_TX_INJ                  : in  std_logic;                          --! Flag to write data in FIFO TX from injetor
+      -- VALID_K_CHARAC_TX_INJ            : in  std_logic_vector(03 downto 00);     --! K charachter valid in the 32-bit DATA_TX_INJ vector
+      -- FIFO_TX_FULL_INJ                 : out   std_logic;                        --! Flag full of the FIFO TX to the injector
+      -- -- Interface spy and injector
+      -- FIFO_RX_RD_EN_SPY                : in  std_logic;                          --! FiFo RX read enable flag from the spy
+      -- DATA_RX_SPY                      : out std_logic_vector(31 downto 00);     --! 32-bit Data parallel to be received to the spy
+      -- FIFO_RX_EMPTY_SPY                : out std_logic;                          --! FiFo RX empty flag to the spy
+      -- FIFO_RX_DATA_VALID_SPY           : out std_logic;                          --! FiFo RX data valid flag to the spy
+      -- VALID_K_CHARAC_RX_SPY            : out std_logic_vector(03 downto 00);     --! 4-bit valid K character flags to the spy
       -- Paramter and Status signals
       LANE_START                       : in  std_logic;                          --! Asserts or de-asserts LaneStart for the lane
       AUTOSTART                        : in  std_logic;                          --! Asserts or de-asserts AutoStart for the lane
