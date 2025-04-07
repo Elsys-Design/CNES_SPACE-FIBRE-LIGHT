@@ -86,19 +86,19 @@ entity spacefibre_light_top is
       LINK_RST_ASSERTED                : out std_logic;
       ----------------------- Phy + Lane layer signals -----------------------
       -- -- Interface injector
-      -- ENABLE_INJ                       : in std_logic;
-      -- DATA_TX_INJ                      : in  std_logic_vector(31 downto 00);     --! Data parallel to be send from injector
-      -- CAPABILITY_TX_INJ                : in  std_logic_vector(07 downto 00);     --! Capability send on TX link in INIT3 control word from injector
-      -- NEW_DATA_TX_INJ                  : in  std_logic;                          --! Flag to write data in FIFO TX from injetor
-      -- VALID_K_CHARAC_TX_INJ            : in  std_logic_vector(03 downto 00);     --! K charachter valid in the 32-bit DATA_TX_INJ vector
-      -- FIFO_TX_FULL_INJ                 : out   std_logic;                        --! Flag full of the FIFO TX to the injector
+      ENABLE_INJ                       : in std_logic;
+      DATA_TX_INJ                      : in  std_logic_vector(31 downto 00);     --! Data parallel to be send from injector
+      CAPABILITY_TX_INJ                : in  std_logic_vector(07 downto 00);     --! Capability send on TX link in INIT3 control word from injector
+      NEW_DATA_TX_INJ                  : in  std_logic;                          --! Flag to write data in FIFO TX from injetor
+      VALID_K_CHARAC_TX_INJ            : in  std_logic_vector(03 downto 00);     --! K charachter valid in the 32-bit DATA_TX_INJ vector
+      FIFO_TX_FULL_INJ                 : out   std_logic;                        --! Flag full of the FIFO TX to the injector
       -- -- Interface spy
-      -- ENABLE_SPY                       : in std_logic;
-      -- FIFO_RX_RD_EN_SPY                : in  std_logic;                          --! FiFo RX read enable flag from the spy
-      -- DATA_RX_SPY                      : out std_logic_vector(31 downto 00);     --! 32-bit Data parallel to be received to the spy
-      -- FIFO_RX_EMPTY_SPY                : out std_logic;                          --! FiFo RX empty flag to the spy
-      -- FIFO_RX_DATA_VALID_SPY           : out std_logic;                          --! FiFo RX data valid flag to the spy
-      -- VALID_K_CHARAC_RX_SPY            : out std_logic_vector(03 downto 00);     --! 4-bit valid K character flags to the spy
+      ENABLE_SPY                       : in std_logic;
+      FIFO_RX_RD_EN_SPY                : in  std_logic;                          --! FiFo RX read enable flag from the spy
+      DATA_RX_SPY                      : out std_logic_vector(31 downto 00);     --! 32-bit Data parallel to be received to the spy
+      FIFO_RX_EMPTY_SPY                : out std_logic;                          --! FiFo RX empty flag to the spy
+      FIFO_RX_DATA_VALID_SPY           : out std_logic;                          --! FiFo RX data valid flag to the spy
+      VALID_K_CHARAC_RX_SPY            : out std_logic_vector(03 downto 00);     --! 4-bit valid K character flags to the spy
       -- Paramter and Status signals
       LANE_START                       : in  std_logic;                          --! Asserts or de-asserts LaneStart for the lane
       AUTOSTART                        : in  std_logic;                          --! Asserts or de-asserts AutoStart for the lane
@@ -204,6 +204,48 @@ architecture rtl of spacefibre_light_top is
             LINK_RST_ASSERTED_DL    : out std_logic                              --! Link has been reseted
           );
     end component;
+
+    component mux_tx is
+      port (
+        RST_N                  : in  std_logic;                          --! Global reset
+        CLK                    : in  std_logic;                          --! Global clock
+        -- Ctrl signal
+        ENABLE_INJ             : in std_logic;
+        -- Injector interface
+        DATA_TX_INJ            : in  std_logic_vector(31 downto 00);     --! Data parallel to be send from injector
+        CAPABILITY_TX_INJ      : in  std_logic_vector(07 downto 00);     --! Capability send on TX link in INIT3 control word from injector
+        NEW_DATA_TX_INJ        : in  std_logic;                          --! Flag to write data in FIFO TX from injetor
+        VALID_K_CHARAC_TX_INJ  : in  std_logic_vector(03 downto 00);     --! K charachter valid in the 32-bit DATA_TX_INJ vector
+        FIFO_TX_FULL_INJ       : out std_logic;
+          -- Data-Link interface
+        DATA_TX_DL             : in  std_logic_vector(31 downto 00);     --! Data parallel to be send from Data-Link Layer
+        CAPABILITY_TX_DL       : in  std_logic_vector(07 downto 00);     --! Capability send on TX link in INIT3 control word
+        NEW_DATA_TX_DL         : in  std_logic;                          --! Flag to write data in FIFO TX
+        VALID_K_CHARAC_TX_DL   : in  std_logic_vector(03 downto 00);     --! K charachter valid in the 32-bit DATA_TX_DL vector
+        FIFO_TX_FULL_DL        : out std_logic;
+        -- Phy Plus Lane interface
+        DATA_TX_MUX            : out  std_logic_vector(31 downto 00);    --! Data parallel
+        CAPABILITY_TX_MUX      : out  std_logic_vector(07 downto 00);    --! Capability send on TX link in INIT3 control word
+        NEW_DATA_TX_MUX        : out  std_logic;                         --! Flag to write data in FIFO TX
+        VALID_K_CHARAC_TX_MUX  : out  std_logic_vector(03 downto 00);    --! K charachter valid in the 32-bit DATA_TX_MUX vector
+        FIFO_TX_FULL_PPL       : in   std_logic
+      );
+   end component;
+
+   component demux_rx is
+      port (
+        RST_N                  : in  std_logic; --! Global reset
+        CLK                    : in  std_logic; --! Global Clock
+        -- Ctrl signal
+        ENABLE_SPY             : in std_logic;  --! Enable Spy read command
+        -- Data-Link interface
+        FIFO_RX_RD_EN_DL       : in  std_logic; --! Flag to read data in FIFO RX from Data-Link
+        -- SPY interface
+        FIFO_RX_RD_EN_SPY      : in  std_logic; --! Flag to read data in FIFO RX from Spy
+        -- Phy Plus Lane interface
+        FIFO_RX_RD_EN_DEMUX    : out std_logic  --! Flag to read data in FIFO RX to PPL
+      );
+   end component;
 
    component phy_plus_lane is
       port(
@@ -375,7 +417,7 @@ architecture rtl of spacefibre_light_top is
    signal capability_tx_dl       : std_logic_vector(7 downto 0);   -- Capability send on TX link in INIT3 control word
    signal new_data_tx_dl         : std_logic;                      -- Flag to write data in FIFO TX
    signal valid_k_charac_tx_dl   : std_logic_vector(3 downto 0);   -- K character valid in the 32-bit DATA_TX_DL vector
-   signal fifo_tx_full_ppl       : std_logic;                      -- Flag full of the FIFO TX
+   signal fifo_tx_full_mux       : std_logic;                      -- Flag full of the FIFO TX
    -- DATA-LINK // Phy plus Lane interface TX signals
    signal fifo_rx_rd_en_dl       : std_logic;                      -- Flag to read data in FIFO RX
    signal data_rx_ppl            : std_logic_vector(31 downto 0);  -- Data parallel to be received to Data-Link Layer
@@ -430,6 +472,14 @@ architecture rtl of spacefibre_light_top is
    signal current_time_slot_dl               : std_logic_vector(G_VC_NUM-1 downto 0);
    signal reset_param_dl                     : std_logic;
    signal link_rst_asserted_dl               : std_logic;
+   -- Mux // Phy plus Lane interface TX signals
+   signal data_tx_mux                        : std_logic_vector(31 downto 00);
+   signal capability_tx_mux                  : std_logic_vector(07 downto 00);
+   signal new_data_tx_mux                    : std_logic;                     
+   signal valid_k_charac_tx_mux              : std_logic_vector(03 downto 00);
+   signal fifo_tx_full_ppl                   : std_logic;
+   -- Demux // Phy plus Lane interface TX signals
+   signal fifo_rx_rd_en_demux                : std_logic;
 
 begin
    ------------------------------------------------------------------------------------------------------------------
@@ -437,10 +487,10 @@ begin
    ------------------------------------------------------------------------------------------------------------------
    inst_reset_sync_clk_from_GTY : reset_gen
    port map(
-      RST_N                            => RST_N,
-      CLK                              => clk_tx_i,
-      RST_TX_DONE                      => rst_tx_done,
-      INTERNAL_SYNC_RST_N              => rst_sync_gty_n
+      RST_N               => RST_N,
+      CLK                 => clk_tx_i,
+      RST_TX_DONE         => rst_tx_done,
+      INTERNAL_SYNC_RST_N => rst_sync_gty_n
    );
    -----------------------------------------------------------------------------------------------------------------
    ---------------------------------------------- DATA-LINK layer modules ---------------------------------------------
@@ -450,40 +500,40 @@ begin
       G_VC_NUM => G_VC_NUM
    )
    Port map (
-      CLK                     => CLK,
-      RST_N                   => RST_N,
+      CLK                      => CLK,
+      RST_N                    => RST_N,
        -- Network layer AXI-Stream TX interface
-       AXIS_ARSTN_TX_NW       => AXIS_ARSTN_TX_DL,
-       AXIS_ACLK_TX_NW        => AXIS_ACLK_TX_DL,
-       AXIS_TREADY_TX_DL      => AXIS_TREADY_TX_DL,
-       AXIS_TDATA_TX_NW       => AXIS_TDATA_TX_DL,
-       AXIS_TUSER_TX_NW       => AXIS_TUSER_TX_DL,
-       AXIS_TLAST_TX_NW       => AXIS_TLAST_TX_DL,
-       AXIS_TVALID_TX_NW      => AXIS_TVALID_TX_DL,
+       AXIS_ARSTN_TX_NW        => AXIS_ARSTN_TX_DL,
+       AXIS_ACLK_TX_NW         => AXIS_ACLK_TX_DL,
+       AXIS_TREADY_TX_DL       => AXIS_TREADY_TX_DL,
+       AXIS_TDATA_TX_NW        => AXIS_TDATA_TX_DL,
+       AXIS_TUSER_TX_NW        => AXIS_TUSER_TX_DL,
+       AXIS_TLAST_TX_NW        => AXIS_TLAST_TX_DL,
+       AXIS_TVALID_TX_NW       => AXIS_TVALID_TX_DL,
        -- Network layer RX interface
-       AXIS_ARSTN_RX_NW       => AXIS_ARSTN_RX_DL,
-       AXIS_ACLK_RX_NW        => AXIS_ACLK_RX_DL,
-       AXIS_TREADY_RX_NW      => AXIS_TREADY_RX_DL,
-       AXIS_TDATA_RX_DL       => AXIS_TDATA_RX_DL,
-       AXIS_TUSER_RX_DL       => AXIS_TUSER_RX_DL,
-       AXIS_TLAST_RX_DL       => AXIS_TLAST_RX_DL,
-       AXIS_TVALID_RX_DL      => AXIS_TVALID_RX_DL,
-       CURRENT_TIME_SLOT_NW   => CURRENT_TIME_SLOT_NW,
+       AXIS_ARSTN_RX_NW        => AXIS_ARSTN_RX_DL,
+       AXIS_ACLK_RX_NW         => AXIS_ACLK_RX_DL,
+       AXIS_TREADY_RX_NW       => AXIS_TREADY_RX_DL,
+       AXIS_TDATA_RX_DL        => AXIS_TDATA_RX_DL,
+       AXIS_TUSER_RX_DL        => AXIS_TUSER_RX_DL,
+       AXIS_TLAST_RX_DL        => AXIS_TLAST_RX_DL,
+       AXIS_TVALID_RX_DL       => AXIS_TVALID_RX_DL,
+       CURRENT_TIME_SLOT_NW    => CURRENT_TIME_SLOT_NW,
        -- Lane layer TX interface
-       DATA_TX_DL            =>  data_tx_dl,
-       CAPABILITY_TX_DL      =>  capability_tx_dl,
-       NEW_DATA_TX_DL        =>  new_data_tx_dl,
-       VALID_K_CHARAC_TX_DL  =>  valid_k_charac_tx_dl,
-       FIFO_TX_FULL_PPL      =>  fifo_tx_full_ppl,
+       DATA_TX_DL              =>  data_tx_dl,
+       CAPABILITY_TX_DL        =>  capability_tx_dl,
+       NEW_DATA_TX_DL          =>  new_data_tx_dl,
+       VALID_K_CHARAC_TX_DL    =>  valid_k_charac_tx_dl,
+       FIFO_TX_FULL_PPL        =>  fifo_tx_full_ppl,
        -- Lane layer RX interface
-       FIFO_RX_RD_EN_DL       => fifo_rx_rd_en_dl,
-       DATA_RX_PPL            => data_rx_ppl,
-       FIFO_RX_EMPTY_PPL      => fifo_rx_empty_ppl,
-       FIFO_RX_DATA_VALID_PPL => fifo_rx_data_valid_ppl,
-       VALID_K_CHARAC_RX_PPL  => valid_k_charac_rx_ppl,
-       FAR_END_CAPA_PPL       => far_end_capa_ppl,
-       LANE_ACTIVE_PPL        => lane_active_ppl,
-       LANE_RESET_DL          => lane_reset_dl,
+       FIFO_RX_RD_EN_DL        => fifo_rx_rd_en_dl,
+       DATA_RX_PPL             => data_rx_ppl,
+       FIFO_RX_EMPTY_PPL       => fifo_rx_empty_ppl,
+       FIFO_RX_DATA_VALID_PPL  => fifo_rx_data_valid_ppl,
+       VALID_K_CHARAC_RX_PPL   => valid_k_charac_rx_ppl,
+       FAR_END_CAPA_PPL        => far_end_capa_ppl,
+       LANE_ACTIVE_PPL         => lane_active_ppl,
+       LANE_RESET_DL           => lane_reset_dl,
        -- MIB parameters interface
        INTERFACE_RESET_MIB     => interface_reset_dl,
        LINK_RESET_MIB          => link_reset_dl,
@@ -592,15 +642,74 @@ begin
          LINK_RST_ASSERTED   => LINK_RST_ASSERTED
       );
    -----------------------------------------------------------------------------------------------------------------
-   ---------------------------------------------- PHY_PLUS_LANE modules ---------------------------------------------
-   ------------------------------------------------------------------------------------------------------------------
+   ----------------------------------------------- Inter Layer modules ---------------------------------------------
+   -----------------------------------------------------------------------------------------------------------------
+   ---------------------------------------------------
+   -- Assignations
+   ---------------------------------------------------
+   DATA_RX_SPY            <= data_rx_ppl;
+   FIFO_RX_EMPTY_SPY      <= fifo_rx_empty_ppl;
+   FIFO_RX_DATA_VALID_SPY <= fifo_rx_data_valid_ppl;
+   VALID_K_CHARAC_RX_SPY  <= valid_k_charac_rx_ppl;
+  ---------------------------------------------------
+  -- Instanciations
+  ---------------------------------------------------
+   inst_mux_tx: mux_tx
+      port map(
+        RST_N                  => RST_N,
+        CLK                    => CLK,
+        -- Ctrl signal
+        ENABLE_INJ             => ENABLE_INJ,
+        -- Injector interface
+        DATA_TX_INJ            =>  DATA_TX_INJ,
+        CAPABILITY_TX_INJ      =>  CAPABILITY_TX_INJ,
+        NEW_DATA_TX_INJ        =>  NEW_DATA_TX_INJ,
+        VALID_K_CHARAC_TX_INJ  =>  VALID_K_CHARAC_TX_INJ,
+        FIFO_TX_FULL_INJ       =>  FIFO_TX_FULL_INJ,
+          -- Data-Link interfa
+        DATA_TX_DL             => data_tx_dl,
+        CAPABILITY_TX_DL       => capability_tx_dl,
+        NEW_DATA_TX_DL         => new_data_tx_dl,
+        VALID_K_CHARAC_TX_DL   => valid_k_charac_tx_dl,
+        FIFO_TX_FULL_DL        => fifo_tx_full_mux,
+        -- Phy Plus Lane interf
+        DATA_TX_MUX            => data_tx_mux,
+        CAPABILITY_TX_MUX      => capability_tx_mux,
+        NEW_DATA_TX_MUX        => new_data_tx_mux,
+        VALID_K_CHARAC_TX_MUX  => valid_k_charac_tx_mux,
+        FIFO_TX_FULL_PPL       => fifo_tx_full_ppl
+      );
+   inst_demux_rx: demux_rx
+      port map (
+        RST_N                  => RST_N,
+        CLK                    => CLK,
+        -- Ctrl signal
+        ENABLE_SPY             => ENABLE_SPY,
+        -- Data-Link Interface
+        FIFO_RX_RD_EN_DL       => fifo_rx_rd_en_dl,
+        -- SPY interface
+        FIFO_RX_RD_EN_SPY      => FIFO_RX_RD_EN_SPY,
+        -- Phy Plus Lane int
+        FIFO_RX_RD_EN_DEMUX    => fifo_rx_rd_en_demux
+      );
+   -----------------------------------------------------------------------------------------------------------------
+   ---------------------------------------------- PHY_PLUS_LANE modules --------------------------------------------
+   -----------------------------------------------------------------------------------------------------------------
+   ---------------------------------------------------
+   -- Assignations
+   ---------------------------------------------------
+   CLK_TX       <= clk_tx_i;
+   RST_TXCLK_N  <= rst_sync_gty_n;
+   ---------------------------------------------------
+   -- Instanciations
+   ---------------------------------------------------
    inst_phy_plus_lane : phy_plus_lane
    port map(
       RST_N                            => RST_N,
       RST_TXCLK_N                      => rst_sync_gty_n,
       CLK                              => CLK,
       CLK_TX_OUT                       => clk_tx_i,
-	   RST_TX_DONE                      => rst_tx_done,
+	    RST_TX_DONE                      => rst_tx_done,
       -- Clock and reset
       ------------------
       CLK_GTY                          => CLK_GTY,               -- Clock signal
@@ -611,7 +720,7 @@ begin
       VALID_K_CHARAC_TX                => valid_k_charac_tx_dl,
       FIFO_TX_FULL                     => fifo_tx_full_ppl,
       -- TO Data-link layer
-      FIFO_RX_RD_EN                    => fifo_rx_rd_en_dl,
+      FIFO_RX_RD_EN                    => fifo_rx_rd_en_demux,
       DATA_RX                          => data_rx_ppl,
       FIFO_RX_EMPTY                    => fifo_rx_empty_ppl,
       FIFO_RX_DATA_VALID               => fifo_rx_data_valid_ppl,
@@ -673,9 +782,5 @@ begin
       FAR_END_CAPA_FROM_MOD            => far_end_capa_ppl,
       RX_POLARITY_FROM_MOD             => rx_polarity_ppl
    );
-
-   -- Outputs
-   CLK_TX       <= clk_tx_i;
-   RST_TXCLK_N  <= rst_sync_gty_n;
 
 end architecture rtl;
