@@ -100,9 +100,10 @@ elsif rising_edge(CLK) and LANE_ACTIVE_PPL= '1' then
                               DATA_DENC           <= DATA_DMAC;
                               VALID_K_CHARAC_DENC <= VALID_K_CHAR_DMAC;
                               NEW_WORD_DENC       <= NEW_WORD_DMAC;
-                              sif_done            <= '1';
                               if END_PACKET_DMAC ='1' then
                                 sif_done            <= '0';
+                              else 
+                                sif_done            <= '1';
                               end if;
                             elsif NEW_WORD_DMAC = '1' then
                               if TYPE_FRAME_DMAC = C_DATA_FRM then

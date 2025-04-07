@@ -154,26 +154,26 @@ begin
         VC_RUN_EMISSION_DMAC <= (others => '0');
         DATA_DMAC            <= std_logic_vector(idle_data);
         VALID_K_CHAR_DMAC    <= (others => '0');
-        -- Idle
-        if idle_cnt /= 0 then
-          idle_data <= idle_data -1;
-          idle_cnt  <= idle_cnt +1;
-        elsif idle_cnt= 63 then -- Last Idle data of the frames
+        -- Idlz
+        if idle_cnt= 63 then -- Last Idle data of the frames
           END_PACKET_DMAC <= '1';
           idle_data       <= idle_data -1;
           idle_cnt        <= (others => '0');
+        else
+          idle_data <= idle_data -1;
+          idle_cnt  <= idle_cnt +1;
         end if;
         -- Req or Channel ready
         if (((REQ_ACK_DERRM = '1' or REQ_NACK_DERRM = '1' ) and cnt_wait_ack = 15) or REQ_FCT_DIBUF /= std_logic_vector(to_unsigned(0,G_VC_NUM))) and type_frame /= C_BC_FRM and cnt_wait = '1' then -- Pending request
           current_state_vc <= REQ_ST;
         elsif VC_READY_DOBUF(current_channel) = '1' and VC_PAUSE_MIB(current_channel) = '0' then -- Channel ready
-          current_state_vc <= START_ENCAPS_ST;
-          VC_RD_EN_DMAC(current_channel)        <= '1';
+          current_state_vc               <= START_ENCAPS_ST;
+          VC_RD_EN_DMAC(current_channel) <= '1';
         elsif test /= std_logic_vector(to_unsigned(0, G_VC_NUM+1)) then
-          current_channel <= (current_channel + 1) mod 9;
-          NEW_WORD_DMAC        <= '1';
+          current_channel <= (current_channel + 1) mod G_VC_NUM+1;
+          NEW_WORD_DMAC   <= '1';
         else
-          NEW_WORD_DMAC        <= '1';
+          NEW_WORD_DMAC <= '1';
         end if;
 
       when START_ENCAPS_ST => -- Start data transfer
@@ -181,12 +181,20 @@ begin
           VIRTUAL_CHANNEL_DMAC                  <= std_logic_vector(to_unsigned(current_channel,VIRTUAL_CHANNEL_DMAC'length));
           NEW_WORD_DMAC                         <= '1';
           VC_RUN_EMISSION_DMAC(current_channel) <= '1';
-          type_frame                            <= C_DATA_FRM;
-          current_state_vc                      <= TRANSFER_ST;  
+          if current_channel = G_VC_NUM then
+            type_frame <= C_BC_FRM;
+          else 
+            type_frame <= C_DATA_FRM;
+          end if;
+          current_state_vc <= TRANSFER_ST;  
      
       when TRANSFER_ST => -- Data transfer in progress
         VC_RD_EN_DMAC(current_channel) <= '1';
-        type_frame                     <= C_DATA_FRM;
+        if current_channel = G_VC_NUM then
+          type_frame <= C_BC_FRM;
+        else 
+          type_frame <= C_DATA_FRM;
+        end if;
         if VC_DATA_VALID_DOBUF(current_channel)='1'  then
           if VC_END_PACKET_DOBUF(current_channel) = '1' then -- Last data of a transfer
             DATA_DMAC         <= VC_DATA_DOBUF(current_channel);
@@ -213,10 +221,14 @@ begin
         end if;
      
       when END_ST => -- End of data transfer
-        type_frame                            <= C_DATA_FRM;
+        if current_channel = G_VC_NUM then
+          type_frame <= C_BC_FRM;
+        else 
+          type_frame <= C_DATA_FRM;
+        end if;
         VC_END_EMISSION_DMAC(current_channel) <= '1';
         current_state_vc                      <= IDLE_ST;
-        current_channel                       <= (current_channel + 1) mod 9;
+        current_channel                       <= (current_channel + 1) mod G_VC_NUM+1;
      
       when REQ_ST =>
         if VC_END_PACKET_DOBUF(current_channel) = '1' and VC_DATA_VALID_DOBUF(current_channel)='1' then -- Last data of a transfer
