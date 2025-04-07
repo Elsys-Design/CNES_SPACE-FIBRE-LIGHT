@@ -476,7 +476,154 @@ def check_NACK(tb, number_of_line_to_check, number_of_nack, path):
     elif ACK_counter > number_of_nack:
         return 3
     else:
-        return 0       
+        return 0
+
+def check_CRC(tb, path):
+    """
+    check all CRC values in a log file
+    """
+    assert os.path.exists(path), "Source file doesn't exist"
+    
+    tb.logger.info("sim_time %d ns: Source file %s to check does exist, open in read mode", get_sim_time(units = "ns"), path)
+    file = open(path, "r")
+
+    error_cnt = 0
+    ack_cnt = 0
+    nack_cnt = 0
+    fct_cnt = 0
+    sif_cnt = 0
+    data_frame_cnt = 0
+    bc_frame_cnt = 0
+    in_data_frame = 0
+    in_bc_frame = 0
+    crc_8 = "00000000"
+    crc_16 = "1111111111111111"
+    error_list = ""
+    line_cnt = 0
+    for line in file:
+        line_cnt +=1
+        input_splitted = line.split(';')
+        if input_splitted[-1] == "\n":
+            input_splitted.remove("\n")
+        elif '\n' in input_splitted[-1]:
+            input_splitted[-1] = input_splitted[-1].replace("\n", "")
+        
+        
+        if in_data_frame == 1 and in_bc_frame == 0 and ((input_splitted[0][6:8] != "1C" and input_splitted[0][6:8] != "7C" and input_splitted[0][4:8] != "A2FC" and input_splitted[0][4:8] != "BBFC" and input_splitted[0][0:8] != "CFCFCEFC" and input_splitted[0][0:8] != "7F7FCEFC") or input_splitted[1] != "0001"):
+            crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_16(f"{int(input_splitted[0][6:8], base = 16):0>8b}", crc_16)
+            crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_16(f"{int(input_splitted[0][4:6], base = 16):0>8b}", crc_16)
+            crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_16(f"{int(input_splitted[0][2:4], base = 16):0>8b}", crc_16)
+            crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_16(f"{int(input_splitted[0][0:2], base = 16):0>8b}", crc_16)
+
+        if in_bc_frame == 1 and ((input_splitted[0][6:8] != "5C"and input_splitted[0][6:8] != "7C" and input_splitted[0][4:8] != "A2FC" and input_splitted[0][4:8] != "BBFC" and input_splitted[0][0:8] != "CFCFCEFC" and input_splitted[0][0:8] != "7F7FCEFC") or input_splitted[1] != "0001"):
+            crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8(f"{int(input_splitted[0][6:8], base = 16):0>8b}", crc_8)
+            crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8(f"{int(input_splitted[0][4:6], base = 16):0>8b}", crc_8)
+            crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8(f"{int(input_splitted[0][2:4], base = 16):0>8b}", crc_8)
+            crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8(f"{int(input_splitted[0][0:2], base = 16):0>8b}", crc_8)
+        
+        #ACK
+        if input_splitted[0][4:8] == "A2FC" and input_splitted[1] == "0001":
+            crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8(f"{int(input_splitted[0][6:8], base = 16):0>8b}")
+            crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8(f"{int(input_splitted[0][4:6], base = 16):0>8b}", crc_8)
+            crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8(f"{int(input_splitted[0][2:4], base = 16):0>8b}", crc_8)
+            crc_8 = tb.spacefibre_random_generator_data_link.invert_string(crc_8)
+            if f"{int(input_splitted[0][0:2], base = 16):0>8b}" != crc_8:
+                ack_cnt += 1
+                error_cnt += 1
+                error_list += "\t" + str(line_cnt) + "\n"
+
+
+        #NACK
+        if input_splitted[0][4:8] == "BBFC" and input_splitted[1] == "0001":
+            crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8(f"{int(input_splitted[0][6:8], base = 16):0>8b}")
+            crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8(f"{int(input_splitted[0][4:6], base = 16):0>8b}", crc_8)
+            crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8(f"{int(input_splitted[0][2:4], base = 16):0>8b}", crc_8)
+            crc_8 = tb.spacefibre_random_generator_data_link.invert_string(crc_8)
+            if f"{int(input_splitted[0][0:2], base = 16):0>8b}" != crc_8:
+                nack_cnt += 1
+                error_cnt += 1
+                error_list += "\t" + str(line_cnt) + "\n"
+
+        #FCT
+        if input_splitted[0][6:8] == "7C" and input_splitted[1] == "0001":
+            crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8(f"{int(input_splitted[0][6:8], base = 16):0>8b}")
+            crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8(f"{int(input_splitted[0][4:6], base = 16):0>8b}", crc_8)
+            crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8(f"{int(input_splitted[0][2:4], base = 16):0>8b}", crc_8)
+            crc_8 = tb.spacefibre_random_generator_data_link.invert_string(crc_8)
+            if f"{int(input_splitted[0][0:2], base = 16):0>8b}" != crc_8:
+                fct_cnt += 1
+                error_cnt += 1
+                error_list += "\t" + str(line_cnt) + "\n"
+
+        #SIF
+        if input_splitted[0][4:8] == "84FC" and input_splitted[1] == "0001":
+            crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8(f"{int(input_splitted[0][6:8], base = 16):0>8b}")
+            crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8(f"{int(input_splitted[0][4:6], base = 16):0>8b}", crc_8)
+            crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8(f"{int(input_splitted[0][2:4], base = 16):0>8b}", crc_8)
+            crc_8 = tb.spacefibre_random_generator_data_link.invert_string(crc_8)
+            in_data_frame = 0
+            in_bc_frame = 0
+            if f"{int(input_splitted[0][0:2], base = 16):0>8b}" != crc_8:
+                sif_cnt += 1
+                error_cnt += 1
+                error_list += "\t" + str(line_cnt) + "\n"
+
+        #SDF
+        if input_splitted[0][4:8] == "50FC" and input_splitted[1] == "0001":
+            crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_16(f"{int(input_splitted[0][6:8], base = 16):0>8b}")
+            crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_16(f"{int(input_splitted[0][4:6], base = 16):0>8b}", crc_16)
+            crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_16(f"{int(input_splitted[0][2:4], base = 16):0>8b}", crc_16)
+            crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_16(f"{int(input_splitted[0][0:2], base = 16):0>8b}", crc_16)
+            in_data_frame = 1
+
+        #EDF
+        if input_splitted[0][6:8] == "1C" and input_splitted[1] == "0001" and in_data_frame == 1:
+            crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_16(f"{int(input_splitted[0][6:8], base = 16):0>8b}", crc_16)
+            crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_16(f"{int(input_splitted[0][4:6], base = 16):0>8b}", crc_16)
+            crc_16 = tb.spacefibre_random_generator_data_link.invert_string(crc_16)
+            in_data_frame = 0
+            if f"{int(input_splitted[0][0:4], base = 16):0>16b}" != crc_16:
+                data_frame_cnt += 1
+                error_cnt += 1
+                error_list += "\t" + str(line_cnt) + "\n"
+
+        #SBF
+        if input_splitted[0][4:8] == "5DFC" and input_splitted[1] == "0001":
+            crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8(f"{int(input_splitted[0][6:8], base = 16):0>8b}")
+            crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8(f"{int(input_splitted[0][4:6], base = 16):0>8b}", crc_8)
+            crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8(f"{int(input_splitted[0][2:4], base = 16):0>8b}", crc_8)
+            crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8(f"{int(input_splitted[0][0:2], base = 16):0>8b}", crc_8)
+            in_bc_frame = 1
+
+        #EBF
+        if input_splitted[0][6:8] == "5C" and input_splitted[1] == "0001" and in_bc_frame == 1:
+            crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8(f"{int(input_splitted[0][6:8], base = 16):0>8b}", crc_8)
+            crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8(f"{int(input_splitted[0][4:6], base = 16):0>8b}", crc_8)
+            crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8(f"{int(input_splitted[0][2:4], base = 16):0>8b}", crc_8)
+            crc_8 = tb.spacefibre_random_generator_data_link.invert_string(crc_8)
+            in_bc_frame = 0
+            if f"{int(input_splitted[0][0:2], base = 16):0>8b}" != crc_8:
+                bc_frame_cnt += 1
+                error_cnt += 1
+                error_list += "\t" + str(line_cnt) + "\n"
+        
+
+    file.close()
+    if error_cnt > 0:
+        tb.logger.error("sim_time %d ns: %d CRC error in %s" \
+        "\n\t%d ACK error" \
+        "\n\t%d NACK error" \
+        "\n\t%d FCT error" \
+        "\n\t%d SIF error" \
+        "\n\t%d EDF error" \
+        "\n\t%d EBF error" \
+        "\nlist of erronated line:\n%s", get_sim_time(units = "ns"), error_cnt, path, ack_cnt, nack_cnt, fct_cnt, sif_cnt, data_frame_cnt, bc_frame_cnt, error_list)
+        return 1
+    else:
+        tb.logger.info("sim_time %d ns: no CRC error in %s", get_sim_time(units = "ns"), path)
+        return 0
+
+
 
 async def send_idle_ctrl_word(tb, number_of_words):
     for x in range(number_of_words):
@@ -867,7 +1014,7 @@ async def cocotb_run(dut):
 
     await initialization_procedure(tb, "reference/spacefibre_serial/monitor_step_3")
 
-    monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_1", number_of_word = 20))
+    monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_3", number_of_word = 2500))
     #Send first FCT to each virtual channel
     for x in range(8):
         await send_FCT(tb, x, 0, "0"+ f"{(x+1):0>7b}")
@@ -930,6 +1077,9 @@ async def cocotb_run(dut):
     
     await monitor
 
+
+    check_CRC(tb, "reference/spacefibre_serial/monitor_step_3_hexa.dat")
+
     if step_3_failed == 0:
         tb.logger.info("simulation time %d ns : step 3 result: Pass")
     else:
@@ -956,25 +1106,36 @@ async def cocotb_run(dut):
 
     await start_gen_vc_dl(tb)
 
+    await send_idle_ctrl_word(tb, 1000)
+
     #Check transmission of idle frame
 
     #Send first FCT to each virtual channel
     for x in range(8):
         await send_FCT(tb, x, 0, "0"+ f"{(x+1):0>7b}")
 
+    await send_idle_ctrl_word(tb, 64*8+50)
     #Check transmission of data frame
 
     await configure_gen_vc_dl(tb,[0xE2,0x1F,0x00,0x00], [0x00,0x00,0x00,0x00])
 
     await start_gen_vc_dl(tb)
 
+    await send_idle_ctrl_word(tb, 1000)
     #Check transmission of idle frame
 
     #Send first FCT to each virtual channel
-    for x in range(8):
-        await send_FCT(tb, x, 0, "0"+ f"{(x+9):0>7b}")
+    for x in range(4):
+        await send_FCT(tb, 2*x, 0, "0"+ f"{(x+9):0>7b}")
 
+    await send_idle_ctrl_word(tb, 64*4+50)
     #Check transmission of 1 out of 2 data frame
+
+    for x in range(4):
+        await send_FCT(tb, 2*x+1, 0, "0"+ f"{(x+9):0>7b}")
+
+    await send_idle_ctrl_word(tb, 64*4+50)
+
 
     if step_4_failed == 0:
         tb.logger.info("simulation time %d ns : step 4 result: Pass")
