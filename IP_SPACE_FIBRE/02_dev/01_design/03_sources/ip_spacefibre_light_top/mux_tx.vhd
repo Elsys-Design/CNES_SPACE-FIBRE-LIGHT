@@ -65,10 +65,10 @@ begin
     FIFO_TX_FULL_INJ        <= '0';
 	elsif rising_edge(CLK) then
     if ENABLE_INJ ='1' then
-      DATA_TX_MUX           <= DATA_TX_MUX;
-      CAPABILITY_TX_MUX     <= CAPABILITY_TX_MUX;
-      NEW_DATA_TX_MUX       <= NEW_DATA_TX_MUX;
-      VALID_K_CHARAC_TX_MUX <= VALID_K_CHARAC_TX_MUX;
+      DATA_TX_MUX           <= DATA_TX_INJ;
+      CAPABILITY_TX_MUX     <= CAPABILITY_TX_INJ;
+      NEW_DATA_TX_MUX       <= NEW_DATA_TX_INJ;
+      VALID_K_CHARAC_TX_MUX <= VALID_K_CHARAC_TX_INJ;
       FIFO_TX_FULL_INJ      <= FIFO_TX_FULL_PPL;
     else
       DATA_TX_MUX           <= DATA_TX_DL;

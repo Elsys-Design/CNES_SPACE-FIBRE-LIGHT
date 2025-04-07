@@ -46,7 +46,6 @@ entity CONFIGURATION_2_BENCH is
         ---
         -- Discret from Network layer
         ---
-        CURRENT_TIME_SLOT     : in std_logic_vector(7 downto 0);
 
         ---
         -- AXI4 Lite slave interface Configurator
@@ -1238,7 +1237,7 @@ port map (
     AXIS_TUSER_RX_DL                 => axis_tuser_rx_dl,
     AXIS_TLAST_RX_DL                 => axis_tlast_rx_dl,
     AXIS_TVALID_RX_DL                => axis_tvalid_rx_dl,
-    CURRENT_TIME_SLOT_NW             => CURRENT_TIME_SLOT,
+    CURRENT_TIME_SLOT_NW             => "00000000",
 
     INTERFACE_RESET                  => interface_rst,
     LINK_RESET                       => link_rst,
