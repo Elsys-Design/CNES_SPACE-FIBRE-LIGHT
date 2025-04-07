@@ -105,7 +105,7 @@ begin
   DATA_DOBUF           <= rd_data(C_DATA_LENGTH-1 downto 0);
   VALID_K_CHARAC_DOBUF <= rd_data(C_DATA_LENGTH+C_BYTE_BY_WORD_LENGTH-1 downto C_DATA_LENGTH);
   DATA_VALID_DOBUF     <= rd_data_vld;
-  END_PACKET_DOBUF     <= vc_end_packet;
+  END_PACKET_DOBUF     <= vc_end_packet and rd_data_vld;
 
 ---------------------------------------------------------
 -----                     Instanciation             -----
@@ -170,39 +170,20 @@ begin
 end process p_link_reset;
 ---------------------------------------------------------
 -- Process: p_vc_end_packet
--- Description: End of packet management
+-- Description: Manage the end of packet
 ---------------------------------------------------------
 p_vc_end_packet: process(CLK, RST_N)
 begin
   if RST_N = '0' then
     vc_end_packet <= '0';
   elsif rising_edge(CLK) then
-    vc_end_packet <= '0';
-    if cnt_word_sent > 0 then
-      vc_end_packet <='1';
-    elsif status_threshold_low = '1' and VC_RD_EN_DMAC='1' and cnt_word_sent > 0 then
-      vc_end_packet <='1';
+    if rd_data_vld = '1' and vc_end_packet ='1' then
+      vc_end_packet <= '0';
+    elsif rd_data_vld = '1' then
+      vc_end_packet <= '1';
     end if;
   end if;
 end process p_vc_end_packet;
----------------------------------------------------------
--- Process: p_cnt_word
--- Description: Count the number of word sent
----------------------------------------------------------
-p_cnt_word: process(CLK, RST_N)
-begin
-  if RST_N = '0' then
-    cnt_word_sent      <= (others =>'0');
-  elsif rising_edge(CLK) then
-    if rd_data_vld = '1' and  vc_end_packet='1' then
-      cnt_word_sent      <= (others =>'0');
-    elsif rd_data_vld = '1' then
-      cnt_word_sent <= cnt_word_sent +1;
-    elsif cnt_word_sent > 1 then
-      cnt_word_sent      <= (others =>'0');
-    end if;
-  end if;
-end process p_cnt_word;
 ---------------------------------------------------------
 -- Process: p_vc_ready
 -- Description: Manages the virtual channel ready signal
