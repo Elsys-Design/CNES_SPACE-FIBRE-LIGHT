@@ -30,468 +30,393 @@
 
 /* These could be macro constants, if space is an issue. */
 static volatile uint32_t * const CONF_PHY_PARAMETERS_REGISTER =
-    (volatile uint32_t *)
-    (
-        MODEL_CONFIGURATOR_ADDR + MOD_CONF_PARAM_PHY_REG_OFFSET
-    );
+	(volatile uint32_t *)
+	(
+		MODEL_CONFIGURATOR_ADDR + MOD_CONF_PARAM_PHY_REG_OFFSET
+	);
 
 static volatile uint32_t * const CONF_PARAMETERS_REGISTER =
-    (volatile uint32_t *)
-    (
-        MODEL_CONFIGURATOR_ADDR + MOD_CONF_PARAM_LANE_REG_OFFSET
-    );
+	(volatile uint32_t *)
+	(
+		MODEL_CONFIGURATOR_ADDR + MOD_CONF_PARAM_LANE_REG_OFFSET
+	);
 
 static volatile uint32_t * const CONF_STATUS_REGISTER =
-    (volatile uint32_t *)
-    (
-        MODEL_CONFIGURATOR_ADDR + MOD_CONF_STATUS_LANE_REG_OFFSET
-    );
+	(volatile uint32_t *)
+	(
+		MODEL_CONFIGURATOR_ADDR + MOD_CONF_STATUS_LANE_REG_OFFSET
+	);
 
 static volatile uint32_t * const ANA_STATUS_REGISTER =
-    (volatile uint32_t *)
-    (
-        MODEL_ANALYZER_ADDR + MOD_ANA_STATUS_REG_OFFSET
-    );
+	(volatile uint32_t *)
+	(
+		MODEL_ANALYZER_ADDR + MOD_ANA_STATUS_REG_OFFSET
+	);
 
 static volatile uint32_t * const GEN_STATUS_REGISTER =
-    (volatile uint32_t *)
-    (
-        MODEL_GENERATOR_ADDR + MOD_GEN_STATUS_REG_OFFSET
-    );
+	(volatile uint32_t *)
+	(
+		MODEL_GENERATOR_ADDR + MOD_GEN_STATUS_REG_OFFSET
+	);
 
-enum fsm_state
-{
-    FSM_CLEARLINE         = 0b0000,
-    FSM_DISABLED          = 0b0001,
-    FSM_WAIT              = 0b0010,
-    FSM_STARTED           = 0b0011,
-    FSM_INVERTRXPOLARITY  = 0b0100,
-    FSM_CONNECTING        = 0b0101,
-    FSM_CONNECTED         = 0b0110,
-    FSM_ACTIVE            = 0b0111,
-    FSM_PREPARESTANDBY    = 0b1000,
-    FSM_LOSSOFSIGNAL      = 0b1001
-};
+static volatile uint32_t * const ANA_CONTROL_REGISTER =
+	(volatile uint32_t *)
+	(
+		MODEL_ANALYZER_ADDR + MOD_ANA_CONTROL_REG_OFFSET
+	);
 
-enum action_result
-{
-   OK,
-   TIMEOUT
-};
+static volatile uint32_t * const GEN_CONTROL_REGISTER =
+	(volatile uint32_t *)
+	(
+		MODEL_GENERATOR_ADDR + MOD_GEN_CONTROL_REG_OFFSET
+	);
 
-static void print_fsm_state (const enum fsm_state state)
-{
-    switch (state)
-    {
-        case FSM_CLEARLINE:
-			debug_printf("CLEARLINE");
-			break;
+static volatile uint32_t * const ANA_CONFIGURATION_REGISTER =
+	(volatile uint32_t *)
+	(
+		MODEL_ANALYZER_ADDR + MOD_ANA_CONFIG_REG_OFFSET
+	);
 
-        case FSM_DISABLED:
-			debug_printf("DISABLED");
-			break;
-
-        case FSM_WAIT:
-			debug_printf("WAIT");
-			break;
-
-        case FSM_STARTED:
-			debug_printf("STARTED");
-			break;
-
-        case FSM_INVERTRXPOLARITY:
-			debug_printf("INVERTRXPOLARITY");
-			break;
-
-        case FSM_CONNECTING:
-			debug_printf("CONNECTING");
-			break;
-
-        case FSM_CONNECTED:
-			debug_printf("CONNECTED");
-			break;
-
-        case FSM_ACTIVE:
-			debug_printf("ACTIVE");
-			break;
-
-        case FSM_PREPARESTANDBY:
-			debug_printf("PREPARESTANDBY");
-			break;
-
-        case FSM_LOSSOFSIGNAL:
-			debug_printf("LOSSOFSIGNAL");
-			break;
-
-        default:
-            debug_printf("UNKNOWN STATE (%d)", (int) state);
-            break;
-    }
-}
-
-static enum action_result wait_for_state
-(
-    const volatile uint32_t conf_status_register [const static 1],
-    const enum fsm_state target,
-    const unsigned int timeout
-)
-{
-    unsigned int timer = 0;
-
-    while (CONF_STATUS_GET(LANE_STATE, *conf_status_register) != target)
-    {
-        timer += 1;
-
-        if (timer >= timeout)
-        {
-            debug_printf("\r\n Could not reach FSM STATE ");
-            print_fsm_state(target);
-            debug_printf(". Stuck in ");
-            print_fsm_state(CONF_STATUS_GET(LANE_STATE, *conf_status_register));
-            debug_printf(": timed out after %u attempts.\r\n", timer);
-
-            return TIMEOUT;
-        }
-    }
-
-    debug_printf("\r\n Reached FSM STATE \r\n");
-    print_fsm_state(target);
-    debug_printf("\r\n");
-
-    return OK;
-}
-
-static enum action_result wait_for_states
-(
-    const volatile uint32_t conf_status_register [const static 1],
-    const unsigned int valid_states_count,
-    const enum fsm_state valid_states [const static valid_states_count],
-    const unsigned int timeout
-)
-{
-    unsigned int timer = 0;
-    enum fsm_state current_state;
-
-    for (;;)
-    {
-        current_state = CONF_STATUS_GET(LANE_STATE, *conf_status_register);
-
-        for (unsigned int i = 0; i < valid_states_count; ++i)
-        {
-            if (current_state == valid_states[i])
-            {
-                debug_printf("\r\n Reached FSM STATE \r\n");
-                print_fsm_state(current_state);
-                debug_printf("\r\n");
-
-                return OK;
-            }
-        }
-
-        timer += 1;
-
-        if (timer >= timeout)
-        {
-            debug_printf("\r\n Could not reach FSM STATEs ");
-
-            for (unsigned int i = 0; i < valid_states_count; ++i)
-            {
-                print_fsm_state(valid_states[i]);
-                debug_printf(" ");
-            }
-
-            debug_printf(". Stuck in ");
-            print_fsm_state(CONF_STATUS_GET(LANE_STATE, *conf_status_register));
-            debug_printf(": timed out after %u attempts.\r\n", timer);
-
-            return TIMEOUT;
-        }
-    }
-}
+static volatile uint32_t * const GEN_CONFIGURATION_REGISTER =
+	(volatile uint32_t *)
+	(
+		MODEL_GENERATOR_ADDR + MOD_GEN_CONFIG_REG_OFFSET
+	);
 
 static enum action_result initialize (void)
 {
-    debug_printf("\r\n Sets the DUT Lane initialisation FSM to Started state.\r\n");
+	debug_printf("\r\n Sets the DUT Lane initialisation FSM to Started state.\r\n");
 
-    reset_the_dut();
-    lane_reset_conf();
+	reset_the_dut();
+	lane_reset_conf();
 
-    CONF_PARAMETER_SET_IN_PLACE(LANESTART, *CONF_PARAMETERS_REGISTER, 1);
+	CONF_PARAMETER_SET_IN_PLACE(LANESTART, 1, *CONF_PARAMETERS_REGISTER);
 
-    return
-        wait_for_state
-        (
-            CONF_STATUS_REGISTER,
-            FSM_STARTED,
-            DEFAULT_TIMEOUT
-        );
+	return
+		wait_for_state
+		(
+			CONF_STATUS_REGISTER,
+			LANE_STATE_STARTED,
+			DEFAULT_TIMEOUT
+		);
 }
 
 // _ prefix to avoid name collision
 static enum action_result _wait_for_started_to_active (void)
 {
-    // The order matters.
-    const enum fsm_state valid_states[3] =
-        {FSM_ACTIVE, FSM_CONNECTED, FSM_CONNECTING};
+	// The order matters.
+	const enum lane_state valid_states[3] =
+		{LANE_STATE_ACTIVE, LANE_STATE_CONNECTED, LANE_STATE_CONNECTING};
 
-    wait(1023);
+	wait(1023);
 
-    // The set of allowed states shrinks at each iteration.
-    for (int i = 3; i >= 1; i--)
-    {
-        if
-        (
-            wait_for_states
-            (
-                CONF_STATUS_REGISTER,
-                i,
-                valid_states,
-                5000
-            )
-            != OK
-        )
-        {
-            return TIMEOUT;
-        }
-    }
+	// The set of allowed states shrinks at each iteration.
+	for (int i = 3; i >= 1; i--)
+	{
+		if
+		(
+			wait_for_states
+			(
+				CONF_STATUS_REGISTER,
+				i,
+				valid_states,
+				5000
+			)
+			!= OK
+		)
+		{
+			return TIMEOUT;
+		}
+	}
 
-    return OK;
+	return OK;
 }
 
 // _ prefix to avoid name collision
 static uint32_t _wait_end_test (void)
 {
-    unsigned int timer = 0;
+	unsigned int timer = 0;
 
-    for (;;)
-    {
-        if
-        (
-            GEN_STATUS_GET(TEST_END, *GEN_STATUS_REGISTER)
-            && ANA_STATUS_GET(TEST_END, *ANA_STATUS_REGISTER)
-        )
-        {
-            return OK;
-        }
+	for (;;)
+	{
+		if
+		(
+			GEN_STATUS_GET(TEST_END, *GEN_STATUS_REGISTER)
+			&& ANA_STATUS_GET(TEST_END, *ANA_STATUS_REGISTER)
+		)
+		{
+			return OK;
+		}
 
-        if (timer >= 20000)
-        {
-            debug_printf("\r\n wait_end_test timeout\r\n");
+		if (timer >= 20000)
+		{
+			debug_printf("\r\n wait_end_test timeout\r\n");
 
-            if (!GEN_STATUS_GET(TEST_END, *GEN_STATUS_REGISTER))
-            {
-                debug_printf("\r\n Generator not ended\r\n");
-            }
+			if (!GEN_STATUS_GET(TEST_END, *GEN_STATUS_REGISTER))
+			{
+				debug_printf("\r\n Generator not ended\r\n");
+			}
 
-            if (!ANA_STATUS_GET(TEST_END, *ANA_STATUS_REGISTER))
-            {
-                debug_printf("\r\n Generator not ended\r\n");
-            }
+			if (!ANA_STATUS_GET(TEST_END, *ANA_STATUS_REGISTER))
+			{
+				debug_printf("\r\n Generator not ended\r\n");
+			}
 
-            return TIMEOUT;
-        }
-    }
+			return TIMEOUT;
+		}
+	}
 }
 
 #define SETTINGS_COUNT 4
 
 const uint32_t address_and_offset[SETTINGS_COUNT][2] =
-    {
-        {MODEL_GENERATOR_ADDR, MOD_GEN_CONFIG_REG_OFFSET},
-        {MODEL_ANALYZER_ADDR, MOD_ANA_CONFIG_REG_OFFSET},
-        {MODEL_GENERATOR_ADDR, MOD_GEN_INIT_VALUE_REG_OFFSET},
-        {MODEL_ANALYZER_ADDR, MOD_ANA_INIT_VALUE_REG_OFFSET}
-    };
+	{
+		{MODEL_GENERATOR_ADDR, MOD_GEN_CONFIG_REG_OFFSET},
+		{MODEL_ANALYZER_ADDR, MOD_ANA_CONFIG_REG_OFFSET},
+		{MODEL_GENERATOR_ADDR, MOD_GEN_INIT_VALUE_REG_OFFSET},
+		{MODEL_ANALYZER_ADDR, MOD_ANA_INIT_VALUE_REG_OFFSET}
+	};
 
-#define STEP1_TESTS_COUNT 4
-const uint8_t step1_test[STEP1_TESTS_COUNT][SETTINGS_COUNT][4] =
-    {
-        { // Test 1
-            {0x84, 0x00, 0x00, 0x00}, // Generator Config
-            {0x84, 0x00, 0x00, 0x00}, // Analyzer Config
-            {0x00, 0x00, 0x00, 0x34}, // Generator Initial Value
-            {0x00, 0x00, 0x00, 0x34}, // Analyzer Initial Value
-        },
-        { // Test 2
-            {0x9F, 0x00, 0x00, 0x01}, // Generator Config
-            {0x9F, 0x00, 0x00, 0x01}, // Analyzer Config
-            {0x01, 0x00, 0x00, 0x00}, // Generator Initial Value
-            {0x01, 0x00, 0x00, 0x00}, // Analyzer Initial Value
-        },
-        { // Test 3
-            {0x82, 0x20, 0x00, 0x01}, // Generator Config
-            {0x82, 0x20, 0x00, 0x01}, // Analyzer Config
-            {0x00, 0x00, 0x00, 0x02}, // Generator Initial Value
-            {0x00, 0x00, 0x00, 0x02}, // Analyzer Initial Value
-        },
-        { // Test 4
-            {0xA1, 0x08, 0x00, 0x01}, // Generator Config
-            {0xA1, 0x08, 0x00, 0x01}, // Analyzer Config
-            {0x00, 0x00, 0x00, 0x03}, // Generator Initial Value
-            {0x00, 0x00, 0x00, 0x03}, // Analyzer Initial Value
-        },
-    };
+// Yes, it's weird. But it's convenient.
+#define EIGHT_ENTRIES_OF(...) \
+	__VA_ARGS__, __VA_ARGS__, __VA_ARGS__, __VA_ARGS__, \
+	__VA_ARGS__, __VA_ARGS__, __VA_ARGS__, __VA_ARGS__
+
+#define EIGHT_VARIANTS_OF(x) \
+	(x), (x + 32), (x + 64), (x + 128), \
+	(x + 256), (x + 512), (x + 1024), (x + 2048)
+
+#define NINTH_VARIANT_OF(x) (x + 4096)
+
+#define BASIC_CONFIG(init, ...) \
+	{ \
+		.gen_conf = {EIGHT_ENTRIES_OF(__VA_ARGS__)}, \
+		.ana_conf = {EIGHT_ENTRIES_OF(__VA_ARGS__)}, \
+		.gen_init = {EIGHT_VARIANTS_OF(init)}, \
+		.ana_init = {EIGHT_VARIANTS_OF(init)}, \
+		.broadcast_gen_conf = __VA_ARGS__, \
+		.broadcast_ana_conf = __VA_ARGS__, \
+		.broardcast_gen_init = NINTH_VARIANT_OF(init), \
+		.broardcast_ana_init = NINTH_VARIANT_OF(init) \
+	}
+
+struct test_config
+{
+	struct generator_configuration gen_conf[8];
+	struct analyzer_configuration ana_conf[8];
+	struct generator_configuration broadcast_gen_conf;
+	struct analyzer_configuration broadcast_ana_conf;
+	uint32_t gen_init[8];
+	uint32_t ana_init[8];
+	uint32_t broardcast_gen_init;
+	uint32_t broardcast_ana_init;
+};
+
+#define STEP1_TESTS_COUNT 5
+const struct test_config step1_test[STEP1_TESTS_COUNT] =
+	{
+		// Test 1
+		BASIC_CONFIG(0x34000000, {.packet_number = 4, .packet_size = 4}),
+		// Test 2
+		BASIC_CONFIG
+		(
+			0x00FF0000,
+			{
+				.packet_number = 31,
+				.packet_size = 260,
+				.generation_data = GENERATION_DATA_PRBS
+			}
+		),
+		// Test 3
+		BASIC_CONFIG
+		(
+			0x00000001,
+			{
+				.packet_number = 0x1F,
+				.packet_size = 260,
+				.generation_data = GENERATION_DATA_PRBS
+			}
+		),
+		// Test 4
+		BASIC_CONFIG
+		(
+			0x02000000,
+			{
+				.packet_number = 2,
+				.packet_size = 260,
+				.generation_data = GENERATION_DATA_PRBS
+			}
+		),
+		// Test 5
+		BASIC_CONFIG
+		(
+			0x03000000,
+			{
+				.packet_number = 1,
+				.packet_size = 69,
+				.generation_data = GENERATION_DATA_PRBS
+			}
+		),
+	};
 
 #define STEP2_TESTS_COUNT 5
-const uint8_t step2_test[STEP2_TESTS_COUNT][SETTINGS_COUNT][4] =
-    {
-        { // Test 1
-            {0x84, 0x00, 0x00, 0x00}, // Generator Config
-            {0x84, 0x00, 0x00, 0x00}, // Analyzer Config
-            {0x00, 0x00, 0x00, 0x00}, // Generator Initial Value
-            {0x00, 0x00, 0x00, 0x00}, // Analyzer Initial Value
-        },
-        { // Test 2
-            {0x9F, 0x00, 0x00, 0x01}, // Generator Config
-            {0x9F, 0x00, 0x00, 0x01}, // Analyzer Config
-            {0x00, 0x00, 0x00, 0x00}, // Generator Initial Value
-            {0x00, 0x00, 0x00, 0x00}, // Analyzer Initial Value
-        },
-        { // Test 3
-            {0x9F, 0x20, 0x00, 0x01}, // Generator Config
-            {0x9F, 0x20, 0x00, 0x01}, // Analyzer Config
-            {0x01, 0x00, 0x00, 0x00}, // Generator Initial Value
-            {0x01, 0x00, 0x00, 0x00}, // Analyzer Initial Value
-        },
-        { // Test 4
-            {0x82, 0x20, 0x00, 0x01}, // Generator Config
-            {0x82, 0x20, 0x00, 0x01}, // Analyzer Config
-            {0x00, 0x00, 0x00, 0x02}, // Generator Initial Value
-            {0x00, 0x00, 0x00, 0x02}, // Analyzer Initial Value
-        },
-        { // Test 5
-            {0xA1, 0x08, 0x00, 0x01}, // Generator Config
-            {0xA1, 0x08, 0x00, 0x01}, // Analyzer Config
-            {0x00, 0x00, 0x00, 0x03}, // Generator Initial Value
-            {0x00, 0x00, 0x00, 0x03}, // Analyzer Initial Value
-        },
-    };
+const struct test_config step2_test[STEP2_TESTS_COUNT] =
+	{
+		// Test 1
+		BASIC_CONFIG(0x00000000, {.packet_number = 4, .packet_size = 260}),
+		// Test 2
+		BASIC_CONFIG
+		(
+			0x00000000,
+			{
+				.packet_number = 31,
+				.packet_size = 260,
+				.generation_data = GENERATION_DATA_PRBS
+			}
+		),
+		// Test 3
+		BASIC_CONFIG
+		(
+			0x00000001,
+			{
+				.packet_number = 31,
+				.packet_size = 260,
+				.generation_data = GENERATION_DATA_PRBS
+			}
+		),
+		// Test 4
+		BASIC_CONFIG
+		(
+			0x02000000,
+			{
+				.packet_number = 4,
+				.packet_size = 260,
+				.generation_data = GENERATION_DATA_PRBS
+			}
+		),
+		// Test 5
+		BASIC_CONFIG
+		(
+			0x03000000,
+			{
+				.packet_number = 1,
+				.packet_size = 69,
+				.generation_data = GENERATION_DATA_PRBS
+			}
+		)
+	};
 
 static void start_test ()
 {
-    mod_write_all
-    (
-        MODEL_ANALYZER_ADDR,
-        MOD_ANA_CONTROL_REG_OFFSET,
-        bytearray(0x01,0x00,0x00,0x00)
-    );
-
-    mod_write_all
-    (
-        MODEL_GENERATOR_ADDR,
-        MOD_GEN_CONTROL_REG_OFFSET,
-        bytearray(0x01,0x00,0x00,0x00)
-    );
+	ANA_CONTROL_SET_IN_PLACE(MODEL_START, 1, *ANA_CONTROL_REGISTER);
+	GEN_CONTROL_SET_IN_PLACE(MODEL_START, 1, *GEN_CONTROL_REGISTER);
 }
 
 static enum action_result run_tests
 (
-    const unsigned int test_count,
-    const uint8_t test[const static test_count][SETTINGS_COUNT][4]
+	const unsigned int test_count,
+	const struct test_config test[const static test_count]
 )
 {
-    unsigned int successes = 0;
+	unsigned int successes = 0;
 
-    if
-    (
-        (initialize() != OK)
-        || (_wait_for_started_to_active() != OK)
-    )
-    {
-        return TIMEOUT;
-    }
+	if
+	(
+		(initialize() != OK)
+		|| (_wait_for_started_to_active() != OK)
+	)
+	{
+		return TIMEOUT;
+	}
 
-    for (unsigned int i = 0; i < test_count; ++i)
-    {
-        for (int j = 0; j < SETTINGS_COUNT; ++j)
-        {
-             const uint8_t * const config = test[i][j];
+	for (unsigned int i = 0; i < test_count; ++i)
+	{
+		// Only one generator & analyzer here.
+		for (int j = 0; j < 1; ++j)
+		{
+			ANA_CONFIGURATION_REGISTER[j] =
+				ANA_CONFIGURATION_TO_UINT32_T(test[i].ana_conf[j]);
 
-             mod_write_all
-             (
-                 address_and_offset[j][0],
-                 address_and_offset[j][1],
-                 bytearray(config[0], config[1], config[2], config[3])
-             );
-        }
+			GEN_CONFIGURATION_REGISTER[j] =
+				GEN_CONFIGURATION_TO_UINT32_T(test[i].gen_conf[j]);
+		}
+		start_test();
 
-        start_test();
+		if (_wait_end_test() == OK)
+		{
+			int errors = ANA_STATUS_GET(ERROR_COUNTER, *ANA_STATUS_REGISTER);
 
-        if (_wait_end_test() == OK)
-        {
-            int errors = ANA_STATUS_GET(ERROR_COUNTER, *ANA_STATUS_REGISTER);
+			debug_printf
+			(
+				"\r\n Test %d completed with %d errors out.\r\n",
+				errors
+			);
 
-            debug_printf
-            (
-                "\r\n Test %d completed with %d errors out.\r\n",
-                errors
-            );
+			if (errors == 0)
+			{
+				successes++;
+			}
+		}
+		else
+		{
+			debug_printf("\r\nTest %d timed out.\r\n", i);
+		}
+	}
 
-            if (errors == 0)
-            {
-                successes++;
-            }
-        }
-        else
-        {
-            debug_printf("\r\nTest %d timed out.\r\n", i);
-        }
-    }
+	debug_printf
+	(
+		"\r\nTest suite: %d out of %d tests succeeded.\r\n",
+		successes,
+		test_count
+	);
 
-    debug_printf
-    (
-        "\r\nTest suite: %d out of %d tests succeeded.\r\n",
-        successes,
-        test_count
-    );
-
-    return OK;
+	return OK;
 }
 
 void alt_scenario_loopback_step_1 (void)
 {
-    debug_printf("\r\n Start scenario loopback\r\n");
-    debug_printf("\r\n Step 1: Parallel loopback START \r\n");
+	debug_printf("\r\n Start scenario loopback\r\n");
+	debug_printf("\r\n Step 1: Parallel loopback START \r\n");
 
-    CONF_PARAMETER_SET_IN_PLACE
-    (
-        PARALLEL_LOOPBACK_ENABLES,
-        *CONF_PARAMETERS_REGISTER,
-        1
-    );
+	CONF_PARAMETER_SET_IN_PLACE
+	(
+		PARALLEL_LOOPBACK_ENABLES,
+		1,
+		*CONF_PARAMETERS_REGISTER
+	);
 
-    run_tests(STEP1_TESTS_COUNT, step1_test);
+	run_tests(STEP1_TESTS_COUNT, step1_test);
 
-    // Disable parallel loopback
-    CONF_PARAMETER_SET_IN_PLACE
-    (
-        PARALLEL_LOOPBACK_ENABLES,
-        *CONF_PARAMETERS_REGISTER,
-        0
-    );
+	// Disable parallel loopback
+	CONF_PARAMETER_SET_IN_PLACE
+	(
+		PARALLEL_LOOPBACK_ENABLES,
+		0,
+		*CONF_PARAMETERS_REGISTER
+	);
 
-    debug_printf("\r\n Step 1: Parallel loopback END \r\n");
+	debug_printf("\r\n Step 1: Parallel loopback END \r\n");
 }
 
 void alt_scenario_loopback_step_2 (void)
 {
-    debug_printf("\r\n Step 2 START \r\n");
+	debug_printf("\r\n Step 2 START \r\n");
 
-    CONF_PHY_PARAMETER_SET_IN_PLACE
-    (
-        NEAR_END_SERIAL_LOOPBACK,
-        *CONF_PHY_PARAMETERS_REGISTER,
-        1
-    );
+	CONF_PHY_PARAMETER_SET_IN_PLACE
+	(
+		NEAR_END_SERIAL_LOOPBACK,
+		1,
+		*CONF_PHY_PARAMETERS_REGISTER
+	);
 
-    run_tests(STEP2_TESTS_COUNT, step2_test);
+	run_tests(STEP2_TESTS_COUNT, step2_test);
 
-    CONF_PHY_PARAMETER_SET_IN_PLACE
-    (
-        NEAR_END_SERIAL_LOOPBACK,
-        *CONF_PHY_PARAMETERS_REGISTER,
-        0
-    );
+	CONF_PHY_PARAMETER_SET_IN_PLACE
+	(
+		NEAR_END_SERIAL_LOOPBACK,
+		0,
+		*CONF_PHY_PARAMETERS_REGISTER
+	);
 
-    debug_printf("\r\n Step 2 END \r\n");
+	debug_printf("\r\n Step 2 END \r\n");
 }
