@@ -90,6 +90,7 @@ type data_dmac_fsm is (
   signal data_counter    : unsigned(6 downto 0);          --! FCT counter TX
   signal req_ack_done    : std_logic;
   signal cnt_wait_ack    : unsigned(3 downto 0);
+  signal cnt_wait        : std_logic;
   signal test            : std_logic_vector(G_VC_NUM downto 0);
 
   signal current_channel : integer range 0 to G_VC_NUM; -- Index of the current channel
@@ -145,6 +146,7 @@ begin
     TRANS_POL_FLG_DMAC <= TRANS_POL_FLG_DERRM;
     SEQ_NUM_ACK_DMAC   <= SEQ_NUM_ACK_DERRM;
     req_ack_done       <= '0';
+    cnt_wait           <= '1';
     case current_state_vc is
       when IDLE_ST =>
         current_state_req    <= IDLE_ST;
@@ -162,12 +164,14 @@ begin
           idle_cnt        <= (others => '0');
         end if;
         -- Req or Channel ready
-        if (((REQ_ACK_DERRM = '1' or REQ_NACK_DERRM = '1' ) and cnt_wait_ack = 15) or REQ_FCT_DIBUF /= std_logic_vector(to_unsigned(0,G_VC_NUM))) and type_frame /= C_BC_FRM then -- Pending request
+        if (((REQ_ACK_DERRM = '1' or REQ_NACK_DERRM = '1' ) and cnt_wait_ack = 15) or REQ_FCT_DIBUF /= std_logic_vector(to_unsigned(0,G_VC_NUM))) and type_frame /= C_BC_FRM and cnt_wait = '1' then -- Pending request
           current_state_vc <= REQ_ST;
         elsif VC_READY_DOBUF(current_channel) = '1' and VC_PAUSE_MIB(current_channel) = '0' then -- Channel ready
-          current_state_vc <= TRANSFER_ST;
-        elsif test /= std_logic_vector(to_unsigned(0, G_VC_NUM)) then
+          current_state_vc <= START_ENCAPS_ST;
+          VC_RD_EN_DMAC(current_channel)        <= '1';
+        elsif test /= std_logic_vector(to_unsigned(0, G_VC_NUM+1)) then
           current_channel <= (current_channel + 1) mod 9;
+          NEW_WORD_DMAC        <= '1';
         else
           NEW_WORD_DMAC        <= '1';
         end if;
@@ -191,7 +195,7 @@ begin
             END_PACKET_DMAC   <= VC_END_PACKET_DOBUF(current_channel);
             data_counter      <= data_counter + 1;
             current_state_vc  <= END_ST;
-          elsif (((REQ_ACK_DERRM = '1' or REQ_NACK_DERRM = '1' ) and cnt_wait_ack = 15) or REQ_FCT_DIBUF /= std_logic_vector(to_unsigned(0,G_VC_NUM))) and type_frame /= C_BC_FRM then -- Pending request
+          elsif (((REQ_ACK_DERRM = '1' or REQ_NACK_DERRM = '1' ) and cnt_wait_ack = 15) or REQ_FCT_DIBUF /= std_logic_vector(to_unsigned(0,G_VC_NUM))) and type_frame /= C_BC_FRM and cnt_wait = '1' then -- Pending request
             DATA_DMAC         <= VC_DATA_DOBUF(current_channel);
             VALID_K_CHAR_DMAC <= VC_VALID_K_CHAR_DOBUF(current_channel);
             NEW_WORD_DMAC     <= VC_DATA_VALID_DOBUF(current_channel);
@@ -204,7 +208,7 @@ begin
             data_counter      <= data_counter + 1;
             current_state_req <= TRANSFER_ST;
           end if;
-        elsif (((REQ_ACK_DERRM = '1' or REQ_NACK_DERRM = '1' ) and cnt_wait_ack = 15) or REQ_FCT_DIBUF /= std_logic_vector(to_unsigned(0,G_VC_NUM))) and type_frame /= C_BC_FRM then -- Pending request
+        elsif (((REQ_ACK_DERRM = '1' or REQ_NACK_DERRM = '1' ) and cnt_wait_ack = 15) or REQ_FCT_DIBUF /= std_logic_vector(to_unsigned(0,G_VC_NUM))) and type_frame /= C_BC_FRM and cnt_wait = '1' then -- Pending request
           current_state_vc <= REQ_ST;
         end if;
      
@@ -221,7 +225,7 @@ begin
           NEW_WORD_DMAC     <= VC_DATA_VALID_DOBUF(current_channel);
           END_PACKET_DMAC   <= VC_END_PACKET_DOBUF(current_channel);
           data_counter      <= data_counter + 1;
-          current_state_vc  <= IDLE_ST;
+          current_state_vc  <= END_ST;
         elsif VC_DATA_VALID_DOBUF(current_channel)='1' then -- Classic data transfer
           DATA_DMAC         <= VC_DATA_DOBUF(current_channel);
           VALID_K_CHAR_DMAC <= VC_VALID_K_CHAR_DOBUF(current_channel);
@@ -229,7 +233,8 @@ begin
           data_counter      <= data_counter + 1;
           current_state_req <= TRANSFER_ST;  
         else
-          current_state_vc <= current_state_req;  
+          current_state_vc  <= current_state_req;
+          cnt_wait          <= '0'; 
           if REQ_ACK_DERRM = '1' then -- ACK Request
             NEW_WORD_DMAC   <= '1';
             END_PACKET_DMAC <= '1';
