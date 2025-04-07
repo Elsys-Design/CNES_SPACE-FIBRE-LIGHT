@@ -838,7 +838,7 @@ async def cocotb_run(dut):
     #Check ACK
 
     #Send FULL controle word
-    await send_full(tb, "1"+ f"{(381%128):0>7b}")
+    await send_full(tb, "1"+ f"{(380%128):0>7b}")
 
     #Check ACK
 
@@ -882,7 +882,7 @@ async def cocotb_run(dut):
 
     #Check data frame SEQ NUM and CRC
 
-    await configure_model_dl(tb, 19, [0x01,0x01,0x00,0x01], [0x2E,0x00,0x00,0x00])
+    await configure_model_dl(tb, 19, [0x01,0x01,0x00,0x00], [0x2E,0x00,0x00,0x00])
     await start_model_dl(tb, 19)
 
     await send_idle_ctrl_word(tb, 24)
