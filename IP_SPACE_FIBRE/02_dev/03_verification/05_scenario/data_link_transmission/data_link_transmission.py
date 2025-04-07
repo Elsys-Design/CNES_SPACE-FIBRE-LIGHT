@@ -838,7 +838,7 @@ async def cocotb_run(dut):
     #Check ACK
 
     #Send FULL controle word
-    await send_full(tb, "1"+ f"{(381%128):0>7b}")
+    await send_full(tb, "1"+ f"{(380%128):0>7b}")
 
     #Check ACK
 

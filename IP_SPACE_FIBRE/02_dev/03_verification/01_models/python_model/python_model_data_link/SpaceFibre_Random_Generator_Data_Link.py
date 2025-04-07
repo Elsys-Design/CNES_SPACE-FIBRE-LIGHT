@@ -639,6 +639,8 @@ class SpaceFibre_Random_Generator:
             for j in range(packet_number):
 
                 #check if skip needed
+                data_to_log = ""
+                k_encoded_to_log = ""
                 if  word_counter_for_skip >= 5000:
                     data_to_log = ""
                     k_encoded_to_log = ""
@@ -662,8 +664,10 @@ class SpaceFibre_Random_Generator:
                     log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
                     log_file.write("32;7F7FCEFC;0;0001;\n")
                     word_counter_for_skip = 0
+
                 #Send SBF
-                
+                data_to_log = ""
+                k_encoded_to_log = ""
                 data_10b, k_encoded  = await self.write_to_Rx("11111100", 0, 1, invert_polarity = invert_polarity)
                 data_to_log = data_10b + "_" + data_to_log
                 k_encoded_to_log = str(k_encoded) + k_encoded_to_log
@@ -690,6 +694,8 @@ class SpaceFibre_Random_Generator:
                 word_counter_for_skip += 1
 
                 #check if skip needed
+                data_to_log = ""
+                k_encoded_to_log = ""
                 if  word_counter_for_skip >= 5000:
                     data_to_log = ""
                     k_encoded_to_log = ""
@@ -713,12 +719,13 @@ class SpaceFibre_Random_Generator:
                     log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
                     log_file.write("32;7F7FCEFC;0;0001;\n")
                     word_counter_for_skip = 0
-                #Send first broadcast data
 
+                #Send first broadcast data
+                data_to_log = ""
+                k_encoded_to_log = ""
                 for n in range(4):
                     if packet_size != None:
-                        #send EOP at the end of a packet
-                        data_10b, k_encoded  = await self.write_to_Rx(f"{(packet_size):0>64b}"[64-8*(n+1):64-8*n], 0, 1, invert_polarity = invert_polarity)
+                        data_10b, k_encoded  = await self.write_to_Rx(f"{(packet_size):0>64b}"[64-8*(n+1):64-8*n], 0, 0, invert_polarity = invert_polarity)
                         data_to_log = data_10b + "_" + data_to_log
                         k_encoded_to_log = str(k_encoded) + k_encoded_to_log
                         crc_8 = self.compute_crc_8(f"{(packet_size):0>64b}"[64-8*(n+1):64-8*n], crc_8)
@@ -727,8 +734,11 @@ class SpaceFibre_Random_Generator:
                         data_to_log = data_10b + "_" + data_to_log
                         k_encoded_to_log = str(k_encoded) + k_encoded_to_log
                         crc_8 = self.compute_crc_8(word_binary[32-8*(n+1):32-8*n], crc_8)
-                    
-                log_file.write("32;" + f"{(int(word_binary, 2)):0>8X}" + ";0;0000;\n")
+
+                if packet_size != None:
+                    log_file.write("32;" + f"{(packet_size):0>16X}"[8:16] + ";0;0000;\n")
+                else:    
+                    log_file.write("32;" + f"{(int(word_binary, 2)):0>8X}" + ";0;0000;\n")
                 log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
 
                 word_binary = word_binary[1:32] + str(int(word_binary[0])^int(word_binary[1])^int(word_binary[3])^int(word_binary[4]))
@@ -736,6 +746,8 @@ class SpaceFibre_Random_Generator:
                 word_counter_for_skip += 1
 
                 #check if skip needed
+                data_to_log = ""
+                k_encoded_to_log = ""
                 if  word_counter_for_skip >= 5000:
                     data_to_log = ""
                     k_encoded_to_log = ""
@@ -759,11 +771,13 @@ class SpaceFibre_Random_Generator:
                     log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
                     log_file.write("32;7F7FCEFC;0;0001;\n")
                     word_counter_for_skip = 0
-                #Send last broadcast data
 
-                for n in range(4):
+                #Send last broadcast data
+                data_to_log = ""
+                k_encoded_to_log = ""
+                for n in range(3):
                     if packet_size != None:
-                        data_10b, k_encoded  = await self.write_to_Rx(f"{(packet_size):0>64b}"[32-8*(n+1):32-8*n], 0, 1, invert_polarity = invert_polarity)
+                        data_10b, k_encoded  = await self.write_to_Rx(f"{(packet_size):0>64b}"[32-8*(n+1):32-8*n], 0, 0, invert_polarity = invert_polarity)
                         data_to_log = data_10b + "_" + data_to_log
                         k_encoded_to_log = str(k_encoded) + k_encoded_to_log
                         crc_8 = self.compute_crc_8(f"{(packet_size):0>64b}"[32-8*(n+1):32-8*n], crc_8)
@@ -772,8 +786,16 @@ class SpaceFibre_Random_Generator:
                         data_to_log = data_10b + "_" + data_to_log
                         k_encoded_to_log = str(k_encoded) + k_encoded_to_log
                         crc_8 = self.compute_crc_8(word_binary[32-8*(n+1):32-8*n], crc_8)
+
+                data_10b, k_encoded  = await self.write_to_Rx("11111101", 0, 1, invert_polarity = invert_polarity)
+                data_to_log = data_10b + "_" + data_to_log
+                k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+                crc_8 = self.compute_crc_8("11111101", crc_8)
                     
-                log_file.write("32;" + f"{(int(word_binary, 2)):0>8X}" + ";0;0000;\n")
+                if packet_size != None:
+                    log_file.write("32;FD" + f"{(packet_size):0>16X}"[2:8] + ";0;0000;\n")
+                else:    
+                    log_file.write("32;FD" + f"{(int(word_binary, 2)):0>8X}"[2:8] + ";0;0000;\n")
                 log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
 
                 word_binary = word_binary[1:32] + str(int(word_binary[0])^int(word_binary[1])^int(word_binary[3])^int(word_binary[4]))
@@ -807,6 +829,8 @@ class SpaceFibre_Random_Generator:
                 
                 #Send EBF
                 sequence += 1
+                data_to_log = ""
+                k_encoded_to_log = ""
 
                 data_10b, k_encoded  = await self.write_to_Rx("01011100", 0, 1, invert_polarity = invert_polarity)
                 data_to_log = data_10b + "_" + data_to_log
