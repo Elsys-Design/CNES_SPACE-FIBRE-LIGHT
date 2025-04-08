@@ -135,6 +135,7 @@ type data_in_fsm is (
   signal cnt_word_sent          : unsigned(7-1 downto 0);     -- cnt_word sent, max= 64
   signal status_level_rd        : std_logic_vector(C_OUT_BUF_SIZE-1 downto 0);
   signal m_value_for_credit     : std_logic_vector(C_M_SIZE + 5 downto 0);
+  signal fct_credit_cnt_low     : std_logic;
 begin
 ---------------------------------------------------------
 -----                     Assignation               -----
@@ -146,7 +147,7 @@ begin
   DATA_DOBUF           <= rd_data(C_DATA_LENGTH-1 downto 0);
   VALID_K_CHARAC_DOBUF <= rd_data(C_DATA_LENGTH+C_BYTE_BY_WORD_LENGTH-1 downto C_DATA_LENGTH);
   DATA_VALID_DOBUF     <= rd_data_vld;
-  END_PACKET_DOBUF     <= rd_data_vld and status_threshold_low when (cnt_word_sent<63) else rd_data_vld;
+  END_PACKET_DOBUF     <= rd_data_vld and status_threshold_low and fct_credit_cnt_low when (cnt_word_sent<63) else rd_data_vld;
   m_value_for_credit   <= M_VAL_DDES & "000000";
   S_AXIS_TREADY_DL     <= s_axis_tready_i;
 
@@ -305,6 +306,22 @@ begin
   end if;
 end process p_last_char_written;
 ---------------------------------------------------------
+-- Process: p_fct_ccnt_low
+-- Description: Indicates when fct credit counter is almost 0
+---------------------------------------------------------
+p_fct_ccnt_low: process(CLK, RST_N)
+begin
+  if RST_N = '0' then
+    fct_credit_cnt_low <= '0';
+  elsif rising_edge(CLK) then
+    if fct_credit_cnt  < 2 then
+      fct_credit_cnt_low <= '1';
+    else
+      fct_credit_cnt_low <= '0';
+    end if;
+  end if;
+end process p_fct_ccnt_low;
+---------------------------------------------------------
 -- Process: p_has_credit
 -- Description: Indicates if far end input buffer has credit
 ---------------------------------------------------------
@@ -334,16 +351,16 @@ end process p_has_credit;
       if LINK_RESET_DLRE = '1' then
         fct_credit_cnt <= (others => '0');
       else
-        if FCT_FAR_END_DDES = '1' and vc_end_packet = '1' then -- FCT received and packet sent
-          if C_FCT_CC_MAX > (fct_credit_cnt + unsigned(m_value_for_credit) - cnt_word_sent) then -- FCT credit counter will not overflow
-            fct_credit_cnt <= fct_credit_cnt + (unsigned(M_VAL_DDES)*64) - cnt_word_sent;
+        if FCT_FAR_END_DDES = '1' and rd_data_vld = '1' then -- FCT received and packet sent
+          if C_FCT_CC_MAX > (fct_credit_cnt + unsigned(m_value_for_credit) - 1) then -- FCT credit counter will not overflow
+            fct_credit_cnt <= fct_credit_cnt + (unsigned(M_VAL_DDES)*64) - 1;
           else
             FCT_CC_OVF_DOBUF <= '1';
             fct_credit_cnt   <= C_FCT_CC_MAX;
           end if;
-        elsif vc_end_packet = '1' then -- Packet sent
-          if (fct_credit_cnt - cnt_word_sent) > 0 then -- FCT credit counter will not be negative
-            fct_credit_cnt <= fct_credit_cnt - cnt_word_sent;
+        elsif rd_data_vld = '1' then -- Packet sent
+          if (fct_credit_cnt - 1) > 0 then -- FCT credit counter will not be negative
+            fct_credit_cnt <= fct_credit_cnt - 1;
           else
             fct_credit_cnt <= (others => '0');
           end if;
@@ -365,16 +382,13 @@ end process p_has_credit;
 p_cnt_word: process(CLK, RST_N)
 begin
   if RST_N = '0' then
-    cnt_word_sent      <= (others =>'0');
-    vc_end_packet <= '0';
+    cnt_word_sent <= (others =>'0');
   elsif rising_edge(CLK) then
-    vc_end_packet <= '0';
     if status_threshold_low = '1' and rd_data_vld='1' then
       cnt_word_sent  <= (others =>'0');
     elsif rd_data_vld = '1' then
       cnt_word_sent <= cnt_word_sent +1;
     elsif cnt_word_sent >= 63 then
-      vc_end_packet <='1';
       cnt_word_sent <= (others =>'0');
     end if;
   end if;
