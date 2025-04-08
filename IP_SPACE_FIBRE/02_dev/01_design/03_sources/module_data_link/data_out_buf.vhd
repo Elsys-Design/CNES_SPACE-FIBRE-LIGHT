@@ -172,7 +172,7 @@ begin
     aresetn               => RST_N,
     RD_CLK                => CLK,
     RD_DATA               => rd_data,
-    RD_DATA_EN            => VC_RD_EN_DMAC,
+    RD_DATA_EN            => rd_en,
     RD_DATA_VLD           => rd_data_vld,
     cmd_flush             => cmd_flush,
     STATUS_BUSY_FLUSH     => status_busy_flush,
@@ -320,9 +320,9 @@ begin
   if RST_N = '0' then
     fct_credit_cnt_low <= '0';
   elsif rising_edge(CLK) then
-    if fct_credit_cnt  < 2 then
+    if fct_credit_cnt  <= 2 and rd_data_vld = '1' then
       fct_credit_cnt_low <= '1';
-    else
+    elsif fct_credit_cnt  > 1 then
       fct_credit_cnt_low <= '0';
     end if;
   end if;
@@ -396,9 +396,12 @@ begin
       cnt_word_sent <= (others =>'0');
     elsif rd_data_vld = '1' then
       cnt_word_sent <= cnt_word_sent +1;
+    elsif fct_credit_cnt = 0 then
+      cnt_word_sent  <= (others =>'0');
     end if;
   end if;
 end process p_cnt_word;
+
 ---------------------------------------------------------
 -- Process: p_detect_eip_out
 -- Description: EIP output detection
@@ -490,7 +493,7 @@ end process p_eip_cnt;
       vc_ready <= '0';
     elsif rising_edge(CLK) then
       if VC_RD_EN_DMAC='0' then
-        if fct_credit_cnt > 0 and (unsigned(status_level_rd) > 62 or cnt_eip > 0) then
+        if fct_credit_cnt > 0 and (unsigned(status_level_rd) > 63 or cnt_eip > 0) then
           vc_ready <= '1';
         else
           vc_ready <= '0';

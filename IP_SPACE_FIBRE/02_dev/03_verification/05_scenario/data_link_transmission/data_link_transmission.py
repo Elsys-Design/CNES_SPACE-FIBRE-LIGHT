@@ -500,6 +500,7 @@ def check_CRC(tb, path):
     crc_16 = "1111111111111111"
     error_list = ""
     line_cnt = 0
+    seq_num = None
     for line in file:
         line_cnt +=1
         input_splitted = line.split(';')
@@ -554,6 +555,8 @@ def check_CRC(tb, path):
                 fct_cnt += 1
                 error_cnt += 1
                 error_list += "\t" + str(line_cnt) + "\n"
+            if seq_num == None:
+                seq_num = input_splitted[0][2:4]
 
         #SIF
         if input_splitted[0][4:8] == "84FC" and input_splitted[1] == "0001":
@@ -1078,7 +1081,10 @@ async def cocotb_run(dut):
     await monitor
 
 
-    check_CRC(tb, "reference/spacefibre_serial/monitor_step_3_hexa.dat")
+    result = check_CRC(tb, "reference/spacefibre_serial/monitor_step_3_hexa.dat")
+
+    if result == 1:
+        step_3_failed = 1
 
     if step_3_failed == 0:
         tb.logger.info("simulation time %d ns : step 3 result: Pass")
@@ -1096,7 +1102,7 @@ async def cocotb_run(dut):
 
     step_4_failed = 0
 
-    # monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_3", number_of_word = 2500))
+    monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_4", number_of_word = 500+64*80))
 
     await initialization_procedure(tb, "reference/spacefibre_serial/monitor_step_4")
 
@@ -1199,7 +1205,7 @@ async def cocotb_run(dut):
         await send_FCT(tb, x, 1, "0"+ f"{(x+57):0>7b}")
     
     #Send two packets of 64 word to each buffer
-    await configure_gen_vc_dl(tb,[0xE1,0x1F,0x00,0x00], [0x00,0x00,0x00,0x00])
+    await configure_gen_vc_dl(tb,[0xE2,0x1F,0x00,0x00], [0x00,0x00,0x00,0x00])
 
     await start_gen_vc_dl(tb)
 
@@ -1225,9 +1231,9 @@ async def cocotb_run(dut):
 
     step_5_failed = 0
 
-    # monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_3", number_of_word = 2500))
-
     await initialization_procedure(tb, "reference/spacefibre_serial/monitor_step_5")
+    
+    monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_5", number_of_word = 300+64*16+8+100))
     
     #Send first FCT to each virtual channel
     
@@ -1238,13 +1244,15 @@ async def cocotb_run(dut):
 
     await configure_gen_vc_dl(tb, [0xE1,0x1F,0x00,0x00], [0x00,0x00,0x00,0x00])
 
-    await configure_model_dl(tb, 19, [0x01,0x01,0x00,0x01], [0x2E,0x00,0x00,0x00])
+    await configure_model_dl(tb, 19, [0x01,0x02,0x00,0x01], [0x2E,0x00,0x00,0x00])
 
     x = [cocotb.start_soon(start_model_dl(tb, 19))]
 
     x += [cocotb.start_soon(start_gen_vc_dl(tb))]
 
     await Combine(*x)
+
+    await send_idle_ctrl_word(tb, 64*8+4+50)
 
     #Check transmission data and broadcast frame, check order of virtual
 
@@ -1255,13 +1263,18 @@ async def cocotb_run(dut):
     await configure_model_dl(tb, 7, [0x02,0x10,0x00,0x00], [0x00,0x00,0x00,0x07])
     await configure_model_dl(tb, 11, [0x08,0x04,0x00,0x00], [0x00,0x00,0x00,0x11])
     await configure_model_dl(tb, 15, [0x02,0x10,0x00,0x00], [0x00,0x00,0x00,0x15])
+    await configure_model_dl(tb, 19, [0x01,0x02,0x00,0x01], [0x3E,0x00,0x00,0x00])
 
     await start_model_dl(tb, 3)
     await start_model_dl(tb, 7)
     await start_model_dl(tb, 11)
     await start_model_dl(tb, 15)
+    await start_model_dl(tb, 19)
 
+    await send_idle_ctrl_word(tb, 64*4+4+50)
     #Check transmission data, check order of virtual
+    
+    await send_idle_ctrl_word(tb, 100)
 
     await monitor
 
@@ -1281,25 +1294,42 @@ async def cocotb_run(dut):
 
     step_6_failed = 0
 
-    # monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_3", number_of_word = 2500))
 
     await initialization_procedure(tb, "reference/spacefibre_serial/monitor_step_6")
+    
+    monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_6", number_of_word = 200+31*64+7*16*64+100+16*64+100))
 
-    data_config = Data(0x10, [0x04, 0x40,0x00,0x00])
+    Data_read_dl_config_parameters.data = bytearray([0x04, 0x40, 0x00, 0x00])
 
-    await tb.masters[0].write_data(data_config)
+    await tb.masters[0].write_data(Data_read_dl_config_parameters)
 
-    await configure_model_dl(tb, 3, [0xF0,0x1F,0x00,0x01], [0x00,0x00,0x00,0x2A])
+    await configure_model_dl(tb, 3, [0xF0,0x1F,0x00,0x00], [0x00,0x00,0x00,0x2A])
     await start_model_dl(tb, 3)
+    
+    for x in range (16):
+        await send_FCT(tb,0,0,"0" + f"{(x+1):0>7b}")
+        await send_idle_ctrl_word(tb, 64)
+
+    await send_idle_ctrl_word(tb, 100)
 
     #Check that Data Frame are received
 
     await configure_gen_vc_dl(tb, [0xF0,0x1F,0x00,0x01], [0x00,0x00,0x00,0x00])
-    await configure_model_dl(tb, 3, [0xFF,0x1F,0x00,0x01], [0x00,0x00,0x00,0x2A])
+    await configure_model_dl(tb, 3, [0xFF,0x1F,0x00,0x00], [0x00,0x00,0x00,0x2A])
     await start_gen_vc_dl(tb)
+
+    for x in range (16):
+        for y in range (8):
+            await send_FCT(tb,y,0,"0" + f"{(8*x+y+17):0>7b}")
+        await send_idle_ctrl_word(tb, 64*8)
+    for x in range(15):
+        await send_FCT(tb,y,0,"0" + f"{(x+8*16+17):0>7b}")
+        await send_idle_ctrl_word(tb, 64)
+    await send_idle_ctrl_word(tb, 100)
     
     #Check EEP insertion
 
+    await send_idle_ctrl_word(tb, 200)
 
     if step_6_failed == 0:
         tb.logger.info("simulation time %d ns : step 6 result: Pass")
