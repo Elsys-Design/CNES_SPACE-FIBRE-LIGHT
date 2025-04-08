@@ -1117,6 +1117,7 @@ async def cocotb_run(dut):
     await send_idle_ctrl_word(tb, 64*8+50)
     #Check transmission of data frame
 
+    #Send two packets of 64 word to each buffer
     await configure_gen_vc_dl(tb,[0xE2,0x1F,0x00,0x00], [0x00,0x00,0x00,0x00])
 
     await start_gen_vc_dl(tb)
@@ -1129,13 +1130,83 @@ async def cocotb_run(dut):
         await send_FCT(tb, 2*x, 0, "0"+ f"{(x+9):0>7b}")
 
     await send_idle_ctrl_word(tb, 64*4+50)
-    #Check transmission of 1 out of 2 data frame
+    #Check transmission of 1 out of 2 data frame on half the channels
 
     for x in range(4):
-        await send_FCT(tb, 2*x+1, 0, "0"+ f"{(x+9):0>7b}")
+        await send_FCT(tb, 2*x+1, 0, "0"+ f"{(x+13):0>7b}")
+
+    #Check transmission of 1 out of 2 data frame on other half the channels
 
     await send_idle_ctrl_word(tb, 64*4+50)
 
+    for x in range(8):
+        await send_FCT(tb, x, 0, "0"+ f"{(x+17):0>7b}")
+
+    #Check transmission of remaining frames on all channels
+
+    await send_idle_ctrl_word(tb, 64*8+50)
+
+
+    #Send a packets of 32 word to each buffer
+    await configure_gen_vc_dl(tb,[0xE1,0x0F,0x00,0x00], [0x00,0x00,0x00,0x00])
+
+    await start_gen_vc_dl(tb)
+
+    for x in range(8):
+        await send_FCT(tb, x, 0, "0"+ f"{(x+25):0>7b}")
+    
+    await send_idle_ctrl_word(tb, 32*8+50)
+    #Check reception of a frame of 32 word on each channel
+    
+    #Send 3 packets of 32 word to each buffer
+    await configure_gen_vc_dl(tb,[0xE3,0x0F,0x00,0x00], [0x00,0x00,0x00,0x00])
+
+    await start_gen_vc_dl(tb)
+
+    await send_idle_ctrl_word(tb, 32*8+50)
+
+    #Check reception of a frame of 32 word on each channel
+
+    await send_idle_ctrl_word(tb, 200)
+
+    #Send FCT to each buffer
+    for x in range(8):
+        await send_FCT(tb, x, 0, "0"+ f"{(x+33):0>7b}")
+
+    await send_idle_ctrl_word(tb, 64*8+50)
+
+    #Check reception of a frame of 64 word on each channel
+
+
+    #Send two FCT to each buffer
+    for x in range(8):
+        await send_FCT(tb, x, 0, "0"+ f"{(x+41):0>7b}")
+
+    for x in range(8):
+        await send_FCT(tb, x, 0, "0"+ f"{(x+49):0>7b}")
+    
+    #Send two packets of 64 word to each buffer
+    await configure_gen_vc_dl(tb,[0xE2,0x1F,0x00,0x00], [0x00,0x00,0x00,0x00])
+
+    await start_gen_vc_dl(tb)
+
+    await send_idle_ctrl_word(tb, 64*16 + 50)
+    #Check reception of two frame of 64 word on each channel
+
+
+    #Send a FCT of multiplier value 1 to each buffer
+    for x in range(8):
+        await send_FCT(tb, x, 1, "0"+ f"{(x+57):0>7b}")
+    
+    #Send two packets of 64 word to each buffer
+    await configure_gen_vc_dl(tb,[0xE1,0x1F,0x00,0x00], [0x00,0x00,0x00,0x00])
+
+    await start_gen_vc_dl(tb)
+
+    await send_idle_ctrl_word(tb, 64*16 + 50)
+    #Check reception of two frame of 64 word on each channel
+
+    await send_idle_ctrl_word(tb, 200)
 
     if step_4_failed == 0:
         tb.logger.info("simulation time %d ns : step 4 result: Pass")

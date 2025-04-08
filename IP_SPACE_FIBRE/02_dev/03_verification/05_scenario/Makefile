@@ -43,7 +43,7 @@ COCOTB_HDL_TIMEPRECISION = 1fs
 
 COMPILE_ARGS_VLOG = -l questa_compile_verilog_log.dat 
 COMPILE_ARGS_VCOM = -explicit -l questa_vhdl_compile_log.dat
-SIM_ARGS = -cover -L work -L sim_build/work -L xpm -L unisim -L secureip -L commun -L phy_plus_lane_lib -l questa_simulation_log.dat -voptargs="+acc" -suppress 14408 -suppress 16154 -do wave.do $(EXTRA_VSIM_CMD) unisim.glbl
+SIM_ARGS = -cover -L work -L sim_build/work -L xpm -L unisim -L secureip -L commun -L phy_plus_lane_lib -L interlayer_lib -L data_link_lib -l questa_simulation_log.dat -voptargs="+acc" -suppress 14408 -suppress 16154 -do wave.do $(EXTRA_VSIM_CMD) unisim.glbl
 
 COCOTB_RESULTS_FILE = $(PWD)/results.xml
 

@@ -18,6 +18,9 @@ library phy_plus_lane_lib;
 library data_link_lib;
 use data_link_lib.data_link_lib.all;
 
+library interlayer_lib;
+use interlayer_lib.all;
+
 entity spacefibre_light_top is
    generic(
       G_VC_NUM                         : integer := 8                                    --! Number of virtual channel

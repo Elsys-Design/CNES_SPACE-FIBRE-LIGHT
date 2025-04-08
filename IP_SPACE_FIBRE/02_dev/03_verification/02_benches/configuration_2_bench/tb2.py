@@ -116,8 +116,7 @@ class TB(common.TB):
                 
         }
 
-        self.dut.CURRENT_TIME_SLOT.value = 1
-
+        
         for name, type in names.items():
             self.bus_in.append(type[0].from_prefix(dut, name))
 

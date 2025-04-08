@@ -707,6 +707,8 @@ architecture Behavioral of CONFIGURATION_2_BENCH is
 
     begin
 
+        current_time_slot_i <= "00000000";
+
     -- Instantiate the LANE_CONFIGURATOR module
     DATA_LINK_CONFIGURATOR_INST : entity work.DATA_LINK_CONFIGURATOR
         generic map(

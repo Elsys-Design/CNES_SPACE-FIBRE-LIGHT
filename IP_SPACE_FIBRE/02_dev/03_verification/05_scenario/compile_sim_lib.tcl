@@ -20,6 +20,8 @@ if [file exists sim_build/xpm] {vdel -lib sim_build/xpm -all}
 if [file exists sim_build/commun] {vdel -lib sim_build/commun -all}
 if [file exists sim_build/phy_plus_lane_lib] {vdel -lib sim_build/phy_plus_lane_lib -all}
 if [file exists sim_build/secureip] {vdel -lib sim_build/secureip -all}
+if [file exists sim_build/data_link_lib] {vdel -lib sim_build/data_link_lib -all}
+if [file exists sim_build/interlayer_lib] {vdel -lib sim_build/interlayer_lib -all}
 
 echo "############# Create Libraries #############"
 vlib sim_build/xpm
@@ -28,6 +30,7 @@ vlib sim_build/commun
 vlib sim_build/phy_plus_lane_lib
 vlib sim_build/secureip
 vlib sim_build/data_link_lib
+vlib sim_build/interlayer_lib
 echo "############# End create Libraries #############"
 
 echo "############# Map Libraries #############"
@@ -37,6 +40,7 @@ vmap unisim sim_build/unisim
 vmap commun sim_build/commun
 vmap phy_plus_lane_lib sim_build/phy_plus_lane_lib
 vmap data_link_lib sim_build/data_link_lib
+vmap interlayer_lib sim_build/interlayer_lib
 echo "############# End map Libraries #############"
 
 
@@ -163,6 +167,13 @@ vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_desi
 
 echo "######## End compile Data_Link_layer #########"
 
+
+echo "####### Start compile Interlayer #######"
+
+vcom +cover=sb +acc -work interlayer_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/ip_spacefibre_light_top/demux_rx.vhd
+vcom +cover=sb +acc -work interlayer_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/ip_spacefibre_light_top/mux_tx.vhd
+
+echo "####### End compile Interlayer #######"
 
 
 

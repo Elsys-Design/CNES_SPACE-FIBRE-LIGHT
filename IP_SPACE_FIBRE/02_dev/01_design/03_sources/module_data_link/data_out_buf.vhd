@@ -147,7 +147,7 @@ begin
   DATA_DOBUF           <= rd_data(C_DATA_LENGTH-1 downto 0);
   VALID_K_CHARAC_DOBUF <= rd_data(C_DATA_LENGTH+C_BYTE_BY_WORD_LENGTH-1 downto C_DATA_LENGTH);
   DATA_VALID_DOBUF     <= rd_data_vld;
-  END_PACKET_DOBUF     <= rd_data_vld and status_threshold_low and fct_credit_cnt_low when (cnt_word_sent<63) else rd_data_vld;
+  END_PACKET_DOBUF     <= rd_data_vld and (status_threshold_low or fct_credit_cnt_low) when (cnt_word_sent<63) else rd_data_vld;
   m_value_for_credit   <= M_VAL_DDES & "000000";
   S_AXIS_TREADY_DL     <= s_axis_tready_i;
 
@@ -359,7 +359,7 @@ end process p_has_credit;
             fct_credit_cnt   <= C_FCT_CC_MAX;
           end if;
         elsif rd_data_vld = '1' then -- Packet sent
-          if (fct_credit_cnt - 1) > 0 then -- FCT credit counter will not be negative
+          if fct_credit_cnt > 1 then -- FCT credit counter will not be negative
             fct_credit_cnt <= fct_credit_cnt - 1;
           else
             fct_credit_cnt <= (others => '0');
