@@ -170,7 +170,7 @@ begin
           current_state_vc               <= START_ENCAPS_ST;
           VC_RD_EN_DMAC(current_channel) <= '1';
         elsif test /= std_logic_vector(to_unsigned(0, G_VC_NUM+1)) then
-          current_channel <= (current_channel + 1) mod G_VC_NUM+1;
+          current_channel <= (current_channel + 1) mod (G_VC_NUM+1);
           NEW_WORD_DMAC   <= '1';
         else
           NEW_WORD_DMAC <= '1';
@@ -228,7 +228,7 @@ begin
         end if;
         VC_END_EMISSION_DMAC(current_channel) <= '1';
         current_state_vc                      <= IDLE_ST;
-        current_channel                       <= (current_channel + 1) mod G_VC_NUM+1;
+        current_channel                       <= (current_channel + 1) mod (G_VC_NUM+1);
      
       when REQ_ST =>
         if VC_END_PACKET_DOBUF(current_channel) = '1' and VC_DATA_VALID_DOBUF(current_channel)='1' then -- Last data of a transfer
