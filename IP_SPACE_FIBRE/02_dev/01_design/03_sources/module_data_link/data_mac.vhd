@@ -197,12 +197,13 @@ begin
         end if;
         if VC_DATA_VALID_DOBUF(current_channel)='1'  then
           if VC_END_PACKET_DOBUF(current_channel) = '1' then -- Last data of a transfer
-            DATA_DMAC         <= VC_DATA_DOBUF(current_channel);
-            VALID_K_CHAR_DMAC <= VC_VALID_K_CHAR_DOBUF(current_channel);
-            NEW_WORD_DMAC     <= VC_DATA_VALID_DOBUF(current_channel);
-            END_PACKET_DMAC   <= VC_END_PACKET_DOBUF(current_channel);
-            data_counter      <= data_counter + 1;
-            current_state_vc  <= END_ST;
+            DATA_DMAC                      <= VC_DATA_DOBUF(current_channel);
+            VALID_K_CHAR_DMAC              <= VC_VALID_K_CHAR_DOBUF(current_channel);
+            NEW_WORD_DMAC                  <= VC_DATA_VALID_DOBUF(current_channel);
+            END_PACKET_DMAC                <= VC_END_PACKET_DOBUF(current_channel);
+            data_counter                   <= data_counter + 1;
+            VC_RD_EN_DMAC(current_channel) <= '0';
+            current_state_vc               <= END_ST;
           elsif (((REQ_ACK_DERRM = '1' or REQ_NACK_DERRM = '1' ) and cnt_wait_ack = 15) or REQ_FCT_DIBUF /= std_logic_vector(to_unsigned(0,G_VC_NUM))) and type_frame /= C_BC_FRM and cnt_wait = '1' then -- Pending request
             DATA_DMAC         <= VC_DATA_DOBUF(current_channel);
             VALID_K_CHAR_DMAC <= VC_VALID_K_CHAR_DOBUF(current_channel);
@@ -232,12 +233,13 @@ begin
      
       when REQ_ST =>
         if VC_END_PACKET_DOBUF(current_channel) = '1' and VC_DATA_VALID_DOBUF(current_channel)='1' then -- Last data of a transfer
-          DATA_DMAC         <= VC_DATA_DOBUF(current_channel);
-          VALID_K_CHAR_DMAC <= VC_VALID_K_CHAR_DOBUF(current_channel);
-          NEW_WORD_DMAC     <= VC_DATA_VALID_DOBUF(current_channel);
-          END_PACKET_DMAC   <= VC_END_PACKET_DOBUF(current_channel);
-          data_counter      <= data_counter + 1;
-          current_state_vc  <= END_ST;
+          DATA_DMAC                      <= VC_DATA_DOBUF(current_channel);
+          VALID_K_CHAR_DMAC              <= VC_VALID_K_CHAR_DOBUF(current_channel);
+          NEW_WORD_DMAC                  <= VC_DATA_VALID_DOBUF(current_channel);
+          END_PACKET_DMAC                <= VC_END_PACKET_DOBUF(current_channel);
+          data_counter                   <= data_counter + 1;
+          VC_RD_EN_DMAC(current_channel) <= '0';
+          current_state_vc               <= END_ST;
         elsif VC_DATA_VALID_DOBUF(current_channel)='1' then -- Classic data transfer
           DATA_DMAC         <= VC_DATA_DOBUF(current_channel);
           VALID_K_CHAR_DMAC <= VC_VALID_K_CHAR_DOBUF(current_channel);

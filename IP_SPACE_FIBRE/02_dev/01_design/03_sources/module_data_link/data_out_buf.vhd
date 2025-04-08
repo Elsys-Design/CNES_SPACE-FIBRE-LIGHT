@@ -115,6 +115,7 @@ type data_in_fsm is (
   signal s_axis_tlast_i         : std_logic;
   signal s_axis_tvalid_i        : std_logic;
   signal s_axis_tready_i        : std_logic;
+  signal s_axis_tready_r        : std_logic;
   -- continuous mode
   signal cont_mode_flg          : std_logic;
   signal last_k_char            : std_logic;
@@ -136,6 +137,8 @@ type data_in_fsm is (
   signal status_level_rd        : std_logic_vector(C_OUT_BUF_SIZE-1 downto 0);
   signal m_value_for_credit     : std_logic_vector(C_M_SIZE + 5 downto 0);
   signal fct_credit_cnt_low     : std_logic;
+  signal vc_ready               : std_logic;
+  signal rd_en                  : std_logic;
 begin
 ---------------------------------------------------------
 -----                     Assignation               -----
@@ -150,7 +153,8 @@ begin
   END_PACKET_DOBUF     <= rd_data_vld and (status_threshold_low or fct_credit_cnt_low) when (cnt_word_sent<63) else rd_data_vld;
   m_value_for_credit   <= M_VAL_DDES & "000000";
   S_AXIS_TREADY_DL     <= s_axis_tready_i;
-
+  rd_en                <= VC_RD_EN_DMAC and not(rd_data_vld and fct_credit_cnt_low) when (cnt_word_sent<63) else '0';
+  VC_READY_DOBUF       <= vc_ready;
 ---------------------------------------------------------
 -----                     Instanciation             -----
 ---------------------------------------------------------
@@ -214,9 +218,11 @@ begin
     s_axis_tuser_i  <= (others => '0');
     s_axis_tlast_i  <= '0';
     s_axis_tvalid_i <= '0';
+    s_axis_tready_r <= '0';
     cmd_flush       <= '0';
     current_state   <= IDLE_ST;
   elsif rising_edge(S_AXIS_ACLK_NW) then
+    s_axis_tready_r <= s_axis_tready_i;
     cmd_flush <= '0';
     case current_state is
       when IDLE_ST =>
@@ -386,10 +392,10 @@ begin
   elsif rising_edge(CLK) then
     if status_threshold_low = '1' and rd_data_vld='1' then
       cnt_word_sent  <= (others =>'0');
+    elsif cnt_word_sent >= 63  and rd_data_vld = '1' then
+      cnt_word_sent <= (others =>'0');
     elsif rd_data_vld = '1' then
       cnt_word_sent <= cnt_word_sent +1;
-    elsif cnt_word_sent >= 63 then
-      cnt_word_sent <= (others =>'0');
     end if;
   end if;
 end process p_cnt_word;
@@ -424,7 +430,7 @@ begin
   if S_AXIS_ARSTN_NW = '0' or RST_N='0'  then
     eip_in_req      <= '0';
   elsif rising_edge(S_AXIS_ACLK_NW) then
-    if s_axis_tlast_i = '1' and s_axis_tvalid_i= '1' and s_axis_tready_i= '1' then
+    if s_axis_tlast_i = '1' and s_axis_tvalid_i= '1' and (s_axis_tready_i= '1' or s_axis_tready_r ='1') then
       eip_in_req <= '1';
     else
       eip_in_req <= '0';
@@ -481,13 +487,13 @@ end process p_eip_cnt;
   p_vc_ready: process(CLK, RST_N)
   begin
     if RST_N = '0' then
-      VC_READY_DOBUF <= '0';
+      vc_ready <= '0';
     elsif rising_edge(CLK) then
       if VC_RD_EN_DMAC='0' then
         if fct_credit_cnt > 0 and (unsigned(status_level_rd) > 62 or cnt_eip > 0) then
-          VC_READY_DOBUF <= '1';
+          vc_ready <= '1';
         else
-          VC_READY_DOBUF <= '0';
+          vc_ready <= '0';
         end if;
       end if;
     end if;
