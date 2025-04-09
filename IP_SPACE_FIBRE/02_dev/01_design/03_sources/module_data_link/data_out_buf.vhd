@@ -94,6 +94,7 @@ architecture rtl of data_out_buff is
 
 ----------------------------- Declaration signals -----------------------------
 type data_in_fsm is (
+  INIT_ST,
   IDLE_ST,
   WAIT_END_FLUSH_ST,
   ADD_EEP_ST,
@@ -139,6 +140,9 @@ type data_in_fsm is (
   signal fct_credit_cnt_low     : std_logic;
   signal vc_ready               : std_logic;
   signal rd_en                  : std_logic;
+  signal link_reset_dlre_reg1   : std_logic;
+  signal link_reset_dlre_sync   : std_logic;
+  signal eep_insertion_flg      : std_logic;
 begin
 ---------------------------------------------------------
 -----                     Assignation               -----
@@ -152,7 +156,7 @@ begin
   DATA_VALID_DOBUF     <= rd_data_vld;
   END_PACKET_DOBUF     <= rd_data_vld and (status_threshold_low or fct_credit_cnt_low) when (cnt_word_sent<63) else rd_data_vld;
   m_value_for_credit   <= M_VAL_DDES & "000000";
-  S_AXIS_TREADY_DL     <= s_axis_tready_i;
+  S_AXIS_TREADY_DL     <= s_axis_tready_i and not(eep_insertion_flg);
   rd_en                <= VC_RD_EN_DMAC and not(rd_data_vld and fct_credit_cnt_low) when (cnt_word_sent<63) else '0';
   VC_READY_DOBUF       <= vc_ready;
 ---------------------------------------------------------
@@ -214,39 +218,52 @@ end process p_continuous_mode;
 p_data_in_fifo: process(S_AXIS_ARSTN_NW, S_AXIS_ACLK_NW, RST_N)
 begin
   if S_AXIS_ARSTN_NW = '0' or RST_N='0' then
-    s_axis_tdata_i  <= (others => '0');
-    s_axis_tuser_i  <= (others => '0');
-    s_axis_tlast_i  <= '0';
-    s_axis_tvalid_i <= '0';
-    s_axis_tready_r <= '0';
-    cmd_flush       <= '0';
-    current_state   <= IDLE_ST;
+    s_axis_tdata_i       <= (others => '0');
+    s_axis_tuser_i       <= (others => '0');
+    s_axis_tlast_i       <= '0';
+    s_axis_tvalid_i      <= '0';
+    s_axis_tready_r      <= '0';
+    cmd_flush            <= '0';
+    current_state        <= INIT_ST;
+    link_reset_dlre_reg1 <= '0';
+    link_reset_dlre_sync <= '0';
+    eep_insertion_flg    <= '0';
   elsif rising_edge(S_AXIS_ACLK_NW) then
-    s_axis_tready_r <= s_axis_tready_i;
-    cmd_flush <= '0';
+    link_reset_dlre_reg1 <= LINK_RESET_DLRE;
+    link_reset_dlre_sync <= link_reset_dlre_reg1;
+    s_axis_tready_r      <= s_axis_tready_i;
+    cmd_flush            <= '0';
+    eep_insertion_flg    <= '0';
     case current_state is
+      when INIT_ST =>
+                        if link_reset_dlre_sync ='0' and LINK_RESET_DLRE = '0' then
+                          current_state <= IDLE_ST;
+                        end if;
+
       when IDLE_ST =>
                                   s_axis_tdata_i  <= S_AXIS_TDATA_NW;
                                   s_axis_tuser_i  <= S_AXIS_TUSER_NW;
                                   s_axis_tlast_i  <= S_AXIS_TLAST_NW;
                                   s_axis_tvalid_i <= S_AXIS_TVALID_NW;
-                                  if LINK_RESET_DLRE = '1' then
+                                  if link_reset_dlre_sync = '1' then
                                     cmd_flush <= '1';
-                                    if last_k_char = '0' then
+                                    if last_k_char = '1' then
                                       current_state   <= WAIT_END_FLUSH_ST;
+                                    else
+                                      current_state   <= WAIT_EIP_ST;
                                     end if;
                                   elsif cont_mode_flg  = '1' then
-                                    cmd_flush       <= '1';
-                                    current_state   <= ADD_EEP_ST;
+                                    cmd_flush         <= '1';
+                                    eep_insertion_flg <= '1';
+                                    current_state     <= ADD_EEP_ST;
                                   end if;
 
         when WAIT_END_FLUSH_ST =>
-                                  if status_busy_flush = '0' and LINK_RESET_DLRE = '0' then
-                                    current_state <= WAIT_EIP_ST;
+                                  if s_axis_tready_i = '1' then
+                                    current_state <= IDLE_ST;
                                   end if;
 
-        when ADD_EEP_ST =>        if status_busy_flush= '0' and LINK_RESET_DLRE = '0' then
-                                    current_state   <= WAIT_EIP_ST;
+        when ADD_EEP_ST =>        if s_axis_tready_i = '1' then
                                     s_axis_tdata_i  <= C_FILL_SYMB & C_FILL_SYMB & C_FILL_SYMB & C_EEP_SYMB;
                                     s_axis_tuser_i  <= "1111";
                                     s_axis_tlast_i  <= '1';
@@ -256,35 +273,42 @@ begin
                                     else
                                       current_state   <= WAIT_EIP_ST;
                                     end if;
+                                  else
+                                    eep_insertion_flg <= '1';
                                   end if;
 
-        when WAIT_EIP_ST =>
-                                  if S_AXIS_TUSER_NW(0)='1' and (S_AXIS_TDATA_NW(7 downto 0) = C_EEP_SYMB or S_AXIS_TDATA_NW(7 downto 0) = C_EOP_SYMB) and  S_AXIS_TVALID_NW='1' then
+        when WAIT_EIP_ST =>     if s_axis_tready_i ='1' and S_AXIS_TVALID_NW='1' then
+                                  if S_AXIS_TUSER_NW(0)='1' and (S_AXIS_TDATA_NW(7 downto 0) = C_EEP_SYMB or S_AXIS_TDATA_NW(7 downto 0) = C_EOP_SYMB) then
                                     s_axis_tdata_i  <= S_AXIS_TDATA_NW(31 downto 8) & C_FILL_SYMB;
                                     s_axis_tuser_i  <= S_AXIS_TUSER_NW(3 downto 1) & '1';
                                     s_axis_tlast_i  <= '0';
                                     s_axis_tvalid_i <= '1';
-                                  elsif S_AXIS_TUSER_NW(1)='1' and (S_AXIS_TDATA_NW(15 downto 8) = C_EEP_SYMB or S_AXIS_TDATA_NW(15 downto 8) = C_EOP_SYMB) and  S_AXIS_TVALID_NW='1' then
+                                    current_state   <= IDLE_ST;
+                                  elsif S_AXIS_TUSER_NW(1)='1' and (S_AXIS_TDATA_NW(15 downto 8) = C_EEP_SYMB or S_AXIS_TDATA_NW(15 downto 8) = C_EOP_SYMB) then
                                     s_axis_tdata_i  <= S_AXIS_TDATA_NW(31 downto 16) & C_FILL_SYMB & C_FILL_SYMB;
                                     s_axis_tuser_i  <= S_AXIS_TUSER_NW(3 downto 2) & "11";
                                     s_axis_tlast_i  <= '0';
                                     s_axis_tvalid_i <= '1';
-                                  elsif S_AXIS_TUSER_NW(2)='1' and (S_AXIS_TDATA_NW(23 downto 16) = C_EEP_SYMB or S_AXIS_TDATA_NW(23 downto 16) = C_EOP_SYMB) and  S_AXIS_TVALID_NW='1' then
+                                    current_state   <= IDLE_ST;
+                                  elsif S_AXIS_TUSER_NW(2)='1' and (S_AXIS_TDATA_NW(23 downto 16) = C_EEP_SYMB or S_AXIS_TDATA_NW(23 downto 16) = C_EOP_SYMB) then
                                     s_axis_tdata_i  <= S_AXIS_TDATA_NW(31 downto 24) & C_FILL_SYMB & C_FILL_SYMB & C_FILL_SYMB;
                                     s_axis_tuser_i  <= S_AXIS_TUSER_NW(3) & "111";
                                     s_axis_tlast_i  <= '0';
                                     s_axis_tvalid_i <= '1';
-                                  elsif S_AXIS_TUSER_NW(3)='1' and (S_AXIS_TDATA_NW(31 downto 24) = C_EEP_SYMB or S_AXIS_TDATA_NW(31 downto 24) = C_EOP_SYMB) and  S_AXIS_TVALID_NW='1' then
+                                    current_state   <= IDLE_ST;
+                                  elsif S_AXIS_TUSER_NW(3)='1' and (S_AXIS_TDATA_NW(31 downto 24) = C_EEP_SYMB or S_AXIS_TDATA_NW(31 downto 24) = C_EOP_SYMB) then
                                     s_axis_tdata_i  <=  C_FILL_SYMB & C_FILL_SYMB & C_FILL_SYMB & C_FILL_SYMB;
                                     s_axis_tuser_i  <= "1111";
                                     s_axis_tlast_i  <= '0';
                                     s_axis_tvalid_i <= '1';
+                                    current_state   <= IDLE_ST;
                                   else
                                     s_axis_tdata_i  <= (others => '0');
                                     s_axis_tuser_i  <= (others => '0');
                                     s_axis_tlast_i  <= '0';
                                     s_axis_tvalid_i <= '0';
                                   end if;
+                                end if;
     end case;
   end if;
 end process p_data_in_fifo;
@@ -300,7 +324,7 @@ begin
   elsif rising_edge(S_AXIS_ACLK_NW) then
     if S_AXIS_TUSER_NW(C_BYTE_BY_WORD_LENGTH-1)='1' and S_AXIS_TVALID_NW='1' and s_axis_tready_i ='1' then
       last_k_char <= '1';
-    elsif S_AXIS_TVALID_NW='1' then
+    elsif S_AXIS_TVALID_NW='1' and s_axis_tready_i ='1' then
       last_k_char <= '0';
     end if;
   end if;

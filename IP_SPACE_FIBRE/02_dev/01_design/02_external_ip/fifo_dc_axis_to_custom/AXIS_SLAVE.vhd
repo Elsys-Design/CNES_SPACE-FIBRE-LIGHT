@@ -13,9 +13,10 @@ entity AXIS_SLAVE is
 	);
 	port (
 		-- Users to add ports here
-        wr_data         : out std_logic_vector(G_DWIDTH-1 downto 0);
-        wr_enable       : out std_logic;
-        status_full     : in std_logic;
+      wr_data            : out std_logic_vector(G_DWIDTH-1 downto 0);
+      wr_enable          : out std_logic;
+      status_full        : in std_logic;
+			status_busy_flush  : in std_logic;
 		-- User ports ends
 		-- Do not modify the ports beyond this line
 		s00_axis_aclk	: in std_logic;                     -- AXI4Stream sink: Clock
@@ -29,10 +30,19 @@ entity AXIS_SLAVE is
 end AXIS_SLAVE;
 
 architecture implementation of AXIS_SLAVE is
+	signal reset_sync : std_logic;
 begin
 	-- Add user logic here
-    s00_axis_tready     <= not status_full;                 -- Ecriture permise si la fifo n'est pas pleine
+    s00_axis_tready     <= not(status_full) and not(status_busy_flush) and reset_sync;                 -- Ecriture permise si la fifo n'est pas pleine
     wr_enable           <= s00_axis_tvalid;                 -- Ecriture si donn�e valide
     wr_data             <= s00_axis_tuser & s00_axis_tdata; -- Reconstruction du mot de 36 bits
 	-- User logic ends
+	p_reset_sync: process(s00_axis_aresetn, s00_axis_aclk)
+	begin
+		if s00_axis_aresetn = '0'then
+			reset_sync <= '0';
+		elsif rising_edge(s00_axis_aclk) then
+      reset_sync <= '1';
+	  end if;
+  end process p_reset_sync;
 end implementation;
