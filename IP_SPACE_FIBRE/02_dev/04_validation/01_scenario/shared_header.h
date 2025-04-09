@@ -39,10 +39,10 @@
 
 struct test_config
 {
-	struct generator_configuration gen_conf[8];
-	struct analyzer_configuration ana_conf[8];
-	struct generator_configuration broadcast_gen_conf;
-	struct analyzer_configuration broadcast_ana_conf;
+	struct dl_generator_configuration gen_conf[8];
+	struct dl_analyzer_configuration ana_conf[8];
+	struct dl_generator_configuration broadcast_gen_conf;
+	struct dl_analyzer_configuration broadcast_ana_conf;
 	uint32_t gen_init[8];
 	uint32_t ana_init[8];
 	uint32_t broardcast_gen_init;
