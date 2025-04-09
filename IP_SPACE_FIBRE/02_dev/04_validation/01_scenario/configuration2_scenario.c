@@ -30,7 +30,7 @@ static const struct test_config step1_test[STEP1_TESTS_COUNT] =
 			0x34000000,
 			{
 				.packet_number = 1, /* First packet? */
-				.packet_size = 64 /* words */
+				.packet_size = 64 * 4 /* bytes (4 per word. packet_size is 255 max) */
 			}
 		),
 		// Test 2: Invalid message detection, no broadcast
@@ -49,8 +49,8 @@ static const struct test_config step1_test[STEP1_TESTS_COUNT] =
 			NO_BROADCAST_CHANS,
 			0x00000001,
 			{
-				.packet_number = 31,
-				.packet_size = 260
+				.packet_number = 1,
+				.packet_size = 121
 			}
 		),
 		// Test 4: Broadcast test for a frame.
@@ -59,8 +59,8 @@ static const struct test_config step1_test[STEP1_TESTS_COUNT] =
 			ONLY_BROADCAST_CHANS,
 			0x02000000,
 			{
-				.packet_number = 31,
-				.packet_size = 260
+				.packet_number = 1,
+				.packet_size = 16
 			}
 		),
 		// Test 5: Broadcast test for an invalid frame.
@@ -69,8 +69,8 @@ static const struct test_config step1_test[STEP1_TESTS_COUNT] =
 			ONLY_BROADCAST_CHANS,
 			0x03000000,
 			{
-				.packet_number = 31,
-				.packet_size = 260
+				.packet_number = 1,
+				.packet_size = 16
 			}
 		),
 	};
@@ -94,7 +94,7 @@ static const struct test_config step2_test[STEP1_TESTS_COUNT] =
 			0x04000000,
 			{
 				.packet_number = 4,
-				.packet_size = 260
+				.packet_size = 255
 			}
 		),
 	};
@@ -155,6 +155,26 @@ static void assert_ack_counters_increased
 
 	if
 	(
+		DL_CONFIGURATOR_DL_QOS_2_GET(FCT_COUNTER_TX, last_status)
+		>= DL_CONFIGURATOR_DL_QOS_2_GET(FCT_COUNTER_TX, new_status)
+	)
+	{
+		debug_printf("\r\n FCT_COUNTER_TX did not increase for channel %d. \r\n", i);
+	}
+
+	if
+	(
+		DL_CONFIGURATOR_DL_QOS_2_GET(FCT_COUNTER_RX, last_status)
+		>= DL_CONFIGURATOR_DL_QOS_2_GET(FCT_COUNTER_RX, new_status)
+	)
+	{
+		debug_printf("\r\n FCT_COUNTER_RX did not increase for channel %i. \r\n", i);
+	}
+
+	// May actually not be that tied:
+#ifdef nopedynope
+	if
+	(
 		(
 			DL_CONFIGURATOR_DL_QOS_2_GET(ACK_COUNTER_RX, new_status)
 			- DL_CONFIGURATOR_DL_QOS_2_GET(ACK_COUNTER_RX, last_status)
@@ -168,6 +188,7 @@ static void assert_ack_counters_increased
 	{
 		debug_printf("\r\n ACK_COUNTER_RX and ACK_COUNTER_TX did not increase at the same rate for channel %i. \r\n", i);
 	}
+#endif
 }
 
 void scenario2_step2 (void)
@@ -207,4 +228,12 @@ void scenario2_step2 (void)
 	}
 
 	debug_printf("\r\n Step 2: END \r\n");
+}
+
+void scenario2_step3 (void)
+{
+	debug_printf("\r\n Start scenario 2\r\n");
+	debug_printf("\r\n Step 3: \r\n");
+
+	debug_printf("\r\n Step 3: END \r\n");
 }

@@ -28,6 +28,9 @@
 #include "common.h"
 #include "shared_header.h"
 
+// Warning: this alternative is incorrect: it uses Data Link version instead
+// of lane.
+
 #define STEP1_TESTS_COUNT 5
 static const struct test_config step1_test[STEP1_TESTS_COUNT] =
 	{
