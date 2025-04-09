@@ -121,6 +121,8 @@ type data_in_fsm is (
   signal cont_mode_flg          : std_logic;
   signal last_k_char            : std_logic;
   signal cmd_flush              : std_logic;
+  signal cmd_flush_reg1         : std_logic;
+  signal cmd_flush_sync         : std_logic;
   --Flow control signals
   signal fct_credit_cnt         : unsigned(C_FCT_CC_SIZE-1 downto 0);
   signal eip_out                : std_logic;
@@ -155,7 +157,7 @@ begin
   DATA_VALID_DOBUF     <= rd_data_vld;
   END_PACKET_DOBUF     <= rd_data_vld and (status_threshold_low or fct_credit_cnt_low) when (cnt_word_sent<63) else rd_data_vld;
   m_value_for_credit   <= M_VAL_DDES & "000000";
-  S_AXIS_TREADY_DL     <= s_axis_tready_i when(VC_CONT_MODE_MIB = '0') else '1';  -- Tready à '1' in continuous mode
+  S_AXIS_TREADY_DL     <= s_axis_tready_i when(VC_CONT_MODE_MIB = '0') else '1';  -- Tready at '1' in continuous mode
   rd_en                <= VC_RD_EN_DMAC and not(rd_data_vld and fct_credit_cnt_low) when (cnt_word_sent<63) else '0';
   VC_READY_DOBUF       <= vc_ready;
 ---------------------------------------------------------
@@ -199,17 +201,31 @@ begin
 -- Process: p_continuous_mode
 -- Description: Manages continuous mode procedure trigger
 ---------------------------------------------------------
-p_continuous_mode: process(CLK, RST_N)
+p_continuous_mode: process(S_AXIS_ACLK_NW, RST_N, S_AXIS_ARSTN_NW)
 begin
-  if RST_N = '0' then
+  if S_AXIS_ARSTN_NW = '0' or RST_N='0' then
     cont_mode_flg <= '0';
-  elsif rising_edge(CLK) then
+  elsif rising_edge(S_AXIS_ACLK_NW) then
     cont_mode_flg  <= '0';
     if VC_CONT_MODE_MIB = '1' and (status_threshold_high ='1' or LANE_ACTIVE_ST_PPL ='0') then
         cont_mode_flg  <= '1';
     end if;
   end if;
 end process p_continuous_mode;
+---------------------------------------------------------
+-- Process: p_cmd_flush_resync
+-- Description: cmd_flush resynchronisation in CLK domain
+---------------------------------------------------------
+p_cmd_flush_resync: process(CLK, RST_N)
+begin
+  if RST_N = '0' then
+    cmd_flush_reg1 <= '0';
+    cmd_flush_sync <= '0';
+  elsif rising_edge(CLK) then
+    cmd_flush_reg1 <= cmd_flush;
+    cmd_flush_sync <= cmd_flush_reg1;
+  end if;
+end process p_cmd_flush_resync;
 ---------------------------------------------------------
 -- Process: p_data_in_fifo
 -- Description: Manages the data written into the fifo
@@ -467,7 +483,10 @@ begin
     cnt_eip_out_reg  <= (others =>'0');
   elsif rising_edge(CLK) then
     cnt_eip_out_reg <= cnt_eip_out;
-    if eip_out = '1' and eip_out_ack='1'  then
+    if cmd_flush_sync ='1' and VC_CONT_MODE_MIB ='1' then
+      cnt_eip_out      <= (others =>'0');
+      cnt_eip_out_reg  <= (others =>'0');
+    elsif eip_out = '1' and eip_out_ack='1'  then
       cnt_eip_out    <= to_unsigned(1,cnt_eip_out'length);
     elsif eip_out_ack='1' then
       cnt_eip_out   <= (others =>'0');
@@ -491,7 +510,12 @@ begin
     eip_in_req_reg1 <= eip_in_req;
     eip_in_req_reg2 <= eip_in_req_reg1;
     eip_out_ack <= '0';
-    if eip_in_req_reg2 = '1' then
+    if cmd_flush_sync ='1' and VC_CONT_MODE_MIB ='1' then
+      cnt_eip     <= (others =>'0');
+      eip_in_req_reg1  <= '0';
+      eip_in_req_reg2  <= '0';
+      eip_out_ack <= '0';
+    elsif eip_in_req_reg2 = '1' then
       cnt_eip     <= cnt_eip + 1;
     elsif cnt_eip_out > 0 and eip_out_ack = '0' then
       cnt_eip     <= cnt_eip - cnt_eip_out;
