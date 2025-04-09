@@ -142,7 +142,6 @@ type data_in_fsm is (
   signal rd_en                  : std_logic;
   signal link_reset_dlre_reg1   : std_logic;
   signal link_reset_dlre_sync   : std_logic;
-  signal eep_insertion_flg      : std_logic;
 begin
 ---------------------------------------------------------
 -----                     Assignation               -----
@@ -156,7 +155,7 @@ begin
   DATA_VALID_DOBUF     <= rd_data_vld;
   END_PACKET_DOBUF     <= rd_data_vld and (status_threshold_low or fct_credit_cnt_low) when (cnt_word_sent<63) else rd_data_vld;
   m_value_for_credit   <= M_VAL_DDES & "000000";
-  S_AXIS_TREADY_DL     <= s_axis_tready_i and not(eep_insertion_flg);
+  S_AXIS_TREADY_DL     <= s_axis_tready_i when(VC_CONT_MODE_MIB = '0') else '1';  -- Tready à '1' in continuous mode
   rd_en                <= VC_RD_EN_DMAC and not(rd_data_vld and fct_credit_cnt_low) when (cnt_word_sent<63) else '0';
   VC_READY_DOBUF       <= vc_ready;
 ---------------------------------------------------------
@@ -227,13 +226,11 @@ begin
     current_state        <= INIT_ST;
     link_reset_dlre_reg1 <= '0';
     link_reset_dlre_sync <= '0';
-    eep_insertion_flg    <= '0';
   elsif rising_edge(S_AXIS_ACLK_NW) then
     link_reset_dlre_reg1 <= LINK_RESET_DLRE;
     link_reset_dlre_sync <= link_reset_dlre_reg1;
     s_axis_tready_r      <= s_axis_tready_i;
     cmd_flush            <= '0';
-    eep_insertion_flg    <= '0';
     case current_state is
       when INIT_ST =>
                         if link_reset_dlre_sync ='0' and LINK_RESET_DLRE = '0' then
@@ -253,9 +250,12 @@ begin
                                       current_state   <= WAIT_EIP_ST;
                                     end if;
                                   elsif cont_mode_flg  = '1' then
-                                    cmd_flush         <= '1';
-                                    eep_insertion_flg <= '1';
-                                    current_state     <= ADD_EEP_ST;
+                                    cmd_flush       <= '1';
+                                    current_state   <= ADD_EEP_ST;
+                                    s_axis_tdata_i  <= (others => '0');
+                                    s_axis_tuser_i  <= (others => '0');
+                                    s_axis_tlast_i  <= '0';
+                                    s_axis_tvalid_i <= '0';
                                   end if;
 
         when WAIT_END_FLUSH_ST =>
@@ -268,16 +268,14 @@ begin
                                     s_axis_tuser_i  <= "1111";
                                     s_axis_tlast_i  <= '1';
                                     s_axis_tvalid_i <= '1';
-                                    if last_k_char = '1' then
+                                    if S_AXIS_TUSER_NW(C_BYTE_BY_WORD_LENGTH-1)='1' and S_AXIS_TVALID_NW='1' then
                                       current_state   <= IDLE_ST;
                                     else
                                       current_state   <= WAIT_EIP_ST;
                                     end if;
-                                  else
-                                    eep_insertion_flg <= '1';
                                   end if;
 
-        when WAIT_EIP_ST =>     if s_axis_tready_i ='1' and S_AXIS_TVALID_NW='1' then
+        when WAIT_EIP_ST =>     if S_AXIS_TVALID_NW='1' then
                                   if S_AXIS_TUSER_NW(0)='1' and (S_AXIS_TDATA_NW(7 downto 0) = C_EEP_SYMB or S_AXIS_TDATA_NW(7 downto 0) = C_EOP_SYMB) then
                                     s_axis_tdata_i  <= S_AXIS_TDATA_NW(31 downto 8) & C_FILL_SYMB;
                                     s_axis_tuser_i  <= S_AXIS_TUSER_NW(3 downto 1) & '1';
