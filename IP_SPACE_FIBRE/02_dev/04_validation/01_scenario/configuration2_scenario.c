@@ -141,7 +141,7 @@ static void assert_ack_counters_increased
 		>= DL_CONFIGURATOR_DL_QOS_2_GET(ACK_COUNTER_TX, new_status)
 	)
 	{
-		debug_printf("\r\n ACK_COUNTER_TX did not increase in test %d. \r\n", i);
+		debug_printf("\r\n ACK_COUNTER_TX did not increase for channel %d. \r\n", i);
 	}
 
 	if
@@ -150,7 +150,7 @@ static void assert_ack_counters_increased
 		>= DL_CONFIGURATOR_DL_QOS_2_GET(ACK_COUNTER_RX, new_status)
 	)
 	{
-		debug_printf("\r\n ACK_COUNTER_RX did not increase in test %i. \r\n", i);
+		debug_printf("\r\n ACK_COUNTER_RX did not increase for channel %i. \r\n", i);
 	}
 }
 
@@ -169,21 +169,26 @@ void scenario2_step2 (void)
 
 	// FCT REQUEST CHECK?
 
-	last_status = *DL_CONFIGURATOR_DL_QOS_2_PTR;
+	for (int i = 0; i < STEP2_TESTS_COUNT; ++i)
+	{
+		struct test_config test_fragment = step2_test[i];
 
-	run_test(step2_test + 0);
+		for (int j = 0; j < CHANNEL_COUNT; j++)
+		{
+			if (step2_test[i].enable_mask & (1 << j))
+			{
+				last_status = *DL_CONFIGURATOR_DL_QOS_2_PTR;
 
-	new_status = *DL_CONFIGURATOR_DL_QOS_2_PTR;
+				test_fragment.enable_mask = (1 << j);
 
-	assert_ack_counters_increased(last_status, new_status, 0);
+				run_test(&test_fragment);
 
-	last_status = new_status;
+				new_status = *DL_CONFIGURATOR_DL_QOS_2_PTR;
 
-	run_test(step2_test + 1);
-
-	new_status = *DL_CONFIGURATOR_DL_QOS_2_PTR;
-
-	assert_ack_counters_increased(last_status, new_status, 1);
+				assert_ack_counters_increased(last_status, new_status, j);
+			}
+		}
+	}
 
 	debug_printf("\r\n Step 2: END \r\n");
 }

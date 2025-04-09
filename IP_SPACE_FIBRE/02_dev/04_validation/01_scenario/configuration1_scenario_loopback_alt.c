@@ -15,6 +15,7 @@
 
 // Standard headers
 #include <stdint.h>
+#include <stddef.h>
 // Driver
 #include "gpio.h"
 #include "uart_tx.h"
@@ -28,13 +29,14 @@
 #include "shared_header.h"
 
 #define STEP1_TESTS_COUNT 5
-const struct test_config step1_test[STEP1_TESTS_COUNT] =
+static const struct test_config step1_test[STEP1_TESTS_COUNT] =
 	{
 		// Test 1
-		BASIC_CONFIG(0x34000000, {.packet_number = 4, .packet_size = 4}),
+		BASIC_CONFIG(NO_BROADCAST_CHANS, 0x34000000, {.packet_number = 4, .packet_size = 4}),
 		// Test 2
 		BASIC_CONFIG
 		(
+			NO_BROADCAST_CHANS,
 			0x00FF0000,
 			{
 				.packet_number = 31,
@@ -45,6 +47,7 @@ const struct test_config step1_test[STEP1_TESTS_COUNT] =
 		// Test 3
 		BASIC_CONFIG
 		(
+			NO_BROADCAST_CHANS,
 			0x00000001,
 			{
 				.packet_number = 31,
@@ -55,6 +58,7 @@ const struct test_config step1_test[STEP1_TESTS_COUNT] =
 		// Test 4
 		BASIC_CONFIG
 		(
+			NO_BROADCAST_CHANS,
 			0x02000000,
 			{
 				.packet_number = 2,
@@ -65,6 +69,7 @@ const struct test_config step1_test[STEP1_TESTS_COUNT] =
 		// Test 5
 		BASIC_CONFIG
 		(
+			NO_BROADCAST_CHANS,
 			0x03000000,
 			{
 				.packet_number = 1,
@@ -75,13 +80,14 @@ const struct test_config step1_test[STEP1_TESTS_COUNT] =
 	};
 
 #define STEP2_TESTS_COUNT 5
-const struct test_config step2_test[STEP2_TESTS_COUNT] =
+static const struct test_config step2_test[STEP2_TESTS_COUNT] =
 	{
 		// Test 1
-		BASIC_CONFIG(0x00000000, {.packet_number = 4, .packet_size = 260}),
+		BASIC_CONFIG(NO_BROADCAST_CHANS, 0x00000000, {.packet_number = 4, .packet_size = 260}),
 		// Test 2
 		BASIC_CONFIG
 		(
+			NO_BROADCAST_CHANS,
 			0x00000000,
 			{
 				.packet_number = 31,
@@ -92,6 +98,7 @@ const struct test_config step2_test[STEP2_TESTS_COUNT] =
 		// Test 3
 		BASIC_CONFIG
 		(
+			NO_BROADCAST_CHANS,
 			0x00000001,
 			{
 				.packet_number = 31,
@@ -102,6 +109,7 @@ const struct test_config step2_test[STEP2_TESTS_COUNT] =
 		// Test 4
 		BASIC_CONFIG
 		(
+			NO_BROADCAST_CHANS,
 			0x02000000,
 			{
 				.packet_number = 4,
@@ -112,6 +120,7 @@ const struct test_config step2_test[STEP2_TESTS_COUNT] =
 		// Test 5
 		BASIC_CONFIG
 		(
+			NO_BROADCAST_CHANS,
 			0x03000000,
 			{
 				.packet_number = 1,
@@ -133,7 +142,7 @@ void alt_scenario_loopback_step_1 (void)
 		*DL_CONFIGURATOR_LANE_PARAMETER_PTR
 	);
 
-	run_tests(STEP1_TESTS_COUNT, step1_test, /* channels = */1);
+	init_and_run_tests(STEP1_TESTS_COUNT, step1_test);
 
 	// Disable parallel loopback
 	DL_CONFIGURATOR_LANE_PARAMETER_SET_IN_PLACE
@@ -157,7 +166,7 @@ void alt_scenario_loopback_step_2 (void)
 		*DL_CONFIGURATOR_PHY_PARAMETER_PTR
 	);
 
-	run_tests(STEP2_TESTS_COUNT, step2_test, /* channels = */ 1);
+	init_and_run_tests(STEP2_TESTS_COUNT, step2_test);
 
 	DL_CONFIGURATOR_PHY_PARAMETER_SET_IN_PLACE
 	(

@@ -1,3 +1,5 @@
+// Standard headers
+#include <stddef.h>
 // Driver
 #include "gpio.h"
 #include "uart_tx.h"
@@ -61,7 +63,10 @@ static enum action_result _wait_for_started_to_active (void)
 	return OK;
 }
 
-enum action_result wait_test_end (const uint32_t channel_count)
+static enum action_result wait_test_end
+(
+	const struct test_config test [const static 1]
+)
 {
 	unsigned int timer = 0;
 
@@ -69,8 +74,13 @@ enum action_result wait_test_end (const uint32_t channel_count)
 	{
 		bool completed = true;
 
-		for (uint32_t i = 0; i < channel_count; ++i)
+		for (uint32_t i = 0; i < CHANNEL_COUNT; ++i)
 		{
+			if (!(test->enable_mask & (1 << i)))
+			{
+				continue;
+			}
+
 			if
 			(
 				!DL_GENERATOR_STATUS_GET(TEST_END, *DL_GENERATOR_X_STATUS_PTR(i))
@@ -92,8 +102,13 @@ enum action_result wait_test_end (const uint32_t channel_count)
 		{
 			debug_printf("\r\n wait_end_test timeout\r\n");
 
-			for (uint32_t i = 0; i < channel_count; ++i)
+			for (uint32_t i = 0; i < CHANNEL_COUNT; ++i)
 			{
+				if (!(test->enable_mask & (1 << i)))
+				{
+					continue;
+				}
+
 				if (!DL_GENERATOR_STATUS_GET(TEST_END, *DL_GENERATOR_X_STATUS_PTR(i)))
 				{
 					debug_printf("\r\n Generator channel %d not ended\r\n", i);
@@ -110,24 +125,83 @@ enum action_result wait_test_end (const uint32_t channel_count)
 	}
 }
 
-void start_test (const uint32_t channel_count)
+enum action_result run_test (const struct test_config test [const static 1])
 {
-	for (uint32_t i = 0; i < channel_count; ++i)
+	uint32_t error_counter = 0;
+
+	for (uint32_t i = 0; i < CHANNEL_COUNT; ++i)
 	{
-		DL_ANALYZER_CONTROL_SET_IN_PLACE(MODEL_START, 1, *DL_ANALYZER_X_CONTROL_PTR(i));
-		DL_GENERATOR_CONTROL_SET_IN_PLACE(MODEL_START, 1, *DL_GENERATOR_X_CONTROL_PTR(i));
+		if (test->enable_mask & (1 << i))
+		{
+			*DL_ANALYZER_X_CONFIGURATION_PTR(i) =
+				DL_ANALYZER_CONFIGURATION_TO_UINT32_T(test[i].ana_conf[i]);
+
+			*DL_GENERATOR_X_CONFIGURATION_PTR(i) =
+				DL_GENERATOR_CONFIGURATION_TO_UINT32_T(test[i].gen_conf[i]);
+
+			*DL_ANALYZER_X_INITIAL_VALUE_PTR(i) = test[i].ana_init[i];
+
+			*DL_GENERATOR_X_INITIAL_VALUE_PTR(i) = test[i].gen_init[i];
+		}
 	}
+
+	for (uint32_t i = 0; i < CHANNEL_COUNT; ++i)
+	{
+		if (test->enable_mask & (1 << i))
+		{
+			DL_ANALYZER_CONTROL_SET_IN_PLACE(MODEL_START, 1, *DL_ANALYZER_X_CONTROL_PTR(i));
+			DL_GENERATOR_CONTROL_SET_IN_PLACE(MODEL_START, 1, *DL_GENERATOR_X_CONTROL_PTR(i));
+		}
+	}
+
+	if (wait_test_end(test) == OK)
+	{
+		const bool expect_errors = test->expect_errors;
+
+		for (uint32_t i = 0; i < CHANNEL_COUNT; ++i)
+		{
+			if (!(test->enable_mask & (1 << i)))
+			{
+				continue;
+			}
+
+			uint32_t local_errors_count =
+				DL_ANALYZER_STATUS_GET(ERROR_COUNTER, *DL_ANALYZER_X_STATUS_PTR(i));
+
+			if
+			(
+				((local_errors_count > 0) && !expect_errors)
+				|| ((local_errors_count == 0) && expect_errors)
+			)
+			{
+				debug_printf
+				(
+					"\r\n Issue: test %d completed with %d errors out on channel %d (%s).\r\n",
+					i,
+					local_errors_count,
+					i,
+					(expect_errors ? "errors expected" : "no errors expected")
+				);
+			}
+
+			error_counter += local_errors_count;
+		}
+
+		if
+		(
+			((error_counter == 0) && !expect_errors)
+			|| ((error_counter > 0) && expect_errors)
+		)
+		{
+			return OK;
+		}
+	}
+
+	return TIMEOUT;
 }
 
-enum action_result run_tests
-(
-	const unsigned int test_count,
-	const struct test_config test[const static test_count],
-	const uint32_t channel_count
-)
+enum action_result initialization_sequence (void)
 {
-	unsigned int successes = 0;
-
 	if
 	(
 		(initialize() != OK)
@@ -137,66 +211,32 @@ enum action_result run_tests
 		return TIMEOUT;
 	}
 
+	return OK;
+}
+
+enum action_result run_tests
+(
+	const unsigned int test_count,
+	const struct test_config test [const static test_count]
+)
+{
+	unsigned int successes = 0;
+
 	for (unsigned int i = 0; i < test_count; ++i)
 	{
-		const bool expect_errors = test[i].expect_errors;
-
-		// Only one generator & analyzer here.
-		for (uint32_t j = 0; j < channel_count; ++j)
+		switch (run_test(test + i))
 		{
-			*DL_ANALYZER_X_CONFIGURATION_PTR(j) =
-				DL_ANALYZER_CONFIGURATION_TO_UINT32_T(test[i].ana_conf[j]);
-
-			*DL_GENERATOR_X_CONFIGURATION_PTR(j) =
-				DL_GENERATOR_CONFIGURATION_TO_UINT32_T(test[i].gen_conf[j]);
-
-			*DL_ANALYZER_X_INITIAL_VALUE_PTR(j) = test[i].ana_init[j];
-
-			*DL_GENERATOR_X_INITIAL_VALUE_PTR(j) = test[i].gen_init[j];
-		}
-
-		start_test(channel_count);
-
-		if (wait_test_end(channel_count) == OK)
-		{
-			uint32_t total_errors_count = 0;
-
-			for (uint32_t j = 0; j < channel_count; ++j)
-			{
-				uint32_t local_errors_count =
-					DL_ANALYZER_STATUS_GET(ERROR_COUNTER, *DL_ANALYZER_X_STATUS_PTR(j));
-
-				if
-				(
-					((local_errors_count > 0) && !expect_errors)
-					|| ((local_errors_count == 0) && expect_errors)
-				)
-				{
-					debug_printf
-					(
-						"\r\n Issue: test %d completed with %d errors out on channel %d (%s).\r\n",
-						i,
-						local_errors_count,
-						j,
-						(expect_errors ? "errors expected" : "no errors expected")
-					);
-				}
-
-				total_errors_count += local_errors_count;
-			}
-
-			if
-			(
-				((total_errors_count == 0) && !expect_errors)
-				|| ((total_errors_count > 0) && expect_errors)
-			)
-			{
+			case OK:
 				successes++;
-			}
-		}
-		else
-		{
-			debug_printf("\r\nTest %d timed out.\r\n", i);
+				break;
+
+			case TIMEOUT:
+				debug_printf("\r\nTest %d timed out.\r\n", i);
+				break;
+
+			case FAILURE:
+				debug_printf("\r\nTest %d failed.\r\n", i);
+				break;
 		}
 	}
 
@@ -210,3 +250,16 @@ enum action_result run_tests
 	return OK;
 }
 
+enum action_result init_and_run_tests
+(
+	const unsigned int test_count,
+	const struct test_config test [const static test_count]
+)
+{
+	if (initialization_sequence() != OK)
+	{
+		return TIMEOUT;
+	}
+
+	return run_tests(test_count, test);
+}

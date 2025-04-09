@@ -9,31 +9,28 @@
 	(x), (x + 32), (x + 64), (x + 128), \
 	(x + 256), (x + 512), (x + 1024), (x + 2048)
 
-#define NINTH_VARIANT_OF(x) (x + 4096)
+#define CHANNEL_COUNT 8
+#define ALL_CHANS            0xFF
+#define NO_BROADCAST_CHANS   0x7F
+#define ONLY_BROADCAST_CHANS 0x80
 
-#define BASIC_CONFIG(init, ...) \
+#define BASIC_CONFIG(enablemask, init, ...) \
 	{ \
 		.gen_conf = {EIGHT_ENTRIES_OF(__VA_ARGS__)}, \
 		.ana_conf = {EIGHT_ENTRIES_OF(__VA_ARGS__)}, \
 		.gen_init = {EIGHT_VARIANTS_OF(init)}, \
 		.ana_init = {EIGHT_VARIANTS_OF(init)}, \
-		.broadcast_gen_conf = __VA_ARGS__, \
-		.broadcast_ana_conf = __VA_ARGS__, \
-		.broardcast_gen_init = NINTH_VARIANT_OF(init), \
-		.broardcast_ana_init = NINTH_VARIANT_OF(init), \
+		.enable_mask = enablemask, \
 		.expect_errors = false \
 	}
 
-#define INVALID_CONFIG(init, ...) \
+#define INVALID_CONFIG(enablemask, init, ...) \
 	{ \
 		.gen_conf = {EIGHT_ENTRIES_OF(__VA_ARGS__)}, \
 		.ana_conf = {EIGHT_ENTRIES_OF(__VA_ARGS__)}, \
 		.gen_init = {EIGHT_VARIANTS_OF(init)}, \
 		.ana_init = {EIGHT_VARIANTS_OF((init+13))}, \
-		.broadcast_gen_conf = __VA_ARGS__, \
-		.broadcast_ana_conf = __VA_ARGS__, \
-		.broardcast_gen_init = NINTH_VARIANT_OF(init), \
-		.broardcast_ana_init = NINTH_VARIANT_OF((init+13)), \
+		.enable_mask = enablemask, \
 		.expect_errors = true \
 	}
 
@@ -41,21 +38,24 @@ struct test_config
 {
 	struct dl_generator_configuration gen_conf[8];
 	struct dl_analyzer_configuration ana_conf[8];
-	struct dl_generator_configuration broadcast_gen_conf;
-	struct dl_analyzer_configuration broadcast_ana_conf;
 	uint32_t gen_init[8];
 	uint32_t ana_init[8];
-	uint32_t broardcast_gen_init;
-	uint32_t broardcast_ana_init;
+	uint8_t enable_mask;
 	bool expect_errors;
 };
 
-enum action_result wait_test_end (const uint32_t channel_count);
-void start_test (const uint32_t channel_count);
+enum action_result initialization_sequence (void);
+
+enum action_result run_test (const struct test_config test [const static 1]);
 
 enum action_result run_tests
 (
 	const unsigned int test_count,
-	const struct test_config test[const static test_count],
-	const uint32_t channel_count
+	const struct test_config test [const static test_count]
+);
+
+enum action_result init_and_run_tests
+(
+	const unsigned int test_count,
+	const struct test_config test [const static test_count]
 );
