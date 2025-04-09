@@ -226,29 +226,18 @@ begin
     cmd_flush <= '0';
     case current_state is
       when IDLE_ST =>
+                                  s_axis_tdata_i  <= S_AXIS_TDATA_NW;
+                                  s_axis_tuser_i  <= S_AXIS_TUSER_NW;
+                                  s_axis_tlast_i  <= S_AXIS_TLAST_NW;
+                                  s_axis_tvalid_i <= S_AXIS_TVALID_NW;
                                   if LINK_RESET_DLRE = '1' then
                                     cmd_flush <= '1';
-                                    if last_k_char = '1' then
+                                    if last_k_char = '0' then
                                       current_state   <= WAIT_END_FLUSH_ST;
-                                      s_axis_tdata_i  <= S_AXIS_TDATA_NW;
-                                      s_axis_tuser_i  <= S_AXIS_TUSER_NW;
-                                      s_axis_tlast_i  <= S_AXIS_TLAST_NW;
-                                      s_axis_tvalid_i <= S_AXIS_TVALID_NW;
                                     end if;
                                   elsif cont_mode_flg  = '1' then
-                                    cmd_flush <= '1';
-                                    if last_k_char = '1' then
-                                      current_state   <= ADD_EEP_ST;
-                                      s_axis_tdata_i  <= S_AXIS_TDATA_NW;
-                                      s_axis_tuser_i  <= S_AXIS_TUSER_NW;
-                                      s_axis_tlast_i  <= S_AXIS_TLAST_NW;
-                                      s_axis_tvalid_i <= S_AXIS_TVALID_NW;
-                                    end if;
-                                  else
-                                    s_axis_tdata_i  <= S_AXIS_TDATA_NW;
-                                    s_axis_tuser_i  <= S_AXIS_TUSER_NW;
-                                    s_axis_tlast_i  <= S_AXIS_TLAST_NW;
-                                    s_axis_tvalid_i <= S_AXIS_TVALID_NW;
+                                    cmd_flush       <= '1';
+                                    current_state   <= ADD_EEP_ST;
                                   end if;
 
         when WAIT_END_FLUSH_ST =>
@@ -262,6 +251,11 @@ begin
                                     s_axis_tuser_i  <= "1111";
                                     s_axis_tlast_i  <= '1';
                                     s_axis_tvalid_i <= '1';
+                                    if last_k_char = '1' then
+                                      current_state   <= IDLE_ST;
+                                    else
+                                      current_state   <= WAIT_EIP_ST;
+                                    end if;
                                   end if;
 
         when WAIT_EIP_ST =>
@@ -304,7 +298,7 @@ begin
   if S_AXIS_ARSTN_NW = '0' or RST_N='0'  then
     last_k_char <= '0';
   elsif rising_edge(S_AXIS_ACLK_NW) then
-    if S_AXIS_TUSER_NW(C_BYTE_BY_WORD_LENGTH-1)='1' and S_AXIS_TVALID_NW='1' then
+    if S_AXIS_TUSER_NW(C_BYTE_BY_WORD_LENGTH-1)='1' and S_AXIS_TVALID_NW='1' and s_axis_tready_i ='1' then
       last_k_char <= '1';
     elsif S_AXIS_TVALID_NW='1' then
       last_k_char <= '0';
