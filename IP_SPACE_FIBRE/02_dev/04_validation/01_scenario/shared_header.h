@@ -9,10 +9,10 @@
 	(x), (x + 32), (x + 64), (x + 128), \
 	(x + 256), (x + 512), (x + 1024), (x + 2048)
 
-#define CHANNEL_COUNT 8
-#define ALL_CHANS            0xFF
-#define NO_BROADCAST_CHANS   0x7F
-#define ONLY_BROADCAST_CHANS 0x80
+#define CHANNEL_COUNT 9
+#define ALL_CHANS            0x1FF
+#define NO_BROADCAST_CHANS   0x0FF
+#define ONLY_BROADCAST_CHANS 0x100
 
 #define BASIC_CONFIG(enablemask, init, ...) \
 	{ \

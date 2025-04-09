@@ -152,6 +152,22 @@ static void assert_ack_counters_increased
 	{
 		debug_printf("\r\n ACK_COUNTER_RX did not increase for channel %i. \r\n", i);
 	}
+
+	if
+	(
+		(
+			DL_CONFIGURATOR_DL_QOS_2_GET(ACK_COUNTER_RX, new_status)
+			- DL_CONFIGURATOR_DL_QOS_2_GET(ACK_COUNTER_RX, last_status)
+		)
+		!=
+		(
+			DL_CONFIGURATOR_DL_QOS_2_GET(ACK_COUNTER_TX, new_status)
+			- DL_CONFIGURATOR_DL_QOS_2_GET(ACK_COUNTER_TX, last_status)
+		)
+	)
+	{
+		debug_printf("\r\n ACK_COUNTER_RX and ACK_COUNTER_TX did not increase at the same rate for channel %i. \r\n", i);
+	}
 }
 
 void scenario2_step2 (void)
