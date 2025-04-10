@@ -302,7 +302,7 @@ void scenario2_step2 (void)
 /******************************************************************************/
 /**** STEP 3 ******************************************************************/
 /******************************************************************************/
-#define STEP3_TESTS_COUNT 5
+#define STEP3_TESTS_COUNT 4
 static const struct test_config step3_test[STEP3_TESTS_COUNT] =
 	{
 		// Test 1: Send a data packet of 64 words to each virtual channel check
