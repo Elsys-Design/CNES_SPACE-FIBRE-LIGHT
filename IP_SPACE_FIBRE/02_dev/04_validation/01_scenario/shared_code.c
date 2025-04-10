@@ -132,14 +132,14 @@ void initiate_test (const struct test_config test [const static 1])
 		if (test->enable_mask & (1 << i))
 		{
 			*DL_ANALYZER_X_CONFIGURATION_PTR(i) =
-				DL_ANALYZER_CONFIGURATION_TO_UINT32_T(test[i].ana_conf[i]);
+				DL_ANALYZER_CONFIGURATION_TO_UINT32_T(test->ana_conf[i]);
 
 			*DL_GENERATOR_X_CONFIGURATION_PTR(i) =
-				DL_GENERATOR_CONFIGURATION_TO_UINT32_T(test[i].gen_conf[i]);
+				DL_GENERATOR_CONFIGURATION_TO_UINT32_T(test->gen_conf[i]);
 
-			*DL_ANALYZER_X_INITIAL_VALUE_PTR(i) = test[i].ana_init[i];
+			*DL_ANALYZER_X_INITIAL_VALUE_PTR(i) = test->ana_init[i];
 
-			*DL_GENERATOR_X_INITIAL_VALUE_PTR(i) = test[i].gen_init[i];
+			*DL_GENERATOR_X_INITIAL_VALUE_PTR(i) = test->gen_init[i];
 		}
 	}
 
@@ -182,8 +182,7 @@ enum action_result finalize_test
 			{
 				debug_printf
 				(
-					"\r\n Issue: test %d completed with %d errors out on channel %d (%s).\r\n",
-					i,
+					"\r\n Issue: test completed with %d errors out on channel %d (%s).\r\n",
 					local_errors_count,
 					i,
 					(expect_errors ? "errors expected" : "no errors expected")

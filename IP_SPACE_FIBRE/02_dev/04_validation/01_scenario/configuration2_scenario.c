@@ -135,9 +135,9 @@ static const struct test_config step1_test[STEP1_TESTS_COUNT] =
 		)
 	};
 
-void scenario2_step1 (void)
+void configuration2_step1 (void)
 {
-	debug_printf("\r\n Start scenario 2\r\n");
+	debug_printf("\r\n Start configuration 2\r\n");
 	debug_printf("\r\n Step 1: \r\n");
 
 	// Perform initialization procedure
@@ -191,7 +191,7 @@ static const struct test_config step2_test[STEP2_TESTS_COUNT] =
 			NO_BROADCAST_CHANS,
 			0x04000000,
 			{
-				.packet_number = 4,
+				.packet_number = 1,
 				.packet_size = __WORDS_TO_BYTES(64)
 			}
 		),
@@ -260,9 +260,9 @@ static void assert_ack_counters_increased
 #endif
 }
 
-void scenario2_step2 (void)
+void configuration2_step2 (void)
 {
-	debug_printf("\r\n Start scenario 2\r\n");
+	debug_printf("\r\n Start configuration 2\r\n");
 	debug_printf("\r\n Step 2: \r\n");
 	uint32_t last_status = 0, new_status = 0;
 
@@ -340,20 +340,22 @@ static const struct test_config step3_test[STEP3_TESTS_COUNT] =
 		),
 		// Test 4: Send a data packet of 1 word to each virtual channel check
 		// that the data are received on Data_Link_Analyzer models
+		//
+		// 1 byte instead
 		BASIC_CONFIG
 		(
 			NO_BROADCAST_CHANS,
 			0xCA0000FE,
 			{
 				.packet_number = 1,
-				.packet_size = __WORDS_TO_BYTES(1)
+				.packet_size = 1
 			}
 		),
 	};
 
-void scenario2_step3 (void)
+void configuration2_step3 (void)
 {
-	debug_printf("\r\n Start scenario 2\r\n");
+	debug_printf("\r\n Start configuration 2\r\n");
 	debug_printf("\r\n Step 3: \r\n");
 
 	init_and_run_tests(STEP3_TESTS_COUNT, step3_test);
@@ -391,14 +393,14 @@ static const struct test_config step4_test[STEP4_TESTS_COUNT] =
 			0x0C0A0F0E,
 			{
 				.packet_number = 1,
-				.packet_size = __WORDS_TO_BYTES(32)
+				.packet_size = __WORDS_TO_BYTES(64)
 			}
 		)
 	};
 
-void scenario2_step4 (void)
+void configuration2_step4 (void)
 {
-	debug_printf("\r\n Start scenario 2\r\n");
+	debug_printf("\r\n Start configuration 2\r\n");
 	debug_printf("\r\n Step 4: \r\n");
 
 	if (initialization_sequence() != OK)
@@ -411,13 +413,13 @@ void scenario2_step4 (void)
 	DL_CONFIGURATOR_DL_PARAMETER_SET_IN_PLACE
 	(
 		PAUSE_VC,
-		0x1, /* Channel 1 */
+		0x1, /* Channel 0 */
 		*DL_CONFIGURATOR_DL_PARAMETER_PTR
 	);
 	DL_CONFIGURATOR_DL_PARAMETER_SET_IN_PLACE
 	(
 		CONTINUOUS_VC,
-		0x1, /* Channel 1 */
+		0x1, /* Channel 0 */
 		*DL_CONFIGURATOR_DL_PARAMETER_PTR
 	);
 

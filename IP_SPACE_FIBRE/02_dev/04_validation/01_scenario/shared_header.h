@@ -1,13 +1,15 @@
 #pragma once
 
 // Yes, it's weird. But it's convenient.
-#define EIGHT_ENTRIES_OF(...) \
+#define NINE_ENTRIES_OF(...) \
 	__VA_ARGS__, __VA_ARGS__, __VA_ARGS__, __VA_ARGS__, \
-	__VA_ARGS__, __VA_ARGS__, __VA_ARGS__, __VA_ARGS__
+	__VA_ARGS__, __VA_ARGS__, __VA_ARGS__, __VA_ARGS__, \
+	__VA_ARGS__
 
-#define EIGHT_VARIANTS_OF(x) \
+#define NINE_VARIANTS_OF(x) \
 	(x), (x + 32), (x + 64), (x + 128), \
-	(x + 256), (x + 512), (x + 1024), (x + 2048)
+	(x + 256), (x + 512), (x + 1024), (x + 2048), \
+	(x + 4096)
 
 #define CHANNEL_COUNT 9
 #define ALL_CHANS            0x1FF
@@ -16,40 +18,40 @@
 
 #define BASIC_CONFIG(enablemask, init, ...) \
 	{ \
-		.gen_conf = {EIGHT_ENTRIES_OF(__VA_ARGS__)}, \
-		.ana_conf = {EIGHT_ENTRIES_OF(__VA_ARGS__)}, \
-		.gen_init = {EIGHT_VARIANTS_OF(init)}, \
-		.ana_init = {EIGHT_VARIANTS_OF(init)}, \
+		.gen_conf = {NINE_ENTRIES_OF(__VA_ARGS__)}, \
+		.ana_conf = {NINE_ENTRIES_OF(__VA_ARGS__)}, \
+		.gen_init = {NINE_VARIANTS_OF(init)}, \
+		.ana_init = {NINE_VARIANTS_OF(init)}, \
 		.enable_mask = enablemask, \
 		.expect_errors = false \
 	}
 
 #define INVALID_CONFIG(enablemask, init, ...) \
 	{ \
-		.gen_conf = {EIGHT_ENTRIES_OF(__VA_ARGS__)}, \
-		.ana_conf = {EIGHT_ENTRIES_OF(__VA_ARGS__)}, \
-		.gen_init = {EIGHT_VARIANTS_OF(init)}, \
-		.ana_init = {EIGHT_VARIANTS_OF((init+13))}, \
+		.gen_conf = {NINE_ENTRIES_OF(__VA_ARGS__)}, \
+		.ana_conf = {NINE_ENTRIES_OF(__VA_ARGS__)}, \
+		.gen_init = {NINE_VARIANTS_OF(init)}, \
+		.ana_init = {NINE_VARIANTS_OF((init+13))}, \
 		.enable_mask = enablemask, \
 		.expect_errors = true \
 	}
 
 #define FORCE_ERROR_CONFIG(enablemask, init, ...) \
 	{ \
-		.gen_conf = {EIGHT_ENTRIES_OF(__VA_ARGS__)}, \
-		.ana_conf = {EIGHT_ENTRIES_OF(__VA_ARGS__)}, \
-		.gen_init = {EIGHT_VARIANTS_OF(init)}, \
-		.ana_init = {EIGHT_VARIANTS_OF((init+13))}, \
+		.gen_conf = {NINE_ENTRIES_OF(__VA_ARGS__)}, \
+		.ana_conf = {NINE_ENTRIES_OF(__VA_ARGS__)}, \
+		.gen_init = {NINE_VARIANTS_OF(init)}, \
+		.ana_init = {NINE_VARIANTS_OF((init+13))}, \
 		.enable_mask = enablemask, \
 		.expect_errors = false\
 	}
 
 struct test_config
 {
-	struct dl_generator_configuration gen_conf[8];
-	struct dl_analyzer_configuration ana_conf[8];
-	uint32_t gen_init[8];
-	uint32_t ana_init[8];
+	struct dl_generator_configuration gen_conf[CHANNEL_COUNT];
+	struct dl_analyzer_configuration ana_conf[CHANNEL_COUNT];
+	uint32_t gen_init[CHANNEL_COUNT];
+	uint32_t ana_init[CHANNEL_COUNT];
 	uint8_t enable_mask;
 	bool expect_errors;
 };
