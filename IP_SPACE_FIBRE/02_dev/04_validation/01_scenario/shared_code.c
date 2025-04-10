@@ -125,10 +125,8 @@ static enum action_result wait_test_end
 	}
 }
 
-enum action_result run_test (const struct test_config test [const static 1])
+void initiate_test (const struct test_config test [const static 1])
 {
-	uint32_t error_counter = 0;
-
 	for (uint32_t i = 0; i < CHANNEL_COUNT; ++i)
 	{
 		if (test->enable_mask & (1 << i))
@@ -153,6 +151,14 @@ enum action_result run_test (const struct test_config test [const static 1])
 			DL_GENERATOR_CONTROL_SET_IN_PLACE(MODEL_START, 1, *DL_GENERATOR_X_CONTROL_PTR(i));
 		}
 	}
+}
+
+enum action_result finalize_test
+(
+	const struct test_config test [const static 1]
+)
+{
+	uint32_t error_counter = 0;
 
 	if (wait_test_end(test) == OK)
 	{
@@ -198,6 +204,13 @@ enum action_result run_test (const struct test_config test [const static 1])
 	}
 
 	return TIMEOUT;
+}
+
+enum action_result run_test (const struct test_config test [const static 1])
+{
+	initiate_test(test);
+
+	return finalize_test(test);
 }
 
 enum action_result initialization_sequence (void)

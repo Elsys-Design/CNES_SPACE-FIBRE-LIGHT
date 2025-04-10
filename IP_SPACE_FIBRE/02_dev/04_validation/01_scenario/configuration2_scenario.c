@@ -20,83 +20,119 @@
 #include "common.h"
 #include "shared_header.h"
 
-#define STEP1_TESTS_COUNT 5
+#define __WORDS_TO_BYTES(x) (4 * (x))
+
+/******************************************************************************/
+/**** STEP 1 ******************************************************************/
+/******************************************************************************/
+#define STEP1_TESTS_COUNT 10
 static const struct test_config step1_test[STEP1_TESTS_COUNT] =
 	{
-		// Test 1: Sanity check, no broadcast
+		// Test 1: Send a data packet of 64 words to each virtual buffer, check
+		// that the data are received on Data_Link_Analyzer
 		BASIC_CONFIG
 		(
 			NO_BROADCAST_CHANS,
 			0x34000000,
 			{
-				.packet_number = 1, /* First packet? */
-				.packet_size = 64 * 4 /* bytes (4 per word. packet_size is 255 max) */
+				.packet_number = 1,
+				.packet_size = __WORDS_TO_BYTES(64)
 			}
 		),
-		// Test 2: Invalid message detection, no broadcast
+		// Test 2: Send a data packet of 64 words to each virtual buffer, with 2
+		// different seeds on Data_Link_Analyzer and Data_Link_Generator. Check
+		// that Data_Link_Analyzer models detect errors.
 		INVALID_CONFIG
 		(
 			NO_BROADCAST_CHANS,
 			0x34000000,
 			{
 				.packet_number = 1, /* First packet? */
-				.packet_size = 64 /* words */
+				.packet_size = __WORDS_TO_BYTES(64)
 			}
 		),
-		// Test 3: Don't know how to generate a frame.
+		// Test 3: Send multiple packets of pseudo-random size to each virtual
+		// buffer, check that the data are received on Data_Link_Analyzer
+		//
+		// Opting for a https://xkcd.com/221/ inspired solution
 		BASIC_CONFIG
 		(
 			NO_BROADCAST_CHANS,
 			0x00000001,
 			{
 				.packet_number = 1,
-				.packet_size = 121
+				.packet_size = __WORDS_TO_BYTES(4)
 			}
 		),
-		// Test 4: Broadcast test for a frame.
+		BASIC_CONFIG
+		(
+			NO_BROADCAST_CHANS,
+			0x00002001,
+			{
+				.packet_number = 1,
+				.packet_size = __WORDS_TO_BYTES(23)
+			}
+		),
+		BASIC_CONFIG
+		(
+			NO_BROADCAST_CHANS,
+			0x00400001,
+			{
+				.packet_number = 1,
+				.packet_size = __WORDS_TO_BYTES(42)
+			}
+		),
+		BASIC_CONFIG
+		(
+			NO_BROADCAST_CHANS,
+			0x05000300,
+			{
+				.packet_number = 1,
+				.packet_size = __WORDS_TO_BYTES(13)
+			}
+		),
+		BASIC_CONFIG
+		(
+			NO_BROADCAST_CHANS,
+			0xCAFE4BEEF,
+			{
+				.packet_number = 1,
+				.packet_size = __WORDS_TO_BYTES(7)
+			}
+		),
+		BASIC_CONFIG
+		(
+			NO_BROADCAST_CHANS,
+			0xBEEF4CAFE,
+			{
+				.packet_number = 1,
+				.packet_size = __WORDS_TO_BYTES(32)
+			}
+		),
+		// Test 4: Send a broadcast frame, check that the data are received on
+		// [the] Data_Link_Broadacst_Analyzer model
 		BASIC_CONFIG
 		(
 			ONLY_BROADCAST_CHANS,
 			0x02000000,
 			{
 				.packet_number = 1,
-				.packet_size = 16
+				.packet_size = __WORDS_TO_BYTES(64)
 			}
 		),
-		// Test 5: Broadcast test for an invalid frame.
+		// Test 5: Send a broadcast frame with 2 different seeds on
+		// Data_Link_Broadcast_Analyzer and Data_Link_Broadcast_Generator check
+		// that the data received on Data_Link_Broadcast_Analyzer models are
+		// incorrect.
 		INVALID_CONFIG
 		(
 			ONLY_BROADCAST_CHANS,
 			0x03000000,
 			{
 				.packet_number = 1,
-				.packet_size = 16
+				.packet_size = __WORDS_TO_BYTES(64)
 			}
-		),
-	};
-
-#define STEP2_TESTS_COUNT 2
-static const struct test_config step2_test[STEP1_TESTS_COUNT] =
-	{
-		// Test 1: Sanity check, no broadcast
-		BASIC_CONFIG
-		(
-			NO_BROADCAST_CHANS,
-			0x34000000,
-			{
-				.packet_number = 1,
-				.packet_size = 64
-			}
-		),
-		BASIC_CONFIG
-		(
-			NO_BROADCAST_CHANS,
-			0x04000000,
-			{
-				.packet_number = 4,
-				.packet_size = 255
-			}
-		),
+		)
 	};
 
 void scenario2_step1 (void)
@@ -104,6 +140,7 @@ void scenario2_step1 (void)
 	debug_printf("\r\n Start scenario 2\r\n");
 	debug_printf("\r\n Step 1: \r\n");
 
+	// Perform initialization procedure
 	if (initialization_sequence() != OK)
 	{
 		debug_printf("\r\n Initialization sequence failed. \r\n");
@@ -111,8 +148,11 @@ void scenario2_step1 (void)
 		return;
 	}
 
-	wait(2); // FIXME: should be 2us.
+	// Wait 1 us
+	wait(2); // FIXME: should be 1us.
 
+	// Check credit_VC signals for each virtual channels are at 1 in the
+	// data_link_configurator
 	uint32_t val =
 		DL_CONFIGURATOR_DL_STATUS_1_GET(CREDIT_VC, *DL_CONFIGURATOR_DL_STATUS_1_PTR);
 
@@ -123,10 +163,39 @@ void scenario2_step1 (void)
 		return;
 	}
 
+	// Runs regular sending of packets, as described in step1_test.
 	run_tests(STEP1_TESTS_COUNT, step1_test);
 
 	debug_printf("\r\n Step 1: END \r\n");
 }
+
+
+/******************************************************************************/
+/**** STEP 2 ******************************************************************/
+/******************************************************************************/
+#define STEP2_TESTS_COUNT 2
+static const struct test_config step2_test[STEP2_TESTS_COUNT] =
+	{
+		// Test 1: Sanity check, no broadcast
+		BASIC_CONFIG
+		(
+			NO_BROADCAST_CHANS,
+			0x34000000,
+			{
+				.packet_number = 1,
+				.packet_size = __WORDS_TO_BYTES(64)
+			}
+		),
+		BASIC_CONFIG
+		(
+			NO_BROADCAST_CHANS,
+			0x04000000,
+			{
+				.packet_number = 4,
+				.packet_size = __WORDS_TO_BYTES(64)
+			}
+		),
+	};
 
 static void assert_ack_counters_increased
 (
@@ -230,10 +299,153 @@ void scenario2_step2 (void)
 	debug_printf("\r\n Step 2: END \r\n");
 }
 
+/******************************************************************************/
+/**** STEP 3 ******************************************************************/
+/******************************************************************************/
+#define STEP3_TESTS_COUNT 5
+static const struct test_config step3_test[STEP3_TESTS_COUNT] =
+	{
+		// Test 1: Send a data packet of 64 words to each virtual channel check
+		// that the data are received on Data_Link_Analyzer models
+		BASIC_CONFIG
+		(
+			NO_BROADCAST_CHANS,
+			0xC0A0F0E0,
+			{
+				.packet_number = 1,
+				.packet_size = __WORDS_TO_BYTES(64)
+			}
+		),
+		// Test 2: Send two data packets of 32 words to each virtual channel
+		// check that the data are received on Data_Link_Analyzer models
+		BASIC_CONFIG
+		(
+			NO_BROADCAST_CHANS,
+			0x0C0A0F0E,
+			{
+				.packet_number = 2, // That's packets _count_, not its number.
+				.packet_size = __WORDS_TO_BYTES(32)
+			}
+		),
+		// Test 3: Send two data packets of 64 words to a virtual channel check
+		// that the data are received on Data_Link_Analyzer models
+		BASIC_CONFIG
+		(
+			NO_BROADCAST_CHANS,
+			0x00CAFE00,
+			{
+				.packet_number = 2,
+				.packet_size = __WORDS_TO_BYTES(64)
+			}
+		),
+		// Test 4: Send a data packet of 1 word to each virtual channel check
+		// that the data are received on Data_Link_Analyzer models
+		BASIC_CONFIG
+		(
+			NO_BROADCAST_CHANS,
+			0xCA0000FE,
+			{
+				.packet_number = 1,
+				.packet_size = __WORDS_TO_BYTES(1)
+			}
+		),
+	};
+
 void scenario2_step3 (void)
 {
 	debug_printf("\r\n Start scenario 2\r\n");
 	debug_printf("\r\n Step 3: \r\n");
 
+	init_and_run_tests(STEP3_TESTS_COUNT, step3_test);
+
 	debug_printf("\r\n Step 3: END \r\n");
+}
+
+/******************************************************************************/
+/**** STEP 4 ******************************************************************/
+/******************************************************************************/
+#define STEP4_TESTS_COUNT 2
+static const struct test_config step4_test[STEP4_TESTS_COUNT] =
+	{
+		// Test 1: Send 2 packets of 64 words to the virtual buffer 0
+		//
+		// We don't want these to actually succeed, so they should trigger errors
+		// if they are received, and these errors should be reported if they
+		// occur (unlike INVALID_CONFIG, which will not display errors when they
+		// occur as expected).
+		FORCE_ERROR_CONFIG
+		(
+			0x1, // Channel 0
+			0xB0E0E0F0,
+			{
+				.packet_number = 2, // That's packets _count_, not its number.
+				.packet_size = __WORDS_TO_BYTES(64)
+			}
+		),
+		// Test 2: Send a packet of 64 words to the virtual buffer 0
+		//
+		// This is the one that should succeed.
+		BASIC_CONFIG
+		(
+			0x1, // Channel 0
+			0x0C0A0F0E,
+			{
+				.packet_number = 1,
+				.packet_size = __WORDS_TO_BYTES(32)
+			}
+		)
+	};
+
+void scenario2_step4 (void)
+{
+	debug_printf("\r\n Start scenario 2\r\n");
+	debug_printf("\r\n Step 4: \r\n");
+
+	if (initialization_sequence() != OK)
+	{
+		debug_printf("\r\n Initialization sequence failed. \r\n");
+
+		return;
+	}
+
+	DL_CONFIGURATOR_DL_PARAMETER_SET_IN_PLACE
+	(
+		PAUSE_VC,
+		0x1, /* Channel 1 */
+		*DL_CONFIGURATOR_DL_PARAMETER_PTR
+	);
+	DL_CONFIGURATOR_DL_PARAMETER_SET_IN_PLACE
+	(
+		CONTINUOUS_VC,
+		0x1, /* Channel 1 */
+		*DL_CONFIGURATOR_DL_PARAMETER_PTR
+	);
+
+	// This one should timeout
+	debug_printf("\r\n Ignore the timeout error below: we want it to occur.\r\n");
+	if (run_test(step4_test + 0) != TIMEOUT)
+	{
+		debug_printf("\r\n Error: the 2 packets of 64 words did not timeout. \r\n");
+	}
+	debug_printf("\r\n From this point on, no timeouts are expected.\r\n");
+
+	initiate_test(step4_test + 1);
+
+	DL_CONFIGURATOR_DL_PARAMETER_SET_IN_PLACE
+	(
+		PAUSE_VC,
+		0x0,
+		*DL_CONFIGURATOR_DL_PARAMETER_PTR
+	);
+
+	finalize_test(step4_test + 1);
+
+	DL_CONFIGURATOR_DL_PARAMETER_SET_IN_PLACE
+	(
+		CONTINUOUS_VC,
+		0x0,
+		*DL_CONFIGURATOR_DL_PARAMETER_PTR
+	);
+
+	debug_printf("\r\n Step 4: END \r\n");
 }

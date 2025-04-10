@@ -138,6 +138,8 @@ void alt_scenario_loopback_step_1 (void)
 	debug_printf("\r\n Start scenario loopback\r\n");
 	debug_printf("\r\n Step 1: Parallel loopback START \r\n");
 
+	initialization_sequence();
+
 	DL_CONFIGURATOR_LANE_PARAMETER_SET_IN_PLACE
 	(
 		PARALLEL_LOOPBACK_ENABLES,
@@ -145,7 +147,7 @@ void alt_scenario_loopback_step_1 (void)
 		*DL_CONFIGURATOR_LANE_PARAMETER_PTR
 	);
 
-	init_and_run_tests(STEP1_TESTS_COUNT, step1_test);
+	run_tests(STEP1_TESTS_COUNT, step1_test);
 
 	// Disable parallel loopback
 	DL_CONFIGURATOR_LANE_PARAMETER_SET_IN_PLACE
@@ -162,6 +164,8 @@ void alt_scenario_loopback_step_2 (void)
 {
 	debug_printf("\r\n Step 2 START \r\n");
 
+	initialization_sequence();
+
 	DL_CONFIGURATOR_PHY_PARAMETER_SET_IN_PLACE
 	(
 		NEAR_END_SERIAL_LOOPBACK,
@@ -169,7 +173,7 @@ void alt_scenario_loopback_step_2 (void)
 		*DL_CONFIGURATOR_PHY_PARAMETER_PTR
 	);
 
-	init_and_run_tests(STEP2_TESTS_COUNT, step2_test);
+	run_tests(STEP2_TESTS_COUNT, step2_test);
 
 	DL_CONFIGURATOR_PHY_PARAMETER_SET_IN_PLACE
 	(

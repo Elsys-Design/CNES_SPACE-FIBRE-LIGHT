@@ -34,6 +34,16 @@
 		.expect_errors = true \
 	}
 
+#define FORCE_ERROR_CONFIG(enablemask, init, ...) \
+	{ \
+		.gen_conf = {EIGHT_ENTRIES_OF(__VA_ARGS__)}, \
+		.ana_conf = {EIGHT_ENTRIES_OF(__VA_ARGS__)}, \
+		.gen_init = {EIGHT_VARIANTS_OF(init)}, \
+		.ana_init = {EIGHT_VARIANTS_OF((init+13))}, \
+		.enable_mask = enablemask, \
+		.expect_errors = false\
+	}
+
 struct test_config
 {
 	struct dl_generator_configuration gen_conf[8];
@@ -45,6 +55,12 @@ struct test_config
 };
 
 enum action_result initialization_sequence (void);
+
+void initiate_test (const struct test_config test [const static 1]);
+enum action_result finalize_test
+(
+	const struct test_config test [const static 1]
+);
 
 enum action_result run_test (const struct test_config test [const static 1]);
 
