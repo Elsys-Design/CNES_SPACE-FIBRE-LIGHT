@@ -27,7 +27,7 @@ try:
     from framework import Data
     from tb2 import TB, Data_read_phy_config_parameters, Data_read_lane_config_parameters, Data_read_lane_config_status, \
                     Data_read_general_control, Data_read_dl_config_parameters, Data_read_dl_config_status_1, \
-                    Data_read_dl_config_status_1, Data_read_dl_config_QoS_1, Data_read_dl_config_QoS_2, \
+                    Data_read_dl_config_status_2, Data_read_dl_config_QoS_1, Data_read_dl_config_QoS_2, \
                     CLEARLINE, DISABLED, WAIT, STARTED, INVERTRXPOLARITY, CONNECTING, CONNECTED, \
                     ACTIVE, PREPARESTANDBY, LOSSOFSIGNAL, \
                     SpaceFibre_IP_freq, SpaceFibre_serial_port_freq, SpaceFibre_IP_period_ns, \
@@ -1284,6 +1284,7 @@ async def cocotb_run(dut):
         test_failed = 1
         tb.logger.error("simulation time %d ns : step 5 result: Failed")
 
+
     ##########################################################################
     ##########################################################################
     ##########################################################################
@@ -1310,20 +1311,52 @@ async def cocotb_run(dut):
         await send_FCT(tb,0,0,"0" + f"{(x+1):0>7b}")
         await send_idle_ctrl_word(tb, 64)
 
-    await send_idle_ctrl_word(tb, 100)
+    await send_idle_ctrl_word(tb, 500)
+
+
+    Data_read_dl_config_parameters.data = bytearray([0x24, 0x40, 0x00, 0x00])
+
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 10))
+
+    await tb.masters[0].write_data(Data_read_dl_config_parameters)
+    
+    await stimuli 
+
+    for x in range(8):
+        await configure_model_dl(tb, 3, [0x90,0x00,0x00,0x00], [0x00,0x00,0x2A,0x00])
+        await start_model_dl(tb, 3)
+        await send_idle_ctrl_word(tb, 16)
+    
+    await send_idle_ctrl_word(tb, 10)
+
+    for x in range (16):
+        await send_FCT(tb,0,0,"0" + f"{(x+17):0>7b}")
+        await send_idle_ctrl_word(tb, 64)
+
+    await send_idle_ctrl_word(tb, 500)
+
+
+    Data_read_dl_config_parameters.data = bytearray([0x04, 0x40, 0x00, 0x00])
+
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 10))
+
+    await tb.masters[0].write_data(Data_read_dl_config_parameters)
 
     #Check that Data Frame are received
 
     await configure_gen_vc_dl(tb, [0xF0,0x1F,0x00,0x01], [0x00,0x00,0x00,0x00])
     await configure_model_dl(tb, 3, [0xFF,0x1F,0x00,0x00], [0x00,0x00,0x00,0x2A])
+    await configure_model_dl(tb, 5, [0xF0,0x1F,0x00,0x00], [0x00,0x00,0xFF,0x00])
     await start_gen_vc_dl(tb)
 
     for x in range (16):
         for y in range (8):
-            await send_FCT(tb,y,0,"0" + f"{(8*x+y+17):0>7b}")
+            await send_FCT(tb,y,0,"0" + f"{((8*x+y+33)%128):0>7b}")
         await send_idle_ctrl_word(tb, 64*8)
+
+
     for x in range(15):
-        await send_FCT(tb,y,0,"0" + f"{(x+8*16+17):0>7b}")
+        await send_FCT(tb,0,0,"0" + f"{((x+8*16+33)%128):0>7b}")
         await send_idle_ctrl_word(tb, 64)
     await send_idle_ctrl_word(tb, 100)
     
@@ -1336,7 +1369,6 @@ async def cocotb_run(dut):
     else:
         test_failed = 1
         tb.logger.error("simulation time %d ns : step 6 result: Failed")
-
 
     #writting the monitors loggers
     tb.write_monitor_data()

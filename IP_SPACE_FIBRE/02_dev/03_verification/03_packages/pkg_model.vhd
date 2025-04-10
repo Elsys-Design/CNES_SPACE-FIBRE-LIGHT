@@ -140,6 +140,7 @@ package pkg_model is
   constant C_NACK_RST_MODE_BTFD           : integer := 4;
   constant C_PAUSE_VC_BTFD                : integer := 13;
   constant C_CONTINUOUS_VC_BTFD           : integer := 21;
+  constant C_CLEAR_ERROR_FLAG             : integer := 22;
 
   -- Status 1 data link register
   constant C_SEQ_NUMBER_TX_BTFD           : integer := 7;

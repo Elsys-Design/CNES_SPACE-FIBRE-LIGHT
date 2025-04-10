@@ -194,6 +194,7 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
    signal current_time_slot_i  : std_logic_vector(7 downto 0);
    signal link_rst_asserted_i  : std_logic;                                         -- link has been reseted
    signal reset_param_dl_i     : std_logic; 
+   signal clear_error_flag     : std_logic;
 
    begin
 ---------------------------------------
@@ -206,21 +207,22 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
     outputs_to_sync(2)           <= reg_lane_param(C_LANERESET_BTFD);
     outputs_to_sync(3)           <= reg_lane_param(C_PARALLEL_LPB_BTFD);
     outputs_to_sync(11 downto 4) <= reg_lane_param(C_STDBREASON_MAX_BTFD downto C_PARALLEL_LPB_BTFD +1);
-    
 
+    
+    
     LANE_START                   <= outputs_to_dut(0);    
     AUTOSTART                    <= outputs_to_dut(1);                
     LANE_RESET                   <= outputs_to_dut(2);    
     PARALLEL_LOOPBACK_EN         <= outputs_to_dut(3);
     STANDBY_REASON               <= outputs_to_dut(11 downto 4);    
-
+    
     -- Parameter from Configurator to Phy
     outputs_to_sync(12)          <= reg_phy_param(C_NEAR_END_LPB_BTFD);
     outputs_to_sync(13)          <= reg_phy_param(C_FAR_END_LPB_BTFD);
-
+    
     NEAR_END_SERIAL_LB_EN        <= outputs_to_dut(12);  
     FAR_END_SERIAL_LB_EN         <= outputs_to_dut(13); 
-
+    
     -- Parameter from Configurator to Data Link
     outputs_to_sync(14)           <= reg_dl_param(C_INTERFACE_RST_BTFD);
     outputs_to_sync(15)           <= reg_dl_param(C_LINK_RST_BTFD);
@@ -228,6 +230,7 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
     outputs_to_sync(17)           <= reg_dl_param(C_NACK_RST_EN_BTFD);
     outputs_to_sync(26 downto 18) <= reg_dl_param(C_PAUSE_VC_BTFD downto C_NACK_RST_MODE_BTFD + 1);
     outputs_to_sync(34 downto 27) <= reg_dl_param(C_CONTINUOUS_VC_BTFD downto C_PAUSE_VC_BTFD + 1);
+    clear_error_flag              <= reg_dl_param (C_CLEAR_ERROR_FLAG);
 
     INTERFACE_RST                <= outputs_to_dut(14);
     LINK_RST                     <= outputs_to_dut(15);

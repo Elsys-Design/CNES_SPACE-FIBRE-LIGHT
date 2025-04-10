@@ -1243,6 +1243,7 @@ port map (
 
     INTERFACE_RESET                  => interface_rst,
     LINK_RESET                       => link_rst,
+    LINK_RST_ASSERTED                => link_rst_asserted,
     NACK_RST_EN                      => nack_rst_en,
     NACK_RST_MODE                    => nack_rst_mode,
     PAUSE_VC                         => pause_vc,

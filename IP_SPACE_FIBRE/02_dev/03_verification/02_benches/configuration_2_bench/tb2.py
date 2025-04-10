@@ -54,7 +54,7 @@ Data_read_lane_config_parameters= Data.build_empty(0x08, 4)
 Data_read_lane_config_status= Data.build_empty(0x0C, 4)
 Data_read_dl_config_parameters= Data.build_empty(0x10, 4)
 Data_read_dl_config_status_1= Data.build_empty(0x14, 4)
-Data_read_dl_config_status_1= Data.build_empty(0x18, 4)
+Data_read_dl_config_status_2= Data.build_empty(0x18, 4)
 Data_read_dl_config_QoS_1= Data.build_empty(0x1C, 4)
 Data_read_dl_config_QoS_2= Data.build_empty(0x20, 4)
 

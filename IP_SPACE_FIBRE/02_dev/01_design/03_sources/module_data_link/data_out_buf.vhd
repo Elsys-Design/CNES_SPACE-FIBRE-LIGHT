@@ -279,7 +279,7 @@ begin
                                     current_state <= IDLE_ST;
                                   end if;
 
-        when ADD_EEP_ST =>        if s_axis_tready_i = '1' then
+        when ADD_EEP_ST =>        if s_axis_tready_i = '1' and s_axis_tready_r = '1' then
                                     s_axis_tdata_i  <= C_FILL_SYMB & C_FILL_SYMB & C_FILL_SYMB & C_EEP_SYMB;
                                     s_axis_tuser_i  <= "1111";
                                     s_axis_tlast_i  <= '1';
@@ -533,7 +533,7 @@ end process p_eip_cnt;
       vc_ready <= '0';
     elsif rising_edge(CLK) then
       if VC_RD_EN_DMAC='0' then
-        if fct_credit_cnt > 0 and (unsigned(status_level_rd) > 63 or cnt_eip > 0) then
+        if fct_credit_cnt > 0 and ((unsigned(status_level_rd) > 63 or status_full  = '1') or cnt_eip > 0) then
           vc_ready <= '1';
         else
           vc_ready <= '0';
