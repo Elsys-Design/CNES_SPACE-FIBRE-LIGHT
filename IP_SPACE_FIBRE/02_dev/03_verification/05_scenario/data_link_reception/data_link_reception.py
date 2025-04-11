@@ -143,11 +143,11 @@ async def wait_end_test_dl(tb, channel):
     Wait for test end to be raised by the selected analyzer.
     Return the Error counter of the selected analyzer.
     """
-    await tb.masters[2*channel].read_data(Data_lane_ana_status)
+    await tb.masters[channel].read_data(Data_lane_ana_status)
     test_end = format(Data_lane_ana_status.data[0], '0>8b')[6]
     timer = 0
     while test_end != '1' and timer < 1000:
-        await tb.masters[2*channel].read_data(Data_lane_ana_status)
+        await tb.masters[channel].read_data(Data_lane_ana_status)
         timer += 1
         test_end = format(Data_lane_ana_status.data[0], '0>8b')[6]
         tb.logger.debug("simulation time %d ns : Data_lane_ana_status value read : %s", get_sim_time(units = "ns"), format(Data_lane_ana_status.data[0], '0>8b'))
@@ -163,7 +163,7 @@ async def wait_end_test_all_dl(tb):
     """
     result = []
     for channel in range(2, 11):
-        x = await wait_end_test_dl(tb, channel)
+        x = await wait_end_test_dl(tb, 2*channel)
         result += [x]
     return result
 
@@ -174,7 +174,7 @@ async def wait_end_test_all_vc_dl(tb):
     """
     result = []
     for channel in range(2, 10):
-        x = await wait_end_test_dl(tb, channel)
+        x = await wait_end_test_dl(tb, 2*channel)
         result += [x]
     return result
 
@@ -667,11 +667,11 @@ async def cocotb_run(dut):
 
     
 	# Send a broadcast frame
-    await configure_model_dl(tb, 20, [0x01,0x01,0x00,0x01], [0x42,0x00,0x00,0x00])
+    await configure_model_dl(tb, 20, [0x01,0x01,0x00,0x00], [0x42,0x00,0x00,0x00])
 
     await start_model_dl(tb, 20)
 
-    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/random_gen_step_1_3_0", 0x000000300000002F, 1, 0, 1, 0, seq, delay = 0, invert_polarity = 0, seed = 0x42)
+    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/random_gen_step_1_3_0", 0x00000042FD000043, 1, 0, 1, 0, seq, delay = 0, invert_polarity = 0, seed = 0x42)
     seq = (seq + 1) %128
 
     stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))

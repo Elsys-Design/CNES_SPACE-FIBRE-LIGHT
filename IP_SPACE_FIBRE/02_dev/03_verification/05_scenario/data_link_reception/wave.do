@@ -513,56 +513,56 @@ add wave -noupdate -expand -group ANA -group ANA_1 /configuration_2_bench/gen_da
 add wave -noupdate -expand -group ANA -group ANA_1 /configuration_2_bench/gen_data_link_analyzer(1)/DATA_LINK_ANALYZER_INST/prbs_data
 add wave -noupdate -expand -group ANA -group ANA_1 /configuration_2_bench/gen_data_link_analyzer(1)/DATA_LINK_ANALYZER_INST/tdata_i
 add wave -noupdate -expand -group ANA -group ANA_1 /configuration_2_bench/gen_data_link_analyzer(1)/DATA_LINK_ANALYZER_INST/tuser_i
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/CLK
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/RST_N
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/S_AXI_AWADDR
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/S_AXI_AWVALID
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/S_AXI_AWREADY
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/S_AXI_WDATA
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/S_AXI_WSTRB
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/S_AXI_WVALID
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/S_AXI_WREADY
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/S_AXI_BREADY
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/S_AXI_BRESP
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/S_AXI_BVALID
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/S_AXI_ARADDR
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/S_AXI_ARVALID
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/S_AXI_ARREADY
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/S_AXI_RREADY
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/S_AXI_RDATA
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/S_AXI_RRESP
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/S_AXI_RVALID
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/TDATA
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/TVALID
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/TREADY
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/TLAST
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/TUSER
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/axi_wr_state
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/axi_rd_state
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/generation_state
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/reg_la_config
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/reg_la_control
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/reg_la_status
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/reg_la_init_val
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/reg_data_rx_frame
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/packet_number
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/packet_size
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/gen_data
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/model_start
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/data_mode
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/busy
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/test_end
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/err_counter
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/busy_frame
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/test_end_frame
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/err_counter_frame
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/init_val
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/cnt_packet
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/cnt_byte
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/val_data
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/prbs_data
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/tdata_i
-add wave -noupdate -expand -group ANA -expand -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/tuser_i
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/CLK
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/RST_N
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/S_AXI_AWADDR
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/S_AXI_AWVALID
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/S_AXI_AWREADY
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/S_AXI_WDATA
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/S_AXI_WSTRB
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/S_AXI_WVALID
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/S_AXI_WREADY
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/S_AXI_BREADY
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/S_AXI_BRESP
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/S_AXI_BVALID
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/S_AXI_ARADDR
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/S_AXI_ARVALID
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/S_AXI_ARREADY
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/S_AXI_RREADY
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/S_AXI_RDATA
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/S_AXI_RRESP
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/S_AXI_RVALID
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/TDATA
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/TVALID
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/TREADY
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/TLAST
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/TUSER
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/axi_wr_state
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/axi_rd_state
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/generation_state
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/reg_la_config
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/reg_la_control
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/reg_la_status
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/reg_la_init_val
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/reg_data_rx_frame
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/packet_number
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/packet_size
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/gen_data
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/model_start
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/data_mode
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/busy
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/test_end
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/err_counter
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/busy_frame
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/test_end_frame
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/err_counter_frame
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/init_val
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/cnt_packet
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/cnt_byte
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/val_data
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/prbs_data
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/tdata_i
+add wave -noupdate -expand -group ANA -group ANA_0 /configuration_2_bench/gen_data_link_analyzer(0)/DATA_LINK_ANALYZER_INST/tuser_i
 add wave -noupdate -group GEN -group GEN_8 /configuration_2_bench/gen_data_link_generator(8)/DATA_LINK_GENERATOR_INST/CLK
 add wave -noupdate -group GEN -group GEN_8 /configuration_2_bench/gen_data_link_generator(8)/DATA_LINK_GENERATOR_INST/RST_N
 add wave -noupdate -group GEN -group GEN_8 /configuration_2_bench/gen_data_link_generator(8)/DATA_LINK_GENERATOR_INST/S_AXI_AWADDR
@@ -1596,26 +1596,6 @@ add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance
 add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/fct_counter
 add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/full_counter
 add wave -noupdate -group word_id_FSM /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm/retry_counter
-add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/RST_N
-add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/CLK
-add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/DATA_DCCHECK
-add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/VALID_K_CHARAC_DCCHECK
-add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/SEQ_NUM_DCCHECK
-add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/END_FRAME_DCCHECK
-add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/TYPE_FRAME_DCCHECK
-add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/NEW_WORD_DCCHECK
-add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/CRC_ERR_DCCHECK
-add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/NEAR_END_RPF_DERRM
-add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/SEQ_NUM_ERR_DSCHECK
-add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/END_FRAME_DSCHECK
-add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/DATA_DSCHECK
-add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/VALID_K_CHARAC_DSCHECK
-add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/NEW_WORD_DSCHECK
-add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/END_FRAME_FIFO_DSCHECK
-add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/FIFO_FULL_DMBUF
-add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/FRAME_ERR_DSCHECK
-add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/SEQ_NUM_DSCHECK
-add wave -noupdate -group SEQ_NUM_Check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/seq_num_cnt
 add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/RST_N
 add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/WR_CLK
 add wave -noupdate -group Buffer_interne /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/WR_DATA
@@ -1891,8 +1871,52 @@ add wave -noupdate -expand -group Input_buf_0 /configuration_2_bench/spacefibre_
 add wave -noupdate -expand -group Input_buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_in_buff(0)/inst_data_in_buf/axis_data_valid
 add wave -noupdate -expand -group Input_buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_in_buff(0)/inst_data_in_buf/axis_data_valid_reg1
 add wave -noupdate -expand -group Input_buf_0 /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_in_buff(0)/inst_data_in_buf/axis_data_valid_reg2
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/RST_N
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/CLK
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/DATA_DCCHECK
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/VALID_K_CHARAC_DCCHECK
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/SEQ_NUM_DCCHECK
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/END_FRAME_DCCHECK
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/TYPE_FRAME_DCCHECK
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/NEW_WORD_DCCHECK
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/CRC_ERR_DCCHECK
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/FRAME_ERR_DCCHECK
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/MULTIPLIER_DCCHECK
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/VC_DCCHECK
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/RXERR_DCCHECK
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/RXERR_ALL_DCCHECK
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/NEAR_END_RPF_DERRM
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/SEQ_NUM_ACK_DSCHECK
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/END_FRAME_DSCHECK
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/TYPE_FRAME_DSCHECK
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/TRANS_POL_FLG_DERRM
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/CRC_ERR_DSCHECK
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/FRAME_ERR_DSCHECK
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/SEQ_NUM_ERR_DSCHECK
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/RXERR_DSCHECK
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/DATA_DSCHECK
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/VALID_K_CHARAC_DSCHECK
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/NEW_WORD_DSCHECK
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/END_FRAME_FIFO_DSCHECK
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/FIFO_FULL_DMBUF
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/FRAME_ERR_DATA_DSCHECK
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/SEQ_NUM_ERR_DATA_DSCHECK
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/CRC_ERR_DATA_DSCHECK
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/RXERR_DATA_DSCHECK
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/DATA_BC_DSCHECK
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/VALID_K_CHARAC_BC_DSCHECK
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/NEW_WORD_BC_DSCHECK
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/END_FRAME_FIFO_BC_DSCHECK
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/FRAME_ERR_BC_DSCHECK
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/SEQ_NUM_ERR_BC_DSCHECK
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/CRC_ERR_BC_DSCHECK
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/RXERR_BC_DSCHECK
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/FCT_FAR_END_DSCHECK
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/M_VAL_DSCHECK
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/SEQ_NUM_DSCHECK
+add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/seq_num_cnt
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {77129482932 fs} 0}
+WaveRestoreCursors {{Cursor 1} {89512044947 fs} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 210
 configure wave -valuecolwidth 100
@@ -1908,4 +1932,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits fs
 update
-WaveRestoreZoom {0 fs} {197036943270 fs}
+WaveRestoreZoom {89450643764 fs} {89558312036 fs}
