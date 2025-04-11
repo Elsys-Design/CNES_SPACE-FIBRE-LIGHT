@@ -435,6 +435,52 @@ async def send_NACK(tb, seq_num):
     crc_8 = tb.spacefibre_random_generator_data_link.invert_string(crc_8)
     await tb.spacefibre_driver.write_to_Rx(crc_8, delay = 0, k_encoding = 0)
 
+async def send_ACK(tb, seq_num):
+    """
+    Send an ACK control word to the RX port of the SpaceFibreLight IP
+    """
+    await tb.spacefibre_driver.write_to_Rx("11111100", delay = 0, k_encoding = 1)
+    await tb.spacefibre_driver.write_to_Rx("11001110", delay = 0, k_encoding = 0)
+    await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
+    await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
+
+    await tb.spacefibre_driver.write_to_Rx("11111100", delay = 0, k_encoding = 1)
+    await tb.spacefibre_driver.write_to_Rx("11001110", delay = 0, k_encoding = 0)
+    await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
+    await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
+
+    await tb.spacefibre_driver.write_to_Rx("11111100", delay = 0, k_encoding = 1)
+    crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8("11111100")
+    await tb.spacefibre_driver.write_to_Rx("10100010", delay = 0, k_encoding = 0)
+    crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8("10100010", crc_8)
+    await tb.spacefibre_driver.write_to_Rx(seq_num, delay = 0, k_encoding = 0)
+    crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8(seq_num , crc_8)
+    crc_8 = tb.spacefibre_random_generator_data_link.invert_string(crc_8)
+    await tb.spacefibre_driver.write_to_Rx(crc_8, delay = 0, k_encoding = 0)
+
+async def send_NACK(tb, seq_num):
+    """
+    Send an NACK control word to the RX port of the SpaceFibreLight IP
+    """
+    await tb.spacefibre_driver.write_to_Rx("11111100", delay = 0, k_encoding = 1)
+    await tb.spacefibre_driver.write_to_Rx("11001110", delay = 0, k_encoding = 0)
+    await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
+    await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
+
+    await tb.spacefibre_driver.write_to_Rx("11111100", delay = 0, k_encoding = 1)
+    await tb.spacefibre_driver.write_to_Rx("11001110", delay = 0, k_encoding = 0)
+    await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
+    await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
+
+    await tb.spacefibre_driver.write_to_Rx("11111100", delay = 0, k_encoding = 1)
+    crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8("11111100")
+    await tb.spacefibre_driver.write_to_Rx("10111011", delay = 0, k_encoding = 0)
+    crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8("10111011", crc_8)
+    await tb.spacefibre_driver.write_to_Rx(seq_num, delay = 0, k_encoding = 0)
+    crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8(seq_num , crc_8)
+    crc_8 = tb.spacefibre_random_generator_data_link.invert_string(crc_8)
+    await tb.spacefibre_driver.write_to_Rx(crc_8, delay = 0, k_encoding = 0)
+
 async def send_full(tb, seq_num):
     """
     Send an FULL control word to the RX port of the SpaceFibreLight IP
