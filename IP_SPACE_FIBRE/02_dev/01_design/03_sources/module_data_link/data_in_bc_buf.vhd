@@ -155,7 +155,7 @@ begin
   if RST_N = '0' then
     cmd_flush <= '0';
   elsif rising_edge(CLK) then
-    if LINK_RESET_DLRE = '1' then 
+    if LINK_RESET_DLRE = '1' then
       cmd_flush <='1';
     else
       cmd_flush <='0';

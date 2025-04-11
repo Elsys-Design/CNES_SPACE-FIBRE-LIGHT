@@ -86,6 +86,7 @@ architecture rtl of data_in_buf is
 
 ----------------------------- Declaration signals -----------------------------
   type data_in_fsm is (
+    INIT_ST,
     IDLE_ST,
     LINK_RESET_ST,
     ADD_EEP_ST
@@ -200,6 +201,11 @@ begin
     last_k_char_reg2 <= last_k_char_reg1;
     cmd_flush <= '0';
     case current_state is
+      when INIT_ST =>
+                              if LINK_RESET_DLRE = '0' then
+                                current_state <= IDLE_ST;
+                              end if;
+
       when IDLE_ST =>
                               if LINK_RESET_DLRE = '1' then
                                 cmd_flush <= '1';

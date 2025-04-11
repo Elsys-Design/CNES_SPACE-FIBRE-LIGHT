@@ -860,6 +860,7 @@ begin
       FRAME_ERR_BC_DSCHECK      => frame_err_bc_dscheck,
       SEQ_NUM_ERR_BC_DSCHECK    => seq_num_err_bc_dscheck,
       CRC_ERR_BC_DSCHECK        => crc_err_bc_dscheck,
+      RXERR_BC_DSCHECK          => rxerr_bc_dscheck,
       FCT_FAR_END_DSCHECK       => fct_far_end_dscheck,
       M_VAL_DSCHECK             => m_val_dscheck,
       SEQ_NUM_DSCHECK           => SEQ_NUMBER_RX_DL
