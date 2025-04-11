@@ -29,6 +29,8 @@ entity data_crc_check is
     CRC_8B_DWI             : in  std_logic_vector(7 downto 0);                        --! 8 bits CRC from data_word_id_fsm
     TYPE_FRAME_DWI         : in  std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);    --! Current frame/control word type from data_word_id_fsm
     FRAME_ERR_DWI          : in std_logic;
+    MULTIPLIER_DWI         : in std_logic_vector(C_MULT_SIZE-1 downto 0);
+		VC_DWI                 : in std_logic_vector(C_CHANNEL_SIZE-1 downto 0);
     RXNOTHING_ACTIVE_DWI   : in std_logic;
     -- data_seq_check (DSCHECK) interface
     NEW_WORD_DCCHECK       : out std_logic;                                           --! New word Flag from data_word_id_fsm
@@ -39,6 +41,8 @@ entity data_crc_check is
     SEQ_NUM_DCCHECK        : out std_logic_vector(7 downto 0);                        --! SEQ_NUM from data_word_id_fsm
     CRC_ERR_DCCHECK        : out std_logic;                                           --! CRC error flag
     FRAME_ERR_DCCHECK      : out std_logic;
+    MULTIPLIER_DCCHECK     : out std_logic_vector(C_MULT_SIZE-1 downto 0);
+		VC_DCCHECK             : out std_logic_vector(C_CHANNEL_SIZE-1 downto 0);
     -- MIB
     CRC_LONG_ERR_DCCHECK   : out std_logic;                                           --! CRC 16 bits error flag
     CRC_SHORT_ERR_DCCHECK  : out std_logic                                            --! CRC 16 bits error flag
@@ -171,6 +175,8 @@ begin
     TYPE_FRAME_DCCHECK     <= (others => '0');
     END_FRAME_DCCHECK      <= '0';
     FRAME_ERR_DCCHECK      <= '0';
+    MULTIPLIER_DCCHECK     <= (others => '0');
+    VC_DCCHECK             <= (others => '0');
   elsif rising_edge(CLK) then
     SEQ_NUM_DCCHECK        <= SEQ_NUM_DWI;
     NEW_WORD_DCCHECK       <= NEW_WORD_DWI;
@@ -179,6 +185,8 @@ begin
     VALID_K_CHARAC_DCCHECK <= VALID_K_CHARAC_DWI;
     TYPE_FRAME_DCCHECK     <= TYPE_FRAME_DWI;
     FRAME_ERR_DCCHECK      <= FRAME_ERR_DWI;
+    MULTIPLIER_DCCHECK     <= MULTIPLIER_DWI;
+    VC_DCCHECK             <= VC_DWI;
   end if;
 end process p_trans_ctrl_sig;
 

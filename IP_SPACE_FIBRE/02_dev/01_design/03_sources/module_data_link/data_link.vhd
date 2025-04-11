@@ -144,9 +144,6 @@ architecture Behavioral of data_link is
       DATA_DMBUF             : in  std_logic_vector(36-1 downto 0);        --! Data read bus
       DATA_RD_DDES           : out std_logic;                              --! Read command
       DATA_VALID_DMBUF       : in  std_logic;                              --! Data valid
-      -- DOBUF interface
-      FCT_FAR_END_DDES       : out  std_logic_vector(G_VC_NUM-1 downto 0); --! Data write bus
-      M_VAL_DDES             : out  vc_m_val_array(G_VC_NUM-1 downto 0);    --! Multiplier values for each virtual channel
       -- DIBUF interface
       DATA_DDES              : out  vc_data_k_array(G_VC_NUM downto 0);    --! Data write vc & broadcast
       DATA_EN_DDES           : out  std_logic_vector(G_VC_NUM downto 0)    --! Write command vc & broadcast
@@ -200,12 +197,14 @@ architecture Behavioral of data_link is
       NEW_WORD_DCCHECK       : in  std_logic;
       CRC_ERR_DCCHECK        : in std_logic;
       FRAME_ERR_DCCHECK      : in std_logic;
+      MULTIPLIER_DCCHECK     : in std_logic_vector(C_MULT_SIZE-1 downto 0);
+      VC_DCCHECK             : in std_logic_vector(C_CHANNEL_SIZE-1 downto 0);
       -- data_err_management (DERRM) interface
       NEAR_END_RPF_DERRM     : in  std_logic;
       SEQ_NUM_ERR_DSCHECK    : out std_logic;
       SEQ_NUM_ACK_DSCHECK    : out std_logic_vector(6 downto 0);
       END_FRAME_DSCHECK      : out std_logic;
-      TYPE_FRAME_DSCHECK     : out  std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);
+      TYPE_FRAME_DSCHECK     : out  std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);  --! Flag EMPTY of the FIFO RX
       TRANS_POL_FLG_DERRM    : in std_logic;                               --! Transmission polarity flag to error management
       CRC_ERR_DSCHECK        : out std_logic;
       -- data_mid_buffer (DMBUF) interface
@@ -215,6 +214,9 @@ architecture Behavioral of data_link is
       END_FRAME_FIFO_DSCHECK : out std_logic;
       FIFO_FULL_DMBUF        : in  std_logic;
       FRAME_ERR_DSCHECK      : out std_logic;
+      -- DOBUF interface
+      FCT_FAR_END_DSCHECK    : out std_logic_vector(C_VC_NUM-1 downto 0); --! Data write bus
+      M_VAL_DSCHECK          : out std_logic_vector(C_M_SIZE-1 downto 0);    --! Multiplier values for each virtual channel
       -- MIB
       SEQ_NUM_DSCHECK        : out std_logic_vector(7 downto 0)
     );
@@ -234,6 +236,8 @@ architecture Behavioral of data_link is
       CRC_8B_DWI             : in  std_logic_vector(7 downto 0);                        --! 8 bits CRC from data_word_id_fsm
       TYPE_FRAME_DWI         : in  std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);    --! Current frame/control word type from data_word_id_fsm
       FRAME_ERR_DWI          : in std_logic;
+      MULTIPLIER_DWI         : in std_logic_vector(C_MULT_SIZE-1 downto 0);
+      VC_DWI                 : in std_logic_vector(C_CHANNEL_SIZE-1 downto 0);
       RXNOTHING_ACTIVE_DWI   : in std_logic;
       -- data_seq_check (DSCHECK) interface
       NEW_WORD_DCCHECK       : out std_logic;                                           --! New word Flag from data_word_id_fsm
@@ -244,9 +248,11 @@ architecture Behavioral of data_link is
       SEQ_NUM_DCCHECK        : out std_logic_vector(7 downto 0);                        --! SEQ_NUM from data_word_id_fsm
       CRC_ERR_DCCHECK        : out std_logic;                                           --! CRC error flag
       FRAME_ERR_DCCHECK      : out std_logic;
+      MULTIPLIER_DCCHECK     : out std_logic_vector(C_MULT_SIZE-1 downto 0);
+      VC_DCCHECK             : out std_logic_vector(C_CHANNEL_SIZE-1 downto 0);
       -- MIB
       CRC_LONG_ERR_DCCHECK   : out std_logic;                                           --! CRC 16 bits error flag
-      CRC_SHORT_ERR_DCCHECK  : out std_logic                                            --! CRC 16 bits error flag
+      CRC_SHORT_ERR_DCCHECK  : out std_logic                                            --! CRC 8 bits error flag
     );
   end component;
 
@@ -270,6 +276,8 @@ architecture Behavioral of data_link is
       SEQ_NUM_DWI             : out std_logic_vector(7 downto 0);                 --! Flag EMPTY of the FIFO RX
       CRC_16B_DWI             : out std_logic_vector(15 downto 0);                --! Flag EMPTY of the FIFO RX
       CRC_8B_DWI              : out std_logic_vector(7 downto 0);                 --! Flag EMPTY of the FIFO RX
+      MULTIPLIER_DWI          : out std_logic_vector(C_MULT_SIZE-1 downto 0);
+      VC_DWI                  : out std_logic_vector(C_CHANNEL_SIZE-1 downto 0);
       RXNOTHING_ACTIVE_DWI    : out std_logic;
       -- OTHER
       CRC_ERR_DCCHECK         : in  std_logic;
@@ -385,8 +393,8 @@ architecture Behavioral of data_link is
       END_PACKET_DOBUF      : out  std_logic;
       VC_RD_EN_DMAC         : in   std_logic;
       --DDES interface
-      M_VAL_DDES            : in std_logic_vector(C_M_SIZE-1 downto 0);
-      FCT_FAR_END_DDES      : in std_logic;
+      M_VAL_DSCHECK         : in std_logic_vector(C_M_SIZE-1 downto 0);
+      FCT_FAR_END_DSCHECK   : in std_logic;
       -- PPL interface
       LANE_ACTIVE_ST_PPL    : in std_logic;
       --MIB Interface
@@ -531,19 +539,21 @@ architecture Behavioral of data_link is
   signal data_dmbuf                 : std_logic_vector(C_DATA_K_WIDTH-1 downto 0);
   signal data_rd_dmbuf              : std_logic;
   signal data_valid_dmbuf           : std_logic;
-  signal fct_far_end_ddes           : std_logic_vector(G_VC_NUM-1 downto 0);
-  signal m_val_ddes                 : vc_m_val_array(G_VC_NUM-1 downto 0);
   signal data_dscheck               : std_logic_vector(C_DATA_LENGTH-1 downto 0);
   signal valid_k_charac_dscheck     : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
   signal new_word_dscheck           : std_logic;
   signal end_frame_dscheck          : std_logic;
   signal end_frame_fifo_dscheck     : std_logic;
+  signal fct_far_end_dscheck        : std_logic_vector(G_VC_NUM-1 downto 0);
+  signal m_val_dscheck              : std_logic_vector(C_M_SIZE-1 downto 0);
   signal status_busy_flush_dmbuf    : std_logic;
   signal fifo_full_dmbuf            : std_logic;
   signal seq_num_dccheck            : std_logic_vector(7 downto 0);
   signal end_frame_dccheck          : std_logic;
   signal type_frame_dccheck         : std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);
   signal new_word_dccheck           : std_logic;
+  signal multiplier_dccheck         : std_logic_vector(C_MULT_SIZE-1 downto 0);
+  signal vc_dccheck                 : std_logic_vector(C_CHANNEL_SIZE-1 downto 0);
   signal near_end_rpf_derrm         : std_logic;
   signal seq_num_err_dscheck        : std_logic;
   signal new_word_dwi               : std_logic;
@@ -554,6 +564,8 @@ architecture Behavioral of data_link is
   signal type_frame_dwi             : std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);
   signal data_dwi                   : std_logic_vector(C_DATA_LENGTH-1 downto 0);
   signal valid_k_charac_dwi         : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
+  signal multiplier_dwi             : std_logic_vector(C_MULT_SIZE-1 downto 0);
+  signal vc_dwi                     : std_logic_vector(C_CHANNEL_SIZE-1 downto 0);
   signal data_dccheck               : std_logic_vector(C_DATA_LENGTH-1 downto 0);
   signal valid_k_charac_dccheck     : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
   signal crc_err_dccheck            : std_logic;
@@ -667,8 +679,6 @@ begin
     DATA_DMBUF             => data_dmbuf,
     DATA_RD_DDES           => data_rd_dmbuf,
     DATA_VALID_DMBUF       => data_valid_dmbuf,
-    FCT_FAR_END_DDES       => fct_far_end_ddes,
-    M_VAL_DDES             => m_val_ddes,
     DATA_DDES              => data_ddes,
     DATA_EN_DDES           => data_en_ddes
   );
@@ -709,8 +719,10 @@ begin
       NEW_WORD_DCCHECK       => new_word_dccheck,
       CRC_ERR_DCCHECK        => crc_err_dccheck,
       FRAME_ERR_DCCHECK      => frame_err_dccheck,
+      MULTIPLIER_DCCHECK     => multiplier_dccheck,
+      VC_DCCHECK             => vc_dccheck,
       NEAR_END_RPF_DERRM     => near_end_rpf_derrm,
-      TRANS_POL_FLG_DERRM      => trans_pol_flg_derrm,
+      TRANS_POL_FLG_DERRM    => trans_pol_flg_derrm,
       SEQ_NUM_ERR_DSCHECK    => seq_num_err_dscheck,
       SEQ_NUM_ACK_DSCHECK    => seq_num_ack_dscheck,
       END_FRAME_DSCHECK      => end_frame_dscheck,
@@ -722,6 +734,8 @@ begin
       CRC_ERR_DSCHECK        => crc_err_dscheck,
       FIFO_FULL_DMBUF        => fifo_full_dmbuf,
       FRAME_ERR_DSCHECK      => frame_err_dscheck,
+      FCT_FAR_END_DSCHECK    => fct_far_end_dscheck,
+      M_VAL_DSCHECK          => m_val_dscheck,
       SEQ_NUM_DSCHECK        => SEQ_NUMBER_RX_DL
   );
 
@@ -736,6 +750,8 @@ begin
       SEQ_NUM_DWI            => seq_num_dwi,
       CRC_16B_DWI            => crc_16b_dwi,
       CRC_8B_DWI             => crc_8b_dwi,
+      MULTIPLIER_DWI         => multiplier_dwi,
+      VC_DWI                 => vc_dwi,
       TYPE_FRAME_DWI         => type_frame_dwi,
       FRAME_ERR_DWI          => frame_err_dwi,
       RXNOTHING_ACTIVE_DWI   => rxnothing_active_dwi,
@@ -747,6 +763,8 @@ begin
       SEQ_NUM_DCCHECK        => seq_num_dccheck,
       CRC_ERR_DCCHECK        => crc_err_dccheck,
       FRAME_ERR_DCCHECK      => frame_err_dccheck,
+      MULTIPLIER_DCCHECK     => multiplier_dccheck,
+      VC_DCCHECK             => vc_dccheck,
       CRC_LONG_ERR_DCCHECK   => CRC_LONG_ERROR_DL,
       CRC_SHORT_ERR_DCCHECK  => CRC_SHORT_ERROR_DL
   );
@@ -767,7 +785,9 @@ begin
       SEQ_NUM_DWI             => seq_num_dwi,
       CRC_16B_DWI             => crc_16b_dwi,
       CRC_8B_DWI              => crc_8b_dwi,
-      RXNOTHING_ACTIVE_DWI   => rxnothing_active_dwi,
+      MULTIPLIER_DWI          => multiplier_dwi,
+      VC_DWI                  => vc_dwi,
+      RXNOTHING_ACTIVE_DWI    => rxnothing_active_dwi,
       CRC_ERR_DCCHECK         => crc_err_dccheck,
       SEQ_ERR_DSCHECK         => seq_num_err_dscheck,
       FRAME_ERR_DWI           => frame_err_dwi,
@@ -858,8 +878,8 @@ begin
         DATA_VALID_DOBUF      => vc_data_valid_dobuf(i),
         END_PACKET_DOBUF      => vc_end_packet_dobuf(i),
         VC_RD_EN_DMAC         => vc_rd_en_dmac(i),
-        M_VAL_DDES            => m_val_ddes(i),
-        FCT_FAR_END_DDES      => fct_far_end_ddes(i),
+        M_VAL_DSCHECK         => m_val_dscheck,
+        FCT_FAR_END_DSCHECK   => fct_far_end_dscheck(i),
         LANE_ACTIVE_ST_PPL    => LANE_ACTIVE_PPL,
         FCT_CC_OVF_DOBUF      => FCT_CREDIT_OVERFLOW_DL(i),
         CREDIT_VC_DOBUF       => CREDIT_VC_DL(i),

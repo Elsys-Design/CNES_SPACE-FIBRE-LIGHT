@@ -28,6 +28,8 @@ entity data_seq_check is
     NEW_WORD_DCCHECK       : in  std_logic;
 		CRC_ERR_DCCHECK        : in std_logic;
 		FRAME_ERR_DCCHECK      : in std_logic;
+		MULTIPLIER_DCCHECK     : in std_logic_vector(C_MULT_SIZE-1 downto 0);
+		VC_DCCHECK             : in std_logic_vector(C_CHANNEL_SIZE-1 downto 0);
 		-- data_err_management (DERRM) interface
 		NEAR_END_RPF_DERRM     : in  std_logic;
 		SEQ_NUM_ERR_DSCHECK    : out std_logic;
@@ -43,6 +45,9 @@ entity data_seq_check is
     END_FRAME_FIFO_DSCHECK : out std_logic;
     FIFO_FULL_DMBUF        : in  std_logic;
 		FRAME_ERR_DSCHECK      : out std_logic;
+		-- DOBUF interface
+		FCT_FAR_END_DSCHECK    : out  std_logic_vector(C_VC_NUM-1 downto 0); --! Data write bus
+		M_VAL_DSCHECK          : out  std_logic_vector(C_M_SIZE-1 downto 0);    --! Multiplier values for each virtual channel
 		-- MIB
 		SEQ_NUM_DSCHECK        : out std_logic_vector(7 downto 0)
   );
@@ -79,12 +84,16 @@ begin
 		FRAME_ERR_DSCHECK      <= '0';
 		TYPE_FRAME_DSCHECK     <= (others => '0');
 		CRC_ERR_DSCHECK        <= '0';
+		FCT_FAR_END_DSCHECK    <= (others => '0');
+    M_VAL_DSCHECK          <= (others => '0');
 	elsif rising_edge(CLK) then
-		CRC_ERR_DSCHECK    <= CRC_ERR_DCCHECK;
-		TYPE_FRAME_DSCHECK <= TYPE_FRAME_DCCHECK;
-    FRAME_ERR_DSCHECK  <= FRAME_ERR_DCCHECK;
-		SEQ_NUM_DSCHECK    <= SEQ_NUM_DCCHECK;
-	  if (TYPE_FRAME_DCCHECK = C_DATA_FRM  or TYPE_FRAME_DCCHECK = C_BC_FRM or TYPE_FRAME_DCCHECK = C_FCT_FRM) and END_FRAME_DCCHECK = '1' then
+		CRC_ERR_DSCHECK     <= CRC_ERR_DCCHECK;
+		TYPE_FRAME_DSCHECK  <= TYPE_FRAME_DCCHECK;
+    FRAME_ERR_DSCHECK   <= FRAME_ERR_DCCHECK;
+		SEQ_NUM_DSCHECK     <= SEQ_NUM_DCCHECK;
+		FCT_FAR_END_DSCHECK <= (others => '0');
+    M_VAL_DSCHECK       <= (others => '0');
+	  if (TYPE_FRAME_DCCHECK = C_DATA_FRM  or TYPE_FRAME_DCCHECK = C_BC_FRM) and END_FRAME_DCCHECK = '1' then
 			if SEQ_NUM_DCCHECK /= (NEAR_END_RPF_DERRM & std_logic_vector(seq_num_cnt+1)) then
 				SEQ_NUM_ERR_DSCHECK    <= '1';
 				NEW_WORD_DSCHECK       <= '0';
@@ -108,6 +117,32 @@ begin
 				END_FRAME_FIFO_DSCHECK <= END_FRAME_DCCHECK;
 				END_FRAME_DSCHECK      <= END_FRAME_DCCHECK;
       end if;
+		elsif TYPE_FRAME_DCCHECK = C_FCT_FRM and END_FRAME_DCCHECK = '1' then
+			if SEQ_NUM_DCCHECK /= (NEAR_END_RPF_DERRM & std_logic_vector(seq_num_cnt+1)) then
+				SEQ_NUM_ERR_DSCHECK    <= '1';
+				NEW_WORD_DSCHECK       <= '0';
+				DATA_DSCHECK           <= (others => '0');
+				VALID_K_CHARAC_DSCHECK <= (others => '0');
+				END_FRAME_FIFO_DSCHECK <= '0';
+				END_FRAME_DSCHECK      <= END_FRAME_DCCHECK;
+			elsif CRC_ERR_DCCHECK ='1' then
+				SEQ_NUM_ERR_DSCHECK    <= '0';
+				NEW_WORD_DSCHECK       <= '0';
+				DATA_DSCHECK           <= (others => '0');
+				VALID_K_CHARAC_DSCHECK <= (others => '0');
+				END_FRAME_FIFO_DSCHECK <= '0';
+				END_FRAME_DSCHECK      <= END_FRAME_DCCHECK;
+			else
+				seq_num_cnt                                           <= seq_num_cnt+1;
+				SEQ_NUM_ERR_DSCHECK                                   <= '0';
+				NEW_WORD_DSCHECK                                      <= '0';
+				DATA_DSCHECK                                          <= (others => '0');
+				VALID_K_CHARAC_DSCHECK                                <= (others => '0');
+				END_FRAME_FIFO_DSCHECK                                <= '0';
+				END_FRAME_DSCHECK                                     <= END_FRAME_DCCHECK;
+				FCT_FAR_END_DSCHECK(to_integer(unsigned(VC_DCCHECK))) <= '1';
+				M_VAL_DSCHECK                                         <= std_logic_vector(unsigned('0' & MULTIPLIER_DCCHECK)+1);
+			end if;
 	  elsif (TYPE_FRAME_DCCHECK = C_IDLE_FRM  or TYPE_FRAME_DCCHECK = C_FULL_FRM ) and END_FRAME_DCCHECK = '1'then
 			if SEQ_NUM_DCCHECK /= (NEAR_END_RPF_DERRM & std_logic_vector(seq_num_cnt)) then
 				SEQ_NUM_ERR_DSCHECK    <= '1';

@@ -36,9 +36,9 @@ entity data_out_buff is
     DATA_VALID_DOBUF      : out  std_logic;
     END_PACKET_DOBUF      : out  std_logic;
     VC_RD_EN_DMAC         : in   std_logic;
-    --DDES interface
-    M_VAL_DDES            : in std_logic_vector(C_M_SIZE-1 downto 0);
-    FCT_FAR_END_DDES      : in std_logic;
+    --DSCHECK interface
+    M_VAL_DSCHECK         : in std_logic_vector(C_M_SIZE-1 downto 0);
+    FCT_FAR_END_DSCHECK   : in std_logic;
     -- PPL interface
     LANE_ACTIVE_ST_PPL    : in std_logic;
     --MIB Interface
@@ -156,7 +156,7 @@ begin
   VALID_K_CHARAC_DOBUF <= rd_data(C_DATA_LENGTH+C_BYTE_BY_WORD_LENGTH-1 downto C_DATA_LENGTH);
   DATA_VALID_DOBUF     <= rd_data_vld;
   END_PACKET_DOBUF     <= rd_data_vld and (status_threshold_low or fct_credit_cnt_low) when (cnt_word_sent<63) else rd_data_vld;
-  m_value_for_credit   <= M_VAL_DDES & "000000";
+  m_value_for_credit   <= M_VAL_DSCHECK & "000000";
   S_AXIS_TREADY_DL     <= s_axis_tready_i when(VC_CONT_MODE_MIB = '0') else '1';  -- Tready at '1' in continuous mode
   rd_en                <= VC_RD_EN_DMAC and not(rd_data_vld and fct_credit_cnt_low) when (cnt_word_sent<63) else '0';
   VC_READY_DOBUF       <= vc_ready;
@@ -389,9 +389,9 @@ end process p_has_credit;
       if LINK_RESET_DLRE = '1' then
         fct_credit_cnt <= (others => '0');
       else
-        if FCT_FAR_END_DDES = '1' and rd_data_vld = '1' then -- FCT received and packet sent
+        if FCT_FAR_END_DSCHECK = '1' and rd_data_vld = '1' then -- FCT received and packet sent
           if C_FCT_CC_MAX > (fct_credit_cnt + unsigned(m_value_for_credit) - 1) then -- FCT credit counter will not overflow
-            fct_credit_cnt <= fct_credit_cnt + (unsigned(M_VAL_DDES)*64) - 1;
+            fct_credit_cnt <= fct_credit_cnt + (unsigned(M_VAL_DSCHECK)*64) - 1;
           else
             FCT_CC_OVF_DOBUF <= '1';
             fct_credit_cnt   <= C_FCT_CC_MAX;
@@ -402,7 +402,7 @@ end process p_has_credit;
           else
             fct_credit_cnt <= (others => '0');
           end if;
-        elsif FCT_FAR_END_DDES = '1' then -- FCT received
+        elsif FCT_FAR_END_DSCHECK = '1' then -- FCT received
           if C_FCT_CC_MAX > fct_credit_cnt + unsigned(m_value_for_credit) then -- FCT credit counter will not overflow
             fct_credit_cnt <= fct_credit_cnt + unsigned(m_value_for_credit(C_FCT_CC_SIZE-1 downto 0));
           else
