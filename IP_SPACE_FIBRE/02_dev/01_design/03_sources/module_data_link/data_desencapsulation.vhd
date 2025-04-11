@@ -26,9 +26,6 @@ entity data_desencapsulation is
     DATA_DMBUF             : in  std_logic_vector(36-1 downto 0);        --! Data read bus
     DATA_RD_DDES           : out std_logic;                              --! Read command
     DATA_VALID_DMBUF       : in  std_logic;                              --! Data valid
-    -- DOBUF interface
-    FCT_FAR_END_DDES       : out  std_logic_vector(G_VC_NUM-1 downto 0); --! Data write bus
-    M_VAL_DDES             : out  vc_m_val_array(G_VC_NUM-1 downto 0);    --! Multiplier values for each virtual channel
     -- DIBUF interface
     DATA_DDES              : out  vc_data_k_array(G_VC_NUM downto 0);    --! Data write vc & broadcast
     DATA_EN_DDES           : out  std_logic_vector(G_VC_NUM downto 0)    --! Write command vc & broadcast
@@ -41,7 +38,7 @@ architecture rtl of data_desencapsulation is
 ---------------------------------------------------------
 signal data_detected        : std_logic; --high when sdf read
 signal broadcast_detected   : std_logic; --high when sbf read
-signal vc_nb                : unsigned(7 downto 0);    
+signal vc_nb                : unsigned(7 downto 0);
 
 begin
 ---------------------------------------------------------
@@ -54,9 +51,7 @@ begin
 p_desencapsulation : process(CLK, RST_N)     
 begin
   if RST_N = '0' then
-    FCT_FAR_END_DDES   <= (others => '0');
     DATA_DDES          <= (others =>(others => '0'));
-    M_VAL_DDES         <= (others =>(others => '0'));
     DATA_EN_DDES       <= (others => '0');
     DATA_RD_DDES       <= '0';
     data_detected      <= '0';
@@ -64,8 +59,6 @@ begin
     vc_nb              <= (others => '0');
   elsif rising_edge(CLK) then
     DATA_RD_DDES      <= '1';
-    FCT_FAR_END_DDES  <= (others => '0');
-    M_VAL_DDES        <= (others =>(others => '0'));
     if DATA_VALID_DMBUF = '1' then
       --                      msb = 35
       if DATA_DMBUF(C_DATA_K_WIDTH - 3 downto C_DATA_K_WIDTH - 4) = "01" then --reading a K character
@@ -76,11 +69,6 @@ begin
         --                                 15 downto 0
         elsif DATA_DMBUF(C_BYTE_WIDTH*2 - 1 downto 0) =  C_SBF_SYMB & C_K28_7_SYMB then --SBF
           broadcast_detected                            <= '1';
-        --                                 7 downto 0
-        elsif DATA_DMBUF(C_BYTE_WIDTH - 1 downto 0) = C_K28_3_SYMB then --FCT
-          --                                                       12 downto 8                                                          23 downto 21
-          M_VAL_DDES(to_integer(unsigned(DATA_DMBUF(C_BYTE_WIDTH +4 downto C_BYTE_WIDTH))))        <= std_logic_vector(to_unsigned(to_integer(unsigned(DATA_DMBUF(C_BYTE_WIDTH*2 -1 downto C_BYTE_WIDTH*2 - 3)))+1,4));
-          FCT_FAR_END_DDES (to_integer(unsigned(DATA_DMBUF(C_BYTE_WIDTH +4 downto C_BYTE_WIDTH)))) <= '1';
         elsif DATA_DMBUF(C_BYTE_WIDTH - 1 downto 0) = C_K28_0_SYMB then --EDF
           data_detected                              <= '0';
           DATA_EN_DDES                               <= (others => '0');

@@ -564,10 +564,18 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
          reg_dl_status_1(C_SEQ_NUMBER_RX_BTFD downto C_SEQ_NUMBER_TX_BTFD + 1)            <= seq_number_rx_i;
          reg_dl_status_1(C_VC_CREDIT_BTFD downto C_SEQ_NUMBER_RX_BTFD + 1)                <= vc_credit_i;
          reg_dl_status_1(C_FCT_CREDIT_OVERFLOW_BTFD downto C_VC_CREDIT_BTFD + 1)          <= fct_credit_overflow_i;
-         reg_dl_status_2(C_CRC_LONG_ERROR_BTFD)                                           <= crc_long_error_i;
-         reg_dl_status_2(C_CRC_SHORT_ERROR_BTFD)                                          <= crc_short_error_i;
-         reg_dl_status_2(C_FRAME_ERROR_BTFD)                                              <= frame_error_i;
-         reg_dl_status_2(C_SEQ_ERROR_BTFD)                                                <= seq_error_i;
+         if crc_long_error_i ='1' then
+            reg_dl_status_2(C_CRC_LONG_ERROR_BTFD)                                        <= crc_long_error_i;
+         end if;
+         if crc_short_error_i = '1' then
+            reg_dl_status_2(C_CRC_SHORT_ERROR_BTFD)                                       <= crc_short_error_i;
+         end if;
+         if frame_error_i = '1' then
+            reg_dl_status_2(C_FRAME_ERROR_BTFD)                                           <= frame_error_i;
+         end if;
+         if seq_error_i = '1' then
+            reg_dl_status_2(C_SEQ_ERROR_BTFD)                                             <= seq_error_i;
+         end if;
          reg_dl_status_2(C_FAR_END_LINK_RST_BTFD)                                         <= far_end_link_rst_i;
          reg_dl_status_2(C_INPUT_BUFFER_OVERFLW_BTFD downto C_FAR_END_LINK_RST_BTFD + 1)  <= input_buffer_ovfl_i;
          reg_dl_qos_1(C_FRAME_FINISHED_BTFD downto 0)                                     <= frame_finished_i;
@@ -585,6 +593,13 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
          reg_dl_qos_2(C_CURRENT_TIME_SLOT_BTFD downto C_RETRY_COUNTER_RX_BTFD + 1)        <= current_time_slot_i;
          if link_rst_asserted_i = '1' then
             reg_dl_param(C_LINK_RST_ASSERTED_BTFD)                                        <= link_rst_asserted_i;
+         end if;
+         if clear_error_flag = '1' then
+            reg_dl_status_2(C_CRC_LONG_ERROR_BTFD)                                        <= '0';
+            reg_dl_status_2(C_CRC_SHORT_ERROR_BTFD)                                       <= '0';
+            reg_dl_status_2(C_FRAME_ERROR_BTFD)                                           <= '0';
+            reg_dl_status_2(C_SEQ_ERROR_BTFD)                                             <= '0';
+            reg_dl_param(C_CLEAR_ERROR_FLAG)                                              <= '0';
          end if;
       end if;
    end process P_STATUS;

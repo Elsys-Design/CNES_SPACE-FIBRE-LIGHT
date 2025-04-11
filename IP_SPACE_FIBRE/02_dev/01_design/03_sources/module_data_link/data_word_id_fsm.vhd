@@ -35,6 +35,8 @@ entity data_word_id_fsm is
     SEQ_NUM_DWI             : out std_logic_vector(7 downto 0);                 --! Flag EMPTY of the FIFO RX
     CRC_16B_DWI             : out std_logic_vector(15 downto 0);                --! Flag EMPTY of the FIFO RX
     CRC_8B_DWI              : out std_logic_vector(7 downto 0);                 --! Flag EMPTY of the FIFO RX
+		MULTIPLIER_DWI          : out std_logic_vector(C_MULT_SIZE-1 downto 0);
+		VC_DWI                  : out std_logic_vector(C_CHANNEL_SIZE-1 downto 0);
 		RXNOTHING_ACTIVE_DWI    : out std_logic;
     -- OTHER
     CRC_ERR_DCCHECK         : in  std_logic;
@@ -124,6 +126,7 @@ begin
       FRAME_ERR_DWI          <= '0';
 			RXNOTHING_ACTIVE_DWI   <= '0';
    elsif rising_edge(CLK) then
+		  FRAME_ERR_DWI         <= '0';
       current_state_r       <= current_state;
 			RXNOTHING_ACTIVE_DWI  <= '0';
       case current_state is
@@ -237,6 +240,8 @@ begin
 		DATA_DWI           <= (others=> '0');
 		VALID_K_CHARAC_DWI <= (others=> '0');
     END_FRAME_DWI      <= '0';
+		MULTIPLIER_DWI     <= (others=> '0');
+		VC_DWI             <= (others=> '0');
 		ack_counter        <= (others =>'0');
 		nack_counter       <= (others =>'0');
 		fct_counter        <= (others =>'0');
@@ -288,6 +293,8 @@ begin
 	  		SEQ_NUM_DWI    		 <= DATA_RX_PPL(23 downto 16);
 	  		CRC_8B_DWI     		 <= DATA_RX_PPL(31 downto 24);
 				VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
+				MULTIPLIER_DWI     <= DATA_RX_PPL(15 downto 13);
+        VC_DWI             <= DATA_RX_PPL(12 downto 8);
 				fct_counter        <= fct_counter + 1;
 	  	elsif DATA_RX_PPL(15 downto 0) = C_ACK_WORD and VALID_K_CHARAC_PPL = "0001" then -- ACK control word detected
 	  	  TYPE_FRAME_DWI 		 <= C_ACK_FRM;

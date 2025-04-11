@@ -24,6 +24,7 @@
 IP_SPACE_FIBRE/02_dev/03_verification/05_scenario/environnement
 
 #ignore log files
+**.debug
 **/code_coverage.txt
 **/code_coverage.ucdb
 **/framework.log

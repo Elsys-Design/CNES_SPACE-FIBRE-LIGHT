@@ -1342,6 +1342,8 @@ async def cocotb_run(dut):
 
     await tb.masters[0].write_data(Data_read_dl_config_parameters)
 
+    await stimuli
+
     #Check that Data Frame are received
 
     await configure_gen_vc_dl(tb, [0xF0,0x1F,0x00,0x01], [0x00,0x00,0x00,0x00])
