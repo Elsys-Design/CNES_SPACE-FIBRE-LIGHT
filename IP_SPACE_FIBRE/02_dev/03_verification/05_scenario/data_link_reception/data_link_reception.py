@@ -61,6 +61,40 @@ def clean_dir(path):
         file_path = os.path.join(folder, filename)
         os.unlink(file_path)
 
+async def lane_initialization(tb):
+    """
+    Perform the initialization needed to be performed to initialize the lane.
+    """
+    not_started=1
+    
+
+    #Wait to go to Disabled
+    await Timer(2, units = "us")
+
+
+    #Enable LaneStart and wait to be in Started state
+    Data_read_lane_config_parameters.data = bytearray([0x01, 0x00, 0x00, 0x00])
+    time_out = 0
+    await tb.masters[0].write_data(Data_read_lane_config_parameters)
+    while not_started==1 and time_out < 10000:
+        await tb.masters[0].read_data(Data_read_lane_config_status)
+        if format(Data_read_lane_config_status.data[0], '0>8b')[4:8] == STARTED:
+            not_started = 0
+        time_out += 1
+    
+    #Set Lane initialisatiion FSM from Started to Active state
+    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/Started_to_Active.dat")
+
+    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+
+    #Check that Lane initialisatiion FSM is in Active State
+    await tb.masters[0].read_data(Data_read_lane_config_status)
+
+    await stimuli
+    if format(Data_read_lane_config_status.data[0], '0>8b')[4:8] != ACTIVE:
+        global test_failed 
+        test_failed = 1
+
 async def initialization_procedure(tb, monitor_path):
     """
     Perform the initialization needed to be performed before each step of the scenario.
@@ -552,7 +586,7 @@ async def cocotb_run(dut):
         await send_FCT(tb, x, 0, "0"+ f"{(seq):0>7b}")
     
     
-    await configure_ana_vc_dl(tb, [0xE1,0x1F,0x00,0x00], [0x00,0x00,0x00,0x00])
+    await configure_ana_vc_dl(tb, [0xE1,0x1F,0x00,0x01], [0x2A,0x00,0x00,0x00])
 
     await start_ana_vc_dl(tb)
 
@@ -581,32 +615,32 @@ async def cocotb_run(dut):
     await stimuli
 
     # Send 1 frame of 64 word composed of multiple packets to each virtual channel
-    await configure_model_dl(tb, 4, [0x04,0x08,0x00,0x00], [0x00,0x00,0x00,0x05])
-    await configure_model_dl(tb, 6, [0x02,0x10,0x00,0x00], [0x00,0x00,0x00,0x07])
-    await configure_model_dl(tb, 8, [0x10,0x02,0x00,0x00], [0x00,0x00,0x00,0x09])
-    await configure_model_dl(tb, 10, [0x08,0x04,0x00,0x00], [0x00,0x00,0x00,0x11])
-    await configure_model_dl(tb, 12, [0x04,0x08,0x00,0x00], [0x00,0x00,0x00,0x13])
-    await configure_model_dl(tb, 14, [0x02,0x10,0x00,0x00], [0x00,0x00,0x00,0x15])
-    await configure_model_dl(tb, 16, [0x10,0x02,0x00,0x00], [0x00,0x00,0x00,0x17])
-    await configure_model_dl(tb, 18, [0x08,0x04,0x00,0x00], [0x00,0x00,0x00,0x03])
+    await configure_model_dl(tb, 4, [0x04,0x08,0x00,0x01], [0x00,0x00,0x00,0x05])
+    await configure_model_dl(tb, 6, [0x02,0x10,0x00,0x01], [0x00,0x00,0x00,0x07])
+    await configure_model_dl(tb, 8, [0x10,0x02,0x00,0x01], [0x00,0x00,0x00,0x09])
+    await configure_model_dl(tb, 10, [0x08,0x04,0x00,0x01], [0x00,0x00,0x00,0x11])
+    await configure_model_dl(tb, 12, [0x04,0x08,0x00,0x01], [0x00,0x00,0x00,0x13])
+    await configure_model_dl(tb, 14, [0x02,0x10,0x00,0x01], [0x00,0x00,0x00,0x15])
+    await configure_model_dl(tb, 16, [0x10,0x02,0x00,0x01], [0x00,0x00,0x00,0x17])
+    await configure_model_dl(tb, 18, [0x08,0x04,0x00,0x01], [0x00,0x00,0x00,0x03])
 
     await start_ana_vc_dl(tb)
 
-    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/random_gen_step_1_2_0", 64, 4, 64, 0, 0, seq)
+    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/random_gen_step_1_2_0", 64, 4, 64, 0, 0, seq, seed = 0x05000000)
     seq += 1
-    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/random_gen_step_1_2_1", 128, 2, 64, 0, 1, seq)
+    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/random_gen_step_1_2_1", 128, 2, 64, 0, 1, seq, seed = 0x07000000)
     seq += 1
-    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/random_gen_step_1_2_2", 16, 16, 64, 0, 2, seq)
+    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/random_gen_step_1_2_2", 16, 16, 64, 0, 2, seq, seed = 0x09000000)
     seq += 1
-    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/random_gen_step_1_2_3", 32, 8, 64, 0, 3, seq)
+    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/random_gen_step_1_2_3", 32, 8, 64, 0, 3, seq, seed = 0x11000000)
     seq += 1
-    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/random_gen_step_1_2_4", 64, 4, 64, 0, 4, seq)
+    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/random_gen_step_1_2_4", 64, 4, 64, 0, 4, seq, seed = 0x13000000)
     seq += 1
-    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/random_gen_step_1_2_5", 128, 2, 64, 0, 5, seq)
+    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/random_gen_step_1_2_5", 128, 2, 64, 0, 5, seq, seed = 0x15000000)
     seq += 1
-    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/random_gen_step_1_2_6", 16, 16, 64, 0, 6, seq)
+    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/random_gen_step_1_2_6", 16, 16, 64, 0, 6, seq, seed = 0x17000000)
     seq += 1
-    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/random_gen_step_1_2_7", 32, 8, 64, 0, 7, seq)
+    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/random_gen_step_1_2_7", 32, 8, 64, 0, 7, seq, seed = 0x03000000)
     seq += 1
 
 
@@ -637,7 +671,7 @@ async def cocotb_run(dut):
 
     await start_model_dl(tb, 20)
 
-    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/random_gen_step_1_3_0", 0x000000300000002F, 1, 0, 1, 0, seq, delay = 0, invert_polarity = 0, seed = 47)
+    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/random_gen_step_1_3_0", 0x000000300000002F, 1, 0, 1, 0, seq, delay = 0, invert_polarity = 0, seed = 0x42)
     seq = (seq + 1) %128
 
     stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
@@ -1454,24 +1488,78 @@ async def cocotb_run(dut):
     await send_NACK(tb, "1" + f"{((seq+19)%128):0>7b}")
 
     # Send a data frame, check that the data is received on Data_Link_Data_Analyzer models, check that a ACK request is performed
+
+    await configure_model_dl(tb, 4, [0xE1,0x1F,0x00,0x01], [0x00,0x00,0x00,0x00])
+
+    await start_model_dl(tb, 4)
+
+
+    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/random_gen_step_1_1_" + str(x), 255, 1, 64, 0, 0, seq)
+    seq = (seq + 1)%128
+
     # Send data frame with a positive polarity NACK within it, check that a Link Reset procedure is performed immediatly
+
+    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/Data_frame_with_positive_Nack.dat")
+
+    await lane_initialization(tb)
+
+    seq = 0
+    
     # Send a data frame with a wrong CRC, check that the data is not received on Data_Link_Data_Analyzer models, check that a CRC-16bits error is detected, check that a NACK request is performed
+    
+    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/CRC_16b_error.dat")
+    
     # Send a data frame, check that the data is received on Data_Link_Data_Analyzer models, check that a ACK request is performed
+
+    await configure_model_dl(tb, 4, [0xE1,0x1F,0x00,0x01], [0x00,0x00,0x00,0x00])
+
+    await start_model_dl(tb, 4)
+
+
+    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/random_gen_step_1_1_" + str(x), 255, 1, 64, 0, 0, seq, sequence_polarity = 1)
+    seq = (seq + 1)%128
+
     # Send a positive polarity ACK
 
-    await send_ACK(tb, "0" + f"{(seq):0>7b}")
+    await send_ACK(tb, "0" + f"{((seq+50)%128):0>7b}")
 
     # Send a data frame of 16 words, check that the data is received on Data_Link_Data_Analyzer models, check that a ACK request is performed
+    
+    await configure_model_dl(tb, 4, [0x01,0x04,0x00,0x01], [0x00,0x00,0x00,0x00])
+
+    await start_model_dl(tb, 4)
+
+
+    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/random_gen_step_1_1_" + str(x), 255, 1, 64, 0, 0, seq, sequence_polarity = 1)
+    seq = (seq + 1)%128
+
+
     # Send a negative polarity ACK, check that an ACK reception is indicated on the MIB interface
 
-    await send_ACK(tb, "1" + f"{(seq):0>7b}")
+    await send_ACK(tb, "1" + f"{((seq+25)%128):0>7b}")
 
     # Send a positive polarity NACK, check that nothing happens
 
-    await send_NACK(tb, "0" + f"{(seq):0>7b}")
+    await send_NACK(tb, "0" + f"{((seq+32)%128):0>7b}")
 
     # Send a data frame, check that the data is received on Data_Link_Data_Analyzer models, check that a ACK request is performed
+    
+    await configure_model_dl(tb, 4, [0xE1,0x1F,0x00,0x01], [0x00,0x00,0x00,0x00])
+
+    await start_model_dl(tb, 4)
+
+
+    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/random_gen_step_1_1_" + str(x), 255, 1, 64, 0, 0, seq, sequence_polarity = 1)
+    seq = (seq + 1)%128
+
     # Send data frame with a negative polarity NACK within it, check that a Link Reset procedure is performed immediatly
+
+    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/Data_frame_with_negative_Nack.dat")
+
+    await lane_initialization(tb)
+
+    seq = 0
+
     # Set NACK_RST_mode to 0
 
     Data_read_dl_config_parameters.data = bytearray([0x04, 0x00, 0x00, 0x00])
@@ -1483,12 +1571,36 @@ async def cocotb_run(dut):
     await stimuli
 
     # Send a data frame, check that the data is received on Data_Link_Data_Analyzer models, check that a ACK request is performed
+
+    await configure_model_dl(tb, 4, [0xE1,0x1F,0x00,0x01], [0x00,0x00,0x00,0x00])
+
+    await start_model_dl(tb, 4)
+
+
+    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/random_gen_step_1_1_" + str(x), 255, 1, 64, 0, 0, seq, sequence_polarity = 1)
+    seq = (seq + 1)%128
+
     # Send a data frame with a positive polarity NACK within it, check that a Link Reset procedure is performed at the end of the packet being received
+    
+    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/Data_frame_with_positive_Nack_bis.dat")
+
+    await lane_initialization(tb)
+
+    seq = 0
+
     # Send a data frame with a wrong CRC, check that the data is not received on Data_Link_Data_Analyzer models, check that a CRC-16bits error is detected, check that a NACK request is performed
+    
+    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/CRC_16b_error_bis.dat")
+
     # Send a data frame, check that the data is received on Data_Link_Data_Analyzer models, check that a ACK request is performed
+    
     # Send a data frame with a negative polarity NACK within it, check that a Link Reset procedure is performed at the end of the packet being received
     
-    await send_NACK(tb, "0" + f"{(seq):0>7b}")
+    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/Data_frame_with_negative_Nack_bis.dat")
+
+    await lane_initialization(tb)
+
+    seq = 0
 
     # De-assert NACK_RST_en
 
@@ -1505,7 +1617,19 @@ async def cocotb_run(dut):
     await send_NACK(tb, "0" + f"{(seq):0>7b}")
 
     # Send a data frame with a wrong CRC, check that the data is not received on Data_Link_Data_Analyzer models, check that a CRC-16bits error is detected, check that a NACK request is performed
+    
+    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/CRC_16b_error_ter.dat")
+    
     # Send a data frame, check that the data is received on Data_Link_Data_Analyzer models, check that a ACK request is performed
+
+    # Send a negative polarity NACK, check that a NACK reception is indicated on the MIB interface
+
+    await send_NACK(tb, "1" + f"{(seq):0>7b}")
+
+
+    await send_idle_ctrl_word(tb, 200)
+
+
     await monitor
 
     if step_2_failed == 0:

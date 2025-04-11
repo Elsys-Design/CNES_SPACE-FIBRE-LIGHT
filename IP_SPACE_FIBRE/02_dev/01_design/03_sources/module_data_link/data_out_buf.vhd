@@ -241,8 +241,8 @@ begin
     s_axis_tready_r      <= '0';
     cmd_flush            <= '0';
     current_state        <= INIT_ST;
-    link_reset_dlre_reg1 <= '0';
-    link_reset_dlre_sync <= '0';
+    link_reset_dlre_reg1 <= '1';
+    link_reset_dlre_sync <= '1';
   elsif rising_edge(S_AXIS_ACLK_NW) then
     link_reset_dlre_reg1 <= LINK_RESET_DLRE;
     link_reset_dlre_sync <= link_reset_dlre_reg1;

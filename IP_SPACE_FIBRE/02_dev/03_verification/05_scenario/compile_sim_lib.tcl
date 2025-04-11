@@ -149,6 +149,7 @@ vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_desi
 vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/data_crc_check.vhd
 vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/data_crc_compute.vhd
 vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/data_desencapsulation.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/data_desencapsulation_bc.vhd
 vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/data_enpsulation.vhd
 vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/data_err_management.vhd
 vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/data_in_bc_buf.vhd

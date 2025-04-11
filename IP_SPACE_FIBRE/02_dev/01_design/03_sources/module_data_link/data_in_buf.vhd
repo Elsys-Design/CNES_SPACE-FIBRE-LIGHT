@@ -121,6 +121,7 @@ architecture rtl of data_in_buf is
   signal axis_data_valid        : std_logic;
   signal axis_data_valid_reg1   : std_logic;
   signal axis_data_valid_reg2   : std_logic;
+  signal link_reset_dlre_r      : std_logic;
 
 begin
 ---------------------------------------------------------
@@ -192,17 +193,20 @@ end process p_buffer_ful;
 p_data_in_fifo: process(CLK, RST_N)
 begin
   if RST_N = '0' then
-    cmd_flush       <= '0';
-    current_state   <= IDLE_ST;
-    data_in         <= (others =>'0');
-    data_in_en      <= '0';
+    cmd_flush         <= '0';
+    current_state     <= INIT_ST;
+    data_in           <= (others =>'0');
+    data_in_en        <= '0';
+    link_reset_dlre_r <= '1';
   elsif rising_edge(CLK) then
-    last_k_char_reg1 <= last_k_char;
-    last_k_char_reg2 <= last_k_char_reg1;
-    cmd_flush <= '0';
+    last_k_char_reg1  <= last_k_char;
+    last_k_char_reg2  <= last_k_char_reg1;
+    cmd_flush         <= '0';
+    link_reset_dlre_r <= LINK_RESET_DLRE;
+
     case current_state is
       when INIT_ST =>
-                              if LINK_RESET_DLRE = '0' then
+                              if LINK_RESET_DLRE = '0' and link_reset_dlre_r = '0' then
                                 current_state <= IDLE_ST;
                               end if;
 
