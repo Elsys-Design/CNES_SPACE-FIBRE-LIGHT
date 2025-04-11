@@ -389,9 +389,101 @@ async def send_FCT(tb, vc, value, seq_num):
     crc_8 = tb.spacefibre_random_generator_data_link.invert_string(crc_8)
     await tb.spacefibre_driver.write_to_Rx(crc_8, delay = 0, k_encoding = 0)
 
+async def send_ACK(tb, seq_num):
+    """
+    Send an ACK control word to the RX port of the SpaceFibreLight IP
+    """
+    await tb.spacefibre_driver.write_to_Rx("11111100", delay = 0, k_encoding = 1)
+    await tb.spacefibre_driver.write_to_Rx("11001110", delay = 0, k_encoding = 0)
+    await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
+    await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
+
+    await tb.spacefibre_driver.write_to_Rx("11111100", delay = 0, k_encoding = 1)
+    await tb.spacefibre_driver.write_to_Rx("11001110", delay = 0, k_encoding = 0)
+    await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
+    await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
+
+    await tb.spacefibre_driver.write_to_Rx("11111100", delay = 0, k_encoding = 1)
+    crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8("11111100")
+    await tb.spacefibre_driver.write_to_Rx("10100010", delay = 0, k_encoding = 0)
+    crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8("10100010", crc_8)
+    await tb.spacefibre_driver.write_to_Rx(seq_num, delay = 0, k_encoding = 0)
+    crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8(seq_num , crc_8)
+    crc_8 = tb.spacefibre_random_generator_data_link.invert_string(crc_8)
+    await tb.spacefibre_driver.write_to_Rx(crc_8, delay = 0, k_encoding = 0)
+
+async def send_NACK(tb, seq_num):
+    """
+    Send an NACK control word to the RX port of the SpaceFibreLight IP
+    """
+    await tb.spacefibre_driver.write_to_Rx("11111100", delay = 0, k_encoding = 1)
+    await tb.spacefibre_driver.write_to_Rx("11001110", delay = 0, k_encoding = 0)
+    await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
+    await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
+
+    await tb.spacefibre_driver.write_to_Rx("11111100", delay = 0, k_encoding = 1)
+    await tb.spacefibre_driver.write_to_Rx("11001110", delay = 0, k_encoding = 0)
+    await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
+    await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
+
+    await tb.spacefibre_driver.write_to_Rx("11111100", delay = 0, k_encoding = 1)
+    crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8("11111100")
+    await tb.spacefibre_driver.write_to_Rx("10111011", delay = 0, k_encoding = 0)
+    crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8("10111011", crc_8)
+    await tb.spacefibre_driver.write_to_Rx(seq_num, delay = 0, k_encoding = 0)
+    crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8(seq_num , crc_8)
+    crc_8 = tb.spacefibre_random_generator_data_link.invert_string(crc_8)
+    await tb.spacefibre_driver.write_to_Rx(crc_8, delay = 0, k_encoding = 0)
+
+async def send_ACK(tb, seq_num):
+    """
+    Send an ACK control word to the RX port of the SpaceFibreLight IP
+    """
+    await tb.spacefibre_driver.write_to_Rx("11111100", delay = 0, k_encoding = 1)
+    await tb.spacefibre_driver.write_to_Rx("11001110", delay = 0, k_encoding = 0)
+    await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
+    await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
+
+    await tb.spacefibre_driver.write_to_Rx("11111100", delay = 0, k_encoding = 1)
+    await tb.spacefibre_driver.write_to_Rx("11001110", delay = 0, k_encoding = 0)
+    await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
+    await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
+
+    await tb.spacefibre_driver.write_to_Rx("11111100", delay = 0, k_encoding = 1)
+    crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8("11111100")
+    await tb.spacefibre_driver.write_to_Rx("10100010", delay = 0, k_encoding = 0)
+    crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8("10100010", crc_8)
+    await tb.spacefibre_driver.write_to_Rx(seq_num, delay = 0, k_encoding = 0)
+    crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8(seq_num , crc_8)
+    crc_8 = tb.spacefibre_random_generator_data_link.invert_string(crc_8)
+    await tb.spacefibre_driver.write_to_Rx(crc_8, delay = 0, k_encoding = 0)
+
+async def send_NACK(tb, seq_num):
+    """
+    Send an NACK control word to the RX port of the SpaceFibreLight IP
+    """
+    await tb.spacefibre_driver.write_to_Rx("11111100", delay = 0, k_encoding = 1)
+    await tb.spacefibre_driver.write_to_Rx("11001110", delay = 0, k_encoding = 0)
+    await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
+    await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
+
+    await tb.spacefibre_driver.write_to_Rx("11111100", delay = 0, k_encoding = 1)
+    await tb.spacefibre_driver.write_to_Rx("11001110", delay = 0, k_encoding = 0)
+    await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
+    await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
+
+    await tb.spacefibre_driver.write_to_Rx("11111100", delay = 0, k_encoding = 1)
+    crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8("11111100")
+    await tb.spacefibre_driver.write_to_Rx("10111011", delay = 0, k_encoding = 0)
+    crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8("10111011", crc_8)
+    await tb.spacefibre_driver.write_to_Rx(seq_num, delay = 0, k_encoding = 0)
+    crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8(seq_num , crc_8)
+    crc_8 = tb.spacefibre_random_generator_data_link.invert_string(crc_8)
+    await tb.spacefibre_driver.write_to_Rx(crc_8, delay = 0, k_encoding = 0)
+
 async def send_full(tb, seq_num):
     """
-    Send an FCT control word to the RX port of the SpaceFibreLight IP
+    Send an FULL control word to the RX port of the SpaceFibreLight IP
     """
     await tb.spacefibre_driver.write_to_Rx("11111100", delay = 0, k_encoding = 1)
     await tb.spacefibre_driver.write_to_Rx("11001110", delay = 0, k_encoding = 0)
@@ -632,6 +724,15 @@ async def cocotb_run(dut):
     
     await stimuli
 
+    Data_read_dl_config_parameters.data = bytearray([0x04, 0x00, 0x80, 0x00])
+
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 10))
+
+    await tb.masters[0].write_data(Data_read_dl_config_parameters)
+
+    await stimuli
+
+
 
 	# Send an EBF, check that no error is detected
 	
@@ -660,6 +761,15 @@ async def cocotb_run(dut):
         tb.logger.info("simulation time %d ns : step 1.8 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
         
     await stimuli
+
+    Data_read_dl_config_parameters.data = bytearray([0x04, 0x00, 0x80, 0x00])
+
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 10))
+
+    await tb.masters[0].write_data(Data_read_dl_config_parameters)
+
+    await stimuli
+
 
     # Send an idle frame of 31 words, check that the data are not received on Data_Link_Data_Analyzer models
 
@@ -713,6 +823,15 @@ async def cocotb_run(dut):
 
     await stimuli
 
+    Data_read_dl_config_parameters.data = bytearray([0x04, 0x00, 0x80, 0x00])
+
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 10))
+
+    await tb.masters[0].write_data(Data_read_dl_config_parameters)
+
+    await stimuli
+
+
 	# Send an idle frame of 31 words, check that the data are not received on Data_Link_Data_Analyzer models
 	
     await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/random_gen_step_1_8_0", 31, 1, 64, 2, 7, seq)
@@ -741,6 +860,15 @@ async def cocotb_run(dut):
 
     await stimuli
 
+    Data_read_dl_config_parameters.data = bytearray([0x04, 0x00, 0x80, 0x00])
+
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 10))
+
+    await tb.masters[0].write_data(Data_read_dl_config_parameters)
+
+    await stimuli
+
+
     # Send an idle frame of 65 words, check that the data are not received on Data_Link_Data_Analyzer models, check that a frame error is detected
 	
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/Idle_frame_too_long.dat")
@@ -761,6 +889,15 @@ async def cocotb_run(dut):
 
     await stimuli
 
+    Data_read_dl_config_parameters.data = bytearray([0x04, 0x00, 0x80, 0x00])
+
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 10))
+
+    await tb.masters[0].write_data(Data_read_dl_config_parameters)
+
+    await stimuli
+
+
     # Send a data frame but finish with an EBF, check that the data are not received on Data_Link_Data_Analyzer models, check that a frame error is detected
 	
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/SDF_to_EBF.dat")
@@ -780,6 +917,15 @@ async def cocotb_run(dut):
         tb.logger.info("simulation time %d ns : step 1.12 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
 
     await stimuli
+
+    Data_read_dl_config_parameters.data = bytearray([0x04, 0x00, 0x80, 0x00])
+
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 10))
+
+    await tb.masters[0].write_data(Data_read_dl_config_parameters)
+
+    await stimuli
+
 
     # Start to send a data frame
 	# Send a SDF, check that the data are not received on Data_Link_Data_Analyzer models, check that a frame error is detected
@@ -802,6 +948,15 @@ async def cocotb_run(dut):
 
     await stimuli
 
+    Data_read_dl_config_parameters.data = bytearray([0x04, 0x00, 0x80, 0x00])
+
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 10))
+
+    await tb.masters[0].write_data(Data_read_dl_config_parameters)
+
+    await stimuli
+
+
 	# Start to send a data frame
 	# Send a SIF, check that the data are not received on Data_Link_Data_Analyzer models, check that a frame error is detected
 
@@ -823,6 +978,15 @@ async def cocotb_run(dut):
 
     await stimuli
 
+    Data_read_dl_config_parameters.data = bytearray([0x04, 0x00, 0x80, 0x00])
+
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 10))
+
+    await tb.masters[0].write_data(Data_read_dl_config_parameters)
+
+    await stimuli
+
+
 	# Send a data frame of 65 words, check that the data are not received on Data_Link_Data_Analyzer models, check that a frame error is detected
 
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/Data_Frame_too_long.dat")
@@ -842,6 +1006,15 @@ async def cocotb_run(dut):
         tb.logger.info("simulation time %d ns : step 1.15 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
 
     await stimuli
+
+    Data_read_dl_config_parameters.data = bytearray([0x04, 0x00, 0x80, 0x00])
+
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 10))
+
+    await tb.masters[0].write_data(Data_read_dl_config_parameters)
+
+    await stimuli
+
 
 	# Start to send a data frame
 	# Start to send a broadcast frame
@@ -865,6 +1038,15 @@ async def cocotb_run(dut):
 
     await stimuli
 
+    Data_read_dl_config_parameters.data = bytearray([0x04, 0x00, 0x80, 0x00])
+
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 10))
+
+    await tb.masters[0].write_data(Data_read_dl_config_parameters)
+
+    await stimuli
+
+
     # Start to send a data frame
 	# Start to send a broadcast frame
 	# Send a SBF, check that the data are not received on Data_Link_Data_Analyzer nor Data_Link_Broadcast_Analyzer models, check that a frame error is detected
@@ -886,6 +1068,15 @@ async def cocotb_run(dut):
         tb.logger.info("simulation time %d ns : step 1.17 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
 
     await stimuli
+
+    Data_read_dl_config_parameters.data = bytearray([0x04, 0x00, 0x80, 0x00])
+
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 10))
+
+    await tb.masters[0].write_data(Data_read_dl_config_parameters)
+
+    await stimuli
+
 
     # Start to send a data frame
 	# Start to send a broadcast frame
@@ -909,6 +1100,15 @@ async def cocotb_run(dut):
 
     await stimuli
 
+    Data_read_dl_config_parameters.data = bytearray([0x04, 0x00, 0x80, 0x00])
+
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 10))
+
+    await tb.masters[0].write_data(Data_read_dl_config_parameters)
+
+    await stimuli
+
+
     # Start to send a data frame
 	# Start to send a broadcast frame
 	# Send a EDF, check that the data are not received on Data_Link_Data_Analyzer nor Data_Link_Broadcast_Analyzer models, check that a frame error is detected
@@ -931,6 +1131,15 @@ async def cocotb_run(dut):
 
     await stimuli
 
+    Data_read_dl_config_parameters.data = bytearray([0x04, 0x00, 0x80, 0x00])
+
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 10))
+
+    await tb.masters[0].write_data(Data_read_dl_config_parameters)
+
+    await stimuli
+
+
     # Start to send a data frame
 	# Send a broadcast frame of 5 words, check that the data are not received on Data_Link_Data_Analyzer nor Data_Link_Broadcast_Analyzer models, check that a frame error is detected
 	
@@ -951,6 +1160,15 @@ async def cocotb_run(dut):
         tb.logger.info("simulation time %d ns : step 1.20 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
 
     await stimuli
+
+    Data_read_dl_config_parameters.data = bytearray([0x04, 0x00, 0x80, 0x00])
+
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 10))
+
+    await tb.masters[0].write_data(Data_read_dl_config_parameters)
+
+    await stimuli
+
 
     # Start to send a data frame
 	# Send a broadcast frame of 3 words, check that the data are not received on Data_Link_Data_Analyzer nor Data_Link_Broadcast_Analyzer models, check that a frame error is detected
@@ -973,6 +1191,15 @@ async def cocotb_run(dut):
 
     await stimuli
 
+    Data_read_dl_config_parameters.data = bytearray([0x04, 0x00, 0x80, 0x00])
+
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 10))
+
+    await tb.masters[0].write_data(Data_read_dl_config_parameters)
+
+    await stimuli
+
+
     # Start to send a broadcast frame
 	# Send a SDF, check that the data are not received on Data_Link_Broadcast_Analyzer models, check that a frame error is detected
 	
@@ -993,6 +1220,15 @@ async def cocotb_run(dut):
         tb.logger.info("simulation time %d ns : step 1.22 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
 
     await stimuli
+
+    Data_read_dl_config_parameters.data = bytearray([0x04, 0x00, 0x80, 0x00])
+
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 10))
+
+    await tb.masters[0].write_data(Data_read_dl_config_parameters)
+
+    await stimuli
+
 
     # Start to send a broadcast frame
 	# Send a SBF, check that the data are not received on Data_Link_Broadcast_Analyzer models, check that a frame error is detected
@@ -1015,6 +1251,15 @@ async def cocotb_run(dut):
 
     await stimuli
 
+    Data_read_dl_config_parameters.data = bytearray([0x04, 0x00, 0x80, 0x00])
+
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 10))
+
+    await tb.masters[0].write_data(Data_read_dl_config_parameters)
+
+    await stimuli
+
+
     # Start to send a broadcast frame
 	# Send a SIF, check that the data are not received on Data_Link_Broadcast_Analyzer models, check that a frame error is detected
 	
@@ -1035,6 +1280,15 @@ async def cocotb_run(dut):
         tb.logger.info("simulation time %d ns : step 1.24 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
 
     await stimuli
+
+    Data_read_dl_config_parameters.data = bytearray([0x04, 0x00, 0x80, 0x00])
+
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 10))
+
+    await tb.masters[0].write_data(Data_read_dl_config_parameters)
+
+    await stimuli
+
 
     # Start to send a broadcast frame
 	# Send a EDF, check that the data are not received on Data_Link_Broadcast_Analyzer models, check that a frame error is detected
@@ -1057,6 +1311,15 @@ async def cocotb_run(dut):
 
     await stimuli
 
+    Data_read_dl_config_parameters.data = bytearray([0x04, 0x00, 0x80, 0x00])
+
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 10))
+
+    await tb.masters[0].write_data(Data_read_dl_config_parameters)
+
+    await stimuli
+
+
     # Send a broadcast frame of 5 words, check that the data are not received on Data_Link_Broadcast_Analyzer models, check that a frame error is detected
 	
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/BC_frame_too_long.dat")
@@ -1076,6 +1339,15 @@ async def cocotb_run(dut):
         tb.logger.info("simulation time %d ns : step 1.26 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
 
     await stimuli
+
+    Data_read_dl_config_parameters.data = bytearray([0x04, 0x00, 0x80, 0x00])
+
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 10))
+
+    await tb.masters[0].write_data(Data_read_dl_config_parameters)
+
+    await stimuli
+
 
     # Send a broadcast frame of 3 words, check that the data are not received on Data_Link_Broadcast_Analyzer models, check that a frame error is detected
 
@@ -1097,6 +1369,14 @@ async def cocotb_run(dut):
 
     await stimuli
 
+    Data_read_dl_config_parameters.data = bytearray([0x04, 0x00, 0x80, 0x00])
+
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 10))
+
+    await tb.masters[0].write_data(Data_read_dl_config_parameters)
+
+    await stimuli
+
     await send_idle_ctrl_word(tb, 300)
     await monitor
 
@@ -1110,125 +1390,122 @@ async def cocotb_run(dut):
     ##########################################################################
     ##########################################################################
     ##########################################################################
-    ###########        Step 2: Check NACK and ACK insertion        ###########
+    ###########        Step 2: Check NACK and ACK reception        ###########
     ##########################################################################
     ##########################################################################
     ##########################################################################
     
     step_2_failed = 0
     
+    # Perform initialization procedure
     await initialization_procedure(tb, "reference/spacefibre_serial/monitor_step_2")
 
     monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_2", number_of_word = 143+66*8+20))
 
+    seq = 0
+
     #Send first FCT to each virtual channel
     for x in range(8):
-        await send_FCT(tb, x, 0, "0"+ f"{(x+1):0>7b}")
+        seq += 1
+        await send_FCT(tb, x, 0, "0"+ f"{(seq):0>7b}")
 
-    await configure_gen_vc_dl(tb, [0xE1,0x1F,0x00,0x00], [0x00,0x00,0x00,0x00])
+    # Assert NACK_RST_en, set NACK_RST_mode to 1
 
+    Data_read_dl_config_parameters.data = bytearray([0x14, 0x00, 0x00, 0x00])
 
-    for model in range(8):
-        await configure_model_dl(tb, 3+2*model, [0xE1,0x1F,0x00,0x01], [0x2A,0x00,0x00,0x00])
-        await start_model_dl(tb, 3+2*model)
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 10))
 
-    await start_gen_vc_dl(tb)
+    await tb.masters[0].write_data(Data_read_dl_config_parameters)
 
-
-    for target in range(8):
-        await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_1_" + str(target), 255, 1, 64, 0, target, target + 8, delay = 0, invert_polarity = 0, seed = 42)
-
-    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16)
-    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16)
-    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16)
-    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16)
-
-    await monitor
-
-    # Check ACK Request
-
-    monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_2", number_of_word = 143+40*8*15+20))
-
-    for x in range(8):
-        await send_FCT(tb, x, 0, "0"+ f"{(x+17):0>7b}")
-
-    await configure_gen_vc_dl(tb,[0xE1,0x1F,0x00,0x00], [0x00,0x00,0x00,0x00])
+    await stimuli
 
 
-    for model in range(8):
-        await configure_model_dl(tb, 3+2*model, [0x01,0x14,0x00,0x01], [0x2B,0x00,0x00,0x00])
-        await start_model_dl(tb, 3+2*model)
-
-    await start_gen_vc_dl(tb)
-
-    for target in range(8):
-        await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_2_" + str(target), 20, 15, 5, 0, target, 15*target + 24, delay = 0, invert_polarity = 0, seed = 43)
-
-    #Check ACK Request (every 15 word)
-
-    for x in range(8):
-        await send_FCT(tb, x, 0, "0"+ f"{(x+145):0>7b}")
-
-    for model in range(8):
-        await configure_model_dl(tb, 3+2*model, [0x01,0x14,0x00,0x01], [0x2C,0x00,0x00,0x00])
-        await start_model_dl(tb, 3+2*model)
-
-
-    for target in range(8):
-        await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_3_" + str(target), 20, 15, 5, 0, target, 15*target + 152, delay = 0, invert_polarity = 0, seed = 44)
-
-    #Check ACK Request (every 15 word)
-
-    await configure_model_dl(tb, 3, [0x81,0x0C,0x00,0x01], [0x2D,0x00,0x00,0x00])
-    await start_model_dl(tb, 3)
-
-    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_4_" + str(0), 20, 1, 5, 0, 0, 272, delay = 0, invert_polarity = 0, seed = 45)
-
-    for x in range(8):
-        await send_FCT(tb, x, 0, "0"+ f"{(x+113):0>7b}")
+    # Send a data frame, check that the data is received on Data_Link_Data_Analyzer models, check that a ACK request is performed
     
-    await tb.spacefibre_driver.write_from_file("stimulus/spacefibre_serial/CRC_error.dat")
+    await configure_model_dl(tb, 4, [0xE1,0x1F,0x00,0x01], [0x00,0x00,0x00,0x00])
 
-    #Check NACK request
+    await start_model_dl(tb, 4)
 
-    await configure_model_dl(tb, 3, [0x81,0x01,0x00,0x01], [0x2E,0x00,0x00,0x00])
-    await start_model_dl(tb, 3)
 
-    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_5_" + str(0), 12, 10, 3, 0, 0, 120, delay = 0, invert_polarity = 0, seed = 46)
+    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/random_gen_step_1_1_" + str(x), 255, 1, 64, 0, 0, seq)
+    seq = (seq + 1)%128
+    
+    # Send a positive polarity ACK
 
-    #Check ACK
+    await send_ACK(tb, "0" + f"{((seq+15)%128):0>7b}")
 
-    for x in range(8):
-        await send_FCT(tb, x, 0, "0"+ f"{(x+131):0>7b}")
+    # Send a data frame of 16 words, check that the data is received on Data_Link_Data_Analyzer models, check that a ACK request is performed
+    
+    await configure_model_dl(tb, 4, [0x01,0x04,0x00,0x01], [0x00,0x00,0x00,0x00])
 
-    await tb.spacefibre_driver.write_from_file("stimulus/spacefibre_serial/SEQ_NUM_error.dat")
+    await start_model_dl(tb, 4)
 
-    #Check NACK
 
-    await configure_model_dl(tb, 3, [0x81,0x01,0x00,0x01], [0x2E,0x00,0x00,0x00])
-    await start_model_dl(tb, 3)
+    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/random_gen_step_1_1_" + str(x), 64, 1, 64, 0, 0, seq)
+    seq = (seq + 1)%128
 
-    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_6_" + str(0), 12, 10, 3, 0, 0, 138, delay = 0, invert_polarity = 0, seed = 46)
 
-    #Check ACK
+    # Send a negative polarity ACK
 
-    for x in range(8):
-        await send_FCT(tb, x, 0, "0"+ f"{(x+131):0>7b}")
+    await send_ACK(tb, "1" + f"{((seq+18)%128):0>7b}")
 
-    await tb.spacefibre_driver.write_from_file("stimulus/spacefibre_serial/RXERR_error_1.dat")
-    await write_10b_to_Rx(tb, "1101110111")
-    await tb.spacefibre_driver.write_from_file("stimulus/spacefibre_serial/RXERR_error_2.dat")
+    # Send a negative polarity NACK
 
-    #Check NACK
+    await send_NACK(tb, "1" + f"{((seq+19)%128):0>7b}")
 
-    await tb.spacefibre_driver.write_from_file("stimulus/spacefibre_serial/Pos_seq_error.dat")
+    # Send a data frame, check that the data is received on Data_Link_Data_Analyzer models, check that a ACK request is performed
+    # Send data frame with a positive polarity NACK within it, check that a Link Reset procedure is performed immediatly
+    # Send a data frame with a wrong CRC, check that the data is not received on Data_Link_Data_Analyzer models, check that a CRC-16bits error is detected, check that a NACK request is performed
+    # Send a data frame, check that the data is received on Data_Link_Data_Analyzer models, check that a ACK request is performed
+    # Send a positive polarity ACK
 
-    #Check NACK
+    await send_ACK(tb, "0" + f"{(seq):0>7b}")
 
-    await tb.spacefibre_driver.write_from_file("stimulus/spacefibre_serial/Neg_seq_error.dat")
+    # Send a data frame of 16 words, check that the data is received on Data_Link_Data_Analyzer models, check that a ACK request is performed
+    # Send a negative polarity ACK, check that an ACK reception is indicated on the MIB interface
 
-    #Check NACK
+    await send_ACK(tb, "1" + f"{(seq):0>7b}")
 
+    # Send a positive polarity NACK, check that nothing happens
+
+    await send_NACK(tb, "0" + f"{(seq):0>7b}")
+
+    # Send a data frame, check that the data is received on Data_Link_Data_Analyzer models, check that a ACK request is performed
+    # Send data frame with a negative polarity NACK within it, check that a Link Reset procedure is performed immediatly
+    # Set NACK_RST_mode to 0
+
+    Data_read_dl_config_parameters.data = bytearray([0x04, 0x00, 0x00, 0x00])
+
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 10))
+
+    await tb.masters[0].write_data(Data_read_dl_config_parameters)
+
+    await stimuli
+
+    # Send a data frame, check that the data is received on Data_Link_Data_Analyzer models, check that a ACK request is performed
+    # Send a data frame with a positive polarity NACK within it, check that a Link Reset procedure is performed at the end of the packet being received
+    # Send a data frame with a wrong CRC, check that the data is not received on Data_Link_Data_Analyzer models, check that a CRC-16bits error is detected, check that a NACK request is performed
+    # Send a data frame, check that the data is received on Data_Link_Data_Analyzer models, check that a ACK request is performed
+    # Send a data frame with a negative polarity NACK within it, check that a Link Reset procedure is performed at the end of the packet being received
+    
+    await send_NACK(tb, "0" + f"{(seq):0>7b}")
+
+    # De-assert NACK_RST_en
+
+    Data_read_dl_config_parameters.data = bytearray([0x00, 0x00, 0x00, 0x00])
+
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 10))
+
+    await tb.masters[0].write_data(Data_read_dl_config_parameters)
+
+    await stimuli
+
+    # Send a positive polarity NACK, check that a NACK reception is indicated on the MIB interface
+
+    await send_NACK(tb, "0" + f"{(seq):0>7b}")
+
+    # Send a data frame with a wrong CRC, check that the data is not received on Data_Link_Data_Analyzer models, check that a CRC-16bits error is detected, check that a NACK request is performed
+    # Send a data frame, check that the data is received on Data_Link_Data_Analyzer models, check that a ACK request is performed
     await monitor
 
     if step_2_failed == 0:
@@ -1240,7 +1517,7 @@ async def cocotb_run(dut):
     ##########################################################################
     ##########################################################################
     ##########################################################################
-    ###########     Step 3: Check CRC and SEQ_NUMBER generation    ###########
+    ###########      Step 3: Check Reception Errors Management     ###########
     ##########################################################################
     ##########################################################################
     ##########################################################################
@@ -1255,50 +1532,21 @@ async def cocotb_run(dut):
     for x in range(8):
         await send_FCT(tb, x, 0, "0"+ f"{(x+1):0>7b}")
     
-    #Check FCT and SEQ num and CRC
-
-    await configure_gen_vc_dl(tb, [0xE1,0x1F,0x00,0x00], [0x00,0x00,0x00,0x00])
-
-    await start_gen_vc_dl(tb)
-
-    #Check data frame SEQ NUM and CRC
-
-    await configure_model_dl(tb, 19, [0x01,0x01,0x00,0x01], [0x2E,0x00,0x00,0x00])
-    await start_model_dl(tb, 19)
-
-    #Check broadcast frame SEQ NUM and CRC
-
-    for x in range(8):
-        await send_FCT(tb, x, 0, "0"+ f"{(x+9):0>7b}")
-    
-    await tb.spacefibre_driver.write_from_file("stimulus/spacefibre_serial/CRC_error_bis.dat")
-
-
-    #Check NACK SEQ NUM and CRC
-
-    await configure_model_dl(tb, 3, [0x81,0x01,0x00,0x01], [0x2E,0x00,0x00,0x00])
-    await start_model_dl(tb, 3)
-
-    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_3_1_" + str(0), 12, 10, 3, 0, 0, 16, delay = 0, invert_polarity = 0, seed = 46)
-
-    #Check ACK SEQ NUM and CRC
-
-    for x in range(8):
-        await send_FCT(tb, x, 0, "0"+ f"{(x+18):0>7b}")
-
-
-    await configure_gen_vc_dl(tb,[0xE1,0x1F,0x00,0x00], [0x00,0x00,0x00,0x00])
-
-    await start_gen_vc_dl(tb)
-
-    #Check data frame SEQ NUM and CRC
-
-    await configure_model_dl(tb, 19, [0x01,0x01,0x00,0x01], [0x2E,0x00,0x00,0x00])
-    await start_model_dl(tb, 19)
-
-    #Check broadcast frame SEQ NUM and CRC
-
-    
+    # Perform initialization procedure
+    # Send a valid data frame, check that the data is received on Data_Link_Data_Analyzer models
+    # Send a data frame with an invalid CRC, check that the data are not received on Data_Link_Data_Analyzer models, check that a CRC-16bits is detected
+    # Send a RETRY, check that a RETRY reception is indicated on MIB interface
+    # Send a valid data frame, check that the data is received on Data_Link_Data_Analyzer models
+    # Send a data frame with an invalid counter SEQ_NUMBER, check that the data are not received on Data_Link_Data_Analyzer models, check that a sequence number is detected
+    # Send a data frame with an invalid polarity SEQ_NUMBER, check that the data are not received on Data_Link_Data_Analyzer models, check that a sequence number is detected
+    # Send a data frame with an RXERR word, check that the data are not received on Data_Link_Data_Analyzer models
+    # Send a FULL, check that an ACK request is generated, check that a FULL reception is indicated on MIB interface
+    # Send a broadcast frame with an invalid CRC, check that a CRC-8bits is detected
+    # Send a broadcast frame with an invalid SEQ_NUMBER sequence number, check that a sequence number is detected
+    # Send a broadcast frame with an invalid SEQ_NUMBER polarity, check that a sequence number is detected
+    # Send an idle frame with an invalid CRC, check that a CRC-8bits is detected
+    # Send an idle frame with an invalid SEQ_NUMBER sequence number, check that a sequence number is detected
+    # Send an idle frame with an invalid SEQ_NUMBER polarity, check that a sequence number is detected
     await monitor
 
     if step_3_failed == 0:
@@ -1310,7 +1558,7 @@ async def cocotb_run(dut):
     ##########################################################################
     ##########################################################################
     ##########################################################################
-    ###########     Step 4: Check output buffers flow control      ###########
+    ###########      Step 4: Check input buffers flow control      ###########
     ##########################################################################
     ##########################################################################
     ##########################################################################
@@ -1323,29 +1571,21 @@ async def cocotb_run(dut):
 
     #Check that FCT are sent for each virtual buffer
 
-    await configure_gen_vc_dl(tb,[0xE1,0x1F,0x00,0x00], [0x00,0x00,0x00,0x00])
-
-    await start_gen_vc_dl(tb)
-
-    #Check transmission of idle frame
-
-    #Send first FCT to each virtual channel
-    for x in range(8):
-        await send_FCT(tb, x, 0, "0"+ f"{(x+1):0>7b}")
-
-    #Check transmission of data frame
-
-    await configure_gen_vc_dl(tb,[0xE2,0x1F,0x00,0x00], [0x00,0x00,0x00,0x00])
-
-    await start_gen_vc_dl(tb)
-
-    #Check transmission of idle frame
-
-    #Send first FCT to each virtual channel
-    for x in range(8):
-        await send_FCT(tb, x, 0, "0"+ f"{(x+9):0>7b}")
-
-    #Check transmission of 1 out of 2 data frame
+    # Perform initialization procedure
+    # Assert and de_assert Link Reset parameter, check that for each input buffer, an FCT emission request is generated
+    # Check that the FCTs sent are valid for each input buffer
+    # Send a data frame of 64 word to each virtual channel
+    # Send two data frames of 32 word to each virtual channel
+    # Read 64 words on each virtual channel, check that an FCT request is generated for each virtual channel
+    # Check that the FCTs sent are valid for each virtual channel
+    # Read 32 words on each virtual channel, check that no FCT request are generated for each virtual channel
+    # Read 32 words on each virtual channel, check that an FCT request is generated for each virtual channel
+    # Check that the FCTs sent are valid for each virtual channel
+    # Send two data frames of 64 words to a virtual channel
+    # Send three data frames of 64 words to another virtual channel
+    # Read 128 data words in first virtual channel, check that two FCTs request were sent and that the FCTs were valid
+    # Read 192 data words in the second virtual channel, check that three FCTs request were sent and that the FCTs were valid
+    # Send data frames to a single virtual channel from the Data_Link_Generator python model continuously, check that the input buffer associated is indicated to have overflowed
 
     if step_4_failed == 0:
         tb.logger.info("simulation time %d ns : step 4 result: Pass")
@@ -1353,105 +1593,13 @@ async def cocotb_run(dut):
         test_failed = 1
         tb.logger.error("simulation time %d ns : step 4 result: Failed")
 
-    ##########################################################################
-    ##########################################################################
-    ##########################################################################
-    ###########       Step 5: Check output buffers competiton      ###########
-    ##########################################################################
-    ##########################################################################
-    ##########################################################################
-
-
-    step_5_failed = 0
-
-    # monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_3", number_of_word = 2500))
-
-    await initialization_procedure(tb, "reference/spacefibre_serial/monitor_step_5")
     
-    #Send first FCT to each virtual channel
-    
-    for x in range(8):
-        await send_FCT(tb, x, 0, "0"+ f"{(x+1):0>7b}")
-
-    #Check that FCT are sent for each virtual buffer
-
-    await configure_gen_vc_dl(tb, [0xE1,0x1F,0x00,0x00], [0x00,0x00,0x00,0x00])
-
-    await configure_model_dl(tb, 19, [0x01,0x01,0x00,0x01], [0x2E,0x00,0x00,0x00])
-
-    x = [cocotb.start_soon(start_model_dl(tb, 19))]
-
-    x += [cocotb.start_soon(start_gen_vc_dl(tb))]
-
-    await Combine(*x)
-
-    #Check transmission data and broadcast frame, check order of virtual
-
-    for x in range(8):
-        await send_FCT(tb, x, 0, "0"+ f"{(x+9):0>7b}")
-
-    await configure_model_dl(tb, 3, [0x08,0x04,0x00,0x00], [0x00,0x00,0x00,0x03])
-    await configure_model_dl(tb, 7, [0x02,0x10,0x00,0x00], [0x00,0x00,0x00,0x07])
-    await configure_model_dl(tb, 11, [0x08,0x04,0x00,0x00], [0x00,0x00,0x00,0x11])
-    await configure_model_dl(tb, 15, [0x02,0x10,0x00,0x00], [0x00,0x00,0x00,0x15])
-
-    await start_model_dl(tb, 3)
-    await start_model_dl(tb, 7)
-    await start_model_dl(tb, 11)
-    await start_model_dl(tb, 15)
-
-    #Check transmission data, check order of virtual
-
-    await monitor
-
-    if step_5_failed == 0:
-        tb.logger.info("simulation time %d ns : step 5 result: Pass")
-    else:
-        test_failed = 1
-        tb.logger.error("simulation time %d ns : step 5 result: Failed")
-
-    ##########################################################################
-    ##########################################################################
-    ##########################################################################
-    ###########     Step 6: Check continuous mode output buffers   ###########
-    ##########################################################################
-    ##########################################################################
-    ##########################################################################
-
-    step_6_failed = 0
-
-    # monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_3", number_of_word = 2500))
-
-    await initialization_procedure(tb, "reference/spacefibre_serial/monitor_step_6")
-
-    data_config = Data(0x10, [0x04, 0x40,0x00,0x00])
-
-    await tb.masters[0].write_data(data_config)
-
-    await configure_model_dl(tb, 3, [0xF0,0x1F,0x00,0x01], [0x00,0x00,0x00,0x2A])
-    await start_model_dl(tb, 3)
-
-    #Check that Data Frame are received
-
-    await configure_gen_vc_dl(tb, [0xF0,0x1F,0x00,0x01], [0x00,0x00,0x00,0x00])
-    await configure_model_dl(tb, 3, [0xFF,0x1F,0x00,0x01], [0x00,0x00,0x00,0x2A])
-    await start_gen_vc_dl(tb)
-    
-    #Check EEP insertion
-
-
-    if step_6_failed == 0:
-        tb.logger.info("simulation time %d ns : step 6 result: Pass")
-    else:
-        test_failed = 1
-        tb.logger.error("simulation time %d ns : step 6 result: Failed")
-
 
     #writting the monitors loggers
     tb.write_monitor_data()
 
     #print results of test
-    tb.logger.info("simulation time %d ns : TEST RESULTS :",get_sim_time(units="ns"))
+    tb.logger.info("\n\nsimulation time %d ns : TEST RESULTS :",get_sim_time(units="ns"))
     if step_1_failed == 0:
         tb.logger.info("simulation time %d ns : step 1 result: Pass",get_sim_time(units="ns"))
     else:
@@ -1471,16 +1619,6 @@ async def cocotb_run(dut):
         tb.logger.info("simulation time %d ns : step 4 result: Pass",get_sim_time(units="ns"))
     else:
         tb.logger.error("simulation time %d ns : step 4 result: Failed", get_sim_time(units="ns"))
-
-    if step_5_failed == 0:
-        tb.logger.info("simulation time %d ns : step 5 result: Pass",get_sim_time(units="ns"))
-    else:
-        tb.logger.error("simulation time %d ns : step 5 result: Failed", get_sim_time(units="ns"))
-
-    if step_6_failed == 0:
-        tb.logger.info("simulation time %d ns : step 6 result: Pass",get_sim_time(units="ns"))
-    else:
-        tb.logger.error("simulation time %d ns : step 6 result: Failed", get_sim_time(units="ns"))
 
     if test_failed == 1:
         raise TestFailure

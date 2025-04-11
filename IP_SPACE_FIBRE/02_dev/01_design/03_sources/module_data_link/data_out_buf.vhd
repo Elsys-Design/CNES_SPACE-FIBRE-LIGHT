@@ -144,6 +144,7 @@ type data_in_fsm is (
   signal rd_en                  : std_logic;
   signal link_reset_dlre_reg1   : std_logic;
   signal link_reset_dlre_sync   : std_logic;
+  signal flag_last_data         : std_logic;
 begin
 ---------------------------------------------------------
 -----                     Assignation               -----
@@ -158,7 +159,7 @@ begin
   END_PACKET_DOBUF     <= rd_data_vld and (status_threshold_low or fct_credit_cnt_low) when (cnt_word_sent<63) else rd_data_vld;
   m_value_for_credit   <= M_VAL_DSCHECK & "000000";
   S_AXIS_TREADY_DL     <= s_axis_tready_i when(VC_CONT_MODE_MIB = '0') else '1';  -- Tready at '1' in continuous mode
-  rd_en                <= VC_RD_EN_DMAC and not(rd_data_vld and fct_credit_cnt_low) when (cnt_word_sent<63) else '0';
+  rd_en                <= VC_RD_EN_DMAC and not(rd_data_vld and fct_credit_cnt_low) when (cnt_word_sent<63) else flag_last_data;
   VC_READY_DOBUF       <= vc_ready;
 ---------------------------------------------------------
 -----                     Instanciation             -----
@@ -434,6 +435,24 @@ begin
   end if;
 end process p_cnt_word;
 
+---------------------------------------------------------
+-- Process: p_flag_last_data
+-- Description: raise a flag if last data was not sent
+---------------------------------------------------------
+p_flag_last_data: process(CLK, RST_N)
+begin
+  if RST_N = '0' then
+    flag_last_data <= '0';
+  elsif rising_edge(CLK) then
+    if cnt_word_sent = 62 and rd_data_vld = '1' and VC_RD_EN_DMAC = '0' and status_threshold_low = '0' and fct_credit_cnt_low = '0'then
+      flag_last_data <= '1';
+    elsif cnt_word_sent = 63 and VC_RD_EN_DMAC = '1' then 
+      flag_last_data <= '0';
+    elsif cnt_word_sent < 62 then
+      flag_last_data <= '0';
+    end if;
+  end if;
+end process p_flag_last_data;
 ---------------------------------------------------------
 -- Process: p_detect_eip_out
 -- Description: EIP output detection
