@@ -91,7 +91,6 @@ type data_dmac_fsm is (
   signal req_ack_done    : std_logic;
   signal cnt_wait_ack    : unsigned(3 downto 0);
   signal cnt_wait        : std_logic;
-  signal test            : std_logic_vector(G_VC_NUM downto 0);
 
   signal current_channel : integer range 0 to G_VC_NUM; -- Index of the current channel
 begin
@@ -101,7 +100,6 @@ begin
   FCT_COUNTER_TX_DMAC  <= std_logic_vector(fct_counter);
   REQ_ACK_DONE_DMAC    <= req_ack_done;
   TYPE_FRAME_DMAC      <= type_frame;
-  test <= VC_READY_DOBUF and not(VC_PAUSE_MIB);
 ---------------------------------------------------------
 -----                     Process                   -----
 ---------------------------------------------------------
@@ -169,7 +167,7 @@ begin
         elsif VC_READY_DOBUF(current_channel) = '1' and VC_PAUSE_MIB(current_channel) = '0' then -- Channel ready
           current_state_vc               <= START_ENCAPS_ST;
           VC_RD_EN_DMAC(current_channel) <= '1';
-        elsif test /= std_logic_vector(to_unsigned(0, G_VC_NUM+1)) then
+        elsif (VC_READY_DOBUF and not(VC_PAUSE_MIB)) /= std_logic_vector(to_unsigned(0, G_VC_NUM+1)) then
           current_channel <= (current_channel + 1) mod (G_VC_NUM+1);
           NEW_WORD_DMAC   <= '1';
         else

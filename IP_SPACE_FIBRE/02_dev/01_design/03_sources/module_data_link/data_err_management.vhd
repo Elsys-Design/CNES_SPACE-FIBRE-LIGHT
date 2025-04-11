@@ -21,7 +21,7 @@ entity data_err_management is
     RST_N                    : in std_logic;                                --! Active low reset
     -- data_word_interface (DWI) Interface
     TYPE_FRAME_DWI           : in std_logic_vector(3 downto 0);             --! Type of frame from DWI
-    RXERR_DWI                : in std_logic;                                --! Receive error flag from DWI
+    RXERR_DSCHECK             : in std_logic;                                --! Receive error flag from DWI
     -- crc_check (DCCHECK) Interface
     TYPE_FRAME_DCCHECK       : in std_logic_vector(3 downto 0);             --! Type of frame from CRC check
     -- seq_check (DSCHECK) interface
@@ -156,7 +156,7 @@ begin
       s_seq_num_request <= (others => '0');
     elsif rising_edge(CLK) then
       -- Nack requested for broadcast and data frames if rx_err or crc_err
-      if RXERR_DWI = '1' and (TYPE_FRAME_DWI = C_DATA_FRM or TYPE_FRAME_DWI = C_BC_FRM) then
+      if RXERR_DSCHECK = '1' and (TYPE_FRAME_DWI = C_DATA_FRM or TYPE_FRAME_DWI = C_BC_FRM) then
         s_nack_request <= '1';
         s_ack_request  <= '0';
       elsif CRC_ERR_DSCHECK = '1' and (TYPE_FRAME_DSCHECK = C_DATA_FRM or TYPE_FRAME_DSCHECK = C_BC_FRM) then

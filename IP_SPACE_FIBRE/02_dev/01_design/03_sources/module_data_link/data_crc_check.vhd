@@ -31,6 +31,8 @@ entity data_crc_check is
     FRAME_ERR_DWI          : in std_logic;
     MULTIPLIER_DWI         : in std_logic_vector(C_MULT_SIZE-1 downto 0);
 		VC_DWI                 : in std_logic_vector(C_CHANNEL_SIZE-1 downto 0);
+    RXERR_DWI              : in std_logic;
+		RXERR_ALL_DWI          : in std_logic;
     RXNOTHING_ACTIVE_DWI   : in std_logic;
     -- data_seq_check (DSCHECK) interface
     NEW_WORD_DCCHECK       : out std_logic;                                           --! New word Flag from data_word_id_fsm
@@ -43,6 +45,8 @@ entity data_crc_check is
     FRAME_ERR_DCCHECK      : out std_logic;
     MULTIPLIER_DCCHECK     : out std_logic_vector(C_MULT_SIZE-1 downto 0);
 		VC_DCCHECK             : out std_logic_vector(C_CHANNEL_SIZE-1 downto 0);
+    RXERR_DCCHECK          : out std_logic;
+    RXERR_ALL_DCCHECK      : out std_logic;
     -- MIB
     CRC_LONG_ERR_DCCHECK   : out std_logic;                                           --! CRC 16 bits error flag
     CRC_SHORT_ERR_DCCHECK  : out std_logic                                            --! CRC 16 bits error flag
@@ -177,6 +181,8 @@ begin
     FRAME_ERR_DCCHECK      <= '0';
     MULTIPLIER_DCCHECK     <= (others => '0');
     VC_DCCHECK             <= (others => '0');
+    RXERR_DCCHECK          <= '0';
+    RXERR_ALL_DCCHECK      <= '0';
   elsif rising_edge(CLK) then
     SEQ_NUM_DCCHECK        <= SEQ_NUM_DWI;
     NEW_WORD_DCCHECK       <= NEW_WORD_DWI;
@@ -187,6 +193,8 @@ begin
     FRAME_ERR_DCCHECK      <= FRAME_ERR_DWI;
     MULTIPLIER_DCCHECK     <= MULTIPLIER_DWI;
     VC_DCCHECK             <= VC_DWI;
+    RXERR_DCCHECK          <= RXERR_DWI;
+    RXERR_ALL_DCCHECK      <= RXERR_ALL_DWI;
   end if;
 end process p_trans_ctrl_sig;
 

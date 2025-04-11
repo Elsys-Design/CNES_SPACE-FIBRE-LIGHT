@@ -15,7 +15,7 @@ library ieee;
 library data_link_lib;
 use data_link_lib.data_link_lib.all;
 
-entity data_encpasulation is
+entity data_encapsulation is
   generic (
       G_VC_NUM       : integer := 8                                                          --! Number of virtual channel
    );
@@ -46,9 +46,9 @@ entity data_encpasulation is
     SEQ_NUM_ACK_DENC                  : out std_logic_vector(7 downto 0);
     TRANS_POL_FLG_DENC                : out std_logic
   );
-end data_encpasulation;
+end data_encapsulation;
 
-architecture rtl of data_encpasulation is
+architecture rtl of data_encapsulation is
 
 ---------------------------------------------------------
 -----             Signals declaration               -----

@@ -39,6 +39,7 @@ package data_link_lib is
   constant C_CHANNEL_SIZE        : integer              := 5;   -- Channel number field
   -- Middle Buffer
   constant C_MID_BUF_SIZE        : integer              := 7; -- fifo depth = 2**7= 128 words of 32 bits
+  constant C_MID_BUF_BC_SIZE     : integer              := 3; -- fifo depth = 2**3= 8 words of 32 bits
   -- Input Buffer
   constant C_IN_BUF_SIZE         : integer              := 8; -- fifo depth = 2**8= 256 words of 32 bits
   -- DATA LENGTH

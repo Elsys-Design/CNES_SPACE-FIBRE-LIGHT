@@ -38,11 +38,12 @@ entity data_word_id_fsm is
 		MULTIPLIER_DWI          : out std_logic_vector(C_MULT_SIZE-1 downto 0);
 		VC_DWI                  : out std_logic_vector(C_CHANNEL_SIZE-1 downto 0);
 		RXNOTHING_ACTIVE_DWI    : out std_logic;
+		RXERR_DWI               : out std_logic;
+		RXERR_ALL_DWI           : out std_logic;
     -- OTHER
     CRC_ERR_DCCHECK         : in  std_logic;
     SEQ_ERR_DSCHECK         : in  std_logic;
     FRAME_ERR_DWI           : out std_logic;
-		RXERR_DWI               : out std_logic;
 		-- MIB
 		DATA_COUNTER_RX_DWI     : out  std_logic_vector(6 downto 0);          --! ACK counter RX
 		ACK_COUNTER_RX_DWI      : out  std_logic_vector(2 downto 0);          --! ACK counter RX
@@ -103,7 +104,6 @@ begin
 	FCT_COUNTER_RX_DWI   <= std_logic_vector(fct_counter);
 	FULL_COUNTER_RX_DWI  <= std_logic_vector(full_counter);
 	RETRY_COUNTER_RX_DWI <= std_logic_vector(retry_counter);
-	RXERR_DWI            <= detected_rxerr_i;
 	detected_sdf         <= '1' when (FIFO_RX_DATA_VALID_PPL ='1' and DATA_RX_PPL(15 downto 0) = C_SDF_WORD   and VALID_K_CHARAC_PPL = "0001")  else '0';                                   -- SDF control word detected
 	detected_edf         <= '1' when (FIFO_RX_DATA_VALID_PPL ='1' and DATA_RX_PPL(7 downto 0)  = C_K28_0_SYMB and VALID_K_CHARAC_PPL = "0001")  else '0';                                   -- EDF control word detected
 	detected_sbf         <= '1' when (FIFO_RX_DATA_VALID_PPL ='1' and DATA_RX_PPL(15 downto 0) = C_SBF_WORD   and VALID_K_CHARAC_PPL = "0001")  else '0';                                   -- SBF control word detected
@@ -125,10 +125,14 @@ begin
       current_state_r        <= RX_NOTHING_ST;
       FRAME_ERR_DWI          <= '0';
 			RXNOTHING_ACTIVE_DWI   <= '0';
+	    RXERR_DWI              <= '0';
+			RXERR_ALL_DWI          <= '0';
    elsif rising_edge(CLK) then
 		  FRAME_ERR_DWI         <= '0';
       current_state_r       <= current_state;
 			RXNOTHING_ACTIVE_DWI  <= '0';
+			RXERR_DWI             <= '0';
+			RXERR_ALL_DWI         <= '0';
       case current_state is
          when RX_NOTHING_ST                  => if LINK_RESET_DLRE = '1' then
                                                    current_state  <= RX_NOTHING_ST;
@@ -142,8 +146,9 @@ begin
          when RX_DATA_FRAME_ST               => if LINK_RESET_DLRE = '1' or detected_edf = '1' or detected_retry = '1' or CRC_ERR_DCCHECK = '1' or SEQ_ERR_DSCHECK = '1' then
                                                   current_state  <= RX_NOTHING_ST;
 				                                        elsif detected_rxerr_i = '1' then
-																									RXNOTHING_ACTIVE_DWI   <= '1';
-																									current_state         <= RX_NOTHING_ST;
+																									RXNOTHING_ACTIVE_DWI <= '1';
+																									RXERR_DWI            <= '1';
+																									current_state        <= RX_NOTHING_ST;
                                                 elsif detected_sdf = '1' or detected_sif = '1' or detected_ebf = '1' or data_word_cnt > C_MAX_DATA_FRAME then
 																									RXNOTHING_ACTIVE_DWI   <= '1';
                                                   FRAME_ERR_DWI          <= '1';
@@ -155,6 +160,7 @@ begin
                                                   current_state  <= RX_NOTHING_ST;
 				                                        elsif detected_rxerr_i = '1' then
 																									RXNOTHING_ACTIVE_DWI  <= '1';
+																									RXERR_DWI             <= '1';
 																									current_state         <= RX_NOTHING_ST;
                                                 elsif detected_sdf = '1' or detected_sbf = '1' or detected_sif = '1' or detected_edf = '1' or (detected_ebf = '1' and bc_word_cnt /= C_WORD_BC_FRAME) or bc_word_cnt > C_WORD_BC_FRAME then
                                                   RXNOTHING_ACTIVE_DWI  <= '1';
@@ -166,6 +172,8 @@ begin
                                                   current_state  <= RX_NOTHING_ST;
 				                                        elsif detected_rxerr_i = '1' then
 																									RXNOTHING_ACTIVE_DWI  <= '1';
+																									RXERR_ALL_DWI         <= '1';
+																									RXERR_DWI             <= '1';
 																									current_state         <= RX_NOTHING_ST;
                                                 elsif (detected_ebf = '1' and bc_word_cnt = C_WORD_BC_FRAME) then
                                                    current_state  <= RX_DATA_FRAME_ST;

@@ -31,7 +31,7 @@ entity data_in_buf is
     M_AXIS_TREADY_NW	     : in  std_logic;
     M_AXIS_TUSER_DIBUF     : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
     -- DDES interface
-    DATA_DDES              : in  std_logic_vector(C_DATA_LENGTH+C_BYTE_BY_WORD_LENGTH-1 downto 0);
+    DATA_DDES              : in  std_logic_vector(C_DATA_K_WIDTH-1 downto 0);
     DATA_EN_DDES           : in  std_logic;
     -- DMAC interface
     REQ_FCT_DIBUF          : out  std_logic;

@@ -29,8 +29,8 @@ entity data_in_bc_buf is
     M_AXIS_TREADY_NW	     : in  std_logic;
     M_AXIS_TUSER_DIBUF     : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
     -- DDES interface
-    DATA_DDES              : in  std_logic_vector(C_DATA_LENGTH+C_BYTE_BY_WORD_LENGTH-1 downto 0);
-    DATA_EN_DDES           : in  std_logic
+    DATA_DDESBC            : in  std_logic_vector(C_DATA_K_WIDTH-1 downto 0);
+    DATA_EN_DDESBC         : in  std_logic
   );
 end data_in_bc_buf;
 
@@ -125,8 +125,8 @@ begin
   port map (
       aresetn                => RST_N,
       WR_CLK                 => CLK,
-      WR_DATA                => DATA_DDES,
-      WR_DATA_EN             => DATA_EN_DDES,
+      WR_DATA                => DATA_DDESBC,
+      WR_DATA_EN             => DATA_EN_DDESBC,
       CMD_FLUSH              => cmd_flush,
       STATUS_BUSY_FLUSH      => status_busy_flush,
       STATUS_THRESHOLD_HIGH  => open,
