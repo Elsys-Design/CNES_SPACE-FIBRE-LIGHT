@@ -116,6 +116,7 @@ begin
     M_VAL_DSCHECK             <= (others => '0');
 		RXERR_DSCHECK             <= '0';
 	elsif rising_edge(CLK) then
+		SEQ_NUM_ERR_DSCHECK     <= '0';
 		-- Transmission signals to data_err_management
 		CRC_ERR_DSCHECK          <= CRC_ERR_DCCHECK;
 		TYPE_FRAME_DSCHECK       <= TYPE_FRAME_DCCHECK;

@@ -345,10 +345,20 @@ begin
 					DATA_DWI           <= (others=> '0');
 					VALID_K_CHARAC_DWI <= (others=> '0');
 					NEW_WORD_DWI       <= '0';
-      else
+      elsif current_state = RX_DATA_FRAME_ST then
+				TYPE_FRAME_DWI 		 <= C_DATA_FRM;
         DATA_DWI           <= DATA_RX_PPL;
 				VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
         NEW_WORD_DWI       <= '1';
+			elsif current_state = RX_BROADCAST_AND_DATA_FRAME_ST or current_state = RX_BROADCAST_FRAME_ST then
+				TYPE_FRAME_DWI 		 <= C_BC_FRM;
+        DATA_DWI           <= DATA_RX_PPL;
+				VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
+        NEW_WORD_DWI       <= '1';
+			else
+				DATA_DWI           <= (others=> '0');
+				VALID_K_CHARAC_DWI <= (others=> '0');
+        NEW_WORD_DWI       <= '0';
 	  	end if;
     else
       NEW_WORD_DWI     <= '0';
