@@ -140,7 +140,7 @@ package pkg_model is
   constant C_NACK_RST_MODE_BTFD           : integer := 4;
   constant C_PAUSE_VC_BTFD                : integer := 13;
   constant C_CONTINUOUS_VC_BTFD           : integer := 21;
-  constant C_CLEAR_ERROR_FLAG             : integer := 22;
+  constant C_CLEAR_ERROR_FLAG_BTFD        : integer := 22;
 
   -- Status 1 data link register
   constant C_SEQ_NUMBER_TX_BTFD           : integer := 7;
@@ -267,6 +267,7 @@ package pkg_model is
   constant C_DEFAULT_NACK_RST_MODE        : std_logic                                        := '0';
   constant C_DEFAULT_PAUSE_VC             : std_logic_vector(8 downto 0)                     := (others =>'0');
   constant C_DEFAULT_CONTINUOUS_VC        : std_logic_vector(7 downto 0)                     := (others =>'0');
+  constant C_DEFAULT_CLEAR_ERROR_FLAG     : std_logic                                        := '0';
   -- Global register
   constant C_DEFAULT_RST_DUT              : std_logic                                        := '0';            --- parallel loopback enable default value
 
@@ -388,13 +389,15 @@ package body pkg_model is
    function init_dl_dl_param return std_logic_vector is
       variable temp : std_logic_vector(C_AXI_DATA_WIDTH-1 downto 0);
    begin
-      temp(C_INTERFACE_RST_BTFD)                               := C_DEFAULT_INTERFACE_RST;
-      temp(C_LINK_RST_BTFD)                                    := C_DEFAULT_LINK_RST;
-      temp(C_LINK_RST_ASSERTED_BTFD)                           := C_DEFAULT_LINK_RST_ASSERTED;
-      temp(C_NACK_RST_EN_BTFD)                                 := C_DEFAULT_NACK_RST_EN;
-      temp(C_NACK_RST_MODE_BTFD)                               := C_DEFAULT_NACK_RST_MODE;
-      temp(C_PAUSE_VC_BTFD downto C_NACK_RST_MODE_BTFD+1)      := C_DEFAULT_PAUSE_VC;
-      temp(C_CONTINUOUS_VC_BTFD downto C_PAUSE_VC_BTFD+1)      := C_DEFAULT_CONTINUOUS_VC;
+      temp(C_AXI_DATA_WIDTH-1 downto C_STDBREASON_MAX_BTFD +1)  := (others => '0');
+      temp(C_INTERFACE_RST_BTFD)                                := C_DEFAULT_INTERFACE_RST;
+      temp(C_LINK_RST_BTFD)                                     := C_DEFAULT_LINK_RST;
+      temp(C_LINK_RST_ASSERTED_BTFD)                            := C_DEFAULT_LINK_RST_ASSERTED;
+      temp(C_NACK_RST_EN_BTFD)                                  := C_DEFAULT_NACK_RST_EN;
+      temp(C_NACK_RST_MODE_BTFD)                                := C_DEFAULT_NACK_RST_MODE;
+      temp(C_PAUSE_VC_BTFD downto C_NACK_RST_MODE_BTFD+1)       := C_DEFAULT_PAUSE_VC;
+      temp(C_CONTINUOUS_VC_BTFD downto C_PAUSE_VC_BTFD+1)       := C_DEFAULT_CONTINUOUS_VC;
+      temp(C_CLEAR_ERROR_FLAG_BTFD)                             := C_DEFAULT_CLEAR_ERROR_FLAG;
       return temp;
    end function;
 

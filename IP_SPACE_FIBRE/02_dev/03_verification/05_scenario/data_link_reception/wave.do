@@ -1915,6 +1915,61 @@ add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibr
 add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/M_VAL_DSCHECK
 add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/SEQ_NUM_DSCHECK
 add wave -noupdate -expand -group SEQ_NUM_check /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/seq_num_cnt
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/RST_N
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/WR_CLK
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/WR_DATA
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/WR_DATA_EN
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/FRAME_ERROR
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/END_FRAME
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/RD_CLK
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/RD_DATA
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/RD_DATA_EN
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/RD_DATA_VLD
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/CMD_FLUSH
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/STATUS_BUSY_FLUSH
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/STATUS_THRESHOLD_HIGH
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/STATUS_THRESHOLD_LOW
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/STATUS_FULL
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/STATUS_EMPTY
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/STATUS_LEVEL_WR
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/STATUS_LEVEL_RD
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/ram
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/ptr_wr
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/ptr_wr_inc
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/ptr_wr_inc2
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/ptr_rd
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/ptr_rd_inc
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/ptr_wr_gray
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/ptr_rd_gray
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/ptr_wr_in_rd
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/ptr_rd_in_wr
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/ram_level
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/cmd_flush_req
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/cmd_flush_inv
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/cmd_flush_inv_wr
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/cmd_flush_inv_rd
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/flush_ack_inv_wr
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/flush_ack_inv_wr_r
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/flush_ack_inv_rd
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/flush_ack_inv_rd_r
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/flush_ack_wr
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/flush_ack_rd
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/wr_en
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/rd_en
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/full
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/full_prev
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/empty
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/bad_frame
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/ptr_last_valid
+add wave -noupdate -expand -group mid_buffer_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc/ptr_last_valid_gray
+add wave -noupdate -expand -group data_desencapsulation_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_desencapsulation_bc/RST_N
+add wave -noupdate -expand -group data_desencapsulation_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_desencapsulation_bc/CLK
+add wave -noupdate -expand -group data_desencapsulation_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_desencapsulation_bc/DATA_DMBUFBC
+add wave -noupdate -expand -group data_desencapsulation_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_desencapsulation_bc/DATA_RD_DDESBC
+add wave -noupdate -expand -group data_desencapsulation_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_desencapsulation_bc/DATA_VALID_DMBUFBC
+add wave -noupdate -expand -group data_desencapsulation_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_desencapsulation_bc/DATA_DDESBC
+add wave -noupdate -expand -group data_desencapsulation_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_desencapsulation_bc/DATA_EN_DDESBC
+add wave -noupdate -expand -group data_desencapsulation_bc /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_desencapsulation_bc/broadcast_detected
 TreeUpdate [SetDefaultTree]
 WaveRestoreCursors {{Cursor 1} {89512044947 fs} 0}
 quietly wave cursor active 1
@@ -1932,4 +1987,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits fs
 update
-WaveRestoreZoom {89450643764 fs} {89558312036 fs}
+WaveRestoreZoom {0 fs} {167786526474 fs}

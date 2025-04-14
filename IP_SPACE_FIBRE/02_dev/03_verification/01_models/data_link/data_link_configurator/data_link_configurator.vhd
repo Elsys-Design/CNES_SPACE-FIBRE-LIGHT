@@ -230,7 +230,7 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
     outputs_to_sync(17)           <= reg_dl_param(C_NACK_RST_EN_BTFD);
     outputs_to_sync(26 downto 18) <= reg_dl_param(C_PAUSE_VC_BTFD downto C_NACK_RST_MODE_BTFD + 1);
     outputs_to_sync(34 downto 27) <= reg_dl_param(C_CONTINUOUS_VC_BTFD downto C_PAUSE_VC_BTFD + 1);
-    clear_error_flag              <= reg_dl_param (C_CLEAR_ERROR_FLAG);
+    clear_error_flag              <= reg_dl_param (C_CLEAR_ERROR_FLAG_BTFD);
 
     INTERFACE_RST                <= outputs_to_dut(14);
     LINK_RST                     <= outputs_to_dut(15);
@@ -484,6 +484,12 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
          if (reset_param_dl_i = '1') then
             reg_dl_param  <= init_dl_dl_param;
          end if;
+         if link_rst_asserted_i = '1' then
+            reg_dl_param(C_LINK_RST_ASSERTED_BTFD)                                        <= link_rst_asserted_i;
+         end if;
+         if clear_error_flag = '1' then
+            reg_dl_param(C_CLEAR_ERROR_FLAG_BTFD)                                         <= '0';
+         end if;
          case axi_wr_state is
             -- Waiting for a write request
             when IDLE_WAIT_WR_ADDR =>
@@ -591,15 +597,12 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
          reg_dl_qos_2(C_FULL_COUNTER_RX_BTFD downto C_FCT_COUNTER_RX_BTFD + 1)            <= full_counter_rx_i;
          reg_dl_qos_2(C_RETRY_COUNTER_RX_BTFD downto C_FULL_COUNTER_RX_BTFD + 1)          <= retry_counter_rx_i;
          reg_dl_qos_2(C_CURRENT_TIME_SLOT_BTFD downto C_RETRY_COUNTER_RX_BTFD + 1)        <= current_time_slot_i;
-         if link_rst_asserted_i = '1' then
-            reg_dl_param(C_LINK_RST_ASSERTED_BTFD)                                        <= link_rst_asserted_i;
-         end if;
+         
          if clear_error_flag = '1' then
             reg_dl_status_2(C_CRC_LONG_ERROR_BTFD)                                        <= '0';
             reg_dl_status_2(C_CRC_SHORT_ERROR_BTFD)                                       <= '0';
             reg_dl_status_2(C_FRAME_ERROR_BTFD)                                           <= '0';
             reg_dl_status_2(C_SEQ_ERROR_BTFD)                                             <= '0';
-            reg_dl_param(C_CLEAR_ERROR_FLAG)                                              <= '0';
          end if;
       end if;
    end process P_STATUS;

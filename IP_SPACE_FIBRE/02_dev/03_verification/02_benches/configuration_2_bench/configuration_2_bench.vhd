@@ -1249,6 +1249,7 @@ port map (
     PAUSE_VC                         => pause_vc,
     CONTINUOUS_VC                    => continuous_vc,
 
+    INPUT_BUF_OVF_VC                 => input_buffer_ovfl,
     SEQ_NUMBER_TX                    => seq_number_tx,
     SEQ_NUMBER_RX                    => seq_number_rx,
     CREDIT_VC                        => vc_credit,

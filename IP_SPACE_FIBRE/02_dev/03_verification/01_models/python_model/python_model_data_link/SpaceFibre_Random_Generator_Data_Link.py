@@ -893,10 +893,10 @@ class SpaceFibre_Random_Generator:
             k_encoded_to_log = str(k_encoded) + k_encoded_to_log
             crc_8 = self.compute_crc_8("11111100")
 
-            data_10b, k_encoded  = await self.write_to_Rx("01000100", 0, 0, invert_polarity = invert_polarity)
+            data_10b, k_encoded  = await self.write_to_Rx("10000100", 0, 0, invert_polarity = invert_polarity)
             data_to_log = data_10b + "_" + data_to_log
             k_encoded_to_log = str(k_encoded) + k_encoded_to_log
-            crc_8 = self.compute_crc_8("01000100", crc_8)
+            crc_8 = self.compute_crc_8("10000100", crc_8)
 
             data_10b, k_encoded  = await self.write_to_Rx(str(sequence_polarity) + f"{(sequence%128):0>7b}", 0, 0, invert_polarity = invert_polarity)
             data_to_log = data_10b + "_" + data_to_log
@@ -968,8 +968,7 @@ class SpaceFibre_Random_Generator:
 
                     word_counter_for_skip += 1
                 
-                else: 
-                    current_frame_size += 1
+ 
 
                 #check if skip needed
                 if  word_counter_for_skip >= 5000:
@@ -996,6 +995,7 @@ class SpaceFibre_Random_Generator:
                     log_file.write("32;7F7FCEFC;0;0001;\n")
                     word_counter_for_skip = 0
                     
+                current_frame_size += 1
                 for n in range(4):
                     data_10b, k_encoded  = await self.write_to_Rx(word_binary[32-8*(n+1):32-8*n], 0, 0, invert_polarity = invert_polarity)
                     data_to_log = data_10b + "_" + data_to_log

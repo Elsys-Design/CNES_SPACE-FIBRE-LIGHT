@@ -217,21 +217,32 @@ begin
 		  if (current_state_r = RX_IDLE_FRAME_ST) then
 		    data_word_cnt      <= to_unsigned(1,data_word_cnt'length);
 		  else
-		    data_word_cnt      <= data_word_cnt + 1;
+				if (FIFO_RX_DATA_VALID_PPL ='1') then
+		    	data_word_cnt      <= data_word_cnt + 1;
+				end if;
 		  end if;
+			bc_word_cnt          <= (others =>'0');
 		elsif current_state = RX_BROADCAST_FRAME_ST then
 		  receiving_frame      <= '1';
 		  type_incom_frame     <= "10";               -- receiving broadcast frame
-		  bc_word_cnt          <= bc_word_cnt + 1;
+			if (FIFO_RX_DATA_VALID_PPL ='1') then
+		  	bc_word_cnt          <= bc_word_cnt + 1;
+			end if;
 		  data_word_cnt        <= (others =>'0');
 		elsif current_state = RX_BROADCAST_AND_DATA_FRAME_ST then
 		  receiving_frame      <= '1';
 		  type_incom_frame     <= "10";               -- receiving broadcast frame
-		  bc_word_cnt          <= bc_word_cnt + 1;
+			if (FIFO_RX_DATA_VALID_PPL ='1') then
+		  	bc_word_cnt          <= bc_word_cnt + 1;
+			end if;
 		elsif current_state = RX_IDLE_FRAME_ST then
 		  receiving_frame      <= '1';
 		  type_incom_frame     <= "11";               -- receiving idle frame
-		  data_word_cnt        <= data_word_cnt + 1;
+			if (FIFO_RX_DATA_VALID_PPL ='1') and DATA_RX_PPL(15 downto 0) = C_SIF_WORD and VALID_K_CHARAC_PPL = "0001" then
+				data_word_cnt        <= (others => '0');
+			elsif (FIFO_RX_DATA_VALID_PPL ='1') then
+				data_word_cnt        <= data_word_cnt + 1;
+			end if;
 		end if;
 	end if;
 end process p_comb_state;
