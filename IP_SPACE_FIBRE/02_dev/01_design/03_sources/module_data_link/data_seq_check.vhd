@@ -145,48 +145,64 @@ begin
 		FCT_FAR_END_DSCHECK       <= (others => '0');
     M_VAL_DSCHECK             <= (others => '0');
 		-- Seq Num verification
-	  if TYPE_FRAME_DCCHECK = C_DATA_FRM and END_FRAME_DCCHECK = '1' then -- DATA frame
+	  if TYPE_FRAME_DCCHECK = C_DATA_FRM  then -- DATA frame
 			RXERR_DATA_DSCHECK        <= RXERR_DCCHECK or RXERR_ALL_DCCHECK;
 			FRAME_ERR_DATA_DSCHECK    <= FRAME_ERR_DCCHECK;
 			CRC_ERR_DATA_DSCHECK      <= CRC_ERR_DCCHECK;
-			if SEQ_NUM_DCCHECK /= (NEAR_END_RPF_DERRM & std_logic_vector(seq_num_cnt+1)) then
-				SEQ_NUM_ERR_DSCHECK       <= '1';
-				SEQ_NUM_ERR_DATA_DSCHECK  <= '1';
-				END_FRAME_FIFO_DSCHECK    <= END_FRAME_DCCHECK;
-				END_FRAME_DSCHECK         <= END_FRAME_DCCHECK;
-			elsif CRC_ERR_DCCHECK ='1' then
-				SEQ_NUM_ERR_DSCHECK       <= '0';
-				SEQ_NUM_ERR_DATA_DSCHECK  <= '0';
-				END_FRAME_FIFO_DSCHECK    <= END_FRAME_DCCHECK;
-				END_FRAME_DSCHECK         <= END_FRAME_DCCHECK;
-			else
-				seq_num_cnt               <= seq_num_cnt+1;
-				SEQ_NUM_ERR_DSCHECK       <= '0';
-				SEQ_NUM_ERR_DATA_DSCHECK  <= '0';
+			if END_FRAME_DCCHECK = '1' then -- End of frame
+				if SEQ_NUM_DCCHECK /= (NEAR_END_RPF_DERRM & std_logic_vector(seq_num_cnt+1)) then
+					SEQ_NUM_ERR_DSCHECK       <= '1';
+					SEQ_NUM_ERR_DATA_DSCHECK  <= '1';
+					END_FRAME_FIFO_DSCHECK    <= END_FRAME_DCCHECK;
+					END_FRAME_DSCHECK         <= END_FRAME_DCCHECK;
+				elsif CRC_ERR_DCCHECK ='1' then
+					SEQ_NUM_ERR_DSCHECK       <= '0';
+					SEQ_NUM_ERR_DATA_DSCHECK  <= '0';
+					END_FRAME_FIFO_DSCHECK    <= END_FRAME_DCCHECK;
+					END_FRAME_DSCHECK         <= END_FRAME_DCCHECK;
+				else
+					seq_num_cnt               <= seq_num_cnt+1;
+					SEQ_NUM_ERR_DSCHECK       <= '0';
+					SEQ_NUM_ERR_DATA_DSCHECK  <= '0';
+					NEW_WORD_DSCHECK          <= NEW_WORD_DCCHECK;
+					DATA_DSCHECK              <= DATA_DCCHECK;
+					VALID_K_CHARAC_DSCHECK    <= VALID_K_CHARAC_DCCHECK;
+					END_FRAME_FIFO_DSCHECK    <= END_FRAME_DCCHECK;
+					END_FRAME_DSCHECK         <= END_FRAME_DCCHECK;
+      	end if;
+			else -- Receiving frame
 				NEW_WORD_DSCHECK          <= NEW_WORD_DCCHECK;
 				DATA_DSCHECK              <= DATA_DCCHECK;
 				VALID_K_CHARAC_DSCHECK    <= VALID_K_CHARAC_DCCHECK;
 				END_FRAME_FIFO_DSCHECK    <= END_FRAME_DCCHECK;
 				END_FRAME_DSCHECK         <= END_FRAME_DCCHECK;
-      end if;
-		elsif TYPE_FRAME_DCCHECK = C_BC_FRM and END_FRAME_DCCHECK = '1' then -- BROADCAST frame
+			end if;
+		elsif TYPE_FRAME_DCCHECK = C_BC_FRM then -- BROADCAST frame
 			RXERR_BC_DSCHECK     <= RXERR_DCCHECK or RXERR_ALL_DCCHECK;
 			FRAME_ERR_BC_DSCHECK <= FRAME_ERR_DCCHECK;
       CRC_ERR_BC_DSCHECK   <= CRC_ERR_DCCHECK;
-			if SEQ_NUM_DCCHECK /= (NEAR_END_RPF_DERRM & std_logic_vector(seq_num_cnt+1)) then
-				SEQ_NUM_ERR_DSCHECK       <= '1';
-				SEQ_NUM_ERR_BC_DSCHECK    <= '1';
-				END_FRAME_FIFO_BC_DSCHECK <= END_FRAME_DCCHECK;
-				END_FRAME_DSCHECK         <= END_FRAME_DCCHECK;
-			elsif CRC_ERR_DCCHECK ='1' then
-				SEQ_NUM_ERR_DSCHECK       <= '0';
-				SEQ_NUM_ERR_BC_DSCHECK    <= '0';
-				END_FRAME_FIFO_BC_DSCHECK <= END_FRAME_DCCHECK;
-				END_FRAME_DSCHECK         <= END_FRAME_DCCHECK;
-			else
-				seq_num_cnt               <= seq_num_cnt+1;
-				SEQ_NUM_ERR_DSCHECK       <= '0';
-				SEQ_NUM_ERR_BC_DSCHECK    <= '0';
+			if END_FRAME_DCCHECK = '1' then -- End of frame
+			  if SEQ_NUM_DCCHECK /= (NEAR_END_RPF_DERRM & std_logic_vector(seq_num_cnt+1)) then
+			  	SEQ_NUM_ERR_DSCHECK       <= '1';
+			  	SEQ_NUM_ERR_BC_DSCHECK    <= '1';
+			  	END_FRAME_FIFO_BC_DSCHECK <= END_FRAME_DCCHECK;
+			  	END_FRAME_DSCHECK         <= END_FRAME_DCCHECK;
+			  elsif CRC_ERR_DCCHECK ='1' then
+			  	SEQ_NUM_ERR_DSCHECK       <= '0';
+			  	SEQ_NUM_ERR_BC_DSCHECK    <= '0';
+			  	END_FRAME_FIFO_BC_DSCHECK <= END_FRAME_DCCHECK;
+			  	END_FRAME_DSCHECK         <= END_FRAME_DCCHECK;
+			  else
+			  	seq_num_cnt               <= seq_num_cnt+1;
+			  	SEQ_NUM_ERR_DSCHECK       <= '0';
+			  	SEQ_NUM_ERR_BC_DSCHECK    <= '0';
+			  	NEW_WORD_BC_DSCHECK       <= NEW_WORD_DCCHECK;
+			  	DATA_BC_DSCHECK           <= DATA_DCCHECK;
+			  	VALID_K_CHARAC_BC_DSCHECK <= VALID_K_CHARAC_DCCHECK;
+			  	END_FRAME_FIFO_BC_DSCHECK <= END_FRAME_DCCHECK;
+			  	END_FRAME_DSCHECK         <= END_FRAME_DCCHECK;
+			  end if;
+			else -- Receiving frame
 				NEW_WORD_BC_DSCHECK       <= NEW_WORD_DCCHECK;
 				DATA_BC_DSCHECK           <= DATA_DCCHECK;
 				VALID_K_CHARAC_BC_DSCHECK <= VALID_K_CHARAC_DCCHECK;
@@ -215,7 +231,7 @@ begin
 				SEQ_NUM_ERR_DSCHECK    <= '0';
 				END_FRAME_DSCHECK      <= END_FRAME_DCCHECK;
       end if;
-		elsif (TYPE_FRAME_DCCHECK = C_NACK_FRM or TYPE_FRAME_DCCHECK = C_ACK_FRM) and  END_FRAME_DCCHECK = '1'then -- ACK/ NACK verification 
+		elsif (TYPE_FRAME_DCCHECK = C_NACK_FRM or TYPE_FRAME_DCCHECK = C_ACK_FRM) and  END_FRAME_DCCHECK = '1'then -- ACK/ NACK verification
 			if SEQ_NUM_DCCHECK(7) /= TRANS_POL_FLG_DERRM then
 				SEQ_NUM_ERR_DSCHECK    <= '1';
 				END_FRAME_DSCHECK      <= END_FRAME_DCCHECK;
