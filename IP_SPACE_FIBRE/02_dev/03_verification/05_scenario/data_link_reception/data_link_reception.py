@@ -854,6 +854,7 @@ async def cocotb_run(dut):
 
     
     # Send an EDF , check that a frame error is detected
+    # await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/random_gen_step_1_8_5", 31, 1, 64, 2, 7, seq)
 
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/SIF_to_EDF.dat")
 
@@ -890,6 +891,7 @@ async def cocotb_run(dut):
 	# Send an idle frame of 31 words, check that the data are not received on Data_Link_Data_Analyzer models
 	
     # Send an EBF , check that a frame error is detected
+    # await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/random_gen_step_1_8_6", 31, 1, 64, 2, 7, seq)
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/SIF_to_EBF.dat")
 
     await send_idle_ctrl_word(tb, 25)

@@ -227,7 +227,7 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
     outputs_to_sync(14)           <= reg_dl_param(C_INTERFACE_RST_BTFD);
     outputs_to_sync(15)           <= reg_dl_param(C_LINK_RST_BTFD);
     outputs_to_sync(16)           <= reg_dl_param(C_NACK_RST_EN_BTFD);
-    outputs_to_sync(17)           <= reg_dl_param(C_NACK_RST_EN_BTFD);
+    outputs_to_sync(17)           <= reg_dl_param(C_NACK_RST_MODE_BTFD);
     outputs_to_sync(26 downto 18) <= reg_dl_param(C_PAUSE_VC_BTFD downto C_NACK_RST_MODE_BTFD + 1);
     outputs_to_sync(34 downto 27) <= reg_dl_param(C_CONTINUOUS_VC_BTFD downto C_PAUSE_VC_BTFD + 1);
     clear_error_flag              <= reg_dl_param (C_CLEAR_ERROR_FLAG_BTFD);

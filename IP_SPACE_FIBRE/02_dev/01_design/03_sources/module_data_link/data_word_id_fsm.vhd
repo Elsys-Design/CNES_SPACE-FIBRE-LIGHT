@@ -149,7 +149,7 @@ begin
 																									RXNOTHING_ACTIVE_DWI <= '1';
 																									RXERR_DWI            <= '1';
 																									current_state        <= RX_NOTHING_ST;
-                                                elsif detected_sdf = '1' or detected_sif = '1' or detected_ebf = '1' or data_word_cnt > C_MAX_DATA_FRAME then
+                                                elsif detected_sdf = '1' or detected_sif = '1' or detected_ebf = '1' or data_word_cnt >= C_MAX_DATA_FRAME then
 																									RXNOTHING_ACTIVE_DWI   <= '1';
                                                   FRAME_ERR_DWI          <= '1';
                                                   current_state          <= RX_NOTHING_ST;
@@ -162,7 +162,7 @@ begin
 																									RXNOTHING_ACTIVE_DWI  <= '1';
 																									RXERR_DWI             <= '1';
 																									current_state         <= RX_NOTHING_ST;
-                                                elsif detected_sdf = '1' or detected_sbf = '1' or detected_sif = '1' or detected_edf = '1' or (detected_ebf = '1' and bc_word_cnt /= C_WORD_BC_FRAME) or bc_word_cnt > C_WORD_BC_FRAME then
+                                                elsif detected_sdf = '1' or detected_sbf = '1' or detected_sif = '1' or detected_edf = '1' or (detected_ebf = '1' and bc_word_cnt /= C_WORD_BC_FRAME) or bc_word_cnt >= C_WORD_BC_FRAME then
                                                   RXNOTHING_ACTIVE_DWI  <= '1';
 																									FRAME_ERR_DWI         <= '1';
                                                   current_state         <= RX_NOTHING_ST;
@@ -184,13 +184,13 @@ begin
                                                 end if;
 
          when RX_IDLE_FRAME_ST               => if LINK_RESET_DLRE = '1' or detected_rxerr_i = '1' or detected_retry = '1' or CRC_ERR_DCCHECK = '1' or SEQ_ERR_DSCHECK = '1' then
-                                                  current_state  <= RX_NOTHING_ST;
+                                                  current_state   <= RX_NOTHING_ST;
                                                 elsif detected_sbf ='1' then
                                                    current_state  <= RX_BROADCAST_FRAME_ST;
                                                 elsif detected_sdf ='1' then
                                                    current_state  <= RX_DATA_FRAME_ST;
                                                 elsif detected_edf = '1' or detected_ebf = '1' or data_word_cnt > C_MAX_IDLE_FRAME then
-                                                   FRAME_ERR_DWI      <= '1';
+                                                   FRAME_ERR_DWI  <= '1';
                                                    current_state  <= RX_NOTHING_ST;
                                                 end if;
          when others                          => current_state  <= RX_NOTHING_ST;

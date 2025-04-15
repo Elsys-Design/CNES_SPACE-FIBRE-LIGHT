@@ -910,7 +910,7 @@ class SpaceFibre_Random_Generator:
             k_encoded_to_log = str(k_encoded) + k_encoded_to_log
 
             log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
-            log_file.write("32;" + f"{(int(crc_8[0:8],2)):0>2X}" + f"{(sequence%128 +128 * sequence_polarity):0>2X}" + "005C;0;0001;\n")
+            log_file.write("32;" + f"{(int(crc_8[0:8],2)):0>2X}" + f"{(sequence%128 +128 * sequence_polarity):0>2X}" + "84FC;0;0001;\n")
 
             word_counter_for_skip += 1
             

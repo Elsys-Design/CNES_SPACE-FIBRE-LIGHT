@@ -91,7 +91,7 @@ begin
     elsif rising_edge(CLK) then
       crc_var           := crc_reg_16b_comp;
       crc_long_err       <= '0';
-      if RXNOTHING_ACTIVE_DWI ='1' then
+      if RXNOTHING_ACTIVE_DWI ='1' or FRAME_ERR_DWI = '1' then
         crc_reg_16b_comp   <= (others => '1'); -- Reset CRC to seed value
       elsif (TYPE_FRAME_DWI = C_DATA_FRM) then
         if END_FRAME_DWI = '1' and NEW_WORD_DWI = '1'then -- Last word
@@ -136,7 +136,7 @@ begin
     elsif rising_edge(CLK) then
       crc_var       := crc_reg_8b_comp;
       crc_short_err <= '0';
-      if RXNOTHING_ACTIVE_DWI ='1' then
+      if RXNOTHING_ACTIVE_DWI ='1' or FRAME_ERR_DWI = '1' then
         crc_reg_8b_comp   <= (others => '0'); -- Reset CRC to seed value
       elsif TYPE_FRAME_DWI /= C_DATA_FRM then
         if END_FRAME_DWI = '1'and NEW_WORD_DWI = '1'then -- Last word

@@ -150,7 +150,7 @@ begin
 			RXERR_DATA_DSCHECK        <= RXERR_DCCHECK or RXERR_ALL_DCCHECK;
 			FRAME_ERR_DATA_DSCHECK    <= FRAME_ERR_DCCHECK;
 			CRC_ERR_DATA_DSCHECK      <= CRC_ERR_DCCHECK;
-			if END_FRAME_DCCHECK = '1' then -- End of frame
+			if END_FRAME_DCCHECK = '1' and FRAME_ERR_DCCHECK = '0' then -- End of frame
 				if SEQ_NUM_DCCHECK /= (NEAR_END_RPF_DERRM & std_logic_vector(seq_num_cnt+1)) then
 					SEQ_NUM_ERR_DSCHECK       <= '1';
 					SEQ_NUM_ERR_DATA_DSCHECK  <= '1';
@@ -182,7 +182,7 @@ begin
 			RXERR_BC_DSCHECK     <= RXERR_DCCHECK or RXERR_ALL_DCCHECK;
 			FRAME_ERR_BC_DSCHECK <= FRAME_ERR_DCCHECK;
       CRC_ERR_BC_DSCHECK   <= CRC_ERR_DCCHECK;
-			if END_FRAME_DCCHECK = '1' then -- End of frame
+			if END_FRAME_DCCHECK = '1' and FRAME_ERR_DCCHECK = '0' then -- End of frame
 			  if SEQ_NUM_DCCHECK /= (NEAR_END_RPF_DERRM & std_logic_vector(seq_num_cnt+1)) then
 			  	SEQ_NUM_ERR_DSCHECK       <= '1';
 			  	SEQ_NUM_ERR_BC_DSCHECK    <= '1';
@@ -224,7 +224,16 @@ begin
 				FCT_FAR_END_DSCHECK(to_integer(unsigned(VC_DCCHECK))) <= '1';
 				M_VAL_DSCHECK                                         <= std_logic_vector(unsigned('0' & MULTIPLIER_DCCHECK)+1);
 			end if;
-	  elsif (TYPE_FRAME_DCCHECK = C_IDLE_FRM  or TYPE_FRAME_DCCHECK = C_FULL_FRM ) and END_FRAME_DCCHECK = '1'then -- IDLE / FULL verification
+	  elsif TYPE_FRAME_DCCHECK = C_IDLE_FRM   and END_FRAME_DCCHECK = '1'then -- IDLE verification
+			if SEQ_NUM_DCCHECK /= (NEAR_END_RPF_DERRM & std_logic_vector(seq_num_cnt))  and FRAME_ERR_DCCHECK = '0' then
+				SEQ_NUM_ERR_DSCHECK    <= '1';
+				END_FRAME_DSCHECK      <= END_FRAME_DCCHECK;
+			else
+				SEQ_NUM_ERR_DSCHECK    <= '0';
+				END_FRAME_DSCHECK      <= END_FRAME_DCCHECK;
+      end if;
+		
+		elsif TYPE_FRAME_DCCHECK = C_FULL_FRM  and END_FRAME_DCCHECK = '1'then -- FULL verification
 			if SEQ_NUM_DCCHECK /= (NEAR_END_RPF_DERRM & std_logic_vector(seq_num_cnt)) then
 				SEQ_NUM_ERR_DSCHECK    <= '1';
 				END_FRAME_DSCHECK      <= END_FRAME_DCCHECK;
