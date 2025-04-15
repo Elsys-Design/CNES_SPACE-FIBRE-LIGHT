@@ -15,7 +15,7 @@
 // Private
 #include "lib_print.h"
 #include "config.h"
-#include "configuration1_scenario_loopback.h"
+#include "config2_scenario_dl_lpb.h"
 // Common
 #include "common.h"
 #include "shared_header.h"
