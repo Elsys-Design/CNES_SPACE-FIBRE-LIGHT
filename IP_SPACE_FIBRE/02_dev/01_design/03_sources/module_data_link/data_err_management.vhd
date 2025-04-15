@@ -265,20 +265,20 @@ begin
   elsif rising_edge(CLK) then
     if NACK_RST_EN_MIB = '1' then
       if NACK_RST_MODE_MIB = '1' then
-        if FRAME_ERR_DSCHECK = '0' and (TYPE_FRAME_DSCHECK = C_NACK_FRM) and END_FRAME_DSCHECK = '1' then
+        if FRAME_ERR_DSCHECK = '0' and SEQ_ERR_DSCHECK = '0' and CRC_ERR_DSCHECK = '0' and (TYPE_FRAME_DSCHECK = C_NACK_FRM) and END_FRAME_DSCHECK = '1' then
           LINK_RESET_DERRM <= '1';
         else
           LINK_RESET_DERRM <= '0';
         end if;
-      else 
-        if FRAME_ERR_DSCHECK = '0' and (TYPE_FRAME_DSCHECK = C_NACK_FRM) and END_FRAME_DSCHECK = '1' then
-          flg_nack_rst_flg <= '1';
-          LINK_RESET_DERRM <= '0';
-        elsif (TYPE_FRAME_DSCHECK = C_DATA_FRM or TYPE_FRAME_DSCHECK = C_BC_FRM) and END_FRAME_DSCHECK = '1' and FRAME_ERR_DSCHECK = '0' and flg_nack_rst_flg = '1' then
-          LINK_RESET_DERRM <= '1';
-        else
-          LINK_RESET_DERRM <= '0';
-        end if;
+      -- else
+        -- if FRAME_ERR_DSCHECK = '0' and (TYPE_FRAME_DSCHECK = C_NACK_FRM) and END_FRAME_DSCHECK = '1' then
+        --   flg_nack_rst_flg <= '1';
+        --   LINK_RESET_DERRM <= '0';
+        -- elsif (TYPE_FRAME_DSCHECK = C_DATA_FRM or TYPE_FRAME_DSCHECK = C_BC_FRM) and END_FRAME_DSCHECK = '1' and FRAME_ERR_DSCHECK = '0' and flg_nack_rst_flg = '1' then
+        --   LINK_RESET_DERRM <= '1';
+        -- else
+        --   LINK_RESET_DERRM <= '0';
+        -- end if;
       end if;
     else
       LINK_RESET_DERRM <= '0';

@@ -57,6 +57,8 @@ entity mib_data_link is
     CURRENT_TIME_SLOT_DL    : in  std_logic_vector(G_VC_NUM-1 downto 0);
     RESET_PARAM_DL          : in  std_logic;
     LINK_RST_ASSERTED_DL    : in  std_logic;
+    NACK_SEQ_NUM_DL         : in std_logic_vector(7 downto 0);
+    ACK_SEQ_NUM_DL          : in std_logic_vector(7 downto 0);
     -- MIB status interface TOP
     SEQ_NUMBER_TX           : out std_logic_vector(G_VC_NUM-1 downto 0);
     SEQ_NUMBER_RX           : out std_logic_vector(G_VC_NUM-1 downto 0);
@@ -82,7 +84,9 @@ entity mib_data_link is
     RETRY_COUNTER_RX        : out std_logic_vector(1 downto 0);
     CURRENT_TIME_SLOT       : out std_logic_vector(G_VC_NUM-1 downto 0);
     RESET_PARAM             : out std_logic;
-    LINK_RST_ASSERTED       : out std_logic
+    LINK_RST_ASSERTED       : out std_logic;
+    NACK_SEQ_NUM            : out std_logic_vector(7 downto 0);
+    ACK_SEQ_NUM             : out std_logic_vector(7 downto 0)
    );
 end mib_data_link;
 
@@ -122,5 +126,6 @@ begin
   CURRENT_TIME_SLOT       <= CURRENT_TIME_SLOT_DL;
   RESET_PARAM             <= RESET_PARAM_DL;
   LINK_RST_ASSERTED       <= LINK_RST_ASSERTED_DL;
-
+  NACK_SEQ_NUM            <= NACK_SEQ_NUM_DL;
+  ACK_SEQ_NUM             <= ACK_SEQ_NUM_DL;
 end architecture rtl;

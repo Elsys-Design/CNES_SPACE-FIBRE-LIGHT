@@ -85,7 +85,9 @@ entity data_link is
     RETRY_COUNTER_RX_DL     : out  std_logic_vector(1 downto 0);          --! RETRY counter RX
     CURRENT_TIME_SLOT_DL    : out  std_logic_vector(7 downto 0);          --! Current time slot
     RESET_PARAM_DL          : out std_logic;                              --! Reset configuration parameters control
-    LINK_RST_ASSERTED_DL    : out std_logic                               --! Link has been reseted
+    LINK_RST_ASSERTED_DL    : out std_logic;                              --! Link has been reseted
+    NACK_SEQ_NUM_DL         : out std_logic_vector(7 downto 0);           --! NACK Seq_num received
+    ACK_SEQ_NUM_DL          : out std_logic_vector(7 downto 0)            --! ACK Seq_num received
   );
 end data_link;
 architecture Behavioral of data_link is
@@ -249,7 +251,9 @@ architecture Behavioral of data_link is
       FCT_FAR_END_DSCHECK       : out  std_logic_vector(C_VC_NUM-1 downto 0); --! Data write bus
       M_VAL_DSCHECK             : out  std_logic_vector(C_M_SIZE-1 downto 0);    --! Multiplier values for each virtual channel
       -- MIB
-      SEQ_NUM_DSCHECK           : out std_logic_vector(7 downto 0)
+      SEQ_NUM_DSCHECK           : out std_logic_vector(7 downto 0);
+      NACK_SEQ_NUM_DSCHECK      : out std_logic_vector(7 downto 0);
+      ACK_SEQ_NUM_DSCHECK       : out std_logic_vector(7 downto 0)
     );
   end component;
 
@@ -863,7 +867,9 @@ begin
       RXERR_BC_DSCHECK          => rxerr_bc_dscheck,
       FCT_FAR_END_DSCHECK       => fct_far_end_dscheck,
       M_VAL_DSCHECK             => m_val_dscheck,
-      SEQ_NUM_DSCHECK           => SEQ_NUMBER_RX_DL
+      SEQ_NUM_DSCHECK           => SEQ_NUMBER_RX_DL,
+      NACK_SEQ_NUM_DSCHECK      => NACK_SEQ_NUM_DL,
+      ACK_SEQ_NUM_DSCHECK       => ACK_SEQ_NUM_DL
   );
 
   inst_data_crc_check: data_crc_check

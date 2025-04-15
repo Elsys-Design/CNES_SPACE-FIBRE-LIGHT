@@ -65,7 +65,9 @@ entity data_seq_check is
 		FCT_FAR_END_DSCHECK       : out  std_logic_vector(C_VC_NUM-1 downto 0); --! Data write bus
 		M_VAL_DSCHECK             : out  std_logic_vector(C_M_SIZE-1 downto 0);    --! Multiplier values for each virtual channel
 		-- MIB
-		SEQ_NUM_DSCHECK           : out std_logic_vector(7 downto 0)
+		SEQ_NUM_DSCHECK           : out std_logic_vector(7 downto 0);
+		NACK_SEQ_NUM_DSCHECK      : out std_logic_vector(7 downto 0);
+    ACK_SEQ_NUM_DSCHECK       : out std_logic_vector(7 downto 0)
   );
 end data_seq_check;
 
@@ -115,6 +117,8 @@ begin
 		FCT_FAR_END_DSCHECK       <= (others => '0');
     M_VAL_DSCHECK             <= (others => '0');
 		RXERR_DSCHECK             <= '0';
+		NACK_SEQ_NUM_DSCHECK      <= (others => '0');
+		ACK_SEQ_NUM_DSCHECK       <= (others => '0');
 	elsif rising_edge(CLK) then
 		SEQ_NUM_ERR_DSCHECK     <= '0';
 		-- Transmission signals to data_err_management
@@ -232,7 +236,6 @@ begin
 				SEQ_NUM_ERR_DSCHECK    <= '0';
 				END_FRAME_DSCHECK      <= END_FRAME_DCCHECK;
       end if;
-		
 		elsif TYPE_FRAME_DCCHECK = C_FULL_FRM  and END_FRAME_DCCHECK = '1'then -- FULL verification
 			if SEQ_NUM_DCCHECK /= (NEAR_END_RPF_DERRM & std_logic_vector(seq_num_cnt)) then
 				SEQ_NUM_ERR_DSCHECK    <= '1';
@@ -248,6 +251,11 @@ begin
 			else
 				SEQ_NUM_ERR_DSCHECK    <= '0';
 				END_FRAME_DSCHECK      <= END_FRAME_DCCHECK;
+				if TYPE_FRAME_DCCHECK = C_NACK_FRM then -- Update NACK_SEQ_NUM_DSCHECK (MIB)
+					NACK_SEQ_NUM_DSCHECK <= SEQ_NUM_DCCHECK;
+				else                                    -- Update ACK_SEQ_NUM_DSCHECK (MIB)
+					ACK_SEQ_NUM_DSCHECK <= SEQ_NUM_DCCHECK;
+				end if;
 			end if;
 		else
 			SEQ_NUM_ERR_DSCHECK    <= '0';

@@ -85,8 +85,10 @@ entity spacefibre_light_top is
       FULL_COUNTER_RX                  : out std_logic_vector(1 downto 0);    --! FULL counter RX
       RETRY_COUNTER_RX                 : out std_logic_vector(1 downto 0);    --! RETRY counter RX
       CURRENT_TIME_SLOT                : out std_logic_vector(7 downto 0);    --! Current time slot
-      RESET_PARAM                      : out std_logic;
-      LINK_RST_ASSERTED                : out std_logic;
+      RESET_PARAM                      : out std_logic;                       --! Reset parameters register command
+      LINK_RST_ASSERTED                : out std_logic;                       --! Link reset status
+      NACK_SEQ_NUM                     : out std_logic_vector(7 downto 0);    --! NACK Seq_num received
+      ACK_SEQ_NUM                      : out std_logic_vector(7 downto 0);    --! ACK Seq_num received
       ----------------------- Phy + Lane layer signals -----------------------
       -- -- Interface injector
       ENABLE_INJ                       : in std_logic;
@@ -204,7 +206,9 @@ architecture rtl of spacefibre_light_top is
             RETRY_COUNTER_RX_DL     : out  std_logic_vector(1 downto 0);          --! RETRY counter RX
             CURRENT_TIME_SLOT_DL    : out  std_logic_vector(7 downto 0);          --! Current time slot
             RESET_PARAM_DL          : out std_logic;                              --! Reset configuration parameters control
-            LINK_RST_ASSERTED_DL    : out std_logic                              --! Link has been reseted
+            LINK_RST_ASSERTED_DL    : out std_logic;                              --! Link has been reseted
+            NACK_SEQ_NUM_DL         : out std_logic_vector(7 downto 0);           --! NACK Seq_num received
+            ACK_SEQ_NUM_DL          : out std_logic_vector(7 downto 0)            --! ACK Seq_num received
           );
     end component;
 
@@ -343,6 +347,8 @@ architecture rtl of spacefibre_light_top is
          CURRENT_TIME_SLOT_DL    : in  std_logic_vector(G_VC_NUM-1 downto 0);
          RESET_PARAM_DL          : in  std_logic;
          LINK_RST_ASSERTED_DL    : in  std_logic;
+         NACK_SEQ_NUM_DL         : in std_logic_vector(7 downto 0);
+         ACK_SEQ_NUM_DL          : in std_logic_vector(7 downto 0);
          -- MIB status interface TOP
          SEQ_NUMBER_TX           : out std_logic_vector(G_VC_NUM-1 downto 0);
          SEQ_NUMBER_RX           : out std_logic_vector(G_VC_NUM-1 downto 0);
@@ -368,7 +374,9 @@ architecture rtl of spacefibre_light_top is
          RETRY_COUNTER_RX        : out std_logic_vector(1 downto 0);
          CURRENT_TIME_SLOT       : out std_logic_vector(G_VC_NUM-1 downto 0);
          RESET_PARAM             : out std_logic;
-         LINK_RST_ASSERTED       : out std_logic
+         LINK_RST_ASSERTED       : out std_logic;
+         NACK_SEQ_NUM            : out std_logic_vector(7 downto 0);
+         ACK_SEQ_NUM             : out std_logic_vector(7 downto 0)
         );
    end component;
 
@@ -475,10 +483,12 @@ architecture rtl of spacefibre_light_top is
    signal current_time_slot_dl               : std_logic_vector(G_VC_NUM-1 downto 0);
    signal reset_param_dl                     : std_logic;
    signal link_rst_asserted_dl               : std_logic;
+   signal nack_seq_num_dl                    : std_logic_vector(7 downto 0);
+   signal ack_seq_num_dl                     : std_logic_vector(7 downto 0);
    -- Mux // Phy plus Lane interface TX signals
    signal data_tx_mux                        : std_logic_vector(31 downto 00);
    signal capability_tx_mux                  : std_logic_vector(07 downto 00);
-   signal new_data_tx_mux                    : std_logic;                     
+   signal new_data_tx_mux                    : std_logic;
    signal valid_k_charac_tx_mux              : std_logic_vector(03 downto 00);
    signal fifo_tx_full_ppl                   : std_logic;
    -- Demux // Phy plus Lane interface TX signals
@@ -569,7 +579,9 @@ begin
        RETRY_COUNTER_RX_DL     => retry_counter_rx_dl,
        CURRENT_TIME_SLOT_DL    => current_time_slot_dl,
        RESET_PARAM_DL          => reset_param_dl,
-       LINK_RST_ASSERTED_DL    => link_rst_asserted_dl
+       LINK_RST_ASSERTED_DL    => link_rst_asserted_dl,
+       NACK_SEQ_NUM_DL         => nack_seq_num_dl,
+       ACK_SEQ_NUM_DL          => ack_seq_num_dl
    );
 
    inst_mib_data_link : mib_data_link
@@ -617,6 +629,8 @@ begin
          CURRENT_TIME_SLOT_DL => current_time_slot_dl,
          RESET_PARAM_DL       => reset_param_dl,
          LINK_RST_ASSERTED_DL => link_rst_asserted_dl,
+         NACK_SEQ_NUM_DL      => nack_seq_num_dl,
+         ACK_SEQ_NUM_DL       => ack_seq_num_dl,
          -- MIB status interface Lane
          SEQ_NUMBER_TX       => SEQ_NUMBER_TX,
          SEQ_NUMBER_RX       => SEQ_NUMBER_RX,
@@ -642,7 +656,9 @@ begin
          RETRY_COUNTER_RX    => RETRY_COUNTER_RX,
          CURRENT_TIME_SLOT   => CURRENT_TIME_SLOT,
          RESET_PARAM         => RESET_PARAM,
-         LINK_RST_ASSERTED   => LINK_RST_ASSERTED
+         LINK_RST_ASSERTED   => LINK_RST_ASSERTED,
+         NACK_SEQ_NUM        => NACK_SEQ_NUM,
+         ACK_SEQ_NUM         => ACK_SEQ_NUM
       );
    -----------------------------------------------------------------------------------------------------------------
    ----------------------------------------------- Inter Layer modules ---------------------------------------------
