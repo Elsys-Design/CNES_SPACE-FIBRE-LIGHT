@@ -58,6 +58,7 @@ struct test_config
 
 enum action_result initialization_sequence (void);
 
+
 void initiate_test (const struct test_config test [const static 1]);
 enum action_result finalize_test
 (
@@ -77,3 +78,5 @@ enum action_result init_and_run_tests
 	const unsigned int test_count,
 	const struct test_config test [const static test_count]
 );
+
+enum action_result wait_active (void);

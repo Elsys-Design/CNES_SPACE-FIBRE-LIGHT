@@ -226,6 +226,19 @@ enum action_result initialization_sequence (void)
 	return OK;
 }
 
+enum action_result wait_active (void)
+{
+	if
+	(
+		(_wait_for_started_to_active() != OK)
+	)
+	{
+		return TIMEOUT;
+	}
+
+	return OK;
+}
+
 enum action_result run_tests
 (
 	const unsigned int test_count,
