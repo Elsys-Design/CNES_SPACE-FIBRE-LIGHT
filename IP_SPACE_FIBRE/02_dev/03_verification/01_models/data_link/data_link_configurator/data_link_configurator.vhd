@@ -106,6 +106,8 @@ entity DATA_LINK_CONFIGURATOR is
    RETRY_COUNTER_RX      : in std_logic_vector(1 downto 0);
    CURRENT_TIME_SLOT     : in std_logic_vector(7 downto 0);
    LINK_RST_ASSERTED     : in std_logic;                                         -- Link has been reseted
+   ACK_SEQ_NUM           : in std_logic_vector(7 downto 0);
+   NACK_SEQ_NUM          : in std_logic_vector(7 downto 0);
    
    
    -- from the LANE
@@ -142,6 +144,7 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
    -- Registers
    ------------
    signal reg_dl_param     : std_logic_vector(G_DATA_WIDTH-1 downto 0);          -- Data Link parameters register
+   signal reg_dl_err_mngt  : std_logic_vector(G_DATA_WIDTH-1 downto 0);          -- Data Link error management register
    signal reg_dl_status_1  : std_logic_vector(G_DATA_WIDTH-1 downto 0);          -- Data Link status register
    signal reg_dl_status_2  : std_logic_vector(G_DATA_WIDTH-1 downto 0);          -- Data Link status register
    signal reg_dl_qos_1     : std_logic_vector(G_DATA_WIDTH-1 downto 0);          -- Data Link status register
@@ -176,13 +179,13 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
    signal outputs_to_sync  : std_logic_vector(34 downto 0);
    signal outputs_to_dut   : std_logic_vector(34 downto 0);
    -- inputs resynchronization
-   signal inputs_to_sync   : std_logic_vector(133 downto 0);
-   signal inputs_to_model  : std_logic_vector(133 downto 0);
+   signal inputs_to_sync   : std_logic_vector(148 downto 0);
+   signal inputs_to_model  : std_logic_vector(148 downto 0);
 
-   signal frame_tx_i           : std_logic_vector(8 downto 0);    -- 
-   signal frame_finished_i     : std_logic_vector(8 downto 0);       -- 
-   signal data_cnt_tx_i        : std_logic_vector(6 downto 0);                      -- 
-   signal data_cnt_rx_i        : std_logic_vector(6 downto 0);                      --
+   signal frame_tx_i           : std_logic_vector(8 downto 0);
+   signal frame_finished_i     : std_logic_vector(8 downto 0);
+   signal data_cnt_tx_i        : std_logic_vector(6 downto 0);
+   signal data_cnt_rx_i        : std_logic_vector(6 downto 0);
    signal ack_counter_tx_i     : std_logic_vector(2 downto 0);
    signal nack_counter_tx_i    : std_logic_vector(2 downto 0);
    signal fct_counter_tx_i     : std_logic_vector(3 downto 0);
@@ -192,9 +195,11 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
    signal full_counter_rx_i    : std_logic_vector(1 downto 0);
    signal retry_counter_rx_i   : std_logic_vector(1 downto 0);
    signal current_time_slot_i  : std_logic_vector(7 downto 0);
-   signal link_rst_asserted_i  : std_logic;                                         -- link has been reseted
+   signal link_rst_asserted_i  : std_logic; -- link has been reseted
    signal reset_param_dl_i     : std_logic; 
    signal clear_error_flag     : std_logic;
+   signal ack_seq_num_i        : std_logic_vector(7 downto 0);
+   signal nack_seq_num_i        : std_logic_vector(7 downto 0);
 
    begin
 ---------------------------------------
@@ -282,6 +287,8 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
     inputs_to_sync(123 downto 122)               <= RETRY_COUNTER_RX;
     inputs_to_sync(131 downto 124)               <= CURRENT_TIME_SLOT;
     inputs_to_sync(132)                          <= LINK_RST_ASSERTED;
+    inputs_to_sync(140 downto 133)               <= ACK_SEQ_NUM;
+    inputs_to_sync(148 downto 141)               <= NACK_SEQ_NUM;
 
     vc_credit_i                 <= inputs_to_model(30 downto 23);
     fct_credit_overflow_i       <= inputs_to_model(38 downto 31);
@@ -307,6 +314,8 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
     retry_counter_rx_i          <= inputs_to_model(123 downto 122);
     current_time_slot_i         <= inputs_to_model(131 downto 124);
     link_rst_asserted_i         <= inputs_to_model(132);
+    ack_seq_num_i               <= inputs_to_model(140 downto 133);
+    nack_seq_num_i              <= inputs_to_model(148 downto 141);
 
     -- Parameters reset from Data Link to configurator
     inputs_to_sync(133)         <= RESET_PARAM_DL;
@@ -425,6 +434,11 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
                       S_AXI_RRESP  <= "00";
                       S_AXI_RVALID <= '1';
                       axi_rd_state <= RD_RESPONSE;
+                   elsif (S_AXI_ARADDR(C_SLAVE_ADDR_WIDTH-1 downto 0) = C_ADDR_DL_DL_ERR_MNGT) then
+                        S_AXI_RDATA  <= reg_dl_err_mngt;
+                        S_AXI_RRESP  <= "00";
+                        S_AXI_RVALID <= '1';
+                        axi_rd_state <= RD_RESPONSE;
                    -- Global register address
                    elsif (S_AXI_ARADDR(C_SLAVE_ADDR_WIDTH-1 downto 0) = C_ADDR_DL_GLOBAL) then
                        S_AXI_RDATA  <= reg_global;
@@ -482,18 +496,18 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
             reg_lane_param(C_LANESTART_PULSE_BTFD)  <= '0';  -- Reset model start bit
          end if;
          if (reset_param_dl_i = '1') then
-            reg_dl_param  <= init_dl_dl_param;
+            reg_dl_param                            <= init_dl_dl_param;
          end if;
          if link_rst_asserted_i = '1' then
-            reg_dl_param(C_LINK_RST_ASSERTED_BTFD)                                        <= link_rst_asserted_i;
+            reg_dl_param(C_LINK_RST_ASSERTED_BTFD)  <= link_rst_asserted_i;
          end if;
          if clear_error_flag = '1' then
-            reg_dl_param(C_CLEAR_ERROR_FLAG_BTFD)                                         <= '0';
+            reg_dl_param(C_CLEAR_ERROR_FLAG_BTFD)   <= '0';
          end if;
          case axi_wr_state is
             -- Waiting for a write request
             when IDLE_WAIT_WR_ADDR =>
-               S_AXI_AWREADY   <= '1';              -- Ready for new request
+               S_AXI_AWREADY    <= '1';              -- Ready for new request
                S_AXI_WREADY     <= '1';
                if (S_AXI_AWVALID = '1' and S_AXI_WVALID ='1') then
                   S_AXI_AWREADY   <= '0';           -- Ready signals deasserted to indicate request processing
@@ -559,6 +573,7 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
          reg_lane_status                                                                  <= (others => '0');
          reg_dl_status_1                                                                  <= (others => '0');
          reg_dl_status_2                                                                  <= (others => '0');
+         reg_dl_err_mngt                                                                  <= (others => '0');
       elsif rising_edge(CLK) then
          reg_lane_status(C_RX_POLARITY_BTFD)                                              <= rx_polarity_i;
          reg_lane_status(C_FAR_CAPA_MAX_BTFD downto C_FAR_LOST_SIG_BTFD+1)                <= far_end_capa_i;
@@ -597,7 +612,8 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
          reg_dl_qos_2(C_FULL_COUNTER_RX_BTFD downto C_FCT_COUNTER_RX_BTFD + 1)            <= full_counter_rx_i;
          reg_dl_qos_2(C_RETRY_COUNTER_RX_BTFD downto C_FULL_COUNTER_RX_BTFD + 1)          <= retry_counter_rx_i;
          reg_dl_qos_2(C_CURRENT_TIME_SLOT_BTFD downto C_RETRY_COUNTER_RX_BTFD + 1)        <= current_time_slot_i;
-         
+         reg_dl_err_mngt(C_ACK_SEQ_NUM_BTFD downto 0)                                     <= ack_seq_num_i;
+         reg_dl_err_mngt(C_NACK_SEQ_NUM_BTFD downto C_ACK_SEQ_NUM_BTFD + 1)               <= nack_seq_num_i;
          if clear_error_flag = '1' then
             reg_dl_status_2(C_CRC_LONG_ERROR_BTFD)                                        <= '0';
             reg_dl_status_2(C_CRC_SHORT_ERROR_BTFD)                                       <= '0';

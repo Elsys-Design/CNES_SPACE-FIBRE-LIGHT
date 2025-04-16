@@ -504,6 +504,8 @@ architecture Behavioral of CONFIGURATION_2_BENCH is
     signal rx_polarity           : std_logic;
     signal rst_dut_n             : std_logic;
     signal current_time_slot_i   : std_logic_vector(7 downto 0);
+    signal ack_seq_num_i         : std_logic_vector(7 downto 0);
+    signal nack_seq_num_i        : std_logic_vector(7 downto 0);
 
     -- Internal signals for each analyzer instance
     type t_internal_signals_ana is record
@@ -673,6 +675,8 @@ architecture Behavioral of CONFIGURATION_2_BENCH is
                 CURRENT_TIME_SLOT                : out std_logic_vector(7 downto 0);    --! Current time slot
                 RESET_PARAM                      : out std_logic;
                 LINK_RST_ASSERTED                : out std_logic;
+                NACK_SEQ_NUM                     : out std_logic_vector(7 downto 0);    --! NACK Seq_num received
+                ACK_SEQ_NUM                      : out std_logic_vector(7 downto 0);    --! ACK Seq_num received
                 ----------------------- Phy + Lane layer signals -----------------------
                 -- -- Interface injector
                 ENABLE_INJ                       : in std_logic;
@@ -780,6 +784,9 @@ architecture Behavioral of CONFIGURATION_2_BENCH is
             FULL_COUNTER_RX       => full_counter_rx,
             RETRY_COUNTER_RX      => retry_counter_rx,
             CURRENT_TIME_SLOT     => current_time_slot_i,
+            
+            ACK_SEQ_NUM           => ack_seq_num_i,
+            NACK_SEQ_NUM          => nack_seq_num_i,
 
             LANE_STATE            => lane_state,
             RX_ERROR_CNT          => rx_error_cnt,
@@ -1248,6 +1255,10 @@ port map (
     NACK_RST_MODE                    => nack_rst_mode,
     PAUSE_VC                         => pause_vc,
     CONTINUOUS_VC                    => continuous_vc,
+    RESET_PARAM                      => reset_param_dl,
+
+    NACK_SEQ_NUM                     => nack_seq_num_i,
+    ACK_SEQ_NUM                      => ack_seq_num_i,
 
     INPUT_BUF_OVF_VC                 => input_buffer_ovfl,
     SEQ_NUMBER_TX                    => seq_number_tx,

@@ -57,6 +57,7 @@ Data_read_dl_config_status_1= Data.build_empty(0x14, 4)
 Data_read_dl_config_status_2= Data.build_empty(0x18, 4)
 Data_read_dl_config_QoS_1= Data.build_empty(0x1C, 4)
 Data_read_dl_config_QoS_2= Data.build_empty(0x20, 4)
+Data_read_dl_config_err_mngt= Data.build_empty(0x24, 4)
 
 #Creation of data for read and write request on lane_generator registers
 Data_lane_gen_config = Data.build_empty(0x00, 4)

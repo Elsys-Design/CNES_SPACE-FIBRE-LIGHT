@@ -52,15 +52,16 @@ package pkg_model is
   constant C_ADDR_LA_INIT_VAL             : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"0C";           --- address initial value register lane_analyzer
 
   -- data_link_configurator
-  constant C_ADDR_DL_GLOBAL               : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"00";           --- address global register lane_configurator
-  constant C_ADDR_DL_PHY_PARAM            : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"04";           --- address parameters phy register lane_configurator
-  constant C_ADDR_DL_LANE_PARAM           : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"08";           --- address parameters lane register lane_configurator
-  constant C_ADDR_DL_LANE_STATUS          : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"0C";           --- address status lane register lane_configurator
-  constant C_ADDR_DL_DL_PARAM             : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"10";           --- address status lane register lane_configurator
-  constant C_ADDR_DL_DL_STATUS_1          : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"14";           --- address status lane register lane_configurator
-  constant C_ADDR_DL_DL_STATUS_2          : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"18";           --- address status lane register lane_configurator
-  constant C_ADDR_DL_DL_QOS_1             : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"1C";           --- address status lane register lane_configurator
-  constant C_ADDR_DL_DL_QOS_2             : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"20";           --- address status lane register lane_configurator
+  constant C_ADDR_DL_GLOBAL               : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"00";           --- address global register data_link_configurator
+  constant C_ADDR_DL_PHY_PARAM            : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"04";           --- address parameters phy register data_link_configurator
+  constant C_ADDR_DL_LANE_PARAM           : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"08";           --- address parameters lane register data_link_configurator
+  constant C_ADDR_DL_LANE_STATUS          : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"0C";           --- address status lane register data_link_configurator
+  constant C_ADDR_DL_DL_PARAM             : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"10";           --- address parameters data link register data_link_configurator
+  constant C_ADDR_DL_DL_STATUS_1          : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"14";           --- address status 1 data link register data_link_configurator
+  constant C_ADDR_DL_DL_STATUS_2          : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"18";           --- address status 2 data link register data_link_configurator
+  constant C_ADDR_DL_DL_QOS_1             : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"1C";           --- address QoS 1 data link register data_link_configurator
+  constant C_ADDR_DL_DL_QOS_2             : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"20";           --- address QoS 2 data link register data_link_configurator
+  constant C_ADDR_DL_DL_ERR_MNGT          : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"24";           --- address error management data link register data_link_configurator
   ------------------------------------------------------------------------
   -- data_link_generator
   constant C_ADDR_DG_CONFIG               : std_logic_vector(C_SLAVE_ADDR_WIDTH-1 downto 0) := x"00";           --- address configuration lane register lane_generator
@@ -172,6 +173,10 @@ package pkg_model is
   constant C_FULL_COUNTER_RX_BTFD         :integer := 21;
   constant C_RETRY_COUNTER_RX_BTFD        :integer := 23;
   constant C_CURRENT_TIME_SLOT_BTFD       :integer := 31;
+
+  -- Error management data link register
+  constant C_ACK_SEQ_NUM_BTFD             :integer := 7;
+  constant C_NACK_SEQ_NUM_BTFD            :integer := 15;
 
   -- Global register
   constant C_RST_DUT_BTFD                 : integer := 0;                                                       --- RST_DUT_N bitfield
