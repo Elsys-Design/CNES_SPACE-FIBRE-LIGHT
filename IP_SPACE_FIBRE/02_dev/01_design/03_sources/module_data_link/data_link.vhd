@@ -87,7 +87,13 @@ entity data_link is
     RESET_PARAM_DL          : out std_logic;                              --! Reset configuration parameters control
     LINK_RST_ASSERTED_DL    : out std_logic;                              --! Link has been reseted
     NACK_SEQ_NUM_DL         : out std_logic_vector(7 downto 0);           --! NACK Seq_num received
-    ACK_SEQ_NUM_DL          : out std_logic_vector(7 downto 0)            --! ACK Seq_num received
+    ACK_SEQ_NUM_DL          : out std_logic_vector(7 downto 0);           --! ACK Seq_num received
+    DATA_PULSE_RX_DL        : out std_logic;
+    ACK_PULSE_RX_DL         : out std_logic;
+    NACK_PULSE_RX_DL        : out std_logic;
+    FCT_PULSE_RX_DL         : out std_logic;
+    FULL_PULSE_RX_DL        : out std_logic;
+    RETRY_PULSE_RX_DL       : out std_logic
   );
 end data_link;
 architecture Behavioral of data_link is
@@ -253,7 +259,15 @@ architecture Behavioral of data_link is
       -- MIB
       SEQ_NUM_DSCHECK           : out std_logic_vector(7 downto 0);
       NACK_SEQ_NUM_DSCHECK      : out std_logic_vector(7 downto 0);
-      ACK_SEQ_NUM_DSCHECK       : out std_logic_vector(7 downto 0)
+      ACK_SEQ_NUM_DSCHECK       : out std_logic_vector(7 downto 0);
+      ACK_COUNTER_RX_DSCHECK    : out  std_logic_vector(2 downto 0);         --! ACK counter RX
+      NACK_COUNTER_RX_DSCHECK   : out  std_logic_vector(2 downto 0);         --! NACK counter RX
+      FCT_COUNTER_RX_DSCHECK    : out  std_logic_vector(3 downto 0);         --! FCT counter RX
+      FULL_COUNTER_RX_DSCHECK   : out  std_logic_vector(1 downto 0);          --! FULL counter RX
+      ACK_PULSE_RX_DSCHECK      : out std_logic;
+      NACK_PULSE_RX_DSCHECK     : out std_logic;
+      FCT_PULSE_RX_DSCHECK      : out std_logic;
+      FULL_PULSE_RX_DSCHECK     : out std_logic
     );
   end component;
 
@@ -325,12 +339,10 @@ architecture Behavioral of data_link is
       SEQ_ERR_DSCHECK         : in  std_logic;
       FRAME_ERR_DWI           : out std_logic;
       -- MIB
-      DATA_COUNTER_RX_DWI     : out  std_logic_vector(6 downto 0);          --! ACK counter RX
-      ACK_COUNTER_RX_DWI      : out  std_logic_vector(2 downto 0);          --! ACK counter RX
-      NACK_COUNTER_RX_DWI     : out  std_logic_vector(2 downto 0);          --! NACK counter RX
-      FCT_COUNTER_RX_DWI      : out  std_logic_vector(3 downto 0);          --! FCT counter RX
-      FULL_COUNTER_RX_DWI     : out  std_logic_vector(1 downto 0);          --! FULL counter RX
-      RETRY_COUNTER_RX_DWI    : out  std_logic_vector(1 downto 0)           --! RETRY counter RX
+      DATA_COUNTER_RX_DWI     : out  std_logic_vector(6 downto 0);          --! Data counter RX
+      RETRY_COUNTER_RX_DWI    : out  std_logic_vector(1 downto 0);          --! RETRY counter RX
+      DATA_PULSE_RX_DWI       : out std_logic;
+      RETRY_PULSE_RX_DWI      : out std_logic
     );
   end component;
 
@@ -702,7 +714,7 @@ begin
 -----                     Assignation              -----
 --------------------------------------------------------
   LINK_RST_ASSERTED_DL  <= link_reset_dlre;
-  SEQUENCE_ERROR_DL     <= seq_num_err_dscheck;
+  SEQUENCE_ERROR_DL     <= seq_num_err_dscheck when (type_frame_dscheck /= C_ACK_FRM and type_frame_dscheck /= C_NACK_FRM) else '0';-- No sequence error for ack or nack control word
   CURRENT_TIME_SLOT_DL  <= CURRENT_TIME_SLOT_NW;
   FAR_END_LINK_RESET_DL <= FAR_END_CAPA_PPL(C_CAPA_LINK_RST);
   FRAME_ERROR_DL        <= frame_err_dwi;
@@ -869,7 +881,15 @@ begin
       M_VAL_DSCHECK             => m_val_dscheck,
       SEQ_NUM_DSCHECK           => SEQ_NUMBER_RX_DL,
       NACK_SEQ_NUM_DSCHECK      => NACK_SEQ_NUM_DL,
-      ACK_SEQ_NUM_DSCHECK       => ACK_SEQ_NUM_DL
+      ACK_SEQ_NUM_DSCHECK       => ACK_SEQ_NUM_DL,
+      ACK_COUNTER_RX_DSCHECK    => ACK_COUNTER_RX_DL,
+      NACK_COUNTER_RX_DSCHECK   => NACK_COUNTER_RX_DL,
+      FCT_COUNTER_RX_DSCHECK    => FCT_COUNTER_RX_DL,
+      FULL_COUNTER_RX_DSCHECK   => FULL_COUNTER_RX_DL,
+      ACK_PULSE_RX_DSCHECK      => ACK_PULSE_RX_DL,
+      NACK_PULSE_RX_DSCHECK     => NACK_PULSE_RX_DL,
+      FCT_PULSE_RX_DSCHECK      => FCT_PULSE_RX_DL,
+      FULL_PULSE_RX_DSCHECK     => FULL_PULSE_RX_DL
   );
 
   inst_data_crc_check: data_crc_check
@@ -931,11 +951,9 @@ begin
       RXERR_DWI               => rxerr_dwi,
       RXERR_ALL_DWI           => rxerr_all_dwi,
       DATA_COUNTER_RX_DWI     => DATA_COUNTER_RX_DL,
-      ACK_COUNTER_RX_DWI      => ACK_COUNTER_RX_DL,
-      NACK_COUNTER_RX_DWI     => NACK_COUNTER_RX_DL,
-      FCT_COUNTER_RX_DWI      => FCT_COUNTER_RX_DL,
-      FULL_COUNTER_RX_DWI     => FULL_COUNTER_RX_DL,
-      RETRY_COUNTER_RX_DWI    => RETRY_COUNTER_RX_DL
+      RETRY_COUNTER_RX_DWI    => RETRY_COUNTER_RX_DL,
+      DATA_PULSE_RX_DWI       => DATA_PULSE_RX_DL,
+      RETRY_PULSE_RX_DWI      => RETRY_PULSE_RX_DL
   );
   inst_data_err_management: data_err_management
   port map (

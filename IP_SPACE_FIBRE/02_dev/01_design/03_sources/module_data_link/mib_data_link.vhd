@@ -59,6 +59,12 @@ entity mib_data_link is
     LINK_RST_ASSERTED_DL    : in  std_logic;
     NACK_SEQ_NUM_DL         : in std_logic_vector(7 downto 0);
     ACK_SEQ_NUM_DL          : in std_logic_vector(7 downto 0);
+    DATA_PULSE_RX_DL        : in std_logic;
+    ACK_PULSE_RX_DL         : in std_logic;
+    NACK_PULSE_RX_DL        : in std_logic;
+    FCT_PULSE_RX_DL         : in std_logic;
+    FULL_PULSE_RX_DL        : in std_logic;
+    RETRY_PULSE_RX_DL       : in std_logic;
     -- MIB status interface TOP
     SEQ_NUMBER_TX           : out std_logic_vector(G_VC_NUM-1 downto 0);
     SEQ_NUMBER_RX           : out std_logic_vector(G_VC_NUM-1 downto 0);
@@ -86,7 +92,13 @@ entity mib_data_link is
     RESET_PARAM             : out std_logic;
     LINK_RST_ASSERTED       : out std_logic;
     NACK_SEQ_NUM            : out std_logic_vector(7 downto 0);
-    ACK_SEQ_NUM             : out std_logic_vector(7 downto 0)
+    ACK_SEQ_NUM             : out std_logic_vector(7 downto 0);
+    DATA_PULSE_RX           : out std_logic;                       --! Data received pulse signal
+    ACK_PULSE_RX            : out std_logic;                       --! ACK received pulse signal
+    NACK_PULSE_RX           : out std_logic;                       --! NACK received pulse signal
+    FCT_PULSE_RX            : out std_logic;                       --! FCT received pulse signal
+    FULL_PULSE_RX           : out std_logic;                       --! FULL received pulse signal
+    RETRY_PULSE_RX          : out std_logic                        --! RETRY received pulse signal
    );
 end mib_data_link;
 
@@ -128,4 +140,10 @@ begin
   LINK_RST_ASSERTED       <= LINK_RST_ASSERTED_DL;
   NACK_SEQ_NUM            <= NACK_SEQ_NUM_DL;
   ACK_SEQ_NUM             <= ACK_SEQ_NUM_DL;
+  DATA_PULSE_RX           <= DATA_PULSE_RX_DL;
+  ACK_PULSE_RX            <= ACK_PULSE_RX_DL;
+  NACK_PULSE_RX           <= NACK_PULSE_RX_DL;
+  FCT_PULSE_RX            <= FCT_PULSE_RX_DL;
+  FULL_PULSE_RX           <= FULL_PULSE_RX_DL;
+  RETRY_PULSE_RX          <= RETRY_PULSE_RX_DL;
 end architecture rtl;

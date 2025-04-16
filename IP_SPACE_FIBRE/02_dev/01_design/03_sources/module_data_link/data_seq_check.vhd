@@ -67,7 +67,15 @@ entity data_seq_check is
 		-- MIB
 		SEQ_NUM_DSCHECK           : out std_logic_vector(7 downto 0);
 		NACK_SEQ_NUM_DSCHECK      : out std_logic_vector(7 downto 0);
-    ACK_SEQ_NUM_DSCHECK       : out std_logic_vector(7 downto 0)
+    ACK_SEQ_NUM_DSCHECK       : out std_logic_vector(7 downto 0);
+		ACK_COUNTER_RX_DSCHECK    : out  std_logic_vector(2 downto 0);         --! ACK counter RX
+    NACK_COUNTER_RX_DSCHECK   : out  std_logic_vector(2 downto 0);         --! NACK counter RX
+    FCT_COUNTER_RX_DSCHECK    : out  std_logic_vector(3 downto 0);         --! FCT counter RX
+    FULL_COUNTER_RX_DSCHECK   : out  std_logic_vector(1 downto 0);          --! FULL counter RX
+		ACK_PULSE_RX_DSCHECK      : out std_logic;
+		NACK_PULSE_RX_DSCHECK     : out std_logic;
+		FCT_PULSE_RX_DSCHECK      : out std_logic;
+		FULL_PULSE_RX_DSCHECK     : out std_logic
   );
 end data_seq_check;
 
@@ -76,11 +84,21 @@ architecture rtl of data_seq_check is
 -----                  Declaration signals          -----
 ---------------------------------------------------------
 
-signal seq_num_cnt    : unsigned(6 downto 0);   --! Data parallel from Lane Layer
+signal seq_num_cnt    : unsigned(6 downto 0);
+signal ack_counter    : unsigned(2 downto 0);
+signal nack_counter   : unsigned(2 downto 0);
+signal fct_counter    : unsigned(3 downto 0);
+signal full_counter   : unsigned(1 downto 0);
 
 begin
-
-	SEQ_NUM_ACK_DSCHECK <= std_logic_vector(seq_num_cnt);
+	--------------------------------------------------------
+	--                  ASSIGNATION
+	--------------------------------------------------------
+	SEQ_NUM_ACK_DSCHECK      <= std_logic_vector(seq_num_cnt);
+	ACK_COUNTER_RX_DSCHECK   <= std_logic_vector(ack_counter);
+	NACK_COUNTER_RX_DSCHECK  <= std_logic_vector(nack_counter);
+	FCT_COUNTER_RX_DSCHECK   <= std_logic_vector(fct_counter);
+	FULL_COUNTER_RX_DSCHECK  <= std_logic_vector(full_counter);
 ---------------------------------------------------------
 -----                     Process                   -----
 ---------------------------------------------------------
@@ -119,6 +137,14 @@ begin
 		RXERR_DSCHECK             <= '0';
 		NACK_SEQ_NUM_DSCHECK      <= (others => '0');
 		ACK_SEQ_NUM_DSCHECK       <= (others => '0');
+		ACK_PULSE_RX_DSCHECK      <= '0';
+    NACK_PULSE_RX_DSCHECK     <= '0';
+    FCT_PULSE_RX_DSCHECK      <= '0';
+    FULL_PULSE_RX_DSCHECK     <= '0';
+		ack_counter               <= (others =>'0');
+		nack_counter              <= (others =>'0');
+		fct_counter               <= (others =>'0');
+		full_counter              <= (others =>'0');
 	elsif rising_edge(CLK) then
 		SEQ_NUM_ERR_DSCHECK     <= '0';
 		-- Transmission signals to data_err_management
@@ -149,6 +175,11 @@ begin
 		-- FCT Signals
 		FCT_FAR_END_DSCHECK       <= (others => '0');
     M_VAL_DSCHECK             <= (others => '0');
+		-- Pulse signals
+		ACK_PULSE_RX_DSCHECK      <= '0';
+    NACK_PULSE_RX_DSCHECK     <= '0';
+    FCT_PULSE_RX_DSCHECK      <= '0';
+    FULL_PULSE_RX_DSCHECK     <= '0';
 		-- Seq Num verification
 	  if TYPE_FRAME_DCCHECK = C_DATA_FRM  then -- DATA frame
 			RXERR_DATA_DSCHECK        <= RXERR_DCCHECK or RXERR_ALL_DCCHECK;
@@ -219,8 +250,10 @@ begin
 				SEQ_NUM_ERR_DSCHECK    <= '1';
 				END_FRAME_DSCHECK      <= END_FRAME_DCCHECK;
 			elsif CRC_ERR_DCCHECK ='1' then
-				SEQ_NUM_ERR_DSCHECK    <= '0';
-				END_FRAME_DSCHECK      <= END_FRAME_DCCHECK;
+				SEQ_NUM_ERR_DSCHECK  <= '0';
+				END_FRAME_DSCHECK    <= END_FRAME_DCCHECK;
+				fct_counter          <= fct_counter + 1;
+				FCT_PULSE_RX_DSCHECK <= '1';
 			else
 				seq_num_cnt                                           <= seq_num_cnt+1;
 				SEQ_NUM_ERR_DSCHECK                                   <= '0';
@@ -243,6 +276,10 @@ begin
 			else
 				SEQ_NUM_ERR_DSCHECK    <= '0';
 				END_FRAME_DSCHECK      <= END_FRAME_DCCHECK;
+				if (CRC_ERR_DCCHECK='0') then
+				  full_counter          <= full_counter + 1;
+					FULL_PULSE_RX_DSCHECK <= '1';
+				end if;
       end if;
 		elsif (TYPE_FRAME_DCCHECK = C_NACK_FRM or TYPE_FRAME_DCCHECK = C_ACK_FRM) and  END_FRAME_DCCHECK = '1'then -- ACK/ NACK verification
 			if SEQ_NUM_DCCHECK(7) /= TRANS_POL_FLG_DERRM then
@@ -251,10 +288,16 @@ begin
 			else
 				SEQ_NUM_ERR_DSCHECK    <= '0';
 				END_FRAME_DSCHECK      <= END_FRAME_DCCHECK;
-				if TYPE_FRAME_DCCHECK = C_NACK_FRM then -- Update NACK_SEQ_NUM_DSCHECK (MIB)
-					NACK_SEQ_NUM_DSCHECK <= SEQ_NUM_DCCHECK;
-				else                                    -- Update ACK_SEQ_NUM_DSCHECK (MIB)
-					ACK_SEQ_NUM_DSCHECK <= SEQ_NUM_DCCHECK;
+				if CRC_ERR_DCCHECK ='0' then -- ACK/NACK valid
+				  if TYPE_FRAME_DCCHECK = C_NACK_FRM then -- Update  (MIB)
+				  	NACK_SEQ_NUM_DSCHECK  <= SEQ_NUM_DCCHECK;
+						nack_counter          <= nack_counter + 1;
+						NACK_PULSE_RX_DSCHECK <= '1';
+				  else                                    -- Update (MIB)
+				  	ACK_SEQ_NUM_DSCHECK  <= SEQ_NUM_DCCHECK;
+						ack_counter          <= ack_counter + 1;
+						ACK_PULSE_RX_DSCHECK <= '1';
+				  end if;
 				end if;
 			end if;
 		else
