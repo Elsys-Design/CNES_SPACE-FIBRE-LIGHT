@@ -20,8 +20,9 @@ entity data_desencapsulation is
     G_VC_NUM               : integer := 8                                     --! Number of virtual channels
   );
   port (
-    RST_N                  : in  std_logic;                                   --! Active low reset
     CLK                    : in  std_logic;                                   --! Clock signal
+    -- Link Reset
+    LINK_RESET_DLRE        : in std_logic;
     -- data_mid_buffer (DMBUF)interface
     DATA_DMBUF             : in  std_logic_vector(C_DATA_K_WIDTH-1 downto 0); --! Data read bus
     DATA_RD_DDES           : out std_logic;                                   --! Read command
@@ -47,34 +48,36 @@ begin
 -- Process: p_desencapsulation
 -- Description: desencapsulate each frame
 ---------------------------------------------------------
-p_desencapsulation : process(CLK, RST_N)
+p_desencapsulation : process(CLK)
 begin
-  if RST_N = '0' then
-    DATA_DDES          <= (others =>(others => '0'));
-    DATA_EN_DDES       <= (others => '0');
-    DATA_RD_DDES       <= '0';
-    data_detected      <= '0';
-    vc_nb              <= (others => '0');
-  elsif rising_edge(CLK) then
-    DATA_RD_DDES      <= '1';
-    if DATA_VALID_DMBUF = '1' then
-      --                      msb = 35
-      if DATA_DMBUF(C_DATA_K_WIDTH - 3 downto C_DATA_K_WIDTH - 4) = "01" then --reading a K character
-        --                              15 downto 0
-        if DATA_DMBUF(C_BYTE_WIDTH*2 - 1 downto 0) =  C_SDF_SYMB & C_K28_7_SYMB  then -- SDF
-          data_detected <= '1';
-          vc_nb         <= unsigned(DATA_DMBUF(C_BYTE_WIDTH*3 -1 downto C_BYTE_WIDTH*2));
-        elsif DATA_DMBUF(C_BYTE_WIDTH - 1 downto 0) = C_K28_0_SYMB then --EDF
-          data_detected <= '0';
-          DATA_EN_DDES  <= (others => '0');
+  if rising_edge(CLK)  then
+    if LINK_RESET_DLRE ='1' then
+      DATA_DDES          <= (others =>(others => '0'));
+      DATA_EN_DDES       <= (others => '0');
+      DATA_RD_DDES       <= '0';
+      data_detected      <= '0';
+      vc_nb              <= (others => '0');
+    else
+      DATA_RD_DDES      <= '1';
+      if DATA_VALID_DMBUF = '1' then
+        --                      msb = 35
+        if DATA_DMBUF(C_DATA_K_WIDTH - 3 downto C_DATA_K_WIDTH - 4) = "01" then --reading a K character
+          --                              15 downto 0
+          if DATA_DMBUF(C_BYTE_WIDTH*2 - 1 downto 0) =  C_SDF_SYMB & C_K28_7_SYMB  then -- SDF
+            data_detected <= '1';
+            vc_nb         <= unsigned(DATA_DMBUF(C_BYTE_WIDTH*3 -1 downto C_BYTE_WIDTH*2));
+          elsif DATA_DMBUF(C_BYTE_WIDTH - 1 downto 0) = C_K28_0_SYMB then --EDF
+            data_detected <= '0';
+            DATA_EN_DDES  <= (others => '0');
+          end if;
+        elsif data_detected = '1' then
+          DATA_DDES(to_integer(vc_nb))    <= DATA_DMBUF(C_DATA_K_WIDTH-1 downto 0);
+          DATA_EN_DDES(to_integer(vc_nb)) <= '1';
         end if;
-      elsif data_detected = '1' then
-        DATA_DDES(to_integer(vc_nb))    <= DATA_DMBUF(C_DATA_K_WIDTH-1 downto 0);
-        DATA_EN_DDES(to_integer(vc_nb)) <= '1';
+      else --not valid
+        DATA_DDES        <= (others =>(others => '0'));
+        DATA_EN_DDES     <= (others => '0');
       end if;
-    else --not valid
-      DATA_DDES        <= (others =>(others => '0'));
-      DATA_EN_DDES     <= (others => '0');
     end if;
   end if;
 end process p_desencapsulation;

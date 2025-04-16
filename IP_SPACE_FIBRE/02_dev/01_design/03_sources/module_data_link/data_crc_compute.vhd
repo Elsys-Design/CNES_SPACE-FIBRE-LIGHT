@@ -17,8 +17,9 @@ use data_link_lib.data_link_lib.all;
 
 entity data_crc_compute is
  	port (
-    RST_N                 : in  std_logic;                                          --! Global Reset (Active Low)
     CLK                   : in  std_logic;                                          --! Global Clock
+		-- Link Reset
+		LINK_RESET_DLRE       : in std_logic;
 		-- Lane Interface
 		LANE_ACTIVE_PPL       : in  std_logic;                                          --! Lane Active flag
    	-- DSCOM (data_seq_compute) interface
@@ -71,31 +72,33 @@ begin
 -- Process: p_crc_16b
 -- Description: Compute the CRC for a data frame
 ---------------------------------------------------------
-p_crc_16b: process(CLK, RST_N)
+p_crc_16b: process(CLK)
 	variable crc_var : std_logic_vector(15 downto 0);
 begin
-	if RST_N = '0' then
+  if rising_edge(CLK)  then
+    if LINK_RESET_DLRE ='1' then
 			crc_reg_16b        <= (others => '1'); -- Reset CRC to seed value
 			crc_reg_16b_comp   <= (others => '1'); -- Reset CRC to seed value
 			crc_to_inv_16b     <= '0';
-	elsif rising_edge(CLK) and LANE_ACTIVE_PPL= '1' then
-		crc_var        := crc_reg_16b_comp;
-		crc_to_inv_16b <= '0';
-		if (TYPE_FRAME_DSCOM = C_DATA_FRM) then
-			if END_FRAME_DSCOM = '1' and NEW_WORD_DSCOM = '1'then -- Last word
-				crc_to_inv_16b <='1';
-				-- calculates the crc 8 byte by byte
-				for i in indices_dem'range loop
-						crc_var := calculate_crc_16(DATA_DSCOM(7+ indices_dem(i) downto 0 + indices_dem(i)), crc_var);
-				end loop;
-				crc_reg_16b_comp   <= (others => '1'); -- Reset CRC to seed value
-				crc_reg_16b        <= crc_var;
-			elsif NEW_WORD_DSCOM = '1' then
-				-- calculates the crc 8 byte by byte
-				for i in indices'range loop
-						crc_var := calculate_crc_16(DATA_DSCOM(7+ indices(i) downto 0 + indices(i)), crc_var);
-				end loop;
-					crc_reg_16b_comp <= crc_var;
+		elsif LANE_ACTIVE_PPL= '1' then
+			crc_var        := crc_reg_16b_comp;
+			crc_to_inv_16b <= '0';
+			if (TYPE_FRAME_DSCOM = C_DATA_FRM) then
+				if END_FRAME_DSCOM = '1' and NEW_WORD_DSCOM = '1'then -- Last word
+					crc_to_inv_16b <='1';
+					-- calculates the crc 8 byte by byte
+					for i in indices_dem'range loop
+							crc_var := calculate_crc_16(DATA_DSCOM(7+ indices_dem(i) downto 0 + indices_dem(i)), crc_var);
+					end loop;
+					crc_reg_16b_comp   <= (others => '1'); -- Reset CRC to seed value
+					crc_reg_16b        <= crc_var;
+				elsif NEW_WORD_DSCOM = '1' then
+					-- calculates the crc 8 byte by byte
+					for i in indices'range loop
+							crc_var := calculate_crc_16(DATA_DSCOM(7+ indices(i) downto 0 + indices(i)), crc_var);
+					end loop;
+						crc_reg_16b_comp <= crc_var;
+				end if;
 			end if;
 		end if;
 	end if;
@@ -105,48 +108,50 @@ end process p_crc_16b;
 -- Description: Compute the CRC for broadcast frame,
 --              FCT, ACK, NACK and SIF
 ---------------------------------------------------------
-p_crc_8b: process(CLK, RST_N)
+p_crc_8b: process(CLK)
 	variable crc_var : std_logic_vector(7 downto 0);
 begin
-	if RST_N = '0' then
+	if rising_edge(CLK)  then
+    if LINK_RESET_DLRE ='1' then
 			crc_reg_8b      <= (others => '0'); -- Reset CRC to seed value
 			crc_reg_8b_comp <= (others => '0'); -- Reset CRC to seed value
 			crc_to_inv_8b   <= '0';
-	elsif rising_edge(CLK) and LANE_ACTIVE_PPL= '1' then
-		crc_var       := crc_reg_8b_comp;
-		crc_to_inv_8b <= '0';
-		if TYPE_FRAME_DSCOM = C_BC_FRM then -- Broadcast frame
-			if END_FRAME_DSCOM = '1'and NEW_WORD_DSCOM = '1'then -- Last word
-			crc_to_inv_8b <= '1';
-			 -- calculates the crc 8bits  byte by byte
-			 for i in indices_tier'range loop
-				 crc_var := calculate_crc_8(DATA_DSCOM(7+ indices_tier(i) downto 0 + indices_tier(i)), crc_var);
-			 end loop;
-			 crc_reg_8b_comp <= (others => '0'); -- Reset CRC to seed value
-			 crc_reg_8b      <= crc_var;
-			elsif NEW_WORD_DSCOM = '1' then
-			 -- calculates the crc 8 byte by byte
-			 for i in indices'range loop
-					 crc_var := calculate_crc_8(DATA_DSCOM(7+ indices(i) downto 0 + indices(i)), crc_var);
-			 end loop;
-			crc_reg_8b_comp <= crc_var;
+		elsif LANE_ACTIVE_PPL= '1' then
+			crc_var       := crc_reg_8b_comp;
+			crc_to_inv_8b <= '0';
+			if TYPE_FRAME_DSCOM = C_BC_FRM then -- Broadcast frame
+				if END_FRAME_DSCOM = '1'and NEW_WORD_DSCOM = '1'then -- Last word
+				crc_to_inv_8b <= '1';
+				 -- calculates the crc 8bits  byte by byte
+				 for i in indices_tier'range loop
+					 crc_var := calculate_crc_8(DATA_DSCOM(7+ indices_tier(i) downto 0 + indices_tier(i)), crc_var);
+				 end loop;
+				 crc_reg_8b_comp <= (others => '0'); -- Reset CRC to seed value
+				 crc_reg_8b      <= crc_var;
+				elsif NEW_WORD_DSCOM = '1' then
+				 -- calculates the crc 8 byte by byte
+				 for i in indices'range loop
+						 crc_var := calculate_crc_8(DATA_DSCOM(7+ indices(i) downto 0 + indices(i)), crc_var);
+				 end loop;
+				crc_reg_8b_comp <= crc_var;
+				end if;
+			elsif END_FRAME_DSCOM = '1'and NEW_WORD_DSCOM = '1'then -- Control word
+				crc_to_inv_8b <= '1';
+				 -- calculates the crc 8 byte by byte
+				 for i in indices_tier'range loop
+					 crc_var := calculate_crc_8(DATA_DSCOM(7+ indices_tier(i) downto 0 + indices_tier(i)), crc_var);
+				 end loop;
+				 crc_reg_8b_comp <= (others => '0'); -- Reset CRC to seed value
+				 crc_reg_8b      <= crc_var;
+			elsif DATA_DSCOM(15 downto 0) = C_SIF_WORD and VALID_K_CHARAC_DSCOM = "0001" and NEW_WORD_DSCOM = '1'then -- SIF
+				crc_to_inv_8b <= '1';
+				 -- calculates the crc 8 byte by byte
+				 for i in indices_tier'range loop
+					 crc_var := calculate_crc_8(DATA_DSCOM(7+ indices_tier(i) downto 0 + indices_tier(i)), crc_var);
+				 end loop;
+				 crc_reg_8b_comp <= (others => '0'); -- Reset CRC to seed value
+				 crc_reg_8b      <= crc_var;
 			end if;
-		elsif END_FRAME_DSCOM = '1'and NEW_WORD_DSCOM = '1'then -- Control word
-			crc_to_inv_8b <= '1';
-			 -- calculates the crc 8 byte by byte
-			 for i in indices_tier'range loop
-				 crc_var := calculate_crc_8(DATA_DSCOM(7+ indices_tier(i) downto 0 + indices_tier(i)), crc_var);
-			 end loop;
-			 crc_reg_8b_comp <= (others => '0'); -- Reset CRC to seed value
-			 crc_reg_8b      <= crc_var;
-		elsif DATA_DSCOM(15 downto 0) = C_SIF_WORD and VALID_K_CHARAC_DSCOM = "0001" and NEW_WORD_DSCOM = '1'then -- SIF
-			crc_to_inv_8b <= '1';
-			 -- calculates the crc 8 byte by byte
-			 for i in indices_tier'range loop
-				 crc_var := calculate_crc_8(DATA_DSCOM(7+ indices_tier(i) downto 0 + indices_tier(i)), crc_var);
-			 end loop;
-			 crc_reg_8b_comp <= (others => '0'); -- Reset CRC to seed value
-			 crc_reg_8b      <= crc_var;
 		end if;
 	end if;
 end process p_crc_8b;
@@ -158,47 +163,49 @@ end process p_crc_8b;
 -- Description: Last operation of the CRC calculation
 --              (Bit-by-bit inversion)
 ---------------------------------------------------------
-p_crc_inv: process(CLK, RST_N)
+p_crc_inv: process(CLK)
 	variable crc_var_16b : std_logic_vector(15 downto 0);
 	variable crc_var_8b  : std_logic_vector(7 downto 0);
 begin
-	if RST_N = '0' then
-		DATA_DCCOM             <= (others => '0');
-		valid_k_charac_dscom_r <= (others => '0');
-		VALID_K_CHARAC_DCCOM   <= (others => '0');
-		type_frame_dscom_r     <= (others => '0');
-		data_dscom_r           <= (others => '0');
-		new_word_dccom_i       <= '0';
-		NEW_WORD_DCCOM         <= '0';
-	elsif rising_edge(CLK) and LANE_ACTIVE_PPL= '1' then
-		new_word_dccom_i       <= NEW_WORD_DSCOM;
-		valid_k_charac_dscom_r <= VALID_K_CHARAC_DSCOM;
-		VALID_K_CHARAC_DCCOM   <= valid_k_charac_dscom_r;
-		type_frame_dscom_r     <= TYPE_FRAME_DSCOM;
-		data_dscom_r           <= DATA_DSCOM;
-		NEW_WORD_DCCOM         <=  new_word_dccom_i;
-		if type_frame_dscom_r = C_DATA_FRM  and new_word_dccom_i = '1' then -- Data frame
-	    if crc_to_inv_16b = '1' then
-				-- Bit-by-bit inversion
-		  	for i in 0 to 15 loop
-		  		crc_var_16b(i) := crc_reg_16b(15 - i);
-		  	end loop;
-				DATA_DCCOM <= crc_var_16b & data_dscom_r (15 downto 0);
+	if rising_edge(CLK)  then
+    if LINK_RESET_DLRE ='1' then
+			DATA_DCCOM             <= (others => '0');
+			valid_k_charac_dscom_r <= (others => '0');
+			VALID_K_CHARAC_DCCOM   <= (others => '0');
+			type_frame_dscom_r     <= (others => '0');
+			data_dscom_r           <= (others => '0');
+			new_word_dccom_i       <= '0';
+			NEW_WORD_DCCOM         <= '0';
+		elsif LANE_ACTIVE_PPL= '1' then
+			new_word_dccom_i       <= NEW_WORD_DSCOM;
+			valid_k_charac_dscom_r <= VALID_K_CHARAC_DSCOM;
+			VALID_K_CHARAC_DCCOM   <= valid_k_charac_dscom_r;
+			type_frame_dscom_r     <= TYPE_FRAME_DSCOM;
+			data_dscom_r           <= DATA_DSCOM;
+			NEW_WORD_DCCOM         <=  new_word_dccom_i;
+			if type_frame_dscom_r = C_DATA_FRM  and new_word_dccom_i = '1' then -- Data frame
+	  	  if crc_to_inv_16b = '1' then
+					-- Bit-by-bit inversion
+			  	for i in 0 to 15 loop
+			  		crc_var_16b(i) := crc_reg_16b(15 - i);
+			  	end loop;
+					DATA_DCCOM <= crc_var_16b & data_dscom_r (15 downto 0);
+				else
+					DATA_DCCOM <= data_dscom_r;
+				end if;
+			elsif new_word_dccom_i = '1' then -- Other than data frame
+				if crc_to_inv_8b = '1' then
+					-- Bit-by-bit inversion
+					for i in 0 to 7 loop
+						crc_var_8b(i) := crc_reg_8b(7 - i);
+					end loop;
+					DATA_DCCOM <= crc_var_8b & data_dscom_r (23 downto 0);
+				else
+					DATA_DCCOM <= data_dscom_r;
+				end if;
 			else
 				DATA_DCCOM <= data_dscom_r;
 			end if;
-		elsif new_word_dccom_i = '1' then -- Other than data frame
-			if crc_to_inv_8b = '1' then
-				-- Bit-by-bit inversion
-				for i in 0 to 7 loop
-					crc_var_8b(i) := crc_reg_8b(7 - i);
-				end loop;
-				DATA_DCCOM <= crc_var_8b & data_dscom_r (23 downto 0);
-			else
-				DATA_DCCOM <= data_dscom_r;
-			end if;
-		else
-			DATA_DCCOM <= data_dscom_r;
 		end if;
 	end if;
 end process p_crc_inv;
@@ -206,12 +213,14 @@ end process p_crc_inv;
 -- Process: p_end_frame_prev
 -- Description: Copy END_FRAME_DSCOM
 ---------------------------------------------------------
-p_end_frame_prev: process(CLK, RST_N)
+p_end_frame_prev: process(CLK)
 begin
-	if RST_N = '0' then
-		end_frame_dscom_prev <= '0';
-	elsif rising_edge(CLK) and LANE_ACTIVE_PPL= '1' then
-		end_frame_dscom_prev <= END_FRAME_DSCOM;
+	if rising_edge(CLK)  then
+    if LINK_RESET_DLRE ='1' then
+		  end_frame_dscom_prev <= '0';
+	  elsif LANE_ACTIVE_PPL= '1' then
+		  end_frame_dscom_prev <= END_FRAME_DSCOM;
+		end if;
 	end if;
 end process p_end_frame_prev;
 

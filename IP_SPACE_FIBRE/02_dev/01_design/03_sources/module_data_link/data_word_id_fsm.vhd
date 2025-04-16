@@ -106,16 +106,17 @@ begin
 
 -------------------------------------------------------------------------------------------
 -- Data Word Identification FSM transition conditions process
-p_fsm_data_word_id_transition : process(CLK,RST_N)
+p_fsm_data_word_id_transition : process(CLK)
 begin
-   if RST_N = '0' then
+	if rising_edge(CLK)  then
+    if LINK_RESET_DLRE ='1' then
       current_state          <= RX_NOTHING_ST;
       current_state_r        <= RX_NOTHING_ST;
       FRAME_ERR_DWI          <= '0';
 			RXNOTHING_ACTIVE_DWI   <= '0';
 	    RXERR_DWI              <= '0';
 			RXERR_ALL_DWI          <= '0';
-   elsif rising_edge(CLK) then
+		else
 		  FRAME_ERR_DWI         <= '0';
       current_state_r       <= current_state;
 			RXNOTHING_ACTIVE_DWI  <= '0';
@@ -183,188 +184,193 @@ begin
                                                 end if;
          when others                          => current_state  <= RX_NOTHING_ST;
       end case;
-   end if;
+		end if;
+  end if;
 end process p_fsm_data_word_id_transition;
 
 -- Data Word Identification FSM action on state process
-p_comb_state : process(CLK,RST_N)
+p_comb_state : process(CLK)
 begin
-	if RST_N = '0' then
-	  receiving_frame    <= '0';
-	  type_incom_frame   <= (others =>'0');
-	  data_word_cnt      <= (others =>'0');
-	  bc_word_cnt        <= (others =>'0');
-	elsif rising_edge(CLK) then
-		if current_state = RX_NOTHING_ST then
-		  receiving_frame      <= '0';
-		  data_word_cnt        <= (others =>'0');
-		  bc_word_cnt          <= (others =>'0');
-		elsif current_state = RX_DATA_FRAME_ST then
-		  receiving_frame      <= '1';
-		  type_incom_frame     <= "01";               -- receiving data frame
-		  if (current_state_r = RX_IDLE_FRAME_ST) then
-		    data_word_cnt      <= to_unsigned(1,data_word_cnt'length);
-		  else
+	if rising_edge(CLK)  then
+    if LINK_RESET_DLRE ='1' then
+	  	receiving_frame    <= '0';
+	  	type_incom_frame   <= (others =>'0');
+	  	data_word_cnt      <= (others =>'0');
+	  	bc_word_cnt        <= (others =>'0');
+		else
+			if current_state = RX_NOTHING_ST then
+			  receiving_frame      <= '0';
+			  data_word_cnt        <= (others =>'0');
+			  bc_word_cnt          <= (others =>'0');
+			elsif current_state = RX_DATA_FRAME_ST then
+			  receiving_frame      <= '1';
+			  type_incom_frame     <= "01";               -- receiving data frame
+			  if (current_state_r = RX_IDLE_FRAME_ST) then
+			    data_word_cnt      <= to_unsigned(1,data_word_cnt'length);
+			  else
+					if (FIFO_RX_DATA_VALID_PPL ='1') then
+			    	data_word_cnt    <= data_word_cnt + 1;
+					end if;
+			  end if;
+				bc_word_cnt          <= (others =>'0');
+			elsif current_state = RX_BROADCAST_FRAME_ST then
+			  receiving_frame      <= '1';
+			  type_incom_frame     <= "10";               -- receiving broadcast frame
 				if (FIFO_RX_DATA_VALID_PPL ='1') then
-		    	data_word_cnt      <= data_word_cnt + 1;
+			  	bc_word_cnt          <= bc_word_cnt + 1;
 				end if;
-		  end if;
-			bc_word_cnt          <= (others =>'0');
-		elsif current_state = RX_BROADCAST_FRAME_ST then
-		  receiving_frame      <= '1';
-		  type_incom_frame     <= "10";               -- receiving broadcast frame
-			if (FIFO_RX_DATA_VALID_PPL ='1') then
-		  	bc_word_cnt          <= bc_word_cnt + 1;
-			end if;
-		  data_word_cnt        <= (others =>'0');
-		elsif current_state = RX_BROADCAST_AND_DATA_FRAME_ST then
-		  receiving_frame      <= '1';
-		  type_incom_frame     <= "10";               -- receiving broadcast frame
-			if (FIFO_RX_DATA_VALID_PPL ='1') then
-		  	bc_word_cnt          <= bc_word_cnt + 1;
-			end if;
-		elsif current_state = RX_IDLE_FRAME_ST then
-		  receiving_frame      <= '1';
-		  type_incom_frame     <= "11";               -- receiving idle frame
-			if (FIFO_RX_DATA_VALID_PPL ='1') and DATA_RX_PPL(15 downto 0) = C_SIF_WORD and VALID_K_CHARAC_PPL = "0001" then
-				data_word_cnt        <= (others => '0');
-			elsif (FIFO_RX_DATA_VALID_PPL ='1') then
-				data_word_cnt        <= data_word_cnt + 1;
+			  data_word_cnt        <= (others =>'0');
+			elsif current_state = RX_BROADCAST_AND_DATA_FRAME_ST then
+			  receiving_frame      <= '1';
+			  type_incom_frame     <= "10";               -- receiving broadcast frame
+				if (FIFO_RX_DATA_VALID_PPL ='1') then
+			  	bc_word_cnt          <= bc_word_cnt + 1;
+				end if;
+			elsif current_state = RX_IDLE_FRAME_ST then
+			  receiving_frame      <= '1';
+			  type_incom_frame     <= "11";               -- receiving idle frame
+				if (FIFO_RX_DATA_VALID_PPL ='1') and DATA_RX_PPL(15 downto 0) = C_SIF_WORD and VALID_K_CHARAC_PPL = "0001" then
+					data_word_cnt        <= (others => '0');
+				elsif (FIFO_RX_DATA_VALID_PPL ='1') then
+					data_word_cnt        <= data_word_cnt + 1;
+				end if;
 			end if;
 		end if;
 	end if;
 end process p_comb_state;
 
 -- Data Word Identification FSM action on state process
-p_data_word_detection : process(CLK,RST_N)
+p_data_word_detection : process(CLK)
 begin
-	if RST_N = '0' then
-		NEW_WORD_DWI       <= '0';
-    SEQ_NUM_DWI        <= (others=> '0');
-    CRC_16B_DWI        <= (others=> '0');
-    CRC_8B_DWI         <= (others=> '0');
-		TYPE_FRAME_DWI     <= (others=> '0');
-		DATA_DWI           <= (others=> '0');
-		VALID_K_CHARAC_DWI <= (others=> '0');
-    END_FRAME_DWI      <= '0';
-		MULTIPLIER_DWI     <= (others=> '0');
-		VC_DWI             <= (others=> '0');
-		retry_counter      <= (others =>'0');
-		DATA_PULSE_RX_DWI  <='0';
-    RETRY_PULSE_RX_DWI <='0';
-	elsif rising_edge(CLK) then
-    END_FRAME_DWI      <= '0';
-		DATA_PULSE_RX_DWI  <='0';
-    RETRY_PULSE_RX_DWI <='0';
-		-- Frame treatment
-	  if (FIFO_RX_DATA_VALID_PPL ='1') then
-			if DATA_RX_PPL(15 downto 0) = C_SDF_WORD and VALID_K_CHARAC_PPL = "0001" then -- SDF control word detected
-	  		TYPE_FRAME_DWI     <= C_DATA_FRM;
-	  		NEW_WORD_DWI       <= '1';
-				DATA_DWI           <= DATA_RX_PPL;
-				VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
-				DATA_PULSE_RX_DWI  <='1';
-	  	elsif DATA_RX_PPL(7 downto 0) = C_K28_0_SYMB and VALID_K_CHARAC_PPL = "0001" and current_state /= RX_NOTHING_ST then -- EDF control word detected
-	  		TYPE_FRAME_DWI 		 <= C_DATA_FRM;
-	  		NEW_WORD_DWI   		 <= '1';
-        END_FRAME_DWI  		 <= '1';
-				DATA_DWI       		 <= DATA_RX_PPL;
-	  		SEQ_NUM_DWI    		 <= DATA_RX_PPL(15 downto 8);
-	  		CRC_16B_DWI    		 <= DATA_RX_PPL(31 downto 16);
-				VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
-				DATA_PULSE_RX_DWI  <='1';
-	  	elsif DATA_RX_PPL(15 downto 0) = C_SBF_WORD and VALID_K_CHARAC_PPL = "0001" then -- SBF control word detected
-	  		TYPE_FRAME_DWI 		 <= C_BC_FRM;
-	  		NEW_WORD_DWI   		 <= '1';
-				DATA_DWI       		 <= DATA_RX_PPL;
-				VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
-				DATA_PULSE_RX_DWI  <='1';
-	  	elsif DATA_RX_PPL(7 downto 0) = C_K28_2_SYMB and VALID_K_CHARAC_PPL = "0001" and current_state /= RX_NOTHING_ST then -- EBF control word detected
-	  		TYPE_FRAME_DWI		 <= C_BC_FRM;
-	  		NEW_WORD_DWI  		 <= '1';
-        END_FRAME_DWI 		 <= '1';
-				DATA_DWI      		 <= DATA_RX_PPL;
-	  		SEQ_NUM_DWI   		 <= DATA_RX_PPL(23 downto 16);
-	  		CRC_8B_DWI    		 <= DATA_RX_PPL(31 downto 24);
-				VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
-				DATA_PULSE_RX_DWI  <='1';
-	  	elsif DATA_RX_PPL(15 downto 0) = C_SIF_WORD and VALID_K_CHARAC_PPL = "0001" then -- SIF control word detected
-	  		TYPE_FRAME_DWI 		 <= C_IDLE_FRM;
-	  		NEW_WORD_DWI   		 <= '1';
-        END_FRAME_DWI  		 <= '1';
-				DATA_DWI       		 <= DATA_RX_PPL;
-	  		SEQ_NUM_DWI    		 <= DATA_RX_PPL(23 downto 16);
-	  		CRC_8B_DWI     		 <= DATA_RX_PPL(31 downto 24);
-				VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
-	  	elsif DATA_RX_PPL(7 downto 0) = C_K28_3_SYMB and VALID_K_CHARAC_PPL = "0001" then -- FCT control word detected
-	  		TYPE_FRAME_DWI 		 <= C_FCT_FRM;
-	  		NEW_WORD_DWI   		 <= '1';
-        END_FRAME_DWI  		 <= '1';
-				DATA_DWI       		 <= DATA_RX_PPL;
-	  		SEQ_NUM_DWI    		 <= DATA_RX_PPL(23 downto 16);
-	  		CRC_8B_DWI     		 <= DATA_RX_PPL(31 downto 24);
-				VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
-				MULTIPLIER_DWI     <= DATA_RX_PPL(15 downto 13);
-        VC_DWI             <= DATA_RX_PPL(12 downto 8);
-	  	elsif DATA_RX_PPL(15 downto 0) = C_ACK_WORD and VALID_K_CHARAC_PPL = "0001" then -- ACK control word detected
-	  	  TYPE_FRAME_DWI 		 <= C_ACK_FRM;
-	  	  NEW_WORD_DWI   		 <= '1';
-        END_FRAME_DWI  		 <= '1';
-				DATA_DWI       		 <= DATA_RX_PPL;
-	  	  SEQ_NUM_DWI    		 <= DATA_RX_PPL(23 downto 16);
-	  	  CRC_8B_DWI     		 <= DATA_RX_PPL(31 downto 24);
-				VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
-	  	elsif DATA_RX_PPL(15 downto 0) = C_NACK_WORD and VALID_K_CHARAC_PPL = "0001" then -- NACK control word detected
-	  	  TYPE_FRAME_DWI 		 <= C_NACK_FRM;
-	  	  NEW_WORD_DWI   		 <= '1';
-        END_FRAME_DWI  		 <= '1';
-				DATA_DWI       		 <= DATA_RX_PPL;
-	  	  SEQ_NUM_DWI    		 <= DATA_RX_PPL(23 downto 16);
-	  	  CRC_8B_DWI     		 <= DATA_RX_PPL(31 downto 24);
-				VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
-	  	elsif DATA_RX_PPL(15 downto 0) = C_FULL_WORD and VALID_K_CHARAC_PPL = "0001" then -- FULL control word detected
-	  	  TYPE_FRAME_DWI     <= C_FULL_FRM;
-	  	  NEW_WORD_DWI       <= '1';
-        END_FRAME_DWI      <= '1';
-				DATA_DWI           <= DATA_RX_PPL;
-	  	  SEQ_NUM_DWI        <= DATA_RX_PPL(23 downto 16);
-	  	  CRC_8B_DWI         <= DATA_RX_PPL(31 downto 24);
-				VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
-	  	elsif DATA_RX_PPL(15 downto 0) = C_RETRY_WORD and VALID_K_CHARAC_PPL = "0001" then -- RETRY control word detected
-	  	  TYPE_FRAME_DWI 		 <= C_RETRY_FRM;
-	  	  NEW_WORD_DWI   		 <= '1';
-				DATA_DWI       		 <= DATA_RX_PPL;
-	  	  SEQ_NUM_DWI    		 <= DATA_RX_PPL(23 downto 16);
-	  	  CRC_8B_DWI     		 <= DATA_RX_PPL(31 downto 24);
-				VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
-				retry_counter      <= retry_counter + 1;
-        RETRY_PULSE_RX_DWI <='1';
-	  	elsif DATA_RX_PPL = C_RXERR_WORD and VALID_K_CHARAC_PPL = "0001" then -- RXERR control word detected
-        NEW_WORD_DWI   <= '0';
-			elsif current_state = RX_IDLE_FRAME_ST or current_state= RX_NOTHING_ST then
+	if rising_edge(CLK)  then
+    if LINK_RESET_DLRE ='1' then
+			NEW_WORD_DWI       <= '0';
+    	SEQ_NUM_DWI        <= (others=> '0');
+    	CRC_16B_DWI        <= (others=> '0');
+    	CRC_8B_DWI         <= (others=> '0');
+			TYPE_FRAME_DWI     <= (others=> '0');
+			DATA_DWI           <= (others=> '0');
+			VALID_K_CHARAC_DWI <= (others=> '0');
+    	END_FRAME_DWI      <= '0';
+			MULTIPLIER_DWI     <= (others=> '0');
+			VC_DWI             <= (others=> '0');
+			retry_counter      <= (others =>'0');
+			DATA_PULSE_RX_DWI  <='0';
+    	RETRY_PULSE_RX_DWI <='0';
+		else
+    	END_FRAME_DWI      <= '0';
+			DATA_PULSE_RX_DWI  <='0';
+    	RETRY_PULSE_RX_DWI <='0';
+			-- Frame treatment
+	  	if (FIFO_RX_DATA_VALID_PPL ='1') then
+				if DATA_RX_PPL(15 downto 0) = C_SDF_WORD and VALID_K_CHARAC_PPL = "0001" then -- SDF control word detected
+	  			TYPE_FRAME_DWI     <= C_DATA_FRM;
+	  			NEW_WORD_DWI       <= '1';
+					DATA_DWI           <= DATA_RX_PPL;
+					VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
+					DATA_PULSE_RX_DWI  <='1';
+	  		elsif DATA_RX_PPL(7 downto 0) = C_K28_0_SYMB and VALID_K_CHARAC_PPL = "0001" and current_state /= RX_NOTHING_ST then -- EDF control word detected
+	  			TYPE_FRAME_DWI 		 <= C_DATA_FRM;
+	  			NEW_WORD_DWI   		 <= '1';
+    	    END_FRAME_DWI  		 <= '1';
+					DATA_DWI       		 <= DATA_RX_PPL;
+	  			SEQ_NUM_DWI    		 <= DATA_RX_PPL(15 downto 8);
+	  			CRC_16B_DWI    		 <= DATA_RX_PPL(31 downto 16);
+					VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
+					DATA_PULSE_RX_DWI  <='1';
+	  		elsif DATA_RX_PPL(15 downto 0) = C_SBF_WORD and VALID_K_CHARAC_PPL = "0001" then -- SBF control word detected
+	  			TYPE_FRAME_DWI 		 <= C_BC_FRM;
+	  			NEW_WORD_DWI   		 <= '1';
+					DATA_DWI       		 <= DATA_RX_PPL;
+					VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
+					DATA_PULSE_RX_DWI  <='1';
+	  		elsif DATA_RX_PPL(7 downto 0) = C_K28_2_SYMB and VALID_K_CHARAC_PPL = "0001" and current_state /= RX_NOTHING_ST then -- EBF control word detected
+	  			TYPE_FRAME_DWI		 <= C_BC_FRM;
+	  			NEW_WORD_DWI  		 <= '1';
+    	    END_FRAME_DWI 		 <= '1';
+					DATA_DWI      		 <= DATA_RX_PPL;
+	  			SEQ_NUM_DWI   		 <= DATA_RX_PPL(23 downto 16);
+	  			CRC_8B_DWI    		 <= DATA_RX_PPL(31 downto 24);
+					VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
+					DATA_PULSE_RX_DWI  <='1';
+	  		elsif DATA_RX_PPL(15 downto 0) = C_SIF_WORD and VALID_K_CHARAC_PPL = "0001" then -- SIF control word detected
+	  			TYPE_FRAME_DWI 		 <= C_IDLE_FRM;
+	  			NEW_WORD_DWI   		 <= '1';
+    	    END_FRAME_DWI  		 <= '1';
+					DATA_DWI       		 <= DATA_RX_PPL;
+	  			SEQ_NUM_DWI    		 <= DATA_RX_PPL(23 downto 16);
+	  			CRC_8B_DWI     		 <= DATA_RX_PPL(31 downto 24);
+					VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
+	  		elsif DATA_RX_PPL(7 downto 0) = C_K28_3_SYMB and VALID_K_CHARAC_PPL = "0001" then -- FCT control word detected
+	  			TYPE_FRAME_DWI 		 <= C_FCT_FRM;
+	  			NEW_WORD_DWI   		 <= '1';
+    	    END_FRAME_DWI  		 <= '1';
+					DATA_DWI       		 <= DATA_RX_PPL;
+	  			SEQ_NUM_DWI    		 <= DATA_RX_PPL(23 downto 16);
+	  			CRC_8B_DWI     		 <= DATA_RX_PPL(31 downto 24);
+					VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
+					MULTIPLIER_DWI     <= DATA_RX_PPL(15 downto 13);
+    	    VC_DWI             <= DATA_RX_PPL(12 downto 8);
+	  		elsif DATA_RX_PPL(15 downto 0) = C_ACK_WORD and VALID_K_CHARAC_PPL = "0001" then -- ACK control word detected
+	  		  TYPE_FRAME_DWI 		 <= C_ACK_FRM;
+	  		  NEW_WORD_DWI   		 <= '1';
+    	    END_FRAME_DWI  		 <= '1';
+					DATA_DWI       		 <= DATA_RX_PPL;
+	  		  SEQ_NUM_DWI    		 <= DATA_RX_PPL(23 downto 16);
+	  		  CRC_8B_DWI     		 <= DATA_RX_PPL(31 downto 24);
+					VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
+	  		elsif DATA_RX_PPL(15 downto 0) = C_NACK_WORD and VALID_K_CHARAC_PPL = "0001" then -- NACK control word detected
+	  		  TYPE_FRAME_DWI 		 <= C_NACK_FRM;
+	  		  NEW_WORD_DWI   		 <= '1';
+    	    END_FRAME_DWI  		 <= '1';
+					DATA_DWI       		 <= DATA_RX_PPL;
+	  		  SEQ_NUM_DWI    		 <= DATA_RX_PPL(23 downto 16);
+	  		  CRC_8B_DWI     		 <= DATA_RX_PPL(31 downto 24);
+					VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
+	  		elsif DATA_RX_PPL(15 downto 0) = C_FULL_WORD and VALID_K_CHARAC_PPL = "0001" then -- FULL control word detected
+	  		  TYPE_FRAME_DWI     <= C_FULL_FRM;
+	  		  NEW_WORD_DWI       <= '1';
+    	    END_FRAME_DWI      <= '1';
+					DATA_DWI           <= DATA_RX_PPL;
+	  		  SEQ_NUM_DWI        <= DATA_RX_PPL(23 downto 16);
+	  		  CRC_8B_DWI         <= DATA_RX_PPL(31 downto 24);
+					VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
+	  		elsif DATA_RX_PPL(15 downto 0) = C_RETRY_WORD and VALID_K_CHARAC_PPL = "0001" then -- RETRY control word detected
+	  		  TYPE_FRAME_DWI 		 <= C_RETRY_FRM;
+	  		  NEW_WORD_DWI   		 <= '1';
+					DATA_DWI       		 <= DATA_RX_PPL;
+	  		  SEQ_NUM_DWI    		 <= DATA_RX_PPL(23 downto 16);
+	  		  CRC_8B_DWI     		 <= DATA_RX_PPL(31 downto 24);
+					VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
+					retry_counter      <= retry_counter + 1;
+    	    RETRY_PULSE_RX_DWI <='1';
+	  		elsif DATA_RX_PPL = C_RXERR_WORD and VALID_K_CHARAC_PPL = "0001" then -- RXERR control word detected
+    	    NEW_WORD_DWI   <= '0';
+				elsif current_state = RX_IDLE_FRAME_ST or current_state= RX_NOTHING_ST then
+						DATA_DWI           <= (others=> '0');
+						VALID_K_CHARAC_DWI <= (others=> '0');
+						NEW_WORD_DWI       <= '0';
+    	  elsif current_state = RX_DATA_FRAME_ST then
+					TYPE_FRAME_DWI 		 <= C_DATA_FRM;
+    	    DATA_DWI           <= DATA_RX_PPL;
+					VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
+    	    NEW_WORD_DWI       <= '1';
+					DATA_PULSE_RX_DWI  <='1';
+				elsif current_state = RX_BROADCAST_AND_DATA_FRAME_ST or current_state = RX_BROADCAST_FRAME_ST then
+					TYPE_FRAME_DWI 		 <= C_BC_FRM;
+    	    DATA_DWI           <= DATA_RX_PPL;
+					VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
+    	    NEW_WORD_DWI       <= '1';
+					DATA_PULSE_RX_DWI  <='1';
+				else
 					DATA_DWI           <= (others=> '0');
 					VALID_K_CHARAC_DWI <= (others=> '0');
-					NEW_WORD_DWI       <= '0';
-      elsif current_state = RX_DATA_FRAME_ST then
-				TYPE_FRAME_DWI 		 <= C_DATA_FRM;
-        DATA_DWI           <= DATA_RX_PPL;
-				VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
-        NEW_WORD_DWI       <= '1';
-				DATA_PULSE_RX_DWI  <='1';
-			elsif current_state = RX_BROADCAST_AND_DATA_FRAME_ST or current_state = RX_BROADCAST_FRAME_ST then
-				TYPE_FRAME_DWI 		 <= C_BC_FRM;
-        DATA_DWI           <= DATA_RX_PPL;
-				VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
-        NEW_WORD_DWI       <= '1';
-				DATA_PULSE_RX_DWI  <='1';
-			else
-				DATA_DWI           <= (others=> '0');
-				VALID_K_CHARAC_DWI <= (others=> '0');
-        NEW_WORD_DWI       <= '0';
+    	    NEW_WORD_DWI       <= '0';
+	  		end if;
+    	else
+    	  NEW_WORD_DWI     <= '0';
 	  	end if;
-    else
-      NEW_WORD_DWI     <= '0';
-	  end if;
+		end if;
 	end if;
 end process p_data_word_detection;
 
@@ -372,12 +378,14 @@ end process p_data_word_detection;
 -- Process: p_fifo_rd_ppl
 -- Description: Write frames into the fifo
 ---------------------------------------------------------
-p_fifo_rd_ppl: process(CLK, RST_N)
+p_fifo_rd_ppl: process(CLK)
 begin
-	if RST_N = '0' then
-		FIFO_RX_RD_EN_DL <= '0';
-	elsif rising_edge(CLK) then
-		FIFO_RX_RD_EN_DL <= '1';
+	if rising_edge(CLK)  then
+    if LINK_RESET_DLRE ='1' then
+			FIFO_RX_RD_EN_DL <= '0';
+		else
+			FIFO_RX_RD_EN_DL <= '1';
+		end if;
 	end if;
 end process p_fifo_rd_ppl;
 

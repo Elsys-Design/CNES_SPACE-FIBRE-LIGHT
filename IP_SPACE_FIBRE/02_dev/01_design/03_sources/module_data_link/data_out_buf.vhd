@@ -446,7 +446,7 @@ begin
   elsif rising_edge(CLK) then
     if cnt_word_sent = 62 and rd_data_vld = '1' and VC_RD_EN_DMAC = '0' and status_threshold_low = '0' and fct_credit_cnt_low = '0'then
       flag_last_data <= '1';
-    elsif cnt_word_sent = 63 and VC_RD_EN_DMAC = '1' then 
+    elsif cnt_word_sent = 63 and VC_RD_EN_DMAC = '1' then
       flag_last_data <= '0';
     elsif cnt_word_sent < 62 then
       flag_last_data <= '0';
@@ -502,7 +502,7 @@ begin
     cnt_eip_out_reg  <= (others =>'0');
   elsif rising_edge(CLK) then
     cnt_eip_out_reg <= cnt_eip_out;
-    if cmd_flush_sync ='1' and VC_CONT_MODE_MIB ='1' then
+    if cmd_flush_sync ='1' then
       cnt_eip_out      <= (others =>'0');
       cnt_eip_out_reg  <= (others =>'0');
     elsif eip_out = '1' and eip_out_ack='1'  then
@@ -529,7 +529,7 @@ begin
     eip_in_req_reg1 <= eip_in_req;
     eip_in_req_reg2 <= eip_in_req_reg1;
     eip_out_ack <= '0';
-    if cmd_flush_sync ='1' and VC_CONT_MODE_MIB ='1' then
+    if cmd_flush_sync ='1' then
       cnt_eip     <= (others =>'0');
       eip_in_req_reg1  <= '0';
       eip_in_req_reg2  <= '0';
