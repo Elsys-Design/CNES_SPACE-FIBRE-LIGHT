@@ -454,7 +454,7 @@ begin
             end if;
 
             -- Flush is finished
-            if flush_ack_wr = '1' and flush_ack_rd = '1' then
+            if flush_ack_wr = '1' and flush_ack_rd = '1' and CMD_FLUSH  = '0' then
                 flush_ack_rd    <= '0';
                 flush_ack_wr    <= '0';
                 cmd_flush_req   <= '0';
