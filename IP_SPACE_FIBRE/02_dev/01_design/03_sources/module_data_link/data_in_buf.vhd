@@ -271,24 +271,31 @@ begin
     axis_data_valid_reg1 <= '0';
     axis_data_valid_reg2 <= '0';
   elsif rising_edge(CLK) then
-    axis_data_valid_reg1 <= axis_data_valid;
-    axis_data_valid_reg2 <= axis_data_valid_reg1;
-    if axis_data_valid_reg2 = '1' then
-      if cnt_word_sent > 62 then
-        cnt_word_sent <= to_unsigned(1,cnt_word_sent'length);
-        req_fct_i     <= '1';
-      elsif req_fct_done ='1' then
+    if LINK_RESET_DLRE = '1' then
+      cnt_word_sent        <= (others =>'0');
+      req_fct_i            <= '0';
+      axis_data_valid_reg1 <= '0';
+      axis_data_valid_reg2 <= '0';
+    else 
+      axis_data_valid_reg1 <= axis_data_valid;
+      axis_data_valid_reg2 <= axis_data_valid_reg1;
+      if axis_data_valid_reg2 = '1' then
+        if cnt_word_sent > 62 then
+          cnt_word_sent <= to_unsigned(1,cnt_word_sent'length);
+          req_fct_i     <= '1';
+        elsif req_fct_done ='1' then
+            req_fct_i     <= '0';
+            cnt_word_sent <= cnt_word_sent + 1;
+        else
           req_fct_i     <= '0';
           cnt_word_sent <= cnt_word_sent + 1;
-      else
+        end if;
+      elsif cnt_word_sent > 62 then
+        cnt_word_sent <= (others =>'0');
+        req_fct_i     <= '1';
+      elsif req_fct_done ='1' then
         req_fct_i     <= '0';
-        cnt_word_sent <= cnt_word_sent + 1;
       end if;
-    elsif cnt_word_sent > 62 then
-      cnt_word_sent <= (others =>'0');
-      req_fct_i     <= '1';
-    elsif req_fct_done ='1' then
-      req_fct_i     <= '0';
     end if;
   end if;
 end process p_cnt_word;

@@ -177,7 +177,9 @@ begin
   if RST_N = '0' then
     vc_end_packet <= '0';
   elsif rising_edge(CLK) then
-    if rd_data_vld = '1' and vc_end_packet ='1' then
+    if LINK_RESET_DLRE = '1' then
+      vc_end_packet <= '0';
+    elsif rd_data_vld = '1' and vc_end_packet ='1' then
       vc_end_packet <= '0';
     elsif rd_data_vld = '1' then
       vc_end_packet <= '1';

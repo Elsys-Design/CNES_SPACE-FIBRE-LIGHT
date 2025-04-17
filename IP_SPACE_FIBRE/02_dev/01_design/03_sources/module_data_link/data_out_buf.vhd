@@ -423,7 +423,9 @@ begin
   if RST_N = '0' then
     cnt_word_sent <= (others =>'0');
   elsif rising_edge(CLK) then
-    if status_threshold_low = '1' and rd_data_vld='1' then
+    if LINK_RESET_DLRE = '1' then
+      cnt_word_sent <= (others =>'0');
+    elsif status_threshold_low = '1' and rd_data_vld='1' then
       cnt_word_sent  <= (others =>'0');
     elsif cnt_word_sent >= 63  and rd_data_vld = '1' then
       cnt_word_sent <= (others =>'0');
