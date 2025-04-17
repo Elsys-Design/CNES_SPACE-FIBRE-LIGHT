@@ -193,11 +193,13 @@ begin
 						SEQ_NUM_ERR_DATA_DSCHECK  <= '1';
 						END_FRAME_FIFO_DSCHECK    <= END_FRAME_DCCHECK;
 						END_FRAME_DSCHECK         <= END_FRAME_DCCHECK;
+						NEW_WORD_DSCHECK          <= NEW_WORD_DCCHECK;
 					elsif CRC_ERR_DCCHECK ='1' then
 						SEQ_NUM_ERR_DSCHECK       <= '0';
 						SEQ_NUM_ERR_DATA_DSCHECK  <= '0';
 						END_FRAME_FIFO_DSCHECK    <= END_FRAME_DCCHECK;
 						END_FRAME_DSCHECK         <= END_FRAME_DCCHECK;
+						NEW_WORD_DSCHECK          <= NEW_WORD_DCCHECK;
 					else
 						seq_num_cnt               <= seq_num_cnt+1;
 						SEQ_NUM_ERR_DSCHECK       <= '0';
@@ -225,11 +227,13 @@ begin
 				  	SEQ_NUM_ERR_BC_DSCHECK    <= '1';
 				  	END_FRAME_FIFO_BC_DSCHECK <= END_FRAME_DCCHECK;
 				  	END_FRAME_DSCHECK         <= END_FRAME_DCCHECK;
+						NEW_WORD_BC_DSCHECK       <= NEW_WORD_DCCHECK;
 				  elsif CRC_ERR_DCCHECK ='1' then
 				  	SEQ_NUM_ERR_DSCHECK       <= '0';
 				  	SEQ_NUM_ERR_BC_DSCHECK    <= '0';
 				  	END_FRAME_FIFO_BC_DSCHECK <= END_FRAME_DCCHECK;
 				  	END_FRAME_DSCHECK         <= END_FRAME_DCCHECK;
+						NEW_WORD_BC_DSCHECK       <= NEW_WORD_DCCHECK;
 				  else
 				  	seq_num_cnt               <= seq_num_cnt+1;
 				  	SEQ_NUM_ERR_DSCHECK       <= '0';
