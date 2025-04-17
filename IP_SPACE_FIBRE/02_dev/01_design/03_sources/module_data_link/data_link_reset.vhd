@@ -68,7 +68,7 @@ begin
 ---------------------------------------------------------
 p_data_in_fifo: process(CLK, RST_N)
 begin
-  if rising_edge(CLK) then
+  if RST_N ='0' then
     current_state      <= CONF_RST_ST;
     LINK_RESET_DLRE    <= '1';
     LANE_RESET_DLRE    <= '1';

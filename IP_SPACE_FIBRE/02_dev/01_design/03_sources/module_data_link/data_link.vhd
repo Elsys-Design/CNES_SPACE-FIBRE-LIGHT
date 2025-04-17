@@ -749,8 +749,8 @@ begin
   );
   inst_data_desencapsulation_bc : data_desencapsulation_bc
     port map(
-      RST_N               => RST_N,
       CLK                 => CLK,
+      LINK_RESET_DLRE     => link_reset_dlre,
       DATA_DMBUFBC        => data_dmbufbc,
       DATA_RD_DDESBC      => data_rd_ddesbc,
       DATA_VALID_DMBUFBC  => data_valid_dmbufbc,

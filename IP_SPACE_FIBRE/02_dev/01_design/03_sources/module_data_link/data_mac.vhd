@@ -301,7 +301,7 @@ end process p_arbiter;
 -- Process: p_request
 -- Description: manage 15 words minimum beetween 2 ACK or NACK
 ---------------------------------------------------------
-p_cnt_wait_ack: process(CLK, RST_N)
+p_cnt_wait_ack: process(CLK)
 begin
   if rising_edge(CLK)  then
     if LINK_RESET_DLRE ='1' then
