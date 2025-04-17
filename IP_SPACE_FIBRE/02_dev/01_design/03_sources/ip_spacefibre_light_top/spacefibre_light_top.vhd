@@ -359,8 +359,14 @@ architecture rtl of spacefibre_light_top is
          CURRENT_TIME_SLOT_DL    : in  std_logic_vector(G_VC_NUM-1 downto 0);
          RESET_PARAM_DL          : in  std_logic;
          LINK_RST_ASSERTED_DL    : in  std_logic;
-         NACK_SEQ_NUM_DL         : in std_logic_vector(7 downto 0);
-         ACK_SEQ_NUM_DL          : in std_logic_vector(7 downto 0);
+         NACK_SEQ_NUM_DL         : in  std_logic_vector(7 downto 0);
+         ACK_SEQ_NUM_DL          : in  std_logic_vector(7 downto 0);
+         DATA_PULSE_RX_DL        : in  std_logic;
+         ACK_PULSE_RX_DL         : in  std_logic;
+         NACK_PULSE_RX_DL        : in  std_logic;
+         FCT_PULSE_RX_DL         : in  std_logic;
+         FULL_PULSE_RX_DL        : in  std_logic;
+         RETRY_PULSE_RX_DL       : in  std_logic;
          -- MIB status interface TOP
          SEQ_NUMBER_TX           : out std_logic_vector(G_VC_NUM-1 downto 0);
          SEQ_NUMBER_RX           : out std_logic_vector(G_VC_NUM-1 downto 0);
@@ -388,7 +394,13 @@ architecture rtl of spacefibre_light_top is
          RESET_PARAM             : out std_logic;
          LINK_RST_ASSERTED       : out std_logic;
          NACK_SEQ_NUM            : out std_logic_vector(7 downto 0);
-         ACK_SEQ_NUM             : out std_logic_vector(7 downto 0)
+         ACK_SEQ_NUM             : out std_logic_vector(7 downto 0);
+         DATA_PULSE_RX           : out std_logic;
+         ACK_PULSE_RX            : out std_logic;
+         NACK_PULSE_RX           : out std_logic;
+         FCT_PULSE_RX            : out std_logic;
+         FULL_PULSE_RX           : out std_logic;
+         RETRY_PULSE_RX          : out std_logic
         );
    end component;
 

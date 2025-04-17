@@ -1475,7 +1475,7 @@ async def cocotb_run(dut):
 
     # Assert NACK_RST_en, set NACK_RST_mode to 1
 
-    Data_read_dl_config_parameters.data = bytearray([0x14, 0x00, 0x00, 0x00])
+    Data_read_dl_config_parameters.data = bytearray([0x18, 0x00, 0x00, 0x00])
 
     stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 10))
 
@@ -1788,7 +1788,7 @@ async def cocotb_run(dut):
     else:
         tb.logger.info("simulation time %d ns : step 2.6 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
 
-    Data_read_dl_config_parameters.data = bytearray([0x14, 0x00, 0x00, 0x00])
+    Data_read_dl_config_parameters.data = bytearray([0x18, 0x00, 0x00, 0x00])
 
 
     await tb.masters[0].write_data(Data_read_dl_config_parameters)
@@ -1836,7 +1836,7 @@ async def cocotb_run(dut):
 
 
 
-    Data_read_dl_config_parameters.data = bytearray([0x14, 0x00, 0x40, 0x00])
+    Data_read_dl_config_parameters.data = bytearray([0x18, 0x00, 0x40, 0x00])
 
     stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 10))
 
@@ -2816,7 +2816,7 @@ async def cocotb_run(dut):
 
     # Send a valid data frame, check that the data is received on Data_Link_Data_Analyzer models
 
-    #Analyzer was started in step 3.4
+    #Analyzer was started in step 3.8
 
     await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/random_gen_step_1_1_" + str(x), 255, 1, 64, 0, 0, seq, sequence_polarity = 1, seed = 8)
     seq = (seq + 1)%128
@@ -2881,6 +2881,90 @@ async def cocotb_run(dut):
     await stimuli
 
     # Send a broadcast frame with an invalid CRC, check that a CRC-8bits is detected
+
+    await configure_model_dl(tb, 20, [0x01,0x01,0x00,0x00], [0x00,0x00,0x42,0x00])
+    
+    await start_model_dl(tb, 20)
+
+    
+    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/step_3_CRC_8b_error.dat")
+
+    await send_idle_ctrl_word(tb,50)
+
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb,25))
+
+    await tb.masters[20].read_data(Data_lane_ana_status)
+    test_end = format(Data_lane_ana_status.data[0], '0>8b')[6]
+
+    if test_end != '0':
+        step_2_failed = 1
+        tb.logger.error("simulation time %d ns : step 3.11 result: Failed\nError_count : %s \n\n\n", get_sim_time(units = "ns"), result)
+    else:
+        tb.logger.info("simulation time %d ns : step 3.11 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
+
+    await stimuli
+
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 25))
+
+    await tb.masters[0].read_data(Data_read_dl_config_status_2)
+    CRC_long_error = format(Data_read_dl_config_status_2.data[0], '0>8b')[7]
+    CRC_short_error = format(Data_read_dl_config_status_2.data[0], '0>8b')[6]
+    frame_error = format(Data_read_dl_config_status_2.data[0], '0>8b')[5]
+    sequence_error = format(Data_read_dl_config_status_2.data[0], '0>8b')[4]
+
+    if CRC_long_error != '0' or CRC_short_error != '1' or frame_error != '0' or sequence_error != '0':
+        step_2_failed = 1
+        tb.logger.error("simulation time %d ns : step 3.11 result: Failed\n\n\n", get_sim_time(units = "ns"))
+    else:
+        tb.logger.info("simulation time %d ns : step 3.11 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
+
+    Data_read_dl_config_parameters.data = bytearray([0x00, 0x00, 0x40, 0x00])
+
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 10))
+
+    await tb.masters[0].write_data(Data_read_dl_config_parameters)
+
+    await stimuli
+
+
+
+    # Send a valid boradcast frame, check that the data is received on Data_Link_Data_Analyzer models
+
+    #Analyzer was started in step 3.11
+
+    await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/random_gen_step_1_1_" + str(x), 255, 1, 64, 0, 1, seq, sequence_polarity = 1, seed = 8)
+    seq = (seq + 1)%128
+
+    
+
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb,25))
+
+    result = await wait_end_test_dl(tb, 4)
+
+    if result != "00000000":
+        step_2_failed = 1
+        tb.logger.error("simulation time %d ns : step 3.12 result: Failed\nError_count : %s \n\n\n", get_sim_time(units = "ns"), result)
+    else:
+        tb.logger.info("simulation time %d ns : step 3.12 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
+
+    await stimuli
+
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 25))
+
+    await tb.masters[0].read_data(Data_read_dl_config_status_2)
+    CRC_long_error = format(Data_read_dl_config_status_2.data[0], '0>8b')[7]
+    CRC_short_error = format(Data_read_dl_config_status_2.data[0], '0>8b')[6]
+    frame_error = format(Data_read_dl_config_status_2.data[0], '0>8b')[5]
+    sequence_error = format(Data_read_dl_config_status_2.data[0], '0>8b')[4]
+
+    if CRC_long_error != '0' or CRC_short_error != '0' or frame_error != '0' or sequence_error != '0':
+        step_2_failed = 1
+        tb.logger.error("simulation time %d ns : step 3.12 result: Failed\n\n\n", get_sim_time(units = "ns"))
+    else:
+        tb.logger.info("simulation time %d ns : step 3.12 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
+
+    await stimuli
+
     # Send a broadcast frame with an invalid SEQ_NUMBER sequence number, check that a sequence number is detected
     # Send a broadcast frame with an invalid SEQ_NUMBER polarity, check that a sequence number is detected
     # Send an idle frame with an invalid CRC, check that a CRC-8bits is detected
