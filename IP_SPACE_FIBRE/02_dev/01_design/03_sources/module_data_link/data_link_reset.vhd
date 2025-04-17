@@ -68,11 +68,11 @@ begin
 ---------------------------------------------------------
 p_data_in_fifo: process(CLK, RST_N)
 begin
-  if RST_N = '0' then
+  if RST_N ='0' then
     current_state      <= CONF_RST_ST;
-    LINK_RESET_DLRE    <= '0';
-    LANE_RESET_DLRE    <= '0';
-    RESET_PARAM_DLRE   <= '0';
+    LINK_RESET_DLRE    <= '1';
+    LANE_RESET_DLRE    <= '1';
+    RESET_PARAM_DLRE   <= '1';
     NEAR_END_CAPA_DLRE <= (others =>'0');
     cnt_link_reset     <= (others =>'0');
   elsif rising_edge(CLK) then

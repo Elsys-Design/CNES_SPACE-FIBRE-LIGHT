@@ -17,8 +17,9 @@ use data_link_lib.data_link_lib.all;
 
 entity data_crc_check is
   port (
-    RST_N                  : in  std_logic;                                           --! Global reset
     CLK                    : in  std_logic;                                           --! Global clock
+    -- Link Reset
+    LINK_RESET_DLRE        : in std_logic;
     -- data_word_identification (DWI) interface
     DATA_DWI               : in  std_logic_vector(C_DATA_LENGTH-1 downto 0);          --! Data parallel from daata_word_id_fsm
     VALID_K_CHARAC_DWI     : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);  --! K charachter valid in the 32-bit DATA_DWI vector
@@ -81,14 +82,15 @@ begin
 -- Process: p_crc_16b
 -- Description: Compute the CRC for a data frame
 ---------------------------------------------------------
- p_crc_16b: process(CLK, RST_N)
+ p_crc_16b: process(CLK)
     variable crc_var : std_logic_vector(15 downto 0);
     variable crc_in : std_logic_vector(15 downto 0);
 begin
-    if RST_N = '0' then
+  if rising_edge(CLK)  then
+    if LINK_RESET_DLRE ='1' then
         crc_reg_16b_comp   <= (others => '1'); -- Reset CRC to seed value
         crc_long_err       <= '0';
-    elsif rising_edge(CLK) then
+    else
       crc_var           := crc_reg_16b_comp;
       crc_long_err       <= '0';
       if RXNOTHING_ACTIVE_DWI ='1' or FRAME_ERR_DWI = '1' then
@@ -119,6 +121,7 @@ begin
         end if;
       end if;
     end if;
+  end if;
 end process p_crc_16b;
 
 ---------------------------------------------------------
@@ -126,14 +129,15 @@ end process p_crc_16b;
 -- Description: Compute the CRC for broadcast frame,
 --              FCT, ACK, NACK and SIF
 ---------------------------------------------------------
-p_crc_8b: process(CLK, RST_N)
+p_crc_8b: process(CLK)
     variable crc_var : std_logic_vector(7 downto 0);
     variable crc_in  : std_logic_vector(7 downto 0);
 begin
-    if RST_N = '0' then
+  if rising_edge(CLK)  then
+    if LINK_RESET_DLRE ='1' then
       crc_reg_8b_comp <= (others => '0'); -- Reset CRC to seed value
       crc_short_err   <= '0';
-    elsif rising_edge(CLK) then
+    else
       crc_var       := crc_reg_8b_comp;
       crc_short_err <= '0';
       if RXNOTHING_ACTIVE_DWI ='1' or FRAME_ERR_DWI = '1' then
@@ -164,37 +168,40 @@ begin
         end if;
       end if;
     end if;
+  end if;
 end process p_crc_8b;
 ---------------------------------------------------------
 -- Process: p_trans_ctrl_sig
 -- Description: Signals transmission for data_seq_check.
 ---------------------------------------------------------
-p_trans_ctrl_sig: process(CLK, RST_N)
+p_trans_ctrl_sig: process(CLK)
 begin
-  if RST_N = '0' then
-    SEQ_NUM_DCCHECK        <= (others => '0');
-    NEW_WORD_DCCHECK       <= '0';
-    DATA_DCCHECK           <= (others => '0');
-    VALID_K_CHARAC_DCCHECK <= (others => '0');
-    TYPE_FRAME_DCCHECK     <= (others => '0');
-    END_FRAME_DCCHECK      <= '0';
-    FRAME_ERR_DCCHECK      <= '0';
-    MULTIPLIER_DCCHECK     <= (others => '0');
-    VC_DCCHECK             <= (others => '0');
-    RXERR_DCCHECK          <= '0';
-    RXERR_ALL_DCCHECK      <= '0';
-  elsif rising_edge(CLK) then
-    SEQ_NUM_DCCHECK        <= SEQ_NUM_DWI;
-    NEW_WORD_DCCHECK       <= NEW_WORD_DWI;
-    END_FRAME_DCCHECK      <= END_FRAME_DWI;
-    DATA_DCCHECK           <= DATA_DWI;
-    VALID_K_CHARAC_DCCHECK <= VALID_K_CHARAC_DWI;
-    TYPE_FRAME_DCCHECK     <= TYPE_FRAME_DWI;
-    FRAME_ERR_DCCHECK      <= FRAME_ERR_DWI;
-    MULTIPLIER_DCCHECK     <= MULTIPLIER_DWI;
-    VC_DCCHECK             <= VC_DWI;
-    RXERR_DCCHECK          <= RXERR_DWI;
-    RXERR_ALL_DCCHECK      <= RXERR_ALL_DWI;
+  if rising_edge(CLK)  then
+    if LINK_RESET_DLRE ='1' then
+      SEQ_NUM_DCCHECK        <= (others => '0');
+      NEW_WORD_DCCHECK       <= '0';
+      DATA_DCCHECK           <= (others => '0');
+      VALID_K_CHARAC_DCCHECK <= (others => '0');
+      TYPE_FRAME_DCCHECK     <= (others => '0');
+      END_FRAME_DCCHECK      <= '0';
+      FRAME_ERR_DCCHECK      <= '0';
+      MULTIPLIER_DCCHECK     <= (others => '0');
+      VC_DCCHECK             <= (others => '0');
+      RXERR_DCCHECK          <= '0';
+      RXERR_ALL_DCCHECK      <= '0';
+    else
+      SEQ_NUM_DCCHECK        <= SEQ_NUM_DWI;
+      NEW_WORD_DCCHECK       <= NEW_WORD_DWI;
+      END_FRAME_DCCHECK      <= END_FRAME_DWI;
+      DATA_DCCHECK           <= DATA_DWI;
+      VALID_K_CHARAC_DCCHECK <= VALID_K_CHARAC_DWI;
+      TYPE_FRAME_DCCHECK     <= TYPE_FRAME_DWI;
+      FRAME_ERR_DCCHECK      <= FRAME_ERR_DWI;
+      MULTIPLIER_DCCHECK     <= MULTIPLIER_DWI;
+      VC_DCCHECK             <= VC_DWI;
+      RXERR_DCCHECK          <= RXERR_DWI;
+      RXERR_ALL_DCCHECK      <= RXERR_ALL_DWI;
+    end if;
   end if;
 end process p_trans_ctrl_sig;
 

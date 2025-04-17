@@ -18,7 +18,8 @@ use data_link_lib.data_link_lib.all;
 entity data_err_management is
   port (
     CLK                      : in std_logic;                                --! Clock signal
-    RST_N                    : in std_logic;                                --! Active low reset
+    -- Link Reset
+    LINK_RESET_DLRE        : in std_logic;
     -- data_word_interface (DWI) Interface
     TYPE_FRAME_DWI           : in std_logic_vector(3 downto 0);             --! Type of frame from DWI
     RXERR_DSCHECK             : in std_logic;                                --! Receive error flag from DWI
@@ -91,89 +92,93 @@ begin
 -- Description: FSM to determine the polarity flags
 --							(TPF and RPF)
 ---------------------------------------------------------
-  p_fsm : process (CLK, RST_N)
+  p_fsm : process (CLK)
   begin
-    if RST_N = '0' then
-      state               <= VALID_POSITIVE_ST;
-      near_end_rpf        <= '0';
-      nack_request_fsm    <= '0';
-      ack_request_fsm     <= '0';
-      s_far_end_rpf       <= '0';
-      s_seq_err           <= '0';
-      s_seq_num_fsm       <= (others => '0');
-      ack_pol_flg         <= '0';
-    elsif rising_edge(CLK) then
-      -- Synchronization for the FSM
-      s_far_end_rpf    <= FAR_END_RPF_DSCHECK;
-      s_seq_err        <= SEQ_ERR_DSCHECK;
-      ack_request_fsm  <= s_ack_request;
-      nack_request_fsm <= s_nack_request;
-      s_seq_num_fsm    <= s_seq_num_request;
-      case state is
-        when VALID_POSITIVE_ST =>
-            									near_end_rpf        <= '0';
-                              ack_pol_flg         <= '0';
-            									if s_nack_request = '1' then
-            									    state <= ERROR_NEGATIVE_ST;
-            									end if;
+    if rising_edge(CLK)  then
+      if LINK_RESET_DLRE ='1' then
+        state               <= VALID_POSITIVE_ST;
+        near_end_rpf        <= '0';
+        nack_request_fsm    <= '0';
+        ack_request_fsm     <= '0';
+        s_far_end_rpf       <= '0';
+        s_seq_err           <= '0';
+        s_seq_num_fsm       <= (others => '0');
+        ack_pol_flg         <= '0';
+      else
+        -- Synchronization for the FSM
+        s_far_end_rpf    <= FAR_END_RPF_DSCHECK;
+        s_seq_err        <= SEQ_ERR_DSCHECK;
+        ack_request_fsm  <= s_ack_request;
+        nack_request_fsm <= s_nack_request;
+        s_seq_num_fsm    <= s_seq_num_request;
+        case state is
+          when VALID_POSITIVE_ST =>
+              									near_end_rpf        <= '0';
+                                ack_pol_flg         <= '0';
+              									if s_nack_request = '1' then
+              									    state <= ERROR_NEGATIVE_ST;
+              									end if;
 
-        when VALID_NEGATIVE_ST =>
-            									near_end_rpf        <= '1';
-                              ack_pol_flg         <= '1';
-            									if s_nack_request = '1' then
-            									    state <= ERROR_POSITIVE_ST;
-            									end if;
+          when VALID_NEGATIVE_ST =>
+              									near_end_rpf        <= '1';
+                                ack_pol_flg         <= '1';
+              									if s_nack_request = '1' then
+              									    state <= ERROR_POSITIVE_ST;
+              									end if;
 
-        when ERROR_POSITIVE_ST =>
-            									near_end_rpf        <= '0';
-                              ack_pol_flg         <= '1';
-            									if s_ack_request = '1' then
-            									    state <= VALID_POSITIVE_ST;
-            									elsif s_far_end_rpf = '0' and s_seq_err = '1' then
-            									    state <= ERROR_NEGATIVE_ST;
-            									end if;
+          when ERROR_POSITIVE_ST =>
+              									near_end_rpf        <= '0';
+                                ack_pol_flg         <= '1';
+              									if s_ack_request = '1' then
+              									    state <= VALID_POSITIVE_ST;
+              									elsif s_far_end_rpf = '0' and s_seq_err = '1' then
+              									    state <= ERROR_NEGATIVE_ST;
+              									end if;
 
-        when ERROR_NEGATIVE_ST  =>
-            									near_end_rpf         <= '1';
-                              ack_pol_flg         <= '0';
-            									if s_ack_request = '1' then
-            									    state <= VALID_NEGATIVE_ST;
-            									elsif s_far_end_rpf = '1' and s_seq_err = '1' then
-            									    state <= ERROR_POSITIVE_ST;
-            									end if;
-      end case;
+          when ERROR_NEGATIVE_ST  =>
+              									near_end_rpf         <= '1';
+                                ack_pol_flg         <= '0';
+              									if s_ack_request = '1' then
+              									    state <= VALID_NEGATIVE_ST;
+              									elsif s_far_end_rpf = '1' and s_seq_err = '1' then
+              									    state <= ERROR_POSITIVE_ST;
+              									end if;
+        end case;
+      end if;
     end if;
   end process p_fsm;
 ---------------------------------------------------------
 -- Process: p_err
 -- Description: Error detection, internal request management
 ---------------------------------------------------------
-  p_err : process(CLK, RST_N)
+  p_err : process(CLK)
   begin
-    if RST_N = '0' then
-      s_nack_request    <= '0';
-      s_ack_request     <= '0';
-      s_seq_num_request <= (others => '0');
-    elsif rising_edge(CLK) then
-      -- Nack requested for broadcast and data frames if rx_err or crc_err
-      if RXERR_DSCHECK = '1' and (TYPE_FRAME_DWI = C_DATA_FRM or TYPE_FRAME_DWI = C_BC_FRM) then
-        s_nack_request <= '1';
-        s_ack_request  <= '0';
-      elsif CRC_ERR_DSCHECK = '1' and (TYPE_FRAME_DSCHECK = C_DATA_FRM or TYPE_FRAME_DSCHECK = C_BC_FRM) then
-        s_nack_request <= '1';
-        s_ack_request  <= '0';
-      -- Nack requested for broadcast, data, FCT, and FULL frames if seq_err
-      elsif SEQ_ERR_DSCHECK = '1' and  (TYPE_FRAME_DSCHECK = C_DATA_FRM or TYPE_FRAME_DSCHECK = C_BC_FRM or TYPE_FRAME_DSCHECK = C_FCT_FRM or TYPE_FRAME_DSCHECK = C_FULL_FRM) then
-        s_nack_request <= '1';
-        s_ack_request  <= '0';
-      -- Ack requested for broadcast, data, FCT, and FULL frames if end of frame without seq_err
-      elsif SEQ_ERR_DSCHECK = '0' and END_FRAME_DSCHECK = '1'  and (TYPE_FRAME_DSCHECK = C_DATA_FRM or TYPE_FRAME_DSCHECK = C_BC_FRM or TYPE_FRAME_DSCHECK = C_FCT_FRM or TYPE_FRAME_DSCHECK = C_FULL_FRM) then
-        s_ack_request     <= '1';
+    if rising_edge(CLK)  then
+      if LINK_RESET_DLRE ='1' then
         s_nack_request    <= '0';
-        s_seq_num_request <=SEQ_NUM_ACK_DSCHECK;
+        s_ack_request     <= '0';
+        s_seq_num_request <= (others => '0');
       else
-        s_ack_request  <= '0';
-        s_nack_request <= '0';
+        -- Nack requested for broadcast and data frames if rx_err or crc_err
+        if RXERR_DSCHECK = '1' and (TYPE_FRAME_DWI = C_DATA_FRM or TYPE_FRAME_DWI = C_BC_FRM) then
+          s_nack_request <= '1';
+          s_ack_request  <= '0';
+        elsif CRC_ERR_DSCHECK = '1' and (TYPE_FRAME_DSCHECK = C_DATA_FRM or TYPE_FRAME_DSCHECK = C_BC_FRM) then
+          s_nack_request <= '1';
+          s_ack_request  <= '0';
+        -- Nack requested for broadcast, data, FCT, and FULL frames if seq_err
+        elsif SEQ_ERR_DSCHECK = '1' and  (TYPE_FRAME_DSCHECK = C_DATA_FRM or TYPE_FRAME_DSCHECK = C_BC_FRM or TYPE_FRAME_DSCHECK = C_FCT_FRM or TYPE_FRAME_DSCHECK = C_FULL_FRM) then
+          s_nack_request <= '1';
+          s_ack_request  <= '0';
+        -- Ack requested for broadcast, data, FCT, and FULL frames if end of frame without seq_err
+        elsif SEQ_ERR_DSCHECK = '0' and END_FRAME_DSCHECK = '1'  and (TYPE_FRAME_DSCHECK = C_DATA_FRM or TYPE_FRAME_DSCHECK = C_BC_FRM or TYPE_FRAME_DSCHECK = C_FCT_FRM or TYPE_FRAME_DSCHECK = C_FULL_FRM) then
+          s_ack_request     <= '1';
+          s_nack_request    <= '0';
+          s_seq_num_request <=SEQ_NUM_ACK_DSCHECK;
+        else
+          s_ack_request  <= '0';
+          s_nack_request <= '0';
+        end if;
       end if;
     end if;
   end process p_err;
@@ -182,60 +187,62 @@ begin
 -- Description: Output request management: priority to
 --							the latest, done handling, synchronization
 ---------------------------------------------------------
-  p_sync : process (CLK, RST_N)
+  p_sync : process (CLK)
   begin
-    if RST_N = '0' then
-      ack_request_out  <= '0';
-      nack_request_out <= '0';
-      s_seq_num_out    <= (others =>'0');
-    elsif rising_edge(CLK) then
-      if ack_request_out = '1' then
-        -- Ack valid but new Nack request
-        if REQ_ACK_DONE_DMAC = '1' and nack_request_fsm = '1' then
-          ack_request_out  <= '0';
-          nack_request_out <= '1';
-        -- Ack valid but new Ack request
-        elsif REQ_ACK_DONE_DMAC = '1' and ack_request_fsm = '1' then
-          ack_request_out  <= '1';
-          nack_request_out <= '0';
-          s_seq_num_out    <= s_seq_num_fsm;
-        -- Ack valid
-        elsif REQ_ACK_DONE_DMAC = '1' then
-          ack_request_out  <= '0';
-          nack_request_out <= '0';
-        -- Priority to the latest request
-        elsif nack_request_fsm = '1' then
-          ack_request_out  <= '0';
-          nack_request_out <= '1';
-        end if;
-      elsif nack_request_out = '1' then
-        -- Nack valid but new Nack request
-        if REQ_ACK_DONE_DMAC = '1' and nack_request_fsm = '1' then
-          ack_request_out  <= '0';
-          nack_request_out <= '1';
-        -- Nack valid but new Ack request
-        elsif REQ_ACK_DONE_DMAC = '1' and ack_request_fsm = '1' then
-          ack_request_out  <= '1';
-          nack_request_out <= '0';
-          s_seq_num_out    <= s_seq_num_fsm;
-        -- Ack valid
-        elsif REQ_ACK_DONE_DMAC = '1' then
-          ack_request_out  <= '0';
-          nack_request_out <= '0';
+    if rising_edge(CLK)  then
+      if LINK_RESET_DLRE ='1' then
+        ack_request_out  <= '0';
+        nack_request_out <= '0';
+        s_seq_num_out    <= (others =>'0');
+      else
+        if ack_request_out = '1' then
+          -- Ack valid but new Nack request
+          if REQ_ACK_DONE_DMAC = '1' and nack_request_fsm = '1' then
+            ack_request_out  <= '0';
+            nack_request_out <= '1';
+          -- Ack valid but new Ack request
+          elsif REQ_ACK_DONE_DMAC = '1' and ack_request_fsm = '1' then
+            ack_request_out  <= '1';
+            nack_request_out <= '0';
+            s_seq_num_out    <= s_seq_num_fsm;
+          -- Ack valid
+          elsif REQ_ACK_DONE_DMAC = '1' then
+            ack_request_out  <= '0';
+            nack_request_out <= '0';
+          -- Priority to the latest request
+          elsif nack_request_fsm = '1' then
+            ack_request_out  <= '0';
+            nack_request_out <= '1';
+          end if;
+        elsif nack_request_out = '1' then
+          -- Nack valid but new Nack request
+          if REQ_ACK_DONE_DMAC = '1' and nack_request_fsm = '1' then
+            ack_request_out  <= '0';
+            nack_request_out <= '1';
+          -- Nack valid but new Ack request
+          elsif REQ_ACK_DONE_DMAC = '1' and ack_request_fsm = '1' then
+            ack_request_out  <= '1';
+            nack_request_out <= '0';
+            s_seq_num_out    <= s_seq_num_fsm;
+          -- Ack valid
+          elsif REQ_ACK_DONE_DMAC = '1' then
+            ack_request_out  <= '0';
+            nack_request_out <= '0';
+          -- Priority to the latest request
+          elsif ack_request_fsm = '1' then
+            ack_request_out  <= '1';
+            nack_request_out <= '0';
+            s_seq_num_out    <= s_seq_num_fsm;
+          end if;
         -- Priority to the latest request
         elsif ack_request_fsm = '1' then
           ack_request_out  <= '1';
           nack_request_out <= '0';
           s_seq_num_out    <= s_seq_num_fsm;
+        elsif nack_request_fsm = '1' then
+          ack_request_out  <= '0';
+          nack_request_out <= '1';
         end if;
-      -- Priority to the latest request
-      elsif ack_request_fsm = '1' then
-        ack_request_out  <= '1';
-        nack_request_out <= '0';
-        s_seq_num_out    <= s_seq_num_fsm;
-      elsif nack_request_fsm = '1' then
-        ack_request_out  <= '0';
-        nack_request_out <= '1';
       end if;
     end if;
   end process p_sync;
@@ -243,13 +250,15 @@ begin
 -- Process: p_tpf
 -- Description: Transmit polarity flag management
 ---------------------------------------------------------
-p_tpf : process(CLK, RST_N)
+p_tpf : process(CLK)
 begin
-  if RST_N = '0' then
-    trans_pol_flg <= '0';
-  elsif rising_edge(CLK) then
-    if (TYPE_FRAME_DSCHECK = C_NACK_FRM) and END_FRAME_DSCHECK = '1' and CRC_ERR_DSCHECK ='0' and SEQ_ERR_DSCHECK = '0' then
-      trans_pol_flg <= not(trans_pol_flg);
+  if rising_edge(CLK)  then
+    if LINK_RESET_DLRE ='1' then
+      trans_pol_flg <= '0';
+    else
+      if (TYPE_FRAME_DSCHECK = C_NACK_FRM) and END_FRAME_DSCHECK = '1' and CRC_ERR_DSCHECK ='0' and SEQ_ERR_DSCHECK = '0' then
+        trans_pol_flg <= not(trans_pol_flg);
+      end if;
     end if;
   end if;
 end process p_tpf;
@@ -257,32 +266,35 @@ end process p_tpf;
 -- Process: p_nack_rst_strat
 -- Description: Error detection, internal request management
 ---------------------------------------------------------
-p_nack_rst_strat : process(CLK, RST_N)
+p_nack_rst_strat : process(CLK)
 begin
-  if RST_N = '0' then
-    LINK_RESET_DERRM <= '0';
-    flg_nack_rst_flg <='0';
-  elsif rising_edge(CLK) then
-    if NACK_RST_EN_MIB = '1' then
-      if NACK_RST_MODE_MIB = '1' then
-        if FRAME_ERR_DSCHECK = '0' and SEQ_ERR_DSCHECK = '0' and CRC_ERR_DSCHECK = '0' and (TYPE_FRAME_DSCHECK = C_NACK_FRM) and END_FRAME_DSCHECK = '1' then
-          LINK_RESET_DERRM <= '1';
-        else
-          LINK_RESET_DERRM <= '0';
-        end if;
-      -- else
-        -- if FRAME_ERR_DSCHECK = '0' and (TYPE_FRAME_DSCHECK = C_NACK_FRM) and END_FRAME_DSCHECK = '1' then
-        --   flg_nack_rst_flg <= '1';
-        --   LINK_RESET_DERRM <= '0';
-        -- elsif (TYPE_FRAME_DSCHECK = C_DATA_FRM or TYPE_FRAME_DSCHECK = C_BC_FRM) and END_FRAME_DSCHECK = '1' and FRAME_ERR_DSCHECK = '0' and flg_nack_rst_flg = '1' then
-        --   LINK_RESET_DERRM <= '1';
-        -- else
-        --   LINK_RESET_DERRM <= '0';
-        -- end if;
-      end if;
-    else
+  if rising_edge(CLK)  then
+    if LINK_RESET_DLRE ='1' then
       LINK_RESET_DERRM <= '0';
+      flg_nack_rst_flg <='0';
+    else
+      if NACK_RST_EN_MIB = '1' then
+        if NACK_RST_MODE_MIB = '1' then
+          if FRAME_ERR_DSCHECK = '0' and SEQ_ERR_DSCHECK = '0' and CRC_ERR_DSCHECK = '0' and (TYPE_FRAME_DSCHECK = C_NACK_FRM) and END_FRAME_DSCHECK = '1' then
+            LINK_RESET_DERRM <= '1';
+          else
+            LINK_RESET_DERRM <= '0';
+          end if;
+        -- else
+          -- if FRAME_ERR_DSCHECK = '0' and (TYPE_FRAME_DSCHECK = C_NACK_FRM) and END_FRAME_DSCHECK = '1' then
+          --   flg_nack_rst_flg <= '1';
+          --   LINK_RESET_DERRM <= '0';
+          -- elsif (TYPE_FRAME_DSCHECK = C_DATA_FRM or TYPE_FRAME_DSCHECK = C_BC_FRM) and END_FRAME_DSCHECK = '1' and FRAME_ERR_DSCHECK = '0' and flg_nack_rst_flg = '1' then
+          --   LINK_RESET_DERRM <= '1';
+          -- else
+          --   LINK_RESET_DERRM <= '0';
+          -- end if;
+        end if;
+      else
+        LINK_RESET_DERRM <= '0';
+      end if;
     end if;
   end if;
 end process p_nack_rst_strat;
+
 end Behavioral;
