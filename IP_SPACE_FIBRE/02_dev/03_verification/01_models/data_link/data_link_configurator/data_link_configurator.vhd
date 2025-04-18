@@ -179,8 +179,8 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
    signal outputs_to_sync  : std_logic_vector(34 downto 0);
    signal outputs_to_dut   : std_logic_vector(34 downto 0);
    -- inputs resynchronization
-   signal inputs_to_sync   : std_logic_vector(148 downto 0);
-   signal inputs_to_model  : std_logic_vector(148 downto 0);
+   signal inputs_to_sync   : std_logic_vector(149 downto 0);
+   signal inputs_to_model  : std_logic_vector(149 downto 0);
 
    signal frame_tx_i           : std_logic_vector(8 downto 0);
    signal frame_finished_i     : std_logic_vector(8 downto 0);
@@ -213,21 +213,19 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
     outputs_to_sync(3)           <= reg_lane_param(C_PARALLEL_LPB_BTFD);
     outputs_to_sync(11 downto 4) <= reg_lane_param(C_STDBREASON_MAX_BTFD downto C_PARALLEL_LPB_BTFD +1);
 
-    
-    
-    LANE_START                   <= outputs_to_dut(0);    
-    AUTOSTART                    <= outputs_to_dut(1);                
-    LANE_RESET                   <= outputs_to_dut(2);    
+    LANE_START                   <= outputs_to_dut(0);
+    AUTOSTART                    <= outputs_to_dut(1);
+    LANE_RESET                   <= outputs_to_dut(2);
     PARALLEL_LOOPBACK_EN         <= outputs_to_dut(3);
-    STANDBY_REASON               <= outputs_to_dut(11 downto 4);    
+    STANDBY_REASON               <= outputs_to_dut(11 downto 4);
     
     -- Parameter from Configurator to Phy
     outputs_to_sync(12)          <= reg_phy_param(C_NEAR_END_LPB_BTFD);
     outputs_to_sync(13)          <= reg_phy_param(C_FAR_END_LPB_BTFD);
     
-    NEAR_END_SERIAL_LB_EN        <= outputs_to_dut(12);  
-    FAR_END_SERIAL_LB_EN         <= outputs_to_dut(13); 
-    
+    NEAR_END_SERIAL_LB_EN        <= outputs_to_dut(12);
+    FAR_END_SERIAL_LB_EN         <= outputs_to_dut(13);
+
     -- Parameter from Configurator to Data Link
     outputs_to_sync(14)           <= reg_dl_param(C_INTERFACE_RST_BTFD);
     outputs_to_sync(15)           <= reg_dl_param(C_LINK_RST_BTFD);
@@ -318,9 +316,9 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
     nack_seq_num_i              <= inputs_to_model(148 downto 141);
 
     -- Parameters reset from Data Link to configurator
-    inputs_to_sync(133)         <= RESET_PARAM_DL;
+    inputs_to_sync(149)         <= RESET_PARAM_DL;
     
-    reset_param_dl_i            <= inputs_to_model(133);
+    reset_param_dl_i            <= inputs_to_model(149);
 
 
 
