@@ -100,7 +100,7 @@ begin
 	detected_ack         <= '1' when (FIFO_RX_DATA_VALID_PPL ='1' and DATA_RX_PPL(15 downto 0) = C_ACK_WORD   and VALID_K_CHARAC_PPL = "0001")  else '0';                                   -- ACK control word detected
 	detected_nack        <= '1' when (FIFO_RX_DATA_VALID_PPL ='1' and DATA_RX_PPL(15 downto 0) = C_NACK_WORD  and VALID_K_CHARAC_PPL = "0001")  else '0';                                   -- NACK control word detected
 	detected_full        <= '1' when (FIFO_RX_DATA_VALID_PPL ='1' and DATA_RX_PPL(15 downto 0) = C_FULL_WORD  and VALID_K_CHARAC_PPL = "0001")  else '0';                                   -- FULL control word detected
-	detected_retry       <= '1' when (FIFO_RX_DATA_VALID_PPL ='1' and DATA_RX_PPL(15 downto 0) = C_RETRY_WORD and VALID_K_CHARAC_PPL = "0001")  else '0';                                   -- RETRY control word detected
+	detected_retry       <= '1' when (FIFO_RX_DATA_VALID_PPL ='1' and DATA_RX_PPL = C_RETRY_WORD and VALID_K_CHARAC_PPL = "0001")  else '0';                                   -- RETRY control word detected
 	detected_rxerr_i     <= '1' when (FIFO_RX_DATA_VALID_PPL ='1' and DATA_RX_PPL = C_RXERR_WORD              and VALID_K_CHARAC_PPL = "0001" and current_state /= RX_NOTHING_ST) else '0'; -- RXERR control word detected
 
 -------------------------------------------------------------------------------------------
@@ -334,7 +334,7 @@ begin
 	  		  SEQ_NUM_DWI        <= DATA_RX_PPL(23 downto 16);
 	  		  CRC_8B_DWI         <= DATA_RX_PPL(31 downto 24);
 					VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
-	  		elsif DATA_RX_PPL(15 downto 0) = C_RETRY_WORD and VALID_K_CHARAC_PPL = "0001" then -- RETRY control word detected
+	  		elsif DATA_RX_PPL = C_RETRY_WORD and VALID_K_CHARAC_PPL = "0001" then -- RETRY control word detected
 	  		  TYPE_FRAME_DWI 		 <= C_RETRY_FRM;
 	  		  NEW_WORD_DWI   		 <= '1';
 					DATA_DWI       		 <= DATA_RX_PPL;
@@ -343,7 +343,9 @@ begin
 					VALID_K_CHARAC_DWI <= VALID_K_CHARAC_PPL;
 					retry_counter      <= retry_counter + 1;
     	    RETRY_PULSE_RX_DWI <='1';
-	  		elsif DATA_RX_PPL = C_RXERR_WORD and VALID_K_CHARAC_PPL = "0001" then -- RXERR control word detected
+	  		elsif DATA_RX_PPL = C_RXERR_WORD and VALID_K_CHARAC_PPL = "0001" and current_state /= RX_IDLE_FRAME_ST and current_state /= RX_NOTHING_ST then -- RXERR control word detected
+    	    NEW_WORD_DWI   <= '1';
+				elsif DATA_RX_PPL = C_RXERR_WORD and VALID_K_CHARAC_PPL = "0001" then -- RXERR control word detected
     	    NEW_WORD_DWI   <= '0';
 				elsif current_state = RX_IDLE_FRAME_ST or current_state= RX_NOTHING_ST then
 						DATA_DWI           <= (others=> '0');

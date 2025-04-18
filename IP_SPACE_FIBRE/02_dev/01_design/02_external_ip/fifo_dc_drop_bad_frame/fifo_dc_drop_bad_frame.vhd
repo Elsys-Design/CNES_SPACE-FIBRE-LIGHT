@@ -121,7 +121,6 @@ architecture RTL of FIFO_DC_DROP_BAD_FRAME is
     -- MODIF
     ------------------
     -- Frame control signals
-    signal bad_frame            : std_logic;                     -- Error detected in this frame
     signal ptr_last_valid       : unsigned(G_AWIDTH-1 downto 0); -- Pointer to the end of last valid frame
     signal ptr_last_valid_gray  : unsigned(G_AWIDTH-1 downto 0);
     ------------------
@@ -201,7 +200,6 @@ begin
             -- MODIF
             ------------------
             ptr_last_valid  <= (others => '0');
-            bad_frame       <= '0';
             ------------------
 
         elsif rising_edge(WR_CLK) then
@@ -215,7 +213,7 @@ begin
                 -- MODIF
                 ------------------
                 ptr_last_valid  <= (others => '0');
-                bad_frame       <= '0';
+
                 ------------------
                 
             end if;
@@ -225,9 +223,8 @@ begin
                 ------------------
                 -- MODIF
                 ------------------
-               if FRAME_ERROR = '1' or bad_frame = '1' then
+               if FRAME_ERROR = '1' then
                     ptr_wr         <= ptr_last_valid;
-                    bad_frame      <= not END_FRAME; -- R�initialiser si end_frame = '1', sinon garder '1'
                 elsif END_FRAME = '1' then 
                     ptr_wr         <= ptr_wr_inc;
                     ptr_last_valid <= ptr_wr_inc;

@@ -966,6 +966,7 @@ begin
   port map (
       CLK                      => CLK,
       LINK_RESET_DLRE          => link_reset_dlre,
+      LINK_RESET_DERRM         => link_reset_derrm,
       TYPE_FRAME_DWI           => type_frame_dwi,
       RXERR_DSCHECK            => rxerr_dscheck,
       TYPE_FRAME_DCCHECK       => type_frame_dccheck,

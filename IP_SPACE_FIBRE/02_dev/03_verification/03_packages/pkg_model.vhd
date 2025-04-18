@@ -180,7 +180,9 @@ package pkg_model is
 
   -- Global register
   constant C_RST_DUT_BTFD                 : integer := 0;                                                       --- RST_DUT_N bitfield
-
+  constant C_LANE_SPY_EN_BTFD             : integer := 1;
+  constant C_DL_EN_BTFD                   : integer := 2;
+  
   -- ### lane_generator ###
   -- Configuration register lane_generator
   constant C_LG_FRAME_NB_MAX_BTFD         : integer := 4;                                                       --- Frame number MSB bitfield
@@ -274,7 +276,9 @@ package pkg_model is
   constant C_DEFAULT_CONTINUOUS_VC        : std_logic_vector(7 downto 0)                     := (others =>'0');
   constant C_DEFAULT_CLEAR_ERROR_FLAG     : std_logic                                        := '0';
   -- Global register
-  constant C_DEFAULT_RST_DUT              : std_logic                                        := '0';            --- parallel loopback enable default value
+  constant C_DEFAULT_RST_DUT              : std_logic                                        := '0';            --- reset DUT default value
+  constant C_DEFAULT_DL_EN                : std_logic                                        := '1';            --- Data Link layer enable default value
+  constant C_DEFAULT_LANE_SPY             : std_logic                                        := '0';            --- Lane spy enable default value
 
   -- ### lane_generator ###
   -- Configuration register lane_generator
@@ -413,8 +417,10 @@ package body pkg_model is
    function init_lc_global return std_logic_vector is
       variable temp : std_logic_vector(C_AXI_DATA_WIDTH-1 downto 0);
    begin
-      temp(C_AXI_DATA_WIDTH-1 downto C_RST_DUT_BTFD +1)  := (others => '0');
-      temp(C_RST_DUT_BTFD)                               := C_DEFAULT_RST_DUT;
+      temp(C_AXI_DATA_WIDTH-1 downto C_DL_EN_BTFD +1)  := (others => '0');
+      temp(C_DL_EN_BTFD)                               := C_DEFAULT_DL_EN;
+      temp(C_LANE_SPY_EN_BTFD)                            := C_DEFAULT_LANE_SPY;
+      temp(C_RST_DUT_BTFD)                             := C_DEFAULT_RST_DUT;
       return temp;
    end function;
 

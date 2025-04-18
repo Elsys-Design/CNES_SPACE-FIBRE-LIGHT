@@ -120,6 +120,8 @@ entity DATA_LINK_CONFIGURATOR is
    
    -- to the DUT
    RST_DUT_N             : out std_logic;                                         -- Reset DUT (active low)
+   DL_EN                 : out std_logic;
+   LANE_SPY_EN           : out std_logic;
    
    -- from the DUT
    RESET_PARAM_DL        : in std_logic                                         -- Reset configuration parameters control
@@ -176,8 +178,8 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
    signal far_end_capa_i   : std_logic_vector(C_FAR_CAPA_WIDTH-1 downto 0);     -- Far-end Capablities
    signal rx_polarity_i    : std_logic;                                         -- RX Polarity
    -- inputs resynchronization
-   signal outputs_to_sync  : std_logic_vector(34 downto 0);
-   signal outputs_to_dut   : std_logic_vector(34 downto 0);
+   signal outputs_to_sync  : std_logic_vector(36 downto 0);
+   signal outputs_to_dut   : std_logic_vector(36 downto 0);
    -- inputs resynchronization
    signal inputs_to_sync   : std_logic_vector(149 downto 0);
    signal inputs_to_model  : std_logic_vector(149 downto 0);
@@ -199,7 +201,9 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
    signal reset_param_dl_i     : std_logic; 
    signal clear_error_flag     : std_logic;
    signal ack_seq_num_i        : std_logic_vector(7 downto 0);
-   signal nack_seq_num_i        : std_logic_vector(7 downto 0);
+   signal nack_seq_num_i       : std_logic_vector(7 downto 0);
+   signal dl_en_i              : std_logic;
+   signal lane_spy_en_i        : std_logic;
 
    begin
 ---------------------------------------
@@ -217,7 +221,9 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
     AUTOSTART                    <= outputs_to_dut(1);
     LANE_RESET                   <= outputs_to_dut(2);
     PARALLEL_LOOPBACK_EN         <= outputs_to_dut(3);
-    STANDBY_REASON               <= outputs_to_dut(11 downto 4);
+    STANDBY_REASON               <= outputs_to_dut(11 downto 4);  
+    DL_EN                        <= outputs_to_dut(35);
+    LANE_SPY_EN                  <= outputs_to_dut(36);
     
     -- Parameter from Configurator to Phy
     outputs_to_sync(12)          <= reg_phy_param(C_NEAR_END_LPB_BTFD);
@@ -233,6 +239,9 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
     outputs_to_sync(17)           <= reg_dl_param(C_NACK_RST_MODE_BTFD);
     outputs_to_sync(26 downto 18) <= reg_dl_param(C_PAUSE_VC_BTFD downto C_NACK_RST_MODE_BTFD + 1);
     outputs_to_sync(34 downto 27) <= reg_dl_param(C_CONTINUOUS_VC_BTFD downto C_PAUSE_VC_BTFD + 1);
+
+    outputs_to_sync(35)            <= dl_en_i;
+    outputs_to_sync(36)            <= lane_spy_en_i;
     clear_error_flag              <= reg_dl_param (C_CLEAR_ERROR_FLAG_BTFD);
 
     INTERFACE_RST                <= outputs_to_dut(14);
@@ -328,6 +337,9 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
 
    lane_start_pulse             <= reg_lane_param(C_LANESTART_PULSE_BTFD);
    RST_DUT_N                    <= reg_global(C_RST_DUT_BTFD);
+
+   dl_en_i                      <= reg_global(C_DL_EN_BTFD);
+   lane_spy_en_i                <= reg_global(C_LANE_SPY_EN_BTFD);
 
 ---------------------------------------
 -- INSTANCIATION
