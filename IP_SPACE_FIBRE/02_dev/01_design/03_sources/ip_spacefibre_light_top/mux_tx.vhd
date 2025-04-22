@@ -26,18 +26,21 @@ entity mux_tx is
     NEW_DATA_TX_INJ        : in  std_logic;                          --! Flag to write data in FIFO TX from injetor
     VALID_K_CHARAC_TX_INJ  : in  std_logic_vector(03 downto 00);     --! K charachter valid in the 32-bit DATA_TX_INJ vector
     FIFO_TX_FULL_INJ       : out std_logic;
+    LANE_RESET_INJ         : in  std_logic;  
 		-- Data-Link interface
     DATA_TX_DL             : in  std_logic_vector(31 downto 00);     --! Data parallel to be send from Data-Link Layer
     CAPABILITY_TX_DL       : in  std_logic_vector(07 downto 00);     --! Capability send on TX link in INIT3 control word
     NEW_DATA_TX_DL         : in  std_logic;                          --! Flag to write data in FIFO TX
     VALID_K_CHARAC_TX_DL   : in  std_logic_vector(03 downto 00);     --! K charachter valid in the 32-bit DATA_TX_DL vector
     FIFO_TX_FULL_DL        : out std_logic;
+    LANE_RESET_DL          : in  std_logic;
     -- Phy Plus Lane interface
     DATA_TX_MUX            : out  std_logic_vector(31 downto 00);    --! Data parallel
     CAPABILITY_TX_MUX      : out  std_logic_vector(07 downto 00);    --! Capability send on TX link in INIT3 control word
     NEW_DATA_TX_MUX        : out  std_logic;                         --! Flag to write data in FIFO TX
     VALID_K_CHARAC_TX_MUX  : out  std_logic_vector(03 downto 00);    --! K charachter valid in the 32-bit DATA_TX_MUX vector
-    FIFO_TX_FULL_PPL       : in   std_logic
+    FIFO_TX_FULL_PPL       : in   std_logic;
+    LANE_RESET_MUX         : out  std_logic
   );
 end mux_tx;
 
@@ -63,6 +66,7 @@ begin
 		VALID_K_CHARAC_TX_MUX   <= (others => '0');
     FIFO_TX_FULL_DL         <= '0';
     FIFO_TX_FULL_INJ        <= '0';
+    LANE_RESET_MUX          <= '0';
 	elsif rising_edge(CLK) then
     if ENABLE_INJ ='1' then
       DATA_TX_MUX           <= DATA_TX_INJ;
@@ -70,12 +74,14 @@ begin
       NEW_DATA_TX_MUX       <= NEW_DATA_TX_INJ;
       VALID_K_CHARAC_TX_MUX <= VALID_K_CHARAC_TX_INJ;
       FIFO_TX_FULL_INJ      <= FIFO_TX_FULL_PPL;
+      LANE_RESET_MUX        <= LANE_RESET_INJ;
     else
       DATA_TX_MUX           <= DATA_TX_DL;
       CAPABILITY_TX_MUX     <= CAPABILITY_TX_DL;
       NEW_DATA_TX_MUX       <= NEW_DATA_TX_DL;
       VALID_K_CHARAC_TX_MUX <= VALID_K_CHARAC_TX_DL;
       FIFO_TX_FULL_DL       <= FIFO_TX_FULL_PPL;
+      LANE_RESET_MUX        <= LANE_RESET_DL;
 	  end if;
 	end if;
 end process p_mux;

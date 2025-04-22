@@ -602,8 +602,11 @@ architecture Behavioral of CONFIGURATION_2_BENCH is
     signal data_rx_ppl               : std_logic_vector(31 downto 0);
     signal fifo_rx_empty_ppl         : std_logic;
     signal fifo_rx_data_valid_ppl    : std_logic;
-    signal valid_k_charac_rx_ppl    : std_logic_vector(3 downto 0);
+    signal valid_k_charac_rx_ppl     : std_logic_vector(3 downto 0);
     signal far_end_capa_dl           : std_logic_vector(7 downto 0);
+    signal enable_spy                : std_logic;
+    signal enable_inj                : std_logic;
+    signal lane_reset_dl             : std_logic;
     --MIB
     
     
@@ -685,6 +688,7 @@ architecture Behavioral of CONFIGURATION_2_BENCH is
                 NEW_DATA_TX_INJ                  : in  std_logic;                          --! Flag to write data in FIFO TX from injetor
                 VALID_K_CHARAC_TX_INJ            : in  std_logic_vector(03 downto 00);     --! K charachter valid in the 32-bit DATA_TX_INJ vector
                 FIFO_TX_FULL_INJ                 : out   std_logic;                        --! Flag full of the FIFO TX to the injector
+                LANE_RESET_INJ                   : in  std_logic;
                 -- -- Interface spy
                 ENABLE_SPY                       : in std_logic;
                 FIFO_RX_RD_EN_SPY                : in  std_logic;                          --! FiFo RX read enable flag from the spy
@@ -793,8 +797,79 @@ architecture Behavioral of CONFIGURATION_2_BENCH is
             FAR_END_CAPA          => far_end_capa,
             RX_POLARITY           => rx_polarity,
 
-            RST_DUT_N             => rst_dut_n
+            RST_DUT_N             => rst_dut_n,
+            DL_EN                 => enable_inj,
+            LANE_SPY_EN           => enable_spy
         );
+       ---------------------------------------------------------------------------
+   -- INSTANCE: I_LANE_GENERATOR
+   -- Description : Lane generator model
+   ---------------------------------------------------------------------------
+   
+   I_LANE_GENERATOR: entity work.LANE_GENERATOR
+   port map (
+      CLK             =>  CLK,
+      RST_N           =>  rst_dut_n,
+      S_AXI_AWADDR    =>  S_GEN_LANE_AXI_AWADDR,
+      S_AXI_AWVALID   =>  S_GEN_LANE_AXI_AWVALID,
+      S_AXI_AWREADY   =>  S_GEN_LANE_AXI_AWREADY,
+      S_AXI_WDATA     =>  S_GEN_LANE_AXI_WDATA,
+      S_AXI_WSTRB     =>  S_GEN_LANE_AXI_WSTRB,
+      S_AXI_WVALID    =>  S_GEN_LANE_AXI_WVALID,
+      S_AXI_WREADY    =>  S_GEN_LANE_AXI_WREADY,
+      S_AXI_BREADY    =>  S_GEN_LANE_AXI_BREADY,
+      S_AXI_BRESP     =>  S_GEN_LANE_AXI_BRESP,
+      S_AXI_BVALID    =>  S_GEN_LANE_AXI_BVALID,
+      S_AXI_ARADDR    =>  S_GEN_LANE_AXI_ARADDR,
+      S_AXI_ARVALID   =>  S_GEN_LANE_AXI_ARVALID,
+      S_AXI_ARREADY   =>  S_GEN_LANE_AXI_ARREADY,
+      S_AXI_RREADY    =>  S_GEN_LANE_AXI_RREADY,
+      S_AXI_RDATA     =>  S_GEN_LANE_AXI_RDATA,
+      S_AXI_RRESP     =>  S_GEN_LANE_AXI_RRESP,
+      S_AXI_RVALID    =>  S_GEN_LANE_AXI_RVALID,
+      -- LANE interface
+      ---------------------------------------
+      DATA_TX               => data_tx_ppl,
+      NEW_DATA_TX_PPL       => new_data_tx_ppl,
+      FIFO_TX_FULL_PPL      => fifo_tx_full_ppl,
+      LANE_RESET_DL         => lane_reset_dl,
+      VALID_K_CHARAC_TX_PPL => valid_k_charac_tx_ppl,
+      CAPABILITY_TX_PPL     => capability_tx_ppl
+   );
+  ---------------------------------------------------------------------------
+  -- INSTANCE: I_LANE_ANALYZER
+  -- Description : Lane analyzer model
+  ---------------------------------------------------------------------------
+  I_LANE_ANALYZER: entity work.LANE_ANALYZER
+  port map (
+     CLK             =>  CLK,
+     RST_N           =>  rst_dut_n,
+     S_AXI_AWADDR    =>  S_ANA_LANE_AXI_AWADDR,
+     S_AXI_AWVALID   =>  S_ANA_LANE_AXI_AWVALID,
+     S_AXI_AWREADY   =>  S_ANA_LANE_AXI_AWREADY,
+     S_AXI_WDATA     =>  S_ANA_LANE_AXI_WDATA,
+     S_AXI_WSTRB     =>  S_ANA_LANE_AXI_WSTRB,
+     S_AXI_WVALID    =>  S_ANA_LANE_AXI_WVALID,
+     S_AXI_WREADY    =>  S_ANA_LANE_AXI_WREADY,
+     S_AXI_BREADY    =>  S_ANA_LANE_AXI_BREADY,
+     S_AXI_BRESP     =>  S_ANA_LANE_AXI_BRESP,
+     S_AXI_BVALID    =>  S_ANA_LANE_AXI_BVALID,
+     S_AXI_ARADDR    =>  S_ANA_LANE_AXI_ARADDR,
+     S_AXI_ARVALID   =>  S_ANA_LANE_AXI_ARVALID,
+     S_AXI_ARREADY   =>  S_ANA_LANE_AXI_ARREADY,
+     S_AXI_RREADY    =>  S_ANA_LANE_AXI_RREADY,
+     S_AXI_RDATA     =>  S_ANA_LANE_AXI_RDATA,
+     S_AXI_RRESP     =>  S_ANA_LANE_AXI_RRESP,
+     S_AXI_RVALID    =>  S_ANA_LANE_AXI_RVALID,
+     -- LANE interface
+     ---------------------------------------
+     DATA_RX               => data_rx_ppl,
+     VALID_K_CHARAC_RX_PPL => valid_k_charac_rx_ppl,
+     FIFO_RX_EMPTY_PPL     => fifo_rx_empty_ppl,
+     FIFO_RX_DATA_VALID_PPL=> fifo_rx_data_valid_ppl,
+     FIFO_RX_RD_EN_PPL     => fifo_rx_rd_en_ppl,
+     FAR_END_CAPA_DL       => far_end_capa
+  );
 
     -- Instantiate the DATA_LINK_ANALYZER module 9 times
     gen_data_link_analyzer: for i in 0 to 8 generate
@@ -1283,14 +1358,15 @@ port map (
     CURRENT_TIME_SLOT                => current_time_slot_i,
 
     --interface spy and injector
-    ENABLE_INJ                       => '0',
+    ENABLE_INJ                       => enable_inj,
     DATA_TX_INJ                      => data_tx_ppl,
     CAPABILITY_TX_INJ                => capability_tx_ppl,
     NEW_DATA_TX_INJ                  => new_data_tx_ppl,
     VALID_K_CHARAC_TX_INJ            => valid_k_charac_tx_ppl,
     FIFO_TX_FULL_INJ                 => fifo_tx_full_ppl,
+    LANE_RESET_INJ                   => lane_reset_dl,
 
-    ENABLE_SPY                       => '0',
+    ENABLE_SPY                       => enable_spy,
     FIFO_RX_RD_EN_SPY                => fifo_rx_rd_en_ppl,
     DATA_RX_SPY                      => data_rx_ppl,
     FIFO_RX_EMPTY_SPY                => fifo_rx_empty_ppl,
