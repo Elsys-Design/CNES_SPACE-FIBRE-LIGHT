@@ -93,8 +93,8 @@ architecture rtl of data_in_buf is
   );
 
   type req_fct_fsm is (
-    IDLE_ST,
-    REQ_FCT_ST
+    INIT_ST,
+    IDLE_ST
   );
 
   signal current_state          : data_in_fsm;
@@ -122,6 +122,7 @@ architecture rtl of data_in_buf is
   signal axis_data_valid_reg1   : std_logic;
   signal axis_data_valid_reg2   : std_logic;
   signal link_reset_dlre_r      : std_logic;
+  signal fct_send_counter       : unsigned(1 downto 0);
 
 begin
 ---------------------------------------------------------
@@ -177,7 +178,7 @@ begin
     LINK_RESET_DIBUF    <= '0';
     INPUT_BUF_OVF_DIBUF <= '0';
   elsif rising_edge(CLK) then
-    if status_full = '1' then
+    if status_full = '1' and DATA_EN_DDES ='1' then
       LINK_RESET_DIBUF    <= '1';
       INPUT_BUF_OVF_DIBUF <= '1';
     else
@@ -270,6 +271,7 @@ begin
     req_fct_i            <= '0';
     axis_data_valid_reg1 <= '0';
     axis_data_valid_reg2 <= '0';
+
   elsif rising_edge(CLK) then
     if LINK_RESET_DLRE = '1' then
       cnt_word_sent        <= (others =>'0');
@@ -306,30 +308,33 @@ end process p_cnt_word;
 p_req_fct: process(CLK, RST_N)
 begin
   if RST_N = '0' then
-    current_state_fct <= IDLE_ST;
+    current_state_fct <= INIT_ST;
     REQ_FCT_DIBUF     <= '0';
     req_fct_done      <= '0';
+    fct_send_counter  <= (others =>'0');
   elsif rising_edge(CLK) then
     req_fct_done   <= '0';
     case current_state_fct is
+      when INIT_ST =>
+                          if LINK_RESET_DLRE = '0' then
+                            REQ_FCT_DIBUF   <= '1';
+                            if fct_send_counter = 3 and REQ_FCT_DONE_DMAC = '1' then
+                              REQ_FCT_DIBUF     <= '0';
+                              current_state_fct <= IDLE_ST;
+                              fct_send_counter  <= (others =>'0');
+                            elsif REQ_FCT_DONE_DMAC = '1' then
+                              fct_send_counter  <= fct_send_counter + 1;
+                            end if;
+                          end if;
       when IDLE_ST =>
                            if LINK_RESET_DLRE = '1' then
-                             current_state_fct   <= REQ_FCT_ST;
+                             current_state_fct   <= INIT_ST;
                            elsif req_fct_i ='1' then
                              REQ_FCT_DIBUF   <= '1';
                            elsif REQ_FCT_DONE_DMAC = '1' then
                              REQ_FCT_DIBUF   <= '0';
                              req_fct_done    <= '1';
                            end if;
-        when REQ_FCT_ST =>
-                          if LINK_RESET_DLRE = '0' then
-                            REQ_FCT_DIBUF   <= '1';
-                            if REQ_FCT_DONE_DMAC= '1' then
-                              REQ_FCT_DIBUF       <= '0';
-                              current_state_fct   <= IDLE_ST;
-                              req_fct_done        <= '1';
-                            end if;
-                          end if;
     end case;
   end if;
 end process p_req_fct;
