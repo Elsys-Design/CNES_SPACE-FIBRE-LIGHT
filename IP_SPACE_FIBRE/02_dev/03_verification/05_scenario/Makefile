@@ -35,6 +35,8 @@ VHDL_SOURCES += $(path_to_root_dir)/IP_SPACE_FIBRE/02_dev/03_verification/01_mod
 VHDL_SOURCES += $(path_to_root_dir)/IP_SPACE_FIBRE/02_dev/03_verification/01_models/data_link/data_link_analyzer/data_link_analyzer.vhd
 VHDL_SOURCES += $(path_to_root_dir)/IP_SPACE_FIBRE/02_dev/03_verification/01_models/data_link/data_link_configurator/data_link_configurator.vhd
 VHDL_SOURCES += $(path_to_root_dir)/IP_SPACE_FIBRE/02_dev/03_verification/01_models/data_link/data_link_generator/data_link_generator.vhd
+VHDL_SOURCES += $(path_to_root_dir)/IP_SPACE_FIBRE/02_dev/03_verification/01_models/lane/lane_generator/lane_generator.vhd
+VHDL_SOURCES += $(path_to_root_dir)/IP_SPACE_FIBRE/02_dev/03_verification/01_models/lane/lane_analyzer/lane_analyzer.vhd
 VHDL_SOURCES += $(path_to_root_dir)/IP_SPACE_FIBRE/02_dev/03_verification/02_benches/configuration_2_bench/configuration_2_bench.vhd
 
 SCRIPT_FILE = ../compile_sim_lib.tcl

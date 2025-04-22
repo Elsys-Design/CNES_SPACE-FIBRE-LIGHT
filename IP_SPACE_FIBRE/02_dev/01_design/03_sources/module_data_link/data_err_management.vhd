@@ -167,7 +167,11 @@ begin
           s_nack_request <= '1';
           s_ack_request  <= '0';
         -- Nack requested for broadcast, data, FCT, and FULL frames if seq_err
-        elsif SEQ_ERR_DSCHECK = '1' and  (TYPE_FRAME_DSCHECK = C_DATA_FRM or TYPE_FRAME_DSCHECK = C_BC_FRM or TYPE_FRAME_DSCHECK = C_FCT_FRM or TYPE_FRAME_DSCHECK = C_FULL_FRM) then
+        elsif SEQ_ERR_DSCHECK = '1' and  (TYPE_FRAME_DSCHECK = C_DATA_FRM or TYPE_FRAME_DSCHECK = C_BC_FRM) then
+          s_nack_request <= '1';
+          s_ack_request  <= '0';
+        -- Nack requested for broadcast, data, FCT, and FULL frames if seq_err
+        elsif SEQ_ERR_DSCHECK = '1' and CRC_ERR_DSCHECK = '0' and  (TYPE_FRAME_DSCHECK = C_IDLE_FRM or TYPE_FRAME_DSCHECK = C_FCT_FRM or TYPE_FRAME_DSCHECK = C_FULL_FRM) then
           s_nack_request <= '1';
           s_ack_request  <= '0';
         -- Ack requested for broadcast, data, FCT, and FULL frames if end of frame without seq_err
