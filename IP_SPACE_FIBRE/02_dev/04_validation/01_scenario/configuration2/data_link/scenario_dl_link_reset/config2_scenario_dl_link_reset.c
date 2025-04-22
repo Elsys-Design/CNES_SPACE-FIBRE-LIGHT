@@ -270,3 +270,12 @@ void configuration2_dl_link_reset_step2 (void)
 
 	debug_printf("\r\n Step 2: END \r\n");
 }
+
+/******************************************************************************/
+/**** Function wiath all steps*************************************************/
+/******************************************************************************/
+void configuration2_dl_link_reset_all_step (void)
+{
+  configuration2_dl_link_reset_step1();
+  configuration2_dl_link_reset_step2();
+}

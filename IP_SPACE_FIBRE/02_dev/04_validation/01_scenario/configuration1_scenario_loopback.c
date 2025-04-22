@@ -25,6 +25,7 @@
 #include "configuration1_scenario_loopback.h"
 // Common
 #include "common.h"
+#include "shared_header.h"
 //define constant
 
 #define CLEARLINE         0b0000
@@ -53,6 +54,7 @@ void init_to_started(void){
     
     //LaneReset with Lane_Configurator
     lane_reset_conf();
+    phy_plus_lane_olny();
     
     //Wait to go to Disabled
         //Enable LaneStart and wait to be in Started state
@@ -407,13 +409,13 @@ void scenario_loopback(void){
     debug_printf("\r\n Step 2 START \r\n");
     uint32_t step_2_failed = 0;
     mod_write(MODEL_CONFIGURATOR_ADDR, MOD_CONF_PARAM_PHY_REG_OFFSET, NEAR_END_LOOPBACK_MASK, 1 << NEAR_END_LOOPBACK_SHIFT);
-    init_to_started();
+    // init_to_started();
     //###########################
     //#With loopback during init
     //###########################
     
-    wait_for_started_to_active();
-
+    // wait_for_started_to_active();
+    initialization_sequence();
     //Incremental data generation
 
     //Configure Lane_Generator
@@ -623,12 +625,12 @@ void scenario_loopback_step1(void){
     ///////////////////////////////////////////////       
 	int step_1_failed = 0;
     mod_write(MODEL_CONFIGURATOR_ADDR, MOD_CONF_PARAM_LANE_REG_OFFSET, PARALLEL_LOOPBACK_MASK, 1 << PARALLEL_LOOPBACK_SHIFT);
-    init_to_started();
+    // init_to_started();
 
     ///With loopback during init
 
-    wait_for_started_to_active();
-
+    // wait_for_started_to_active();
+    initialization_sequence();
     //Incremental data generation
 
     //Configure Lane_Generator
@@ -843,13 +845,13 @@ void scenario_loopback_step2(void){
     debug_printf("\r\n Step 2: Near-End Loopback START \r\n");
     uint32_t step_2_failed = 0;
     mod_write(MODEL_CONFIGURATOR_ADDR, MOD_CONF_PARAM_PHY_REG_OFFSET, NEAR_END_LOOPBACK_MASK, 1 << NEAR_END_LOOPBACK_SHIFT);
-    init_to_started();
+    // init_to_started();
     //###########################
     //#With loopback during init
     //###########################
     
-    wait_for_started_to_active();
-
+    // wait_for_started_to_active();
+    initialization_sequence();
     //Incremental data generation
 
     //Configure Lane_Generator
@@ -1040,5 +1042,218 @@ void scenario_loopback_step2(void){
     }
     else{
         debug_printf("\r\n Step 2 near-end loopback result: Failed\r\n");
+    }
+}
+
+void scenario_loopback_step3(void){
+    uint32_t data_lane_gen_config, data_lane_ana_config,  data_lane_gen_seed, data_lane_ana_seed, data_lane_ana_control, data_lane_gen_control, error_cnt, temp;
+	debug_printf("\r\n Start scenraio loopback\r\n");	
+
+    //////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
+    /////        Step 3: Check phy layer near-end serial loopback        /////
+    //////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
+    debug_printf("\r\n Step 3: EXTERNAL Loopback START \r\n");
+    uint32_t step_3_failed = 0;
+    initialization_sequence();
+    //###########################
+    //#With loopback during init
+    //###########################
+    
+    //wait_for_started_to_active();
+
+    //Incremental data generation
+
+    //Configure Lane_Generator
+    data_lane_gen_config = bytearray(0x84,0x20,0x00,0x00);// 4 frames, 104 bytes, incremental
+    mod_write_all(MODEL_GENERATOR_ADDR, MOD_GEN_CONFIG_REG_OFFSET, data_lane_gen_config);
+
+    //Configure Lane_Analyzer
+    data_lane_ana_config = bytearray(0x84,0x20,0x00,0x00);
+    mod_write_all(MODEL_ANALYZER_ADDR, MOD_ANA_CONFIG_REG_OFFSET, data_lane_ana_config);
+
+    //Seed of Lane_Generator
+    data_lane_gen_seed = bytearray(0x00,0x00,0x00,0x00);
+    mod_write_all(MODEL_GENERATOR_ADDR, MOD_GEN_INIT_VALUE_REG_OFFSET, data_lane_gen_seed);
+
+    //Seed of Lane_Analyzer
+    data_lane_ana_seed = bytearray(0x00,0x00,0x00,0x00);
+    mod_write_all(MODEL_ANALYZER_ADDR, MOD_ANA_INIT_VALUE_REG_OFFSET, data_lane_ana_seed);
+
+    // Start Test
+    data_lane_ana_control = bytearray( 0x01,0x00,0x00,0x00);
+    mod_write_all(MODEL_ANALYZER_ADDR, MOD_ANA_CONTROL_REG_OFFSET, data_lane_ana_control);
+
+    data_lane_gen_control = bytearray(0x01,0x00,0x00,0x00);
+    mod_write_all(MODEL_GENERATOR_ADDR, MOD_GEN_CONTROL_REG_OFFSET, data_lane_gen_control);
+    
+    //Pull until Test End
+    error_cnt = wait_end_test();
+
+    if (error_cnt != 0){
+        step_3_failed = 1; 
+        debug_printf("\r\nstep 3.1 result: FAILED\r\n");
+        debug_printf("\r\n number of error : %x\r\n", error_cnt);
+    }
+    else{
+        debug_printf("\r\nstep 3.1 result: PASS\r\n");
+    }
+
+    //PRBS data generation
+
+    //Configure Lane_Generator
+    data_lane_gen_config = bytearray(0x9F,0x20,0x00,0x01);// 31 frames, 104 bytes, prbs
+    mod_write_all(MODEL_GENERATOR_ADDR, MOD_GEN_CONFIG_REG_OFFSET, data_lane_gen_config);
+
+    //Configure Lane_Analyzer
+    data_lane_ana_config = bytearray(0x9F,0x20,0x00,0x01);
+    mod_write_all(MODEL_ANALYZER_ADDR, MOD_ANA_CONFIG_REG_OFFSET, data_lane_ana_config);
+
+    //Seed of Lane_Generator
+    data_lane_gen_seed = bytearray(0x00,0x00,0x00,0x00);
+    mod_write_all(MODEL_GENERATOR_ADDR, MOD_GEN_INIT_VALUE_REG_OFFSET, data_lane_gen_seed);
+
+    //Seed of Lane_Analyzer
+    data_lane_ana_seed = bytearray(0x00,0x00,0x00,0x00);
+    mod_write_all(MODEL_ANALYZER_ADDR, MOD_ANA_INIT_VALUE_REG_OFFSET, data_lane_ana_seed);
+
+    // Start Test
+    data_lane_ana_control = bytearray( 0x01,0x00,0x00,0x00);
+    mod_write_all(MODEL_ANALYZER_ADDR, MOD_ANA_CONTROL_REG_OFFSET, data_lane_ana_control);
+
+    data_lane_gen_control = bytearray(0x01,0x00,0x00,0x00);
+    mod_write_all(MODEL_GENERATOR_ADDR, MOD_GEN_CONTROL_REG_OFFSET, data_lane_gen_control);
+    
+    //Pull until Test End
+    error_cnt = wait_end_test();
+
+    if (error_cnt != 0){
+        step_3_failed = 1; 
+        debug_printf("\r\nstep 3.2 result: FAILED\r\n");
+        debug_printf("\r\n number of error : %x\r\n", error_cnt);
+    }
+    else{
+        debug_printf("\r\nstep 3.2 result: PASS\r\n");
+    }
+
+    //// seed 0x00000001
+    //Configure Lane_Generator
+    data_lane_gen_config = bytearray(0x9F,0x20,0x00,0x01);// 31 frames, 104 bytes, prbs
+    mod_write_all(MODEL_GENERATOR_ADDR, MOD_GEN_CONFIG_REG_OFFSET, data_lane_gen_config);
+
+    //Configure Lane_Analyzer
+    data_lane_ana_config = bytearray(0x9F,0x20,0x00,0x01);
+    mod_write_all(MODEL_ANALYZER_ADDR, MOD_ANA_CONFIG_REG_OFFSET, data_lane_ana_config);
+
+    //Seed of Lane_Generator
+    data_lane_gen_seed = bytearray(0x01,0x00,0x00,0x00);
+    mod_write_all(MODEL_GENERATOR_ADDR, MOD_GEN_INIT_VALUE_REG_OFFSET, data_lane_gen_seed);
+
+    //Seed of Lane_Analyzer
+    data_lane_ana_seed = bytearray(0x01,0x00,0x00,0x00);
+    mod_write_all(MODEL_ANALYZER_ADDR, MOD_ANA_INIT_VALUE_REG_OFFSET, data_lane_ana_seed);
+
+    // Start Test
+    data_lane_ana_control = bytearray( 0x01,0x00,0x00,0x00);
+    mod_write_all(MODEL_ANALYZER_ADDR, MOD_ANA_CONTROL_REG_OFFSET, data_lane_ana_control);
+
+    data_lane_gen_control = bytearray(0x01,0x00,0x00,0x00);
+    mod_write_all(MODEL_GENERATOR_ADDR, MOD_GEN_CONTROL_REG_OFFSET, data_lane_gen_control);
+    
+    //Pull until Test End
+    error_cnt = wait_end_test();
+
+    if (error_cnt != 0){
+        step_3_failed = 1; 
+        debug_printf("\r\nstep 3.3 result: FAILED\r\n");
+        debug_printf("\r\n number of error : %x\r\n", error_cnt);
+    }
+    else{
+        debug_printf("\r\nstep 3.3 result: PASS\r\n");
+    }
+
+    //// seed 0x02000000
+    //Configure Lane_Generator
+    data_lane_gen_config = bytearray(0x82,0x20,0x00,0x01);// 2 frames, 104 bytes, prbs
+    mod_write_all(MODEL_GENERATOR_ADDR, MOD_GEN_CONFIG_REG_OFFSET, data_lane_gen_config);
+
+    //Configure Lane_Analyzer
+    data_lane_ana_config = bytearray(0x82,0x20,0x00,0x01);
+    mod_write_all(MODEL_ANALYZER_ADDR, MOD_ANA_CONFIG_REG_OFFSET, data_lane_ana_config);
+
+    //Seed of Lane_Generator
+    data_lane_gen_seed = bytearray(0x00,0x00,0x00,0x02);
+    mod_write_all(MODEL_GENERATOR_ADDR, MOD_GEN_INIT_VALUE_REG_OFFSET, data_lane_gen_seed);
+
+    //Seed of Lane_Analyzer
+    data_lane_ana_seed = bytearray(0x00,0x00,0x00,0x02);
+    mod_write_all(MODEL_ANALYZER_ADDR, MOD_ANA_INIT_VALUE_REG_OFFSET, data_lane_ana_seed);
+
+    // Start Test
+    data_lane_ana_control = bytearray( 0x01,0x00,0x00,0x00);
+    mod_write_all(MODEL_ANALYZER_ADDR, MOD_ANA_CONTROL_REG_OFFSET, data_lane_ana_control);
+
+    data_lane_gen_control = bytearray(0x01,0x00,0x00,0x00);
+    mod_write_all(MODEL_GENERATOR_ADDR, MOD_GEN_CONTROL_REG_OFFSET, data_lane_gen_control);
+    
+    //Pull until Test End
+    error_cnt = wait_end_test();
+
+    if (error_cnt != 0){
+        step_3_failed = 1; 
+        debug_printf("\r\nstep 3.4 result: FAILED\r\n");
+        debug_printf("\r\n number of error : %x\r\n", error_cnt);
+    }
+    else{
+        debug_printf("\r\nstep 3.4 result: PASS\r\n");
+    }
+
+    //// seed 0x03000000
+    //Configure Lane_Generator
+    data_lane_gen_config = bytearray(0xA1,0x08,0x00,0x01);// 1 frames, 69 bytes, prbs
+    mod_write_all(MODEL_GENERATOR_ADDR, MOD_GEN_CONFIG_REG_OFFSET, data_lane_gen_config);
+
+    //Configure Lane_Analyzer
+    data_lane_ana_config = bytearray(0xA1,0x08,0x00,0x01);
+    mod_write_all(MODEL_ANALYZER_ADDR, MOD_ANA_CONFIG_REG_OFFSET, data_lane_ana_config);
+
+    //Seed of Lane_Generator
+    data_lane_gen_seed = bytearray(0x00,0x00,0x00,0x03);
+    mod_write_all(MODEL_GENERATOR_ADDR, MOD_GEN_INIT_VALUE_REG_OFFSET, data_lane_gen_seed);
+
+    //Seed of Lane_Analyzer
+    data_lane_ana_seed = bytearray(0x00,0x00,0x00,0x03);
+    mod_write_all(MODEL_ANALYZER_ADDR, MOD_ANA_INIT_VALUE_REG_OFFSET, data_lane_ana_seed);
+
+    // Start Test
+    data_lane_ana_control = bytearray( 0x01,0x00,0x00,0x00);
+    mod_write_all(MODEL_ANALYZER_ADDR, MOD_ANA_CONTROL_REG_OFFSET, data_lane_ana_control);
+
+    data_lane_gen_control = bytearray(0x01,0x00,0x00,0x00);
+    mod_write_all(MODEL_GENERATOR_ADDR, MOD_GEN_CONTROL_REG_OFFSET, data_lane_gen_control);
+    
+    //Pull until Test End
+    error_cnt = wait_end_test();
+
+    if (error_cnt != 0){
+        step_3_failed = 1; 
+        debug_printf("\r\nstep 3.5 result: FAILED\r\n");
+        debug_printf("\r\n number of error : %x\r\n", error_cnt);
+    }
+    else{
+        debug_printf("\r\nstep 3.5 result: PASS\r\n");
+    }
+    debug_printf("\r\n Step 3 END \r\n");
+    mod_write(MODEL_CONFIGURATOR_ADDR, MOD_CONF_PARAM_PHY_REG_OFFSET, NEAR_END_LOOPBACK_MASK, 0 << NEAR_END_LOOPBACK_SHIFT);
+    //print results of test
+    debug_printf("\r\n TEST RESULTS Scenario Loopback:");
+    if (step_3_failed == 0){
+        debug_printf("\r\n Step 3 External loopback result: Pass\r\n");
+    }
+    else{
+        debug_printf("\r\n Step 3 External loopback result: Failed\r\n");
     }
 }
