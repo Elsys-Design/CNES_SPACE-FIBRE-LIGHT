@@ -458,12 +458,9 @@ void configuration2_dl_lpb_step4 (void)
 
 	debug_printf("\r\n Step 4: END \r\n");
 }
-//##########################################################################
-//## Scenario 1 : Link reset FSM
-//##########################################################################
 
 /******************************************************************************/
-/**** Step 1: Interface RESET  ************************************************/
+/**** Function wiath all steps*************************************************/
 /******************************************************************************/
 void configuration2_dl_lpb_all_step (void)
 {
@@ -471,4 +468,34 @@ void configuration2_dl_lpb_all_step (void)
   configuration2_dl_lpb_step2();
   configuration2_dl_lpb_step3();
   configuration2_dl_lpb_step4();
+}
+
+/******************************************************************************/
+/**** Function wiath all steps*************************************************/
+/******************************************************************************/
+
+void configuration2test_registre(void)
+{
+	if (initialization_sequence() != OK)
+	{
+		debug_printf("\r\n Initialization sequence failed. \r\n");
+
+		return;
+	}
+	uint32_t temp1, temp2;
+	uint32_t reg = *DL_CONFIGURATOR_LANE_PARAMETER_PTR;
+	debug_printf("\r\n TEST REG \r\n");
+	
+	temp1 = DL_CONFIGURATOR_LANE_PARAMETER_GET(LANESTART, reg);
+	temp2 = mod_read_all(MODEL_CONFIGURATOR_ADDR, MOD_CONF_PARAM_LANE_REG_OFFSET);
+	debug_printf("\r\n TEST LANE PARAMETER temp 1: %x \r\n", temp1);
+	debug_printf("\r\n TEST LANE PARAMETER temp 2: %x \r\n", temp2);
+	debug_printf("\r\n TEST ggggggggggggggggggg \r\n");
+	*DL_GENERATOR_X_INITIAL_VALUE_PTR(4) = 0x62U;
+	debug_printf("\r\n TEST ooooooooooooooo\r\n");
+	temp1 = *DL_GENERATOR_X_INITIAL_VALUE_PTR(4);
+	debug_printf("\r\n TESTnnnnnnnnnnnnnnnnnnnnnnn \r\n");
+	temp2 = mod_read_all(MODEL_CONFIGURATOR_ADDR, MOD_CONF_STATUS_LANE_REG_OFFSET);
+	debug_printf("\r\n TEST DL_GENERATOR_X_INITIAL_VALUE_PTR(4) temp 1: %x \r\n", temp1);
+	debug_printf("\r\n TEST MOD_CONF_STATUS_LANE_REG_OFFSET temp 2: %x \r\n", temp2);
 }

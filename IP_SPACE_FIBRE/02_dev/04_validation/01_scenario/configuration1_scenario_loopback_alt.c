@@ -139,6 +139,7 @@ void alt_scenario_loopback_step_1 (void)
 	debug_printf("\r\n Step 1: Parallel loopback START \r\n");
 
 	initialization_sequence();
+	
 
 	DL_CONFIGURATOR_LANE_PARAMETER_SET_IN_PLACE
 	(
