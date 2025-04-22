@@ -116,7 +116,6 @@ architecture rtl of data_in_buf is
   signal m_axis_tready	        : std_logic;
   signal m_axis_tuser           : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
   -- FCT
-  signal req_fct_done           : std_logic;
   signal req_fct_i              : std_logic;
   signal axis_data_valid        : std_logic;
   signal axis_data_valid_reg1   : std_logic;
@@ -282,21 +281,28 @@ begin
       axis_data_valid_reg1 <= axis_data_valid;
       axis_data_valid_reg2 <= axis_data_valid_reg1;
       if axis_data_valid_reg2 = '1' then
-        if cnt_word_sent > 62 then
-          cnt_word_sent <= to_unsigned(1,cnt_word_sent'length);
-          req_fct_i     <= '1';
-        elsif req_fct_done ='1' then
-            req_fct_i     <= '0';
-            cnt_word_sent <= cnt_word_sent + 1;
-        else
+        if REQ_FCT_DONE_DMAC ='1' then
           req_fct_i     <= '0';
+          if cnt_word_sent > 62 then
+            cnt_word_sent <= cnt_word_sent - 63;
+          else
+            cnt_word_sent <= (others =>'0');
+          end if;
+        elsif cnt_word_sent > 62 then
+          req_fct_i     <= '1';
+          cnt_word_sent <= cnt_word_sent + 1;
+        else
           cnt_word_sent <= cnt_word_sent + 1;
         end if;
-      elsif cnt_word_sent > 62 then
-        cnt_word_sent <= (others =>'0');
-        req_fct_i     <= '1';
-      elsif req_fct_done ='1' then
+      elsif REQ_FCT_DONE_DMAC ='1' then
         req_fct_i     <= '0';
+        if cnt_word_sent > 63 then
+          cnt_word_sent <= cnt_word_sent - 64;
+        else
+          cnt_word_sent <= (others =>'0');
+        end if;
+      elsif cnt_word_sent > 62 then
+        req_fct_i     <= '1';
       end if;
     end if;
   end if;
@@ -310,10 +316,8 @@ begin
   if RST_N = '0' then
     current_state_fct <= INIT_ST;
     REQ_FCT_DIBUF     <= '0';
-    req_fct_done      <= '0';
     fct_send_counter  <= (others =>'0');
   elsif rising_edge(CLK) then
-    req_fct_done   <= '0';
     case current_state_fct is
       when INIT_ST =>
                           if LINK_RESET_DLRE = '0' then
@@ -329,11 +333,10 @@ begin
       when IDLE_ST =>
                            if LINK_RESET_DLRE = '1' then
                              current_state_fct   <= INIT_ST;
-                           elsif req_fct_i ='1' then
-                             REQ_FCT_DIBUF   <= '1';
-                           elsif REQ_FCT_DONE_DMAC = '1' then
-                             REQ_FCT_DIBUF   <= '0';
-                             req_fct_done    <= '1';
+                            elsif REQ_FCT_DONE_DMAC = '1' then
+                              REQ_FCT_DIBUF   <= '0';
+                            elsif req_fct_i ='1' then
+                              REQ_FCT_DIBUF   <= '1';
                            end if;
     end case;
   end if;

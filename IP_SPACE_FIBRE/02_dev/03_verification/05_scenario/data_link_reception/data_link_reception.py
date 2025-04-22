@@ -3566,13 +3566,13 @@ async def cocotb_run(dut):
 
     # Read 128 data words in first virtual channel, check that two FCTs request were sent and that the FCTs were valid
 
-    await configure_model_dl(tb, 0, [0xE2,0x1F,0x00,0x01], [0x2C,0x00,0x00,0x00])
+    await configure_model_dl(tb, 4, [0xE2,0x1F,0x00,0x01], [0x2C,0x00,0x00,0x00])
 
-    await start_model_dl(tb, 0)
+    await start_model_dl(tb, 4)
 
-    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 250))
 
-    result = await wait_end_test_dl(tb, 0)
+    result = await wait_end_test_dl(tb, 4)
 
     if result != "00000000":
         step_4_failed = 1
@@ -3584,13 +3584,13 @@ async def cocotb_run(dut):
 
     # Read 192 data words in the second virtual channel, check that three FCTs request were sent and that the FCTs were valid
 
-    await configure_model_dl(tb, 1, [0xE3,0x1F,0x00,0x01], [0x2D,0x00,0x00,0x00])
+    await configure_model_dl(tb, 6, [0xE3,0x1F,0x00,0x01], [0x2D,0x00,0x00,0x00])
 
-    await start_model_dl(tb, 1)
+    await start_model_dl(tb, 6)
 
-    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 350))
 
-    result = await wait_end_test_dl(tb, 1)
+    result = await wait_end_test_dl(tb, 6)
 
     if result != "00000000":
         step_4_failed = 1
