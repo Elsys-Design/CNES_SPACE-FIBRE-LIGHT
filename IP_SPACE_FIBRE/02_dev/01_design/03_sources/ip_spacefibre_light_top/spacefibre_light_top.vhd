@@ -793,7 +793,7 @@ begin
       DATA_TX                          => data_tx_mux,
       CAPABILITY_TX                    => capability_tx_mux,
       NEW_DATA_TX                      => new_data_tx_mux,
-      VALID_K_CHARAC_TX                => valid_k_charac_tx_dl,
+      VALID_K_CHARAC_TX                => valid_k_charac_tx_mux,
       FIFO_TX_FULL                     => fifo_tx_full_ppl,
       -- TO Data-link layer
       FIFO_RX_RD_EN                    => fifo_rx_rd_en_demux,

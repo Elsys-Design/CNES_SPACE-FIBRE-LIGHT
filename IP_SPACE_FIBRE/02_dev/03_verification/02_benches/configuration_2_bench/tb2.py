@@ -153,7 +153,7 @@ class TB(common.TB):
         await RisingEdge(self.dut.spacefibre_instance.inst_phy_plus_lane.RST_TX_DONE)
         self.logger.info("sim_time %d ns: Reset completed", get_sim_time(units = 'ns') )
         
-async def reset_DUT_lane_only(self):
+    async def reset_DUT_lane_only(self):
         """
         Active reset of the DUT for 10 ns.
         Release DUT reset.

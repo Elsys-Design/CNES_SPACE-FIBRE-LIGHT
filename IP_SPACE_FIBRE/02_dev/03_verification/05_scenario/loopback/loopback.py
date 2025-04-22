@@ -75,7 +75,7 @@ async def init_to_started(tb):
     await Timer(2, units = "us")
 
     #Enable LaneStart and wait to be in Started state
-    Data_read_lane_config_parameters.data = bytearry([0x01,0x00,0x00,0x00])
+    Data_read_lane_config_parameters.data = bytearray([0x01,0x00,0x00,0x00])
  
     time_out = 0
     await tb.masters[0].write_data(Data_read_lane_config_parameters)
@@ -205,7 +205,7 @@ async def cocotb_run(dut):
     ###########################
     #With loopback during init
     ###########################
-    Data_read_lane_config_parameters.data = bytearry([0x09,0x00,0x00,0x00]) # Enable  Parallele loopback
+    Data_read_lane_config_parameters.data = bytearray([0x09,0x00,0x00,0x00]) # Enable  Parallele loopback
     await tb.masters[0].write_data(Data_read_lane_config_parameters)
     await wait_for_started_to_active(tb)
 
@@ -417,8 +417,9 @@ async def cocotb_run(dut):
     #Without loopback in Active
     ###########################
 
-    Disable_ParallelLoopback = Data(0x04, 0x00000001)
-    await tb.masters[0].write_data(Disable_ParallelLoopback)
+   
+    Data_read_lane_config_parameters.data = bytearray([0x01,0x00,0x00,0x00]) # Enable  Parallele loopback
+    await tb.masters[0].write_data(Data_read_lane_config_parameters)
 
     #Incremental data generation
 
@@ -628,7 +629,8 @@ async def cocotb_run(dut):
     #With loopback from Active
     ###########################
 
-    await tb.masters[0].write_data(Enable_ParallelLoopback)
+    Data_read_lane_config_parameters.data = bytearray([0x09,0x00,0x00,0x00]) # Enable  Parallele loopback
+    await tb.masters[0].write_data(Data_read_lane_config_parameters)
 
     #Incremental data generation
 
@@ -840,8 +842,8 @@ async def cocotb_run(dut):
         tb.logger.error("simulation time %d ns : step 1 result: Failed", get_sim_time(units = "ns"))
 
 
-    Disable_ParallelLoopback = Data(0x04, 0x00000001)
-    await tb.masters[0].write_data(Disable_ParallelLoopback)
+    Data_read_lane_config_parameters.data = bytearray([0x01,0x00,0x00,0x00]) # Enable  Parallele loopback
+    await tb.masters[0].write_data(Data_read_lane_config_parameters)
 
     ##########################################################################
     ##########################################################################
