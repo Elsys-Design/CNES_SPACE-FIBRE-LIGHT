@@ -306,7 +306,7 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
     far_end_link_rst_i          <= inputs_to_model(44);
     seq_number_tx_i             <= inputs_to_model(51 downto 44);
     seq_number_rx_i             <= inputs_to_model(59 downto 52);
-    input_buffer_ovfl_i         <= inputs_to_model(67 downto 60);
+    input_buffer_ovfl_i         <= inputs_to_model(67 downto 60) or reg_dl_status_2(C_INPUT_BUFFER_OVERFLW_BTFD downto C_FAR_END_LINK_RST_BTFD + 1);
     frame_tx_i                  <= inputs_to_model(76 downto 68);
     frame_finished_i            <= inputs_to_model(85 downto 77);
     data_cnt_tx_i               <= inputs_to_model(92 downto 86);
@@ -625,10 +625,11 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
          reg_dl_err_mngt(C_ACK_SEQ_NUM_BTFD downto 0)                                     <= ack_seq_num_i;
          reg_dl_err_mngt(C_NACK_SEQ_NUM_BTFD downto C_ACK_SEQ_NUM_BTFD + 1)               <= nack_seq_num_i;
          if clear_error_flag = '1' then
-            reg_dl_status_2(C_CRC_LONG_ERROR_BTFD)                                        <= '0';
-            reg_dl_status_2(C_CRC_SHORT_ERROR_BTFD)                                       <= '0';
-            reg_dl_status_2(C_FRAME_ERROR_BTFD)                                           <= '0';
-            reg_dl_status_2(C_SEQ_ERROR_BTFD)                                             <= '0';
+            reg_dl_status_2(C_CRC_LONG_ERROR_BTFD)                                           <= '0';
+            reg_dl_status_2(C_CRC_SHORT_ERROR_BTFD)                                          <= '0';
+            reg_dl_status_2(C_FRAME_ERROR_BTFD)                                              <= '0';
+            reg_dl_status_2(C_SEQ_ERROR_BTFD)                                                <= '0';
+            reg_dl_status_2(C_INPUT_BUFFER_OVERFLW_BTFD downto C_FAR_END_LINK_RST_BTFD + 1)  <= (others => '0');
          end if;
       end if;
    end process P_STATUS;

@@ -107,6 +107,7 @@ architecture rtl of DATA_LINK_ANALYZER is
    signal prbs_data                   : std_logic_vector(C_INTERNAL_BUS_WIDTH-1 downto 0);  -- Data value PRBS generation
    signal tdata_i                     : std_logic_vector(C_INTERNAL_BUS_WIDTH-1 downto 0);  -- Data value 
    signal tuser_i                     : std_logic_vector(C_VALID_K_WIDTH -1 downto 0);      -- Data K character
+   signal tready_i                    : std_logic;                                          -- TREADY internal
    begin
 ---------------------------------------
 -- SIGNAL CONNECTION
@@ -117,6 +118,8 @@ architecture rtl of DATA_LINK_ANALYZER is
    test_end          <= test_end_frame;
    -- err_counter assingation in function of the data_mode
    err_counter       <= err_counter_frame;
+
+   TREADY            <= tready_i;
 
 ---------------------------------------
 -- INSTANCIATION
@@ -358,7 +361,7 @@ architecture rtl of DATA_LINK_ANALYZER is
          test_end_frame          <= '0';
          prbs_data               <= (others=>'1');
          err_counter_frame       <= (others=>'0');
-         TREADY                  <= '0';
+         tready_i                  <= '0';
          tdata_i                 <= (others=>'0');
          tuser_i                 <= (others=>'0');
          reg_data_rx_frame       <= (others=>'0');
@@ -370,7 +373,7 @@ architecture rtl of DATA_LINK_ANALYZER is
                val_data                <= init_val;
                prbs_data               <= std_logic_vector(init_val);
                reg_data_rx_frame       <= std_logic_vector(val_data);
-               TREADY                  <= '0';
+               tready_i                  <= '0';
                if (model_start = '1' and data_mode =C_LA_DM_DATA) then
                   busy_frame              <= '1';                                  -- model busy
                   test_end_frame          <= '0';                                  -- reset for a new test
@@ -455,14 +458,15 @@ architecture rtl of DATA_LINK_ANALYZER is
                   cnt_byte      <= cnt_byte-4;
                end if;
                -- packet management
-               TREADY <= '1';
+               tready_i <= '1';
 
-               if (TVALID = '1' and tdata_i /= TDATA and err_counter_frame < 2**C_LG_CNT_ERR_MAX_WIDTH-1) then
+               if (TVALID = '1' and tready_i = '1' and tdata_i /= TDATA and err_counter_frame < 2**C_LG_CNT_ERR_MAX_WIDTH-1) then
                   err_counter_frame <= err_counter_frame + 1;
                end if;
 
                if (TVALID = '1' and cnt_packet >= packet_number) then
                   generation_state <= END_TEST;
+                  tready_i           <= '0';
                elsif (TVALID = '1' and cnt_packet < packet_number) then
                   generation_state <= ANALYZE;
                else
@@ -470,14 +474,15 @@ architecture rtl of DATA_LINK_ANALYZER is
                end if;
 
             when WAIT_RX =>
-               TREADY <= '1';
+               tready_i <= '1';
 
-               if (TVALID = '1' and tdata_i /= TDATA and err_counter_frame < 2**C_LG_CNT_ERR_MAX_WIDTH-1) then
+               if (TVALID = '1' and tready_i = '1' and tdata_i /= TDATA and err_counter_frame < 2**C_LG_CNT_ERR_MAX_WIDTH-1) then
                   err_counter_frame <= err_counter_frame + 1;
                end if;
 
                if (TVALID = '1' and cnt_packet = packet_number) then
                   generation_state <= END_TEST;
+                  tready_i           <= '0';
                elsif (TVALID = '1' and cnt_packet < packet_number) then
                   if (gen_data = C_INCREMENTAL) then  -- incremental data
                      reg_data_rx_frame <= std_logic_vector(val_data);-- push data in the register rx
@@ -549,7 +554,7 @@ architecture rtl of DATA_LINK_ANALYZER is
             when END_TEST =>
                test_end_frame         <= '1';  -- test finished
                busy_frame             <= '0';
-               TREADY                 <= '0';
+               tready_i                 <= '0';
                generation_state <= IDLE;
 
             when others =>
