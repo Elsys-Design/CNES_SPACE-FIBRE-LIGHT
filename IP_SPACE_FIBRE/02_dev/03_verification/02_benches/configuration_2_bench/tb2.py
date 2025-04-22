@@ -152,3 +152,32 @@ class TB(common.TB):
         self.logger.info("sim_time %d ns: Wait reset completion", get_sim_time(units = 'ns') )
         await RisingEdge(self.dut.spacefibre_instance.inst_phy_plus_lane.RST_TX_DONE)
         self.logger.info("sim_time %d ns: Reset completed", get_sim_time(units = 'ns') )
+        
+async def reset_DUT_lane_only(self):
+        """
+        Active reset of the DUT for 10 ns.
+        Release DUT reset.
+        """
+        Data_read_general_control.data = bytearray( [0x06,0x00,0x00,0x00])
+        await self.masters[0].write_data(Data_read_general_control)
+        Data_read_general_control.data = bytearray( [0x07,0x00,0x00,0x00])
+        await self.masters[0].write_data(Data_read_general_control)
+        self.logger.info("sim_time %d ns: Wait reset completion", get_sim_time(units = 'ns') )
+        await RisingEdge(self.dut.spacefibre_instance.inst_phy_plus_lane.RST_TX_DONE)
+        self.logger.info("sim_time %d ns: Reset completed", get_sim_time(units = 'ns') )
+ 
+    
+    async def reset_lane_only(self):
+        """
+        Active reset of the testbench for 10 ns.
+        Release DUT reset.
+        """
+        await self.reset_global()
+        Data_read_general_control.data = bytearray( [0x06,0x00,0x00,0x00])
+        await self.masters[0].write_data(Data_read_general_control)
+        Data_read_general_control.data = bytearray( [0x07,0x00,0x00,0x00])
+        await self.masters[0].write_data(Data_read_general_control)
+        self.logger.info("sim_time %d ns: Wait reset completion", get_sim_time(units = 'ns') )
+        await RisingEdge(self.dut.spacefibre_instance.inst_phy_plus_lane.RST_TX_DONE)
+        self.logger.info("sim_time %d ns: Reset completed", get_sim_time(units = 'ns') )
+ 
