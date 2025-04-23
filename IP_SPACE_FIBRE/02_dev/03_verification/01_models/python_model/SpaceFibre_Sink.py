@@ -349,7 +349,7 @@ class SpaceFibre_Sink:
                 ms_decoded_data = "001"
         elif ms_encoded_data == "0101" :
             if k_encoded == 1 :
-                if self.dut_Tx_disparity[0] >= 0 :
+                if self.dut_Tx_disparity[0] <= 0 :
                     ms_decoded_data = "101"
                 else :
                     ms_decoded_data = "010"
