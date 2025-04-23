@@ -73,8 +73,19 @@ async def initialization_procedure(tb):
     #Interface Reset with Lane_Configurator
     await tb.masters[0].init_run("stimuli/axi/Interface_reset.json")
 
+
     #Lane Reset with Lane_Configurator
     await tb.masters[0].init_run("stimuli/axi/Lane_reset.json")
+
+    #Wait end of phy reset
+    tb.logger.info("sim_time %d ns: Wait PHY reset completion", get_sim_time(units = 'ns') )
+    await RisingEdge(tb.dut.spacefibre_instance.inst_phy_plus_lane.RST_TX_DONE)
+    tb.logger.info("sim_time %d ns: Reset PHY completed", get_sim_time(units = 'ns') )
+
+    #Wait end of phy reset
+    tb.logger.info("sim_time %d ns: Wait PHY reset completion", get_sim_time(units = 'ns') )
+    await RisingEdge(tb.dut.spacefibre_instance.inst_phy_plus_lane.RST_TX_DONE)
+    tb.logger.info("sim_time %d ns: Reset PHY completed", get_sim_time(units = 'ns') )
 
     #Wait to go to Disabled
     await Timer(2, units = "us")
@@ -101,17 +112,49 @@ async def initialization_procedure(tb):
     if format(Data_read_lane_config_status.data[0], '0>8b')[4:8] != ACTIVE:
         global test_failed 
         test_failed = 1
+        tb.logger.error("simulation time %d ns : Test Failed in initialization_procedure()", get_sim_time(units = "ns"))
+
+
+async def init_lane(tb):
+    #Wait to go to Disabled
+    await Timer(2, units = "us")
+
+    #Enable LaneStart and wait to be in Started state
+    Data_read_lane_config_parameters.data = bytearray([0x01, 0x00, 0x00, 0x00])
+    time_out = 0
+    not_started = 1
+    await tb.masters[0].write_data(Data_read_lane_config_parameters)
+    while not_started==1 and time_out < 10000:
+        await tb.masters[0].read_data(Data_read_lane_config_status)
+        if format(Data_read_lane_config_status.data[0], '0>8b')[4:8] == STARTED:
+            not_started = 0
+        time_out += 1
+    
+    #Set Lane initialisatiion FSM from Started to Active state
+    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/Started_to_Active.dat")
+
+    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+
+    #Check that Lane initialisation FSM is in Active State
+    await tb.masters[0].read_data(Data_read_lane_config_status)
+
+    await stimuli
+    if format(Data_read_lane_config_status.data[0], '0>8b')[4:8] != ACTIVE:
+        global test_failed 
+        test_failed = 1
+        tb.logger.error("simulation time %d ns : Test Failed in init_lane()", get_sim_time(units = "ns"))
+
 
 async def wait_end_test_dl(tb, channel):
     """
     Wait for test end to be raised by the selected analyzer.
     Return the Error counter of the selected analyzer.
     """
-    await tb.masters[2*channel].read_data(Data_lane_ana_status)
+    await tb.masters[channel].read_data(Data_lane_ana_status)
     test_end = format(Data_lane_ana_status.data[0], '0>8b')[6]
     timer = 0
     while test_end != '1' and timer < 1000:
-        await tb.masters[2*channel].read_data(Data_lane_ana_status)
+        await tb.masters[channel].read_data(Data_lane_ana_status)
         timer += 1
         test_end = format(Data_lane_ana_status.data[0], '0>8b')[6]
         tb.logger.debug("simulation time %d ns : Data_lane_ana_status value read : %s", get_sim_time(units = "ns"), format(Data_lane_ana_status.data[0], '0>8b'))
@@ -127,7 +170,7 @@ async def wait_end_test_all_dl(tb):
     """
     result = []
     for channel in range(2, 11):
-        x = await wait_end_test_dl(tb, channel)
+        x = await wait_end_test_dl(tb, 2*channel)
         result += [x]
     return result
 
@@ -138,7 +181,7 @@ async def wait_end_test_all_vc_dl(tb):
     """
     result = []
     for channel in range(2, 10):
-        x = await wait_end_test_dl(tb, channel)
+        x = await wait_end_test_dl(tb, 2*channel)
         result += [x]
     return result
 
@@ -147,124 +190,200 @@ async def start_all_dl(tb):
     Start test on all data link analyzer and all data link generator.
     """
     action = []
-    Data_start_test= Data(Data_lane_ana_control, 0x00000001)
+    Data_lane_ana_control.data = bytearray([0x01,0x00,0x00,0x00])
     # Start analyzer
+    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16))
     for channel in range(2, 11):
-        x = cocotb.start_soon(tb.masters[2*channel].write_data(Data_start_test))
+        x = cocotb.start_soon(tb.masters[2*channel].write_data(Data_lane_ana_control))
         action += [x]
     await Combine(*action)
+    await stimuli
 
-    Data_start_test= Data(Data_lane_gen_control, 0x00000001)
+    action = []
+    Data_lane_gen_control.data = bytearray([0x01,0x00,0x00,0x00])
+    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16))
     # Start generator
     for channel in range(2, 11):
-        x = cocotb.start_soon(tb.masters[2*channel-1].write_data(Data_start_test))
+        x = cocotb.start_soon(tb.masters[2*channel-1].write_data(Data_lane_gen_control))
         action += [x]
     await Combine(*action)
+    await stimuli
 
 async def start_all_vc_dl(tb):
     """
     Start test on all data link analyzer and all data link generator.
     """
     action = []
-    Data_start_test= Data(Data_lane_ana_control, 0x00000001)
+    Data_lane_ana_control.data = bytearray([0x01,0x00,0x00,0x00])
+    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16))
     # Start analyzer
     for channel in range(2, 10):
-        x = cocotb.start_soon(tb.masters[2*channel].write_data(Data_start_test))
+        x = cocotb.start_soon(tb.masters[2*channel].write_data(Data_lane_ana_control))
         action += [x]
     await Combine(*action)
+    await stimuli
 
-    Data_start_test= Data(Data_lane_gen_control, 0x00000001)
+    action = []
+    Data_lane_gen_control.data = bytearray([0x01,0x00,0x00,0x00])
+    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16))
     # Start generator
     for channel in range(2, 10):
-        x = cocotb.start_soon(tb.masters[2*channel-1].write_data(Data_start_test))
+        x = cocotb.start_soon(tb.masters[2*channel-1].write_data(Data_lane_gen_control))
         action += [x]
     await Combine(*action)
+    await stimuli
 
 async def configure_all_vc_dl(tb, conf, seed):
     """
     Start test on all data link analyzer and all data link generator.
     """
     action = []
-    Data_config_test= Data(Data_lane_ana_config, conf)
+    Data_lane_ana_config.data = bytearray(conf)
+    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16))
     # configure analyzer
     for channel in range(2, 10):
-        x = cocotb.start_soon(tb.masters[2*channel].write_data(Data_config_test))
+        x = cocotb.start_soon(tb.masters[2*channel].write_data(Data_lane_ana_config))
         action += [x]
     await Combine(*action)
-
-    Data_config_test= Data(Data_lane_gen_config, conf)
-    # configure generator
-    for channel in range(2, 10):
-        x = cocotb.start_soon(tb.masters[2*channel-1].write_data(Data_config_test))
-        action += [x]
-    await Combine(*action)
+    await stimuli
 
     action = []
-    Data_seed_test= Data(Data_lane_ana_seed, seed)
+    Data_lane_gen_config.data = bytearray(conf)
+    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16))
+    # configure generator
+    for channel in range(2, 10):
+        x = cocotb.start_soon(tb.masters[2*channel-1].write_data(Data_lane_gen_config))
+        action += [x]
+    await Combine(*action)
+    await stimuli
+
+    action = []
+    Data_lane_ana_seed.data = bytearray(seed)
+    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16))
     # configure analyzer seed
     for channel in range(2, 10):
-        x = cocotb.start_soon(tb.masters[2*channel].write_data(Data_seed_test))
+        x = cocotb.start_soon(tb.masters[2*channel].write_data(Data_lane_ana_seed))
         action += [x]
     await Combine(*action)
+    await stimuli
 
-    Data_seed_test= Data(Data_lane_gen_seed, seed)
+    action = []
+    Data_lane_gen_seed.data = bytearray(seed)
+    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16))
     # configure generator seed
     for channel in range(2, 10):
-        x = cocotb.start_soon(tb.masters[2*channel-1].write_data(Data_seed_test))
+        x = cocotb.start_soon(tb.masters[2*channel-1].write_data(Data_lane_gen_seed))
         action += [x]
     await Combine(*action)
+    await stimuli
 
 
 async def start_gen_vc_dl(tb):
     """
     Start test on all data link analyzer and all data link generator.
     """
-    Data_start_test= Data(Data_lane_gen_control, 0x00000001)
+
+    action = []
+    Data_lane_gen_control.data = bytearray([0x01, 0x00, 0x00, 0x00])
+    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16))
     # Start generator
     for channel in range(2, 10):
-        x = cocotb.start_soon(tb.masters[2*channel-1].write_data(Data_start_test))
+        x = cocotb.start_soon(tb.masters[2*channel-1].write_data(Data_lane_gen_control))
         action += [x]
     await Combine(*action)
+    await stimuli
 
 async def configure_gen_vc_dl(tb, conf, seed):
     """
     Start test on all data link analyzer and all data link generator.
     """
-    Data_config_test= Data(Data_lane_gen_config, conf)
+    Data_lane_gen_config.data = bytearray(conf)
+    action = []
+    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16))
     # configure generator
     for channel in range(2, 10):
-        x = cocotb.start_soon(tb.masters[2*channel-1].write_data(Data_config_test))
+        x = cocotb.start_soon(tb.masters[2*channel-1].write_data(Data_lane_gen_config))
         action += [x]
     await Combine(*action)
+    await stimuli
 
-    Data_seed_test= Data(Data_lane_gen_seed, seed)
+    action = []
+    Data_lane_gen_seed.data = bytearray(seed)
+    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16))
     # configure generator seed
     for channel in range(2, 10):
-        x = cocotb.start_soon(tb.masters[2*channel-1].write_data(Data_seed_test))
+        x = cocotb.start_soon(tb.masters[2*channel-1].write_data(Data_lane_gen_seed))
         action += [x]
     await Combine(*action)
+    await stimuli
+
+async def start_ana_vc_dl(tb):
+    """
+    Start test on all data link analyzer and all data link generator.
+    """
+    action = []
+    Data_lane_ana_control.data = bytearray([0x01, 0x00, 0x00, 0x00])
+    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16))
+    # Start generator
+    for channel in range(2, 10):
+        x = cocotb.start_soon(tb.masters[2*channel].write_data(Data_lane_ana_control))
+        action += [x]
+    await Combine(*action)
+    await stimuli
+    
+
+async def configure_ana_vc_dl(tb, conf, seed):
+    """
+    Start test on all data link analyzer and all data link generator.
+    """
+    action = []
+    Data_lane_ana_config.data = bytearray(conf)
+    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16))
+    # configure generator
+    for channel in range(2, 10):
+        x = cocotb.start_soon(tb.masters[2*channel].write_data(Data_lane_ana_config))
+        action += [x]
+    await Combine(*action)
+    await stimuli
+
+    action = []
+    Data_lane_ana_seed.data = bytearray(seed)
+    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16))
+    # configure generator seed
+    for channel in range(2, 10):
+        x = cocotb.start_soon(tb.masters[2*channel].write_data(Data_lane_ana_seed))
+        action += [x]
+    await Combine(*action)
+    await stimuli
 
 async def configure_model_dl(tb, model, conf, seed):
     """
     Start test on all data link analyzer and all data link generator.
     """
     # configure generator
-    Data_config_test= Data(Data_lane_gen_config, conf)
+    Data_lane_gen_config.data = bytearray(conf)
 
-    await tb.masters[model].write_data(Data_config_test)
+    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16))
+    await tb.masters[model].write_data(Data_lane_gen_config)
+    await stimuli
 
 
     # configure generator seed
-    Data_seed_test= Data(Data_lane_gen_seed, seed)
-    await tb.masters[model].write_data(Data_seed_test)
+    Data_lane_gen_seed.data = bytearray(seed)
+
+    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16))
+    await tb.masters[model].write_data(Data_lane_gen_seed)
+    await stimuli
 
 async def start_model_dl(tb, model):
     """
     Start test on all data link analyzer and all data link generator.
     """
-    Data_start_test= Data(Data_lane_gen_control, 0x00000001)
+    Data_lane_gen_control.data = bytearray([0x01,0x00,0x00,0x00])
     # Start model
-    await tb.masters[model].write_data(Data_start_test)
+    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16))
+    await tb.masters[model].write_data(Data_lane_gen_control)
+    await stimuli
 
 
 async def write_10b_to_Rx(tb, encoded_data, delay, invert_polarity = 0):
@@ -333,9 +452,6 @@ async def get_resetflag(tb, resetflag_farend, monitor_path):
     await tb.masters[0].read_data(Data_read_lane_config_status)
 
     await stimuli
-    if format(Data_read_lane_config_status.data[0], '0>8b')[4:8] != ACTIVE:
-        global test_failed 
-        test_failed = 1
     
     stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 1000))
     await monitor
@@ -964,7 +1080,7 @@ async def cocotb_run(dut):
     step_2_failed = 0
     #Sets DUT lane initialisation FSM to Active
 
-    monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_1", number_of_word = 2500))
+    monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_2", number_of_word = 20000))
     
     await initialization_procedure(tb)
 
@@ -984,6 +1100,9 @@ async def cocotb_run(dut):
         
     #Check that the data frame are received
 
+    await send_idle_ctrl_word(tb, 64*8+100)
+
+
 
     #Send first FCT to each virtual channel
     for x in range(8):
@@ -995,14 +1114,17 @@ async def cocotb_run(dut):
 
     #Check that the data frame are received
 
+    await send_idle_ctrl_word(tb, 64*8+100)
+
+
     #Send first FCT to each virtual channel
     for x in range(8):
         await send_FCT(tb, x, 0, "0"+ f"{(x+17):0>7b}")
     
     await configure_gen_vc_dl(tb, [0xE1,0x1F,0x00,0x00], [0x00,0x00,0x00,0x01])
     
-    await configure_model_dl(tb, 3, [0xE1,0x1F,0x00,0x01], [0x2A,0x00,0x00,0x00])
-    await start_model_dl(tb, 3)
+    await configure_model_dl(tb, 4, [0xE1,0x1F,0x00,0x01], [0x2A,0x00,0x00,0x00])
+    await start_model_dl(tb, 4)
 
     await start_gen_vc_dl(tb)
 
@@ -1011,9 +1133,56 @@ async def cocotb_run(dut):
 
     #Check that the data frame are received
 
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 64*8+100))
+
+    result = await wait_end_test_dl(tb, 4)
+
+    if result != "00000000":
+        step_1_failed = 1
+        tb.logger.error("simulation time %d ns : step 2.1 result: Failed\nError_count : %s \n\n\n", get_sim_time(units = "ns"), result)
+    else:
+        tb.logger.info("simulation time %d ns : step 2.1 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
+
+    await stimuli
+
+
+
+
+
+
     #LinkReset with Lane_Configurator
     await tb.masters[0].init_run("stimuli/axi/Link_reset.json")
 
+
+
+    #Wait end of phy reset
+    tb.logger.info("sim_time %d ns: Wait PHY reset completion", get_sim_time(units = 'ns') )
+    await RisingEdge(tb.dut.spacefibre_instance.inst_phy_plus_lane.RST_TX_DONE)
+    tb.logger.info("sim_time %d ns: Reset PHY completed", get_sim_time(units = 'ns') )
+
+
+    await init_lane(tb)
+
+
+
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 25))
+
+    await tb.masters[0].read_data(Data_read_dl_config_parameters)
+    link_rst_asserted = format(Data_read_dl_config_parameters.data[0], '0>8b')[5]
+
+    if link_rst_asserted != '1':
+        step_1_failed = 1
+        tb.logger.error("simulation time %d ns : step 2.2 result: Failed\nlink_rst_asserted: %s\n\n\n", get_sim_time(units = "ns"), link_rst_asserted)
+    else:
+        tb.logger.info("simulation time %d ns : step 2.2 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
+
+    Data_read_dl_config_parameters.data = bytearray([0x18, 0x00, 0x00, 0x00])
+
+    await tb.masters[0].write_data(Data_read_dl_config_parameters)
+    await stimuli
+
+
+
     #Check EEP reception, #check EEP on input buffer 0
 
     #Check FCT request and reset
@@ -1031,18 +1200,95 @@ async def cocotb_run(dut):
         await send_FCT(tb, x, 0, "0"+ f"{(x+1):0>7b}")
         
     #Check that the data frame are received
+
+    await send_idle_ctrl_word(tb, 64*8+100)
+
+
+    #InterfaceReset with Lane_Configurator
+    await tb.masters[0].init_run("stimuli/axi/Interface_reset.json")
+
+
+
+    #Wait end of phy reset
+    tb.logger.info("sim_time %d ns: Wait PHY reset completion", get_sim_time(units = 'ns') )
+    await RisingEdge(tb.dut.spacefibre_instance.inst_phy_plus_lane.RST_TX_DONE)
+    tb.logger.info("sim_time %d ns: Reset PHY completed", get_sim_time(units = 'ns') )
+
+
+    await init_lane(tb)
+    
+    
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 25))
+
+    await tb.masters[0].read_data(Data_read_dl_config_parameters)
+    link_rst_asserted = format(Data_read_dl_config_parameters.data[0], '0>8b')[5]
+
+    if link_rst_asserted != '1':
+        step_1_failed = 1
+        tb.logger.error("simulation time %d ns : step 2.3 result: Failed\nlink_rst_asserted: %s\n\n\n", get_sim_time(units = "ns"), link_rst_asserted)
+    else:
+        tb.logger.info("simulation time %d ns : step 2.3 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
+
+    Data_read_dl_config_parameters.data = bytearray([0x18, 0x00, 0x00, 0x00])
+
+    await tb.masters[0].write_data(Data_read_dl_config_parameters)
+    await stimuli
+
+
+
+    #Check EEP reception, #check EEP on input buffer 0
+
+    #Check FCT request and reset
+
+    #Check that idle frame  PRBS start at 0xFFFF
+
+    await configure_gen_vc_dl(tb, [0xE1,0x1F,0x00,0x00], [0x00,0x00,0x00,0x00])
+
+    await start_gen_vc_dl(tb)
+
+    #Check that idle frame are sent
+
+    #Send first FCT to each virtual channel
+    for x in range(8):
+        await send_FCT(tb, x, 0, "0"+ f"{(x+1):0>7b}")
+        
+    #Check that the data frame are received
+
+    await send_idle_ctrl_word(tb, 64*8+100)
+
 
 
     #Send NACK
-    await tb.spacefibre_random_generator_data_link.write_to_Rx("11111100", 0, k_encoding = 1, invert_polarity = 0)
-    crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8("11111100")
-    await tb.spacefibre_random_generator_data_link.write_to_Rx("10111011", 0, k_encoding = 0, invert_polarity = 0)
-    crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8("10111011", crc_8)
-    await tb.spacefibre_random_generator_data_link.write_to_Rx("00000100", 0, k_encoding = 0, invert_polarity = 0)
-    crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8("00000100", crc_8)
-    await tb.spacefibre_random_generator_data_link.write_to_Rx(crc_8, 0, k_encoding = 0, invert_polarity = 0)
+    await send_NACK(tb, "0" + f"{(9):0>7b}")
 
     #Check That Link Reset has been asserted
+
+
+
+    #Wait end of phy reset
+    tb.logger.info("sim_time %d ns: Wait PHY reset completion", get_sim_time(units = 'ns') )
+    await RisingEdge(tb.dut.spacefibre_instance.inst_phy_plus_lane.RST_TX_DONE)
+    tb.logger.info("sim_time %d ns: Reset PHY completed", get_sim_time(units = 'ns') )
+
+    await init_lane(tb)
+
+
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 25))
+
+    await tb.masters[0].read_data(Data_read_dl_config_parameters)
+    link_rst_asserted = format(Data_read_dl_config_parameters.data[0], '0>8b')[5]
+
+    if link_rst_asserted != '1':
+        step_1_failed = 1
+        tb.logger.error("simulation time %d ns : step 2.4 result: Failed\nlink_rst_asserted: %s\n\n\n", get_sim_time(units = "ns"), link_rst_asserted)
+    else:
+        tb.logger.info("simulation time %d ns : step 2.4 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
+
+    Data_read_dl_config_parameters.data = bytearray([0x18, 0x00, 0x00, 0x00])
+
+    await tb.masters[0].write_data(Data_read_dl_config_parameters)
+    await stimuli
+
 
     #Check EEP reception, #check EEP on input buffer 0
 
@@ -1062,6 +1308,8 @@ async def cocotb_run(dut):
         await send_FCT(tb, x, 0, "0"+ f"{(x+1):0>7b}")
         
     #Check that the data frame are received
+
+    await send_idle_ctrl_word(tb, 64*8+400)
 
     await monitor
 

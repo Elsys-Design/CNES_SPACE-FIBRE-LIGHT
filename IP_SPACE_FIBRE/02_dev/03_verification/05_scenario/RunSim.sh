@@ -74,14 +74,17 @@ if [ "$MYSIM" == "all" ]; then
     for dir in */; do
         #remove / at the end of listed folder
         export MYSIM="${dir::-1}"
-        echo "Found test $MYSIM and execute it!"
+        #don't execute archived tests
+        if [ "$MYSIM" != "archive" ]; then
+            echo "Found test $MYSIM and execute it!"
 
-        cd $MYSIM 
-        #clean sim build sometimes cocotb fail to refresh it
-        rm -r sim_build
-         #run simulation with cocotb
-        make -f ../Makefile
-    cd ..
+            cd $MYSIM 
+            #clean sim build sometimes cocotb fail to refresh it
+            rm -r sim_build
+            #run simulation with cocotb
+            make -f ../Makefile
+            cd ..
+        fi
     done
     #execute all tests
 else

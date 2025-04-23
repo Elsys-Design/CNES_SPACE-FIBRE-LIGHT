@@ -1,19 +1,19 @@
 [
     {
-        "ID": "Enable_Lane_Reset",
+        "ID": "Enable_Interface_Reset",
         "Access": "W",
         "RelTime": "0.030 us",
         "Type": "Simple",
-        "Address": "0x0004",
-        "Data": "0x04000000",
+        "Address": "0x0010",
+        "Data": "0x02000000",
         "Size": 4
     },
     {
-        "ID": "Disable_Lane_Reset",
+        "ID": "Disable_Interface_Reset",
         "Access": "W",
         "RelTime": "0.030 us",
         "Type": "Simple",
-        "Address": "0x0004",
+        "Address": "0x0010",
         "Data": "0x0000",
         "Size": 4
     }

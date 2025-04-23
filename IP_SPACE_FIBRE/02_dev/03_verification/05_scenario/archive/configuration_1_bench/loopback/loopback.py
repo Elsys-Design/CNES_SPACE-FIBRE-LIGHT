@@ -25,7 +25,7 @@ from cocotb.utils import get_sim_time
 try:
     import framework
     from framework import Data
-    from tb2 import TB, Data_read_phy_config_parameters, Data_read_lane_config_parameters, Data_read_lane_config_status, \
+    from tb import TB, Data_read_phy_config_parameters, Data_read_lane_config_parameters, Data_read_lane_config_status, \
                     CLEARLINE, DISABLED, WAIT, STARTED, INVERTRXPOLARITY, CONNECTING, CONNECTED, \
                     ACTIVE, PREPARESTANDBY, LOSSOFSIGNAL, \
                     SpaceFibre_IP_freq, SpaceFibre_serial_port_freq, SpaceFibre_IP_period_ns, \
@@ -65,25 +65,19 @@ async def init_to_started(tb):
     not_started=1
     
     #Reset of the DUT
-    await tb.reset_DUT_lane_only()
+    await tb.reset_DUT()
 
 
     #LaneReset with Lane_Configurator
     await tb.masters[0].init_run("stimuli/axi/Lane_reset.json")
 
-    #Wait end of phy reset
-    tb.logger.info("sim_time %d ns: Wait PHY reset completion", get_sim_time(units = 'ns') )
-    await RisingEdge(tb.dut.spacefibre_instance.inst_phy_plus_lane.RST_TX_DONE)
-    tb.logger.info("sim_time %d ns: Reset PHY completed", get_sim_time(units = 'ns') )
-
     #Wait to go to Disabled
     await Timer(2, units = "us")
 
     #Enable LaneStart and wait to be in Started state
-    Data_read_lane_config_parameters.data = bytearray([0x01,0x00,0x00,0x00])
- 
+    Enable_Lanestart = Data(0x04, 0x00000001)
     time_out = 0
-    await tb.masters[0].write_data(Data_read_lane_config_parameters)
+    await tb.masters[0].write_data(Enable_Lanestart)
     while not_started==1 and time_out < 100:
         await tb.masters[0].read_data(Data_read_lane_config_status)
         if format(Data_read_lane_config_status.data[0], '0>8b')[4:8] == STARTED:
@@ -187,7 +181,7 @@ async def cocotb_run(dut):
     tb = TB(dut)
 
     await tb.init_phy_layer()
-    await tb.reset_lane_only()
+    await tb.reset()
 
     #Specific variable for the scenario
     global test_failed 
@@ -210,8 +204,8 @@ async def cocotb_run(dut):
     ###########################
     #With loopback during init
     ###########################
-    Data_read_lane_config_parameters.data = bytearray([0x09,0x00,0x00,0x00]) # Enable  Parallele loopback
-    await tb.masters[0].write_data(Data_read_lane_config_parameters)
+    Enable_ParallelLoopback = Data(0x04, 0x00000009)
+    await tb.masters[0].write_data(Enable_ParallelLoopback)
     await wait_for_started_to_active(tb)
 
     #Incremental data generation
@@ -422,9 +416,8 @@ async def cocotb_run(dut):
     #Without loopback in Active
     ###########################
 
-   
-    Data_read_lane_config_parameters.data = bytearray([0x01,0x00,0x00,0x00]) # Enable  Parallele loopback
-    await tb.masters[0].write_data(Data_read_lane_config_parameters)
+    Disable_ParallelLoopback = Data(0x04, 0x00000001)
+    await tb.masters[0].write_data(Disable_ParallelLoopback)
 
     #Incremental data generation
 
@@ -634,8 +627,7 @@ async def cocotb_run(dut):
     #With loopback from Active
     ###########################
 
-    Data_read_lane_config_parameters.data = bytearray([0x09,0x00,0x00,0x00]) # Enable  Parallele loopback
-    await tb.masters[0].write_data(Data_read_lane_config_parameters)
+    await tb.masters[0].write_data(Enable_ParallelLoopback)
 
     #Incremental data generation
 
@@ -847,8 +839,8 @@ async def cocotb_run(dut):
         tb.logger.error("simulation time %d ns : step 1 result: Failed", get_sim_time(units = "ns"))
 
 
-    Data_read_lane_config_parameters.data = bytearray([0x01,0x00,0x00,0x00]) # Enable  Parallele loopback
-    await tb.masters[0].write_data(Data_read_lane_config_parameters)
+    Disable_ParallelLoopback = Data(0x04, 0x00000001)
+    await tb.masters[0].write_data(Disable_ParallelLoopback)
 
     ##########################################################################
     ##########################################################################
@@ -858,7 +850,7 @@ async def cocotb_run(dut):
     ##########################################################################
     ##########################################################################
 
-    await tb.reset_lane_only()
+    await tb.reset()
     step_2_failed = 0
     #Sets DUT lane initialisation FSM to Active with parallel loopback enabled 
     await init_to_started(tb)
@@ -867,8 +859,8 @@ async def cocotb_run(dut):
     #With loopback during init
     ###########################
     
-    Data_read_phy_config_parameters.data = bytearray([0x01,0x00,0x00,0x00]) # Enable  near-end loopback
-    await tb.masters[0].write_data(Data_read_phy_config_parameters)
+    Enable_NearEndLoopback = Data(0x00, 0x00000001)
+    await tb.masters[0].write_data(Enable_NearEndLoopback)
     await wait_for_started_to_active(tb)
 
     #Incremental data generation
@@ -1077,8 +1069,8 @@ async def cocotb_run(dut):
     #Without loopback in Active
     ###########################
 
-    Data_read_phy_config_parameters.data = bytearray([0x00,0x00,0x00,0x00]) # Disnable  near-end loopback
-    await tb.masters[0].write_data(Data_read_phy_config_parameters)
+    Disable_NearEndLoopback = Data(0x00, 0x00000000)
+    await tb.masters[0].write_data(Disable_NearEndLoopback)
 
     #Incremental data generation
 
@@ -1285,8 +1277,7 @@ async def cocotb_run(dut):
     #With loopback from Active
     ###########################
 
-    Data_read_phy_config_parameters.data = bytearray([0x01,0x00,0x00,0x00]) # Enable  near-end loopback
-    await tb.masters[0].write_data(Data_read_phy_config_parameters)
+    await tb.masters[0].write_data(Enable_NearEndLoopback)
 
     #Incremental data generation
 
@@ -1498,8 +1489,8 @@ async def cocotb_run(dut):
         test_failed = 1
         tb.logger.error("simulation time %d ns : step 2 result: Failed", get_sim_time(units = "ns"))
 
-    Data_read_phy_config_parameters.data = bytearray([0x00,0x00,0x00,0x00]) # Disable  near-end loopback
-    await tb.masters[0].write_data(Data_read_phy_config_parameters)
+    Disable_NearEndLoopback = Data(0x00, 0x00000000)
+    await tb.masters[0].write_data(Disable_NearEndLoopback)
 
     ##########################################################################
     ##########################################################################
@@ -1509,7 +1500,7 @@ async def cocotb_run(dut):
     ##########################################################################
     ##########################################################################
 
-    await tb.reset_lane_only()
+    await tb.reset()
 
     step_4_failed = 0
     #Sets DUT lane initialisation FSM to Active with external loopback enabled 
