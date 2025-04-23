@@ -51,6 +51,7 @@ architecture rtl of data_link_reset is
 
   signal current_state          : link_rst_fsm;
   signal cnt_link_reset         : unsigned (2 downto 0);
+  signal lane_active_ppl_r      : std_logic;
 
 begin
 ---------------------------------------------------------
@@ -75,10 +76,12 @@ begin
     RESET_PARAM_DLRE   <= '1';
     NEAR_END_CAPA_DLRE <= (others =>'0');
     cnt_link_reset     <= (others =>'0');
+    lane_active_ppl_r  <= '1';
   elsif rising_edge(CLK) then
-    LINK_RESET_DLRE  <= '0';
-    LANE_RESET_DLRE  <= '0';
-    RESET_PARAM_DLRE <= '0';
+    LINK_RESET_DLRE    <= '0';
+    LANE_RESET_DLRE    <= '0';
+    RESET_PARAM_DLRE   <= '0';
+    lane_active_ppl_r  <= LANE_ACTIVE_PPL;
     case current_state is
       when CONF_RST_ST          =>
                                   LINK_RESET_DLRE  <= '1';
@@ -108,6 +111,8 @@ begin
                                     current_state <= CONF_RST_ST;
                                   elsif LINK_RESET_MIB  ='1' or (LINK_RESET_DIBUF /= std_logic_vector(to_unsigned(0,LINK_RESET_DIBUF'length))) or LINK_RESET_DERRM='1' then
                                     current_state <= NEAR_END_RST_ST;
+                                  elsif LANE_ACTIVE_PPL = '1' and lane_active_ppl_r = '0' and FAR_END_CAPA_PPL(C_CAPA_LINK_RST) = '1' then
+                                    current_state <= LINK_INIT_ST;
                                   end if;
       when LINK_INIT_ST         =>
                                   NEAR_END_CAPA_DLRE(C_CAPA_LINK_RST) <= '0';
@@ -115,7 +120,7 @@ begin
                                     current_state <= CONF_RST_ST;
                                   elsif LINK_RESET_MIB  ='1' then
                                     current_state <= NEAR_END_RST_ST;
-                                  elsif LANE_ACTIVE_PPL = '0' and FAR_END_CAPA_PPL(C_CAPA_LINK_RST) = '1' then
+                                  elsif LANE_ACTIVE_PPL = '1' and lane_active_ppl_r = '0' and FAR_END_CAPA_PPL(C_CAPA_LINK_RST) = '1' then
                                     current_state <= NEAR_END_RST_ST;
                                   elsif LINK_RESET_DIBUF /= std_logic_vector(to_unsigned(0,LINK_RESET_DIBUF'length))  or LINK_RESET_DERRM ='1' then
                                     current_state <= NEAR_END_RST_ST;
