@@ -25,7 +25,7 @@ from cocotb.utils import get_sim_time
 try:
     import framework
     from framework import Data
-    from tb import TB, Data_read_phy_config_parameters, Data_read_lane_config_parameters, Data_read_lane_config_status, \
+    from tb2 import TB, Data_read_phy_config_parameters, Data_read_lane_config_parameters, Data_read_lane_config_status, \
                     CLEARLINE, DISABLED, WAIT, STARTED, INVERTRXPOLARITY, CONNECTING, CONNECTED, \
                     ACTIVE, PREPARESTANDBY, LOSSOFSIGNAL, \
                     SpaceFibre_IP_freq, SpaceFibre_serial_port_freq, SpaceFibre_IP_period_ns, \
@@ -66,19 +66,25 @@ async def initialization_procedure(tb):
     not_started=1
     
     #Reset of the DUT
-    await tb.reset_DUT()
+    await tb.reset_DUT_lane_only()
 
     #LaneReset with Lane_Configurator
     await tb.masters[0].init_run("stimuli/axi/Lane_reset.json")
+
+    #Wait end of phy reset
+    tb.logger.info("sim_time %d ns: Wait PHY reset completion", get_sim_time(units = 'ns') )
+    await RisingEdge(tb.dut.spacefibre_instance.inst_phy_plus_lane.RST_TX_DONE)
+    tb.logger.info("sim_time %d ns: Reset PHY completed", get_sim_time(units = 'ns') )
 
     #Wait to go to Disabled
     await Timer(2, units = "us")
 
     #Enable LaneStart and wait to be in Started state
-    Enable_Lanestart = Data(0x04, 0x00000001)
+    Data_read_lane_config_parameters.data = bytearray([0x01,0x00,0x00,0x00])
+ 
     time_out = 0
-    await tb.masters[0].write_data(Enable_Lanestart)
-    while not_started==1 and time_out < 10000:
+    await tb.masters[0].write_data(Data_read_lane_config_parameters)
+    while not_started==1 and time_out < 100:
         await tb.masters[0].read_data(Data_read_lane_config_status)
         if format(Data_read_lane_config_status.data[0], '0>8b')[4:8] == STARTED:
             not_started = 0
@@ -147,7 +153,7 @@ async def cocotb_run(dut):
 
     #Instantiation of the testbench and first reset of the DUT
     tb = TB(dut)
-    await tb.reset()
+    await tb.reset_lane_only()
 
     #Specific variable for the scenario
     global test_failed 
@@ -1387,19 +1393,18 @@ async def cocotb_run(dut):
 
 
 
+    
+
     #Wait to go to Disabled
     await Timer(2, units = "us")
 
-
-
-
-    not_started = 1
-
     #Enable LaneStart and wait to be in Started state
-    Enable_Lanestart = Data(0x04, 0x00000001)
+    Data_read_lane_config_parameters.data = bytearray([0x01,0x00,0x00,0x00])
+    
+    not_started = 1
     time_out = 0
-    await tb.masters[0].write_data(Enable_Lanestart)
-    while not_started==1 and time_out > 10000:
+    await tb.masters[0].write_data(Data_read_lane_config_parameters)
+    while not_started==1 and time_out < 100:
         await tb.masters[0].read_data(Data_read_lane_config_status)
         if format(Data_read_lane_config_status.data[0], '0>8b')[4:8] == STARTED:
             not_started = 0
@@ -1474,19 +1479,25 @@ async def cocotb_run(dut):
     not_started=1
     
     #Reset of the DUT
-    await tb.reset()
+    await tb.reset_lane_only()
 
     #LaneReset with Lane_Configurator
     await tb.masters[0].init_run("stimuli/axi/Lane_reset.json")
+
+    #Wait end of phy reset
+    tb.logger.info("sim_time %d ns: Wait PHY reset completion", get_sim_time(units = 'ns') )
+    await RisingEdge(tb.dut.spacefibre_instance.inst_phy_plus_lane.RST_TX_DONE)
+    tb.logger.info("sim_time %d ns: Reset PHY completed", get_sim_time(units = 'ns') )
 
     #Wait to go to Disabled
     await Timer(2, units = "us")
 
     #Enable LaneStart and wait to be in Started state
-    Enable_Lanestart = Data(0x04, 0x00000001)
+    Data_read_lane_config_parameters.data = bytearray([0x01,0x00,0x00,0x00])
+ 
     time_out = 0
-    await tb.masters[0].write_data(Enable_Lanestart)
-    while not_started==1 and time_out > 10000:
+    await tb.masters[0].write_data(Data_read_lane_config_parameters)
+    while not_started==1 and time_out < 100:
         await tb.masters[0].read_data(Data_read_lane_config_status)
         if format(Data_read_lane_config_status.data[0], '0>8b')[4:8] == STARTED:
             not_started = 0
@@ -1721,20 +1732,27 @@ async def cocotb_run(dut):
     #LaneReset with Lane_Configurator
     await tb.masters[0].init_run("stimuli/axi/Lane_reset.json")
 
+    #Wait end of phy reset
+    tb.logger.info("sim_time %d ns: Wait PHY reset completion", get_sim_time(units = 'ns') )
+    await RisingEdge(tb.dut.spacefibre_instance.inst_phy_plus_lane.RST_TX_DONE)
+    tb.logger.info("sim_time %d ns: Reset PHY completed", get_sim_time(units = 'ns') )
+
     #Wait to go to Disabled
     await Timer(2, units = "us")
 
     #Enable LaneStart and wait to be in Started state
-    Enable_Lanestart = Data(0x04, 0x00000001)
+    Data_read_lane_config_parameters.data = bytearray([0x01,0x00,0x00,0x00])
+    
+    not_started = 1
     time_out = 0
-    await tb.masters[0].write_data(Enable_Lanestart)
-    while not_started==1 and time_out > 10000:
+    await tb.masters[0].write_data(Data_read_lane_config_parameters)
+    while not_started==1 and time_out < 100:
         await tb.masters[0].read_data(Data_read_lane_config_status)
         if format(Data_read_lane_config_status.data[0], '0>8b')[4:8] == STARTED:
             not_started = 0
         time_out += 1
     
-    #Set Lane initialisatiion FSM from Started to Active state
+    #Set Lane initialisation FSM from Started to Active state
 
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/Started_to_Connecting.dat", invert_polarity = 0)
 

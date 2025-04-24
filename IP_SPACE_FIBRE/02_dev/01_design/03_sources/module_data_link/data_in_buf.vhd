@@ -122,6 +122,7 @@ architecture rtl of data_in_buf is
   signal axis_data_valid_reg2   : std_logic;
   signal link_reset_dlre_r      : std_logic;
   signal fct_send_counter       : unsigned(1 downto 0);
+  signal rst_n_i                : std_logic;
 
 begin
 ---------------------------------------------------------
@@ -132,6 +133,7 @@ M_AXIS_TDATA_DIBUF	 <= m_axis_tdata;
 M_AXIS_TLAST_DIBUF	 <= m_axis_tlast;
 m_axis_tready        <= M_AXIS_TREADY_NW;
 M_AXIS_TUSER_DIBUF   <= m_axis_tuser;
+rst_n_i              <= M_AXIS_ARSTN_NW and RST_N;
 ---------------------------------------------------------
 -----                     Instanciation             -----
 ---------------------------------------------------------
@@ -144,7 +146,7 @@ M_AXIS_TUSER_DIBUF   <= m_axis_tuser;
       M_AXIS_TUSER_WIDTH      => C_BYTE_BY_WORD_LENGTH
   )
   port map (
-      aresetn                => M_AXIS_ARSTN_NW,
+      aresetn                => rst_n_i,
       WR_CLK                 => CLK,
       WR_DATA                => data_in,
       WR_DATA_EN             => data_in_en,

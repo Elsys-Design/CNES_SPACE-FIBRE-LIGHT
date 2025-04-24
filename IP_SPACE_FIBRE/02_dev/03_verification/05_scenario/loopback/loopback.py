@@ -71,6 +71,11 @@ async def init_to_started(tb):
     #LaneReset with Lane_Configurator
     await tb.masters[0].init_run("stimuli/axi/Lane_reset.json")
 
+    #Wait end of phy reset
+    tb.logger.info("sim_time %d ns: Wait PHY reset completion", get_sim_time(units = 'ns') )
+    await RisingEdge(tb.dut.spacefibre_instance.inst_phy_plus_lane.RST_TX_DONE)
+    tb.logger.info("sim_time %d ns: Reset PHY completed", get_sim_time(units = 'ns') )
+
     #Wait to go to Disabled
     await Timer(2, units = "us")
 
@@ -862,8 +867,8 @@ async def cocotb_run(dut):
     #With loopback during init
     ###########################
     
-    Enable_NearEndLoopback = Data(0x00, 0x00000001)
-    await tb.masters[0].write_data(Enable_NearEndLoopback)
+    Data_read_phy_config_parameters.data = bytearray([0x01,0x00,0x00,0x00]) # Enable  near-end loopback
+    await tb.masters[0].write_data(Data_read_phy_config_parameters)
     await wait_for_started_to_active(tb)
 
     #Incremental data generation
@@ -1072,8 +1077,8 @@ async def cocotb_run(dut):
     #Without loopback in Active
     ###########################
 
-    Disable_NearEndLoopback = Data(0x00, 0x00000000)
-    await tb.masters[0].write_data(Disable_NearEndLoopback)
+    Data_read_phy_config_parameters.data = bytearray([0x00,0x00,0x00,0x00]) # Disnable  near-end loopback
+    await tb.masters[0].write_data(Data_read_phy_config_parameters)
 
     #Incremental data generation
 
@@ -1280,7 +1285,8 @@ async def cocotb_run(dut):
     #With loopback from Active
     ###########################
 
-    await tb.masters[0].write_data(Enable_NearEndLoopback)
+    Data_read_phy_config_parameters.data = bytearray([0x01,0x00,0x00,0x00]) # Enable  near-end loopback
+    await tb.masters[0].write_data(Data_read_phy_config_parameters)
 
     #Incremental data generation
 
@@ -1492,8 +1498,8 @@ async def cocotb_run(dut):
         test_failed = 1
         tb.logger.error("simulation time %d ns : step 2 result: Failed", get_sim_time(units = "ns"))
 
-    Disable_NearEndLoopback = Data(0x00, 0x00000000)
-    await tb.masters[0].write_data(Disable_NearEndLoopback)
+    Data_read_phy_config_parameters.data = bytearray([0x00,0x00,0x00,0x00]) # Disable  near-end loopback
+    await tb.masters[0].write_data(Data_read_phy_config_parameters)
 
     ##########################################################################
     ##########################################################################
