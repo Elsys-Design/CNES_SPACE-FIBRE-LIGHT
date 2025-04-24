@@ -206,6 +206,9 @@ begin
 			else
 				DATA_DCCOM <= data_dscom_r;
 			end if;
+		else 
+			NEW_WORD_DCCOM         <= '0';
+			new_word_dccom_i       <= '0';
 		end if;
 	end if;
 end process p_crc_inv;

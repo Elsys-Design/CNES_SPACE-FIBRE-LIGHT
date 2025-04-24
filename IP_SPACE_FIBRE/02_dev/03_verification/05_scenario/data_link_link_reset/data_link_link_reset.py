@@ -82,11 +82,6 @@ async def initialization_procedure(tb):
     await RisingEdge(tb.dut.spacefibre_instance.inst_phy_plus_lane.RST_TX_DONE)
     tb.logger.info("sim_time %d ns: Reset PHY completed", get_sim_time(units = 'ns') )
 
-    #Wait end of phy reset
-    tb.logger.info("sim_time %d ns: Wait PHY reset completion", get_sim_time(units = 'ns') )
-    await RisingEdge(tb.dut.spacefibre_instance.inst_phy_plus_lane.RST_TX_DONE)
-    tb.logger.info("sim_time %d ns: Reset PHY completed", get_sim_time(units = 'ns') )
-
     #Wait to go to Disabled
     await Timer(2, units = "us")
 
@@ -1138,7 +1133,7 @@ async def cocotb_run(dut):
     result = await wait_end_test_dl(tb, 4)
 
     if result != "00000000":
-        step_1_failed = 1
+        step_2_failed = 1
         tb.logger.error("simulation time %d ns : step 2.1 result: Failed\nError_count : %s \n\n\n", get_sim_time(units = "ns"), result)
     else:
         tb.logger.info("simulation time %d ns : step 2.1 result: Pass\n\n\n\n", get_sim_time(units = "ns"))

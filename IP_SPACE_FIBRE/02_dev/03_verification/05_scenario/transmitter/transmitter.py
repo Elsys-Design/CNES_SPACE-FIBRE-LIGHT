@@ -197,7 +197,7 @@ async def cocotb_run(dut):
 
     #Instantiation of the testbench and first reset of the DUT
     tb = TB(dut)
-    await tb.reset_only()
+    await tb.reset_lane_only()
 
     #Specific variable for the scenario
     global test_failed 

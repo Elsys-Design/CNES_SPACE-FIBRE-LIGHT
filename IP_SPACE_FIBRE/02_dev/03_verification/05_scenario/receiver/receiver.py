@@ -1400,7 +1400,8 @@ async def cocotb_run(dut):
 
     #Enable LaneStart and wait to be in Started state
     Data_read_lane_config_parameters.data = bytearray([0x01,0x00,0x00,0x00])
- 
+    
+    not_started = 1
     time_out = 0
     await tb.masters[0].write_data(Data_read_lane_config_parameters)
     while not_started==1 and time_out < 100:
@@ -1741,7 +1742,8 @@ async def cocotb_run(dut):
 
     #Enable LaneStart and wait to be in Started state
     Data_read_lane_config_parameters.data = bytearray([0x01,0x00,0x00,0x00])
- 
+    
+    not_started = 1
     time_out = 0
     await tb.masters[0].write_data(Data_read_lane_config_parameters)
     while not_started==1 and time_out < 100:

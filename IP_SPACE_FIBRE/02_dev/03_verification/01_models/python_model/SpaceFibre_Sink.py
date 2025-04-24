@@ -325,10 +325,10 @@ class SpaceFibre_Sink:
         #check disparity
 
         if not self.dut_Tx_disparity[0] <= 1:
-            self.logger.warning("sim_time %s ns : Disparity on Tx port is too high after 5b/6b sub-block : %d", get_sim_time(units = 'ns'), self.dut_Tx_disparity[0])
+            self.logger.warning("sim_time %s ns : Disparity on Tx port is too high after 5b/6b sub-block. Sub-block : %s\tdisparity : %d", get_sim_time(units = 'ns'), ls_encoded_data, self.dut_Tx_disparity[0])
             self.dut_Tx_disparity[0] = 1
         if not self.dut_Tx_disparity[0] >= -1:
-            self.logger.warning("sim_time %s ns : Disparity on Tx port is too low after 5b/6b sub-block : %d", get_sim_time(units = 'ns'), self.dut_Tx_disparity[0])
+            self.logger.warning("sim_time %s ns : Disparity on Tx port is too low after 5b/6b sub-block. Sub-block : %s\tdisparity : %d", get_sim_time(units = 'ns'), ls_encoded_data, self.dut_Tx_disparity[0])
             self.dut_Tx_disparity[0] = -1
 
         #decode 3b/4b
@@ -418,9 +418,9 @@ class SpaceFibre_Sink:
 
         #check disparity
         if not self.dut_Tx_disparity[0] <= 1:
-            self.logger.warning("sim_time %s ns : Disparity on Tx port is too high after 3b/4b sub-block : %d", get_sim_time(units = 'ns'), self.dut_Tx_disparity[0])
+            self.logger.warning("sim_time %s ns : Disparity on Tx port is too high after 3b/4b sub-block. Sub-block : %s\tdisparity : %d", get_sim_time(units = 'ns'), ms_encoded_data, self.dut_Tx_disparity[0])
             self.dut_Tx_disparity[0] = 1
         if not self.dut_Tx_disparity[0] >= -1:
-            self.logger.warning("sim_time %s ns : Disparity on Tx port is too low after 3b/4b sub-block : %d", get_sim_time(units = 'ns'), self.dut_Tx_disparity[0])
+            self.logger.warning("sim_time %s ns : Disparity on Tx port is too low after 3b/4b sub-block. Sub-block : %s\tdisparity : %d", get_sim_time(units = 'ns'), ms_encoded_data, self.dut_Tx_disparity[0])
             self.dut_Tx_disparity[0] = -1
         return ms_decoded_data + ls_decoded_data , k_encoded

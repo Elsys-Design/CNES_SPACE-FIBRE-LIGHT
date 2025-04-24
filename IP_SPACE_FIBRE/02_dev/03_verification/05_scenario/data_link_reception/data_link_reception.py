@@ -71,14 +71,14 @@ async def lane_initialization(tb):
     tb.logger.info("sim_time %d ns: Wait PHY reset completion", get_sim_time(units = 'ns') )
     await RisingEdge(tb.dut.spacefibre_instance.inst_phy_plus_lane.RST_TX_DONE)
     tb.logger.info("sim_time %d ns: Reset PHY completed", get_sim_time(units = 'ns') )
-    
 
     #Wait to go to Disabled
     await Timer(2, units = "us")
 
-
     #Enable LaneStart and wait to be in Started state
     Data_read_lane_config_parameters.data = bytearray([0x01, 0x00, 0x00, 0x00])
+
+
     time_out = 0
     await tb.masters[0].write_data(Data_read_lane_config_parameters)
     while not_started==1 and time_out < 10000:
@@ -111,6 +111,11 @@ async def initialization_procedure(tb, monitor_path):
 
     #LaneReset with Lane_Configurator
     await tb.masters[0].init_run("stimuli/axi/Lane_reset.json")
+
+    #Wait end of phy reset
+    tb.logger.info("sim_time %d ns: Wait PHY reset completion", get_sim_time(units = 'ns') )
+    await RisingEdge(tb.dut.spacefibre_instance.inst_phy_plus_lane.RST_TX_DONE)
+    tb.logger.info("sim_time %d ns: Reset PHY completed", get_sim_time(units = 'ns') )
 
     #Wait to go to Disabled
     await Timer(2, units = "us")

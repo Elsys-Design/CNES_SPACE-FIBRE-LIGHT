@@ -80,9 +80,10 @@ async def init_to_started(tb):
     await Timer(2, units = "us")
 
     #Enable LaneStart and wait to be in Started state
-    Enable_Lanestart = Data(0x04, 0x00000001)
+    Data_read_lane_config_parameters.data = bytearray([0x01,0x00,0x00,0x00])
+ 
     time_out = 0
-    await tb.masters[0].write_data(Enable_Lanestart)
+    await tb.masters[0].write_data(Data_read_lane_config_parameters)
     while not_started==1 and time_out < 100:
         await tb.masters[0].read_data(Data_read_lane_config_status)
         if format(Data_read_lane_config_status.data[0], '0>8b')[4:8] == STARTED:
