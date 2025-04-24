@@ -82,7 +82,7 @@ void configuration2_dl_link_reset_step1 (void)
 		debug_printf("\r\n Error: SEQ_NUMBER_TX = 0 \r\n");
 	}
 	else{
-		debug_printf("\r\n SEQ_NUMBER_TX = %d \r\n", temp1);
+		debug_printf("\r\n SEQ_NUMBER_TX = x%x \r\n", temp1);
 	}
 
 	DL_CONFIGURATOR_DL_STATUS_1_GET(SEQ_NUMBER_RX, temp2);
@@ -91,7 +91,7 @@ void configuration2_dl_link_reset_step1 (void)
 		debug_printf("\r\n Error: SEQ_NUMBER_RX = 0 \r\n");
 	}
 	else{
-		debug_printf("\r\n SEQ_NUMBER_RX = %d \r\n", temp2);
+		debug_printf("\r\n SEQ_NUMBER_RX = x%x \r\n", temp2);
 	}
 
   //Assert and de-assert Interface Reset
@@ -121,14 +121,14 @@ void configuration2_dl_link_reset_step1 (void)
 	DL_CONFIGURATOR_DL_PARAMETER_GET(PAUSE_VC,temp1);
 	if (temp1 != 0)
 	{
-		debug_printf("\r\n Error: PAUSE_VC = %d is not reset\r\n", temp1);
+		debug_printf("\r\n Error: PAUSE_VC = x%x is not reset\r\n", temp1);
 	}
 
 	//Check Link_reset_asserted is at ‘1’
 	DL_CONFIGURATOR_DL_PARAMETER_GET(LINK_RESET_ASSERTED,temp1);
 	if (temp1 != 1)
 	{
-		debug_printf("\r\n Error: LINK_RESET_ASSERTED = %d not asserted\r\n", temp1);
+		debug_printf("\r\n Error: LINK_RESET_ASSERTED = x%x not asserted\r\n", temp1);
 	}
 	//Clear Link_reset_asserted
 	DL_CONFIGURATOR_DL_PARAMETER_SET_IN_PLACE
@@ -205,7 +205,7 @@ void configuration2_dl_link_reset_step2 (void)
 		debug_printf("\r\n Error: SEQ_NUMBER_TX = 0 \r\n");
 	}
 	else{
-		debug_printf("\r\n SEQ_NUMBER_TX = %d \r\n", temp1);
+		debug_printf("\r\n SEQ_NUMBER_TX = x%x \r\n", temp1);
 	}
 
 	DL_CONFIGURATOR_DL_STATUS_1_GET(SEQ_NUMBER_RX, temp2);
@@ -214,7 +214,7 @@ void configuration2_dl_link_reset_step2 (void)
 		debug_printf("\r\n Error: SEQ_NUMBER_RX = 0 \r\n");
 	}
 	else{
-		debug_printf("\r\n SEQ_NUMBER_RX = %d \r\n", temp2);
+		debug_printf("\r\n SEQ_NUMBER_RX = x%x \r\n", temp2);
 	}
 
   //Assert and de-assert Link Reset
@@ -244,14 +244,14 @@ void configuration2_dl_link_reset_step2 (void)
 	DL_CONFIGURATOR_DL_PARAMETER_GET(PAUSE_VC,temp1);
 	if (temp1 != 1)
 	{
-		debug_printf("\r\n Error: PAUSE_VC = %d is reset\r\n", temp1);
+		debug_printf("\r\n Error: PAUSE_VC = x%x is reset\r\n", temp1);
 	}
 
   //Check Link_reset_asserted is at ‘1’
 	DL_CONFIGURATOR_DL_PARAMETER_GET(LINK_RESET_ASSERTED,temp1);
 	if (temp1 != 1)
 	{
-		debug_printf("\r\n Error: LINK_RESET_ASSERTED = %d not asserted\r\n", temp1);
+		debug_printf("\r\n Error: LINK_RESET_ASSERTED = x%x not asserted\r\n", temp1);
 	}
   //Clear Link_reset_asserted
 	DL_CONFIGURATOR_DL_PARAMETER_SET_IN_PLACE

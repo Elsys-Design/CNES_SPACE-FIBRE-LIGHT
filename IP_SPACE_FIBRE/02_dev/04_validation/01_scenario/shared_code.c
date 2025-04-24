@@ -40,7 +40,8 @@ static enum action_result _wait_for_started_to_active (void)
 		{LANE_STATE_ACTIVE, LANE_STATE_CONNECTED, LANE_STATE_CONNECTING};
 
 	wait(1023);
-
+	
+	// debug_printf("\r\n toto\r\n");
 	// The set of allowed states shrinks at each iteration.
 	for (int i = 3; i >= 1; i--)
 	{
@@ -69,10 +70,36 @@ static enum action_result wait_test_end
 )
 {
 	unsigned int timer = 0;
-
+	debug_printf("\r\n run wait_test_end\r\n");
 	for (;;)
 	{
+		timer++;
 		bool completed = true;
+
+		if (timer >= 20000)
+		{
+			debug_printf("\r\n wait_end_test timeout\r\n");
+
+			for (uint32_t i = 0; i < CHANNEL_COUNT; ++i)
+			{
+				if (!(test->enable_mask & (1 << i)))
+				{
+					continue;
+				}
+
+				if (!DL_GENERATOR_STATUS_GET(TEST_END, *DL_GENERATOR_X_STATUS_PTR(i)))
+				{
+					debug_printf("\r\n Generator channel x%x not ended\r\n", i);
+				}
+
+				if (!DL_ANALYZER_STATUS_GET(TEST_END, *DL_ANALYZER_X_STATUS_PTR(i)))
+				{
+					debug_printf("\r\n Analyzer channel x%x not ended\r\n", i);
+				}
+			}
+
+			return TIMEOUT;
+		}
 
 		for (uint32_t i = 0; i < CHANNEL_COUNT; ++i)
 		{
@@ -97,31 +124,6 @@ static enum action_result wait_test_end
 		{
 			return OK;
 		}
-
-		if (timer >= 20000)
-		{
-			debug_printf("\r\n wait_end_test timeout\r\n");
-
-			for (uint32_t i = 0; i < CHANNEL_COUNT; ++i)
-			{
-				if (!(test->enable_mask & (1 << i)))
-				{
-					continue;
-				}
-
-				if (!DL_GENERATOR_STATUS_GET(TEST_END, *DL_GENERATOR_X_STATUS_PTR(i)))
-				{
-					debug_printf("\r\n Generator channel %d not ended\r\n", i);
-				}
-
-				if (!DL_ANALYZER_STATUS_GET(TEST_END, *DL_ANALYZER_X_STATUS_PTR(i)))
-				{
-					debug_printf("\r\n Analyzer channel %d not ended\r\n", i);
-				}
-			}
-
-			return TIMEOUT;
-		}
 	}
 }
 
@@ -142,7 +144,6 @@ void initiate_test (const struct test_config test [const static 1])
 			*DL_GENERATOR_X_INITIAL_VALUE_PTR(i) = test->gen_init[i];
 		}
 	}
-
 	for (uint32_t i = 0; i < CHANNEL_COUNT; ++i)
 	{
 		if (test->enable_mask & (1 << i))
@@ -159,7 +160,7 @@ enum action_result finalize_test
 )
 {
 	uint32_t error_counter = 0;
-
+	debug_printf("\r\n  run finalize_test \r\n");
 	if (wait_test_end(test) == OK)
 	{
 		const bool expect_errors = test->expect_errors;
@@ -182,7 +183,7 @@ enum action_result finalize_test
 			{
 				debug_printf
 				(
-					"\r\n Issue: test completed with %d errors out on channel %d (%s).\r\n",
+					"\r\n Issue: test completed with x%x errors out on channel x%x (%s).\r\n",
 					local_errors_count,
 					i,
 					(expect_errors ? "errors expected" : "no errors expected")
@@ -191,7 +192,7 @@ enum action_result finalize_test
 
 			error_counter += local_errors_count;
 		}
-
+		debug_printf("\r\n  end wait_test_end \r\n");
 		if
 		(
 			((error_counter == 0) && !expect_errors)
@@ -207,7 +208,9 @@ enum action_result finalize_test
 
 enum action_result run_test (const struct test_config test [const static 1])
 {
+	debug_printf("\r\n  run test \r\n");
 	initiate_test(test);
+	debug_printf("\r\n  end test \r\n");
 
 	return finalize_test(test);
 }
@@ -246,28 +249,30 @@ enum action_result run_tests
 )
 {
 	unsigned int successes = 0;
-
 	for (unsigned int i = 0; i < test_count; ++i)
 	{
+		debug_printf("\r\n  in for %x.\r\n", i);
 		switch (run_test(test + i))
 		{
+			debug_printf("\r\n  in switch %x.\r\n", i);
 			case OK:
+				debug_printf("\r\n  success Test %x.\r\n", i);
 				successes++;
 				break;
 
 			case TIMEOUT:
-				debug_printf("\r\nTest %d timed out.\r\n", i);
+				debug_printf("\r\nTest x%x timed out.\r\n", i);
 				break;
 
 			case FAILURE:
-				debug_printf("\r\nTest %d failed.\r\n", i);
+				debug_printf("\r\nTest x%x failed.\r\n", i);
 				break;
 		}
 	}
 
 	debug_printf
 	(
-		"\r\nTest suite: %d out of %d tests succeeded.\r\n",
+		"\r\nTest suite: x%x out of x%x tests succeeded.\r\n",
 		successes,
 		test_count
 	);
