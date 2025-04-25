@@ -626,7 +626,7 @@ def check_CRC(tb, path):
 
                 #EBF
                 if (input_splitted[0][6:8] == "5C" or input_splitted[0][6:8] == "BC") and input_splitted[1] == "0001" and in_bc_frame == 1:
-                    crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8("11111100", crc_8)
+                    crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8("01011100", crc_8)
                     crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8(f"{int(input_splitted[0][4:6], base = 16):0>8b}", crc_8)
                     crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8(f"{int(input_splitted[0][2:4], base = 16):0>8b}", crc_8)
                     crc_8 = tb.spacefibre_random_generator_data_link.invert_string(crc_8)
@@ -855,10 +855,10 @@ async def cocotb_run(dut):
     await monitor
 
     if step_1_failed == 0:
-        tb.logger.info("simulation time %d ns : step 1 result: Pass")
+        tb.logger.info("simulation time %d ns : step 1 result: Pass", get_sim_time(units = 'ns'))
     else:
         test_failed = 1
-        tb.logger.error("simulation time %d ns : step 1 result: Failed")
+        tb.logger.error("simulation time %d ns : step 1 result: Failed", get_sim_time(units = 'ns'))
 
 
     ##########################################################################
@@ -1032,10 +1032,10 @@ async def cocotb_run(dut):
     await monitor
 
     if step_2_failed == 0:
-        tb.logger.info("simulation time %d ns : step 2 result: Pass")
+        tb.logger.info("simulation time %d ns : step 2 result: Pass", get_sim_time(units = 'ns'))
     else:
         test_failed = 1
-        tb.logger.error("simulation time %d ns : step 2 result: Failed")
+        tb.logger.error("simulation time %d ns : step 2 result: Failed", get_sim_time(units = 'ns'))
 
     ##########################################################################
     ##########################################################################
@@ -1124,10 +1124,10 @@ async def cocotb_run(dut):
         step_3_failed = 1
 
     if step_3_failed == 0:
-        tb.logger.info("simulation time %d ns : step 3 result: Pass")
+        tb.logger.info("simulation time %d ns : step 3 result: Pass", get_sim_time(units = 'ns'))
     else:
         test_failed = 1
-        tb.logger.error("simulation time %d ns : step 3 result: Failed")
+        tb.logger.error("simulation time %d ns : step 3 result: Failed", get_sim_time(units = 'ns'))
 
     ##########################################################################
     ##########################################################################
@@ -1252,10 +1252,10 @@ async def cocotb_run(dut):
     await send_idle_ctrl_word(tb, 200)
 
     if step_4_failed == 0:
-        tb.logger.info("simulation time %d ns : step 4 result: Pass")
+        tb.logger.info("simulation time %d ns : step 4 result: Pass", get_sim_time(units = 'ns'))
     else:
         test_failed = 1
-        tb.logger.error("simulation time %d ns : step 4 result: Failed")
+        tb.logger.error("simulation time %d ns : step 4 result: Failed", get_sim_time(units = 'ns'))
 
     ##########################################################################
     ##########################################################################
@@ -1316,10 +1316,10 @@ async def cocotb_run(dut):
     await monitor
 
     if step_5_failed == 0:
-        tb.logger.info("simulation time %d ns : step 5 result: Pass")
+        tb.logger.info("simulation time %d ns : step 5 result: Pass", get_sim_time(units = 'ns'))
     else:
         test_failed = 1
-        tb.logger.error("simulation time %d ns : step 5 result: Failed")
+        tb.logger.error("simulation time %d ns : step 5 result: Failed", get_sim_time(units = 'ns'))
 
 
     ##########################################################################
@@ -1404,10 +1404,10 @@ async def cocotb_run(dut):
     await send_idle_ctrl_word(tb, 200)
 
     if step_6_failed == 0:
-        tb.logger.info("simulation time %d ns : step 6 result: Pass")
+        tb.logger.info("simulation time %d ns : step 6 result: Pass", get_sim_time(units = 'ns'))
     else:
         test_failed = 1
-        tb.logger.error("simulation time %d ns : step 6 result: Failed")
+        tb.logger.error("simulation time %d ns : step 6 result: Failed", get_sim_time(units = 'ns'))
 
     #writting the monitors loggers
     tb.write_monitor_data()
