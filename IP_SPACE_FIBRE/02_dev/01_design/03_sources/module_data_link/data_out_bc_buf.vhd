@@ -22,6 +22,7 @@ entity data_out_bc_buf is
     -- Link Reset
     LINK_RESET_DLRE       : in std_logic;
     -- AXI-Stream interface
+    S_AXIS_ARSTN_NW	      : in std_logic;
 		S_AXIS_ACLK_NW	      : in std_logic;
 		S_AXIS_TREADY_DL      : out std_logic;
 		S_AXIS_TDATA_NW       : in std_logic_vector(C_DATA_LENGTH-1 downto 0);
@@ -97,6 +98,8 @@ architecture rtl of data_out_bc_buf is
   signal cnt_cmd_flush          : unsigned (1 downto 0);
   signal vc_end_packet          : std_logic;
   signal cnt_word_sent          : unsigned(6-1 downto 0);     -- cnt_word sent, max= 64
+      -- Fifo
+  signal rst_n_fifo             : std_logic;
 begin
 ---------------------------------------------------------
 -----                     Assignation               -----
@@ -121,7 +124,7 @@ begin
     S_AXIS_TUSER_WIDTH    => C_BYTE_BY_WORD_LENGTH
   )
   port map (
-    aresetn               => RST_N,
+    aresetn               => rst_n_fifo,
     RD_CLK                => CLK,
     RD_DATA               => rd_data,
     RD_DATA_EN            => VC_RD_EN_DMAC,
@@ -144,6 +147,18 @@ begin
 ---------------------------------------------------------
 -----                     Process                   -----
 ---------------------------------------------------------
+---------------------------------------------------------
+-- Process: p_rst_fifo
+-- Description: Manages the reste signal of the Fifo
+---------------------------------------------------------
+p_rst_fifo: process(CLK, RST_N, S_AXIS_ARSTN_NW)
+begin
+  if RST_N = '0' or  S_AXIS_ARSTN_NW = '0' then
+    rst_n_fifo <= '0';
+  elsif rising_edge(CLK) then
+    rst_n_fifo <= '1';
+  end if;
+end process p_rst_fifo;
 ---------------------------------------------------------
 -- Process: p_link_reset
 -- Description: Flush management
