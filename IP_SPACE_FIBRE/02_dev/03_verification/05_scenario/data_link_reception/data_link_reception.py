@@ -574,30 +574,7 @@ async def cocotb_run(dut):
     #Specific variable for the scenario
     global test_failed 
 
-    #BC seq count
-    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_8("01011100", "11001110")
-    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_8("00000000", crc_16)
-    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_8("00001101", crc_16)
-
-
-    #BC seq pola
-    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_8("01011100", "11001110")
-    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_8("00000000", crc_16)
-    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_8("10010000", crc_16)
-
-
-    #idle seq count
-    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_8("11111100")
-    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_8("10000100", crc_16)
-    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_8("00001001", crc_16)
-
-    #idle seq pola
-    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_8("11111100")
-    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_8("10000100", crc_16)
-    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_8("00010000", crc_16)
     
-
-
     ##########################################################################
     ##########################################################################
     ##########################################################################

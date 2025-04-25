@@ -71,9 +71,12 @@ class SpaceFibre_Random_Generator:
             input = int(crc_16[0]) ^ input
             crc_16 = crc_16[1 : 16] + "0"
             crc_16 = crc_16[0 : 3] + str(input^int(crc_16[3]))+crc_16[4:10] + str(input^int(crc_16[10])) + crc_16[11:15] + str(input)
-        output_file_bin = open("CRC_16_compute_step.debug", "a")
-        output_file_bin.write(f"{int(crc_16, base = 2):0>4X}" + "_" + str(get_sim_time(units = "ns")) + "\n")  
-        output_file_bin.close()      
+        #####
+        # generate debug file
+        #####
+        # output_file_bin = open("CRC_16_compute_step.debug", "a")
+        # output_file_bin.write(f"{int(crc_16, base = 2):0>4X}" + "_" + str(get_sim_time(units = "ns")) + "\n")  
+        # output_file_bin.close()
         return crc_16
     
     def compute_crc_8(self, byte_input, crc_8 = "00000000"):
@@ -85,9 +88,13 @@ class SpaceFibre_Random_Generator:
             input = int(crc_8[0]) ^ input
             crc_8 = crc_8[1 : 8] + "0"
             crc_8 = crc_8[0 : 5] + str(input^int(crc_8[5])) + str(input^int(crc_8[6])) + str(input)
-        output_file_bin = open("CRC_8_compute_step.debug", "a")
-        output_file_bin.write(f"{int(crc_8, base = 2):0>2X}" + "_" + str(get_sim_time(units = "ns")) + "\n")  
-        output_file_bin.close()   
+
+        #####
+        # generate debug file
+        #####
+        # output_file_bin = open("CRC_8_compute_step.debug", "a")
+        # output_file_bin.write(f"{int(crc_8, base = 2):0>2X}" + "_" + str(get_sim_time(units = "ns")) + "\n")  
+        # output_file_bin.close()
         return crc_8
     
     async def write_to_Rx(self, data, delay, k_encoding = 0, invert_polarity = 0):
