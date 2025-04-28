@@ -56,7 +56,10 @@ void configuration2_dl_link_reset_step1 (void)
 	debug_printf("\r\n Start configuration 2\r\n");
 	debug_printf("\r\n Start scenario: Link Reset\r\n");
 	debug_printf("\r\n Step 1: Check interface reset \r\n");
+	// Disable Injector and Spy read command
+	phy_plus_lane_plus_dl();
 
+	// Perform initialization procedure
 	if (initialization_sequence() != OK)
 	{
 		debug_printf("\r\n Initialization sequence failed. \r\n");
@@ -179,7 +182,10 @@ void configuration2_dl_link_reset_step2 (void)
 	debug_printf("\r\n Start configuration 2\r\n");
 	debug_printf("\r\n Start scenario: Link Reset\r\n");
 	debug_printf("\r\n Step 2: Check link reset \r\n");
+	// Disable Injector and Spy read command
+	phy_plus_lane_plus_dl();
 
+	// Perform initialization procedure
 	if (initialization_sequence() != OK)
 	{
 		debug_printf("\r\n Initialization sequence failed. \r\n");
@@ -187,7 +193,6 @@ void configuration2_dl_link_reset_step2 (void)
 		return;
 	}
 	// Send a data packet of 64 words to each virtual channel check that the data are received on Data_Link_Data_Analyzer models
-	debug_printf("\r\n Ignore the timeout error below: we want it to occur.\r\n");
 	run_test(step1_test);
 
   //	Assert PAUSE_VC for channel 0
