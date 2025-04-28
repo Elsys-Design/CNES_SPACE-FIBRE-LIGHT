@@ -140,7 +140,6 @@ static const struct test_config step1_test[STEP1_TESTS_COUNT] =
 
 void configuration2_dl_lpb_step1 (void)
 {
-	uint32_t temp;
 	debug_printf("\r\n Start configuration 2\r\n");
 	debug_printf("\r\n Start scenario: Data-Link Transmission reception loopback\r\n");
 	debug_printf("\r\n Step 1: Check data and broadcast frames transmission and reception \r\n");
@@ -156,11 +155,7 @@ void configuration2_dl_lpb_step1 (void)
 	}
 
 	// Wait 1 us
-	wait_us_clk_150mhz(300);// FIXME: should be 1us.
-	temp = *DL_CONFIGURATOR_DL_STATUS_1_PTR;
-	debug_printf("\r\n DL_CONFIGURATOR_DL_STATUS_1_PTR %x.\r\n", temp);
-	temp = *DL_CONFIGURATOR_DL_PARAMETER_PTR;
-	debug_printf("\r\n DL_CONFIGURATOR_DL_PARAMETER_PTR UUUUUUUUUUU %x.\r\n", temp);
+	wait_us_clk_150mhz(300);
 	// Check credit_VC signals for each virtual channels are at 1 in the
 	// data_link_configurator
 	uint32_t val =
