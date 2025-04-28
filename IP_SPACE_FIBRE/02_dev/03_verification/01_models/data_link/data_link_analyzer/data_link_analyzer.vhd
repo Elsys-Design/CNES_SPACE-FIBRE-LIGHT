@@ -1,11 +1,11 @@
 --------------------------------------------------------------------------
--- COMPANY       : CNES
+-- COMPANY       : ELSYS Design
 --------------------------------------------------------------------------
 -- TITLE         : data_link_analyzer.vhd
 -- PROJECT       : SPACE FIBRE LIGHT
 --------------------------------------------------------------------------
--- AUTHOR        : ELSYS Design (Yvan DAURIAC)
--- CREATED       : 14/09/2024
+-- AUTHOR        : ELSYS Design (Thomas FAVRE-FELIX)
+-- CREATED       : 07/03/2025
 --------------------------------------------------------------------------
 -- DESCRIPTION   : Model able to analyze data from the data_link layer
 --------------------------------------------------------------------------
@@ -380,7 +380,7 @@ architecture rtl of DATA_LINK_ANALYZER is
                if (model_start = '1' and data_mode =C_LA_DM_DATA) then
                   busy_frame              <= '1';                                  -- model busy
                   test_end_frame          <= '0';                                  -- reset for a new test
-                  cnt_byte                <= unsigned(packet_size);                 -- number of packets = frame size
+                  cnt_byte                <= unsigned(packet_size);                -- number of byte = packet size
                   err_counter_frame       <= (others=>'0');
                   cnt_packet              <= (others => '0');
                   if (gen_data = C_INCREMENTAL) then  -- incremental data
@@ -400,6 +400,8 @@ architecture rtl of DATA_LINK_ANALYZER is
             when ANALYZE =>
                
                eep_detected           <= '0';
+
+               -- if previous data just received or first data of the test, and previous data didn't contain EEP
                if ((TVALID = '1' and tready_i = '1') or (tready_i = '0')) and eep_detected = '0' then 
                   -- select data tx in function of the number of bytes remaining in the frame
                   if (gen_data = C_INCREMENTAL) then  -- incremental data
@@ -413,7 +415,7 @@ architecture rtl of DATA_LINK_ANALYZER is
                   end if;
                end if;
                
-               -- word management
+               -- word management with EOP and FILL
                if eep_detected = '0' then 
                   if packet_size = 2 then
                      if (cnt_packet = packet_number-1) then
@@ -446,7 +448,7 @@ architecture rtl of DATA_LINK_ANALYZER is
                      end loop;
                   end if;
 
-                  
+                  -- cnt packet management to monitor current size of packet received
                   if (packet_size = 2) then
                      if (cnt_packet = packet_number-1) then
                         cnt_packet <= cnt_packet + 1;
@@ -468,9 +470,9 @@ architecture rtl of DATA_LINK_ANALYZER is
                   end if;
                end if;
                
-               -- packet management
                tready_i <= '1';
-
+               
+               -- error or EEP management
                if (TVALID = '1' and tready_i = '1' and (tdata_i /= TDATA or tuser_i /= TUSER) and err_counter_frame < 2**C_LG_CNT_ERR_MAX_WIDTH-1) then
                   -- check EEP
                   if (TDATA(7 downto 0) = C_EEP and TUSER(0) = '1') or (TDATA(15 downto 8) = C_EEP and TUSER(1) = '1') or (TDATA(23 downto 16) = C_EEP and TUSER(2) = '1') or (TDATA(31 downto 24) = C_EEP and TUSER(3) = '1') then
@@ -480,6 +482,7 @@ architecture rtl of DATA_LINK_ANALYZER is
                   end if;
                end if;
 
+               -- state transition
                if (cnt_packet >= packet_number) then
                   generation_state <= END_TEST;
                   tready_i           <= '0';
@@ -493,6 +496,7 @@ architecture rtl of DATA_LINK_ANALYZER is
                tready_i <= '1';
                eep_detected  <= '0';
 
+               -- error or EEP management
                if (TVALID = '1' and tready_i = '1' and (tdata_i /= TDATA or tuser_i /= TUSER) and err_counter_frame < 2**C_LG_CNT_ERR_MAX_WIDTH-1) then
                   -- check EEP
                   if (TDATA(7 downto 0) = C_EEP and TUSER(0) = '1') or (TDATA(15 downto 8) = C_EEP and TUSER(1) = '1') or (TDATA(23 downto 16) = C_EEP and TUSER(2) = '1') or (TDATA(31 downto 24) = C_EEP and TUSER(3) = '1') then
@@ -502,12 +506,13 @@ architecture rtl of DATA_LINK_ANALYZER is
                   end if;
                end if;
 
+               -- state transition
                if (cnt_packet >= packet_number) then
                   generation_state <= END_TEST;
                   tready_i           <= '0';
                elsif TVALID = '1' and ((TDATA(7 downto 0) = C_EEP and TUSER(0) = '1') or (TDATA(15 downto 8) = C_EEP and TUSER(1) = '1') or (TDATA(23 downto 16) = C_EEP and TUSER(2) = '1') or (TDATA(31 downto 24) = C_EEP and TUSER(3) = '1')) then
                   generation_state <= WAIT_RX;
-               elsif (TVALID = '1' and cnt_packet < packet_number) then
+               elsif (TVALID = '1' and cnt_packet < packet_number) then -- data received and test not finished
                   if (gen_data = C_INCREMENTAL) then  -- incremental data
                      reg_data_rx_frame <= std_logic_vector(val_data);-- push data in the register rx
                      
@@ -518,7 +523,7 @@ architecture rtl of DATA_LINK_ANALYZER is
                      prbs_data <= prbs_data(C_INTERNAL_BUS_WIDTH-2 downto 0) & (prbs_data(C_INTERNAL_BUS_WIDTH-1) xor prbs_data(C_INTERNAL_BUS_WIDTH-2) xor prbs_data(C_INTERNAL_BUS_WIDTH-4) xor prbs_data(C_INTERNAL_BUS_WIDTH-5)); -- prbs data generation
                   end if;
                   
-                  -- word management
+                  -- word management with EOP and FILL
                   if packet_size = 2 then
                      if (cnt_packet = packet_number-1) then
                         tdata_i <= C_FILL & C_FILL & C_EOP & reg_data_rx_frame(7 downto 0);
@@ -549,7 +554,8 @@ architecture rtl of DATA_LINK_ANALYZER is
                         end if;
                      end loop;
                   end if;
-   
+                  
+                  -- cnt packet to monitor current size of the packet received
                   if (packet_size = 2) then
                      if (cnt_packet = packet_number-1) then
                         cnt_packet <= cnt_packet + 1;

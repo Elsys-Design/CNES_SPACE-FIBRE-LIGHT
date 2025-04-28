@@ -326,18 +326,10 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
 
     -- Parameters reset from Data Link to configurator
     inputs_to_sync(149)         <= RESET_PARAM_DL;
-    
     reset_param_dl_i            <= inputs_to_model(149);
-
-
-
-
-
-   
 
    lane_start_pulse             <= reg_lane_param(C_LANESTART_PULSE_BTFD);
    RST_DUT_N                    <= reg_global(C_RST_DUT_BTFD);
-
    dl_en_i                      <= reg_global(C_DL_EN_BTFD);
    lane_spy_en_i                <= reg_global(C_LANE_SPY_EN_BTFD);
 
@@ -505,13 +497,13 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
          if (lane_start_pulse ='1') then
             reg_lane_param(C_LANESTART_PULSE_BTFD)  <= '0';  -- Reset model start bit
          end if;
-         if (reset_param_dl_i = '1') then
+         if (reset_param_dl_i = '1') then                    -- Configuration reset from data link
             reg_dl_param                            <= init_dl_dl_param;
          end if;
-         if link_rst_asserted_i = '1' then
+         if link_rst_asserted_i = '1' then                   -- Link reset command from data link
             reg_dl_param(C_LINK_RST_ASSERTED_BTFD)  <= link_rst_asserted_i;
          end if;
-         if clear_error_flag = '1' then
+         if clear_error_flag = '1' then                      -- Flag to clear the error counter
             reg_dl_param(C_CLEAR_ERROR_FLAG_BTFD)   <= '0';
          end if;
          case axi_wr_state is
@@ -595,16 +587,16 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
          reg_dl_status_1(C_SEQ_NUMBER_RX_BTFD downto C_SEQ_NUMBER_TX_BTFD + 1)            <= seq_number_rx_i;
          reg_dl_status_1(C_VC_CREDIT_BTFD downto C_SEQ_NUMBER_RX_BTFD + 1)                <= vc_credit_i;
          reg_dl_status_1(C_FCT_CREDIT_OVERFLOW_BTFD downto C_VC_CREDIT_BTFD + 1)          <= fct_credit_overflow_i;
-         if crc_long_error_i ='1' then
+         if crc_long_error_i ='1' then    -- Stay up to be readable by the AXI interface, need tobe cleared manually
             reg_dl_status_2(C_CRC_LONG_ERROR_BTFD)                                        <= crc_long_error_i;
          end if;
-         if crc_short_error_i = '1' then
+         if crc_short_error_i = '1' then  -- Stay up to be readable by the AXI interface, need tobe cleared manually
             reg_dl_status_2(C_CRC_SHORT_ERROR_BTFD)                                       <= crc_short_error_i;
          end if;
-         if frame_error_i = '1' then
+         if frame_error_i = '1' then      -- Stay up to be readable by the AXI interface, need tobe cleared manually
             reg_dl_status_2(C_FRAME_ERROR_BTFD)                                           <= frame_error_i;
          end if;
-         if seq_error_i = '1' then
+         if seq_error_i = '1' then        -- Stay up to be readable by the AXI interface, need tobe cleared manually
             reg_dl_status_2(C_SEQ_ERROR_BTFD)                                             <= seq_error_i;
          end if;
          reg_dl_status_2(C_FAR_END_LINK_RST_BTFD)                                         <= far_end_link_rst_i;
@@ -624,7 +616,7 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
          reg_dl_qos_2(C_CURRENT_TIME_SLOT_BTFD downto C_RETRY_COUNTER_RX_BTFD + 1)        <= current_time_slot_i;
          reg_dl_err_mngt(C_ACK_SEQ_NUM_BTFD downto 0)                                     <= ack_seq_num_i;
          reg_dl_err_mngt(C_NACK_SEQ_NUM_BTFD downto C_ACK_SEQ_NUM_BTFD + 1)               <= nack_seq_num_i;
-         if clear_error_flag = '1' then
+         if clear_error_flag = '1' then  -- Manual clear of error counter with clear_error_flag
             reg_dl_status_2(C_CRC_LONG_ERROR_BTFD)                                           <= '0';
             reg_dl_status_2(C_CRC_SHORT_ERROR_BTFD)                                          <= '0';
             reg_dl_status_2(C_FRAME_ERROR_BTFD)                                              <= '0';
