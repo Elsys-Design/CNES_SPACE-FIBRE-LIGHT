@@ -22,6 +22,7 @@ entity data_in_bc_buf is
     -- Link Reset
     LINK_RESET_DLRE        : in std_logic;
     -- AXI-Stream interface
+    M_AXIS_ARSTN_NW	       : in std_logic;
     M_AXIS_ACLK_NW	       : in  std_logic;
     M_AXIS_TVALID_DIBUF	   : out std_logic;
     M_AXIS_TDATA_DIBUF	   : out std_logic_vector(C_DATA_LENGTH-1 downto 0);

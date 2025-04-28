@@ -105,6 +105,7 @@ architecture Behavioral of data_link is
       -- Link Reset
       LINK_RESET_DLRE        : in std_logic;
       -- AXI-Stream interface
+      M_AXIS_ARSTN_NW	       : in std_logic;
       M_AXIS_ACLK_NW	       : in  std_logic;
       M_AXIS_TVALID_DIBUF	   : out std_logic;
       M_AXIS_TDATA_DIBUF	   : out std_logic_vector(C_DATA_LENGTH-1 downto 0);
@@ -739,6 +740,7 @@ begin
     RST_N                  => RST_N,
     CLK                    => CLK,
     LINK_RESET_DLRE        => link_reset_dlre,
+    M_AXIS_ARSTN_NW        => AXIS_ARSTN_RX_NW(G_VC_NUM),
     M_AXIS_ACLK_NW	       => AXIS_ACLK_RX_NW(G_VC_NUM),
     M_AXIS_TVALID_DIBUF    => AXIS_TVALID_RX_DL(G_VC_NUM),
     M_AXIS_TDATA_DIBUF     => AXIS_TDATA_RX_DL(G_VC_NUM),
