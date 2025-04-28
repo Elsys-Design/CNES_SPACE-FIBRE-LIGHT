@@ -145,6 +145,8 @@ type data_in_fsm is (
   signal link_reset_dlre_reg1   : std_logic;
   signal link_reset_dlre_sync   : std_logic;
   signal flag_last_data         : std_logic;
+    -- Fifo
+  signal rst_n_fifo             : std_logic;
 begin
 ---------------------------------------------------------
 -----                     Assignation               -----
@@ -175,7 +177,7 @@ begin
     S_AXIS_TUSER_WIDTH    => C_BYTE_BY_WORD_LENGTH
   )
   port map (
-    aresetn               => RST_N,
+    aresetn               => rst_n_fifo,
     RD_CLK                => CLK,
     RD_DATA               => rd_data,
     RD_DATA_EN            => rd_en,
@@ -198,6 +200,18 @@ begin
 ---------------------------------------------------------
 -----                     Process                   -----
 ---------------------------------------------------------
+---------------------------------------------------------
+-- Process: p_rst_fifo
+-- Description: Manages the reste signal of the Fifo
+---------------------------------------------------------
+p_rst_fifo: process(CLK, RST_N, S_AXIS_ARSTN_NW)
+begin
+  if RST_N = '0' or  S_AXIS_ARSTN_NW = '0' then
+    rst_n_fifo <= '0';
+  elsif rising_edge(CLK) then
+    rst_n_fifo <= '1';
+  end if;
+end process p_rst_fifo;
 ---------------------------------------------------------
 -- Process: p_continuous_mode
 -- Description: Manages continuous mode procedure trigger

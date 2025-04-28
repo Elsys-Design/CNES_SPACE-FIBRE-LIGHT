@@ -22,6 +22,7 @@ entity data_in_bc_buf is
     -- Link Reset
     LINK_RESET_DLRE        : in std_logic;
     -- AXI-Stream interface
+    M_AXIS_ARSTN_NW	       : in std_logic;
     M_AXIS_ACLK_NW	       : in  std_logic;
     M_AXIS_TVALID_DIBUF	   : out std_logic;
     M_AXIS_TDATA_DIBUF	   : out std_logic_vector(C_DATA_LENGTH-1 downto 0);
@@ -105,6 +106,8 @@ architecture rtl of data_in_bc_buf is
   signal m_axis_tlast	          : std_logic;
   signal m_axis_tready	        : std_logic;
   signal m_axis_tuser           : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
+  -- Fifo
+  signal rst_n_fifo             : std_logic;
 
 begin
 ---------------------------------------------------------
@@ -123,7 +126,7 @@ begin
       M_AXIS_TUSER_WIDTH      => C_BYTE_BY_WORD_LENGTH
   )
   port map (
-      aresetn                => RST_N,
+      aresetn                => rst_n_fifo,
       WR_CLK                 => CLK,
       WR_DATA                => DATA_DDESBC,
       WR_DATA_EN             => DATA_EN_DDESBC,
@@ -146,6 +149,18 @@ begin
 ---------------------------------------------------------
 -----                     Process                   -----
 ---------------------------------------------------------
+---------------------------------------------------------
+-- Process: p_rst_fifo
+-- Description: Manages the reste signal of the Fifo
+---------------------------------------------------------
+p_rst_fifo: process(M_AXIS_ACLK_NW, RST_N, M_AXIS_ARSTN_NW)
+begin
+  if RST_N = '0' or M_AXIS_ARSTN_NW = '0' then
+    rst_n_fifo <= '0';
+  elsif rising_edge(M_AXIS_ACLK_NW) then
+    rst_n_fifo <= '1';
+  end if;
+end process p_rst_fifo;
 ---------------------------------------------------------
 -- Process: p_link_reset
 -- Description: EIP output detection

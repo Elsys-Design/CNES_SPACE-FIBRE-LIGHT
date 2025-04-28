@@ -647,7 +647,7 @@ void scenario_loopback_step1(void){
     mod_write_all(MODEL_GENERATOR_ADDR, MOD_GEN_INIT_VALUE_REG_OFFSET, data_lane_gen_seed);
 
     //Seed of Lane_Analyzer
-    data_lane_ana_seed = bytearray(0x00,0x00,0x00,0x34);
+    data_lane_ana_seed = bytearray(0x00,0x00,0x00,0x00);
     mod_write_all(MODEL_ANALYZER_ADDR, MOD_ANA_INIT_VALUE_REG_OFFSET, data_lane_ana_seed);
     
     // Start Test
@@ -660,8 +660,15 @@ void scenario_loopback_step1(void){
     wait_us_clk_150mhz(60);
 
     //Pull until Test End
-    error_cnt = wait_end_test();
+    // error_cnt = wait_end_test();
+    temp = mod_read_all(MODEL_GENERATOR_ADDR,MOD_GEN_CONTROL_REG_OFFSET);
+    debug_printf("\r\n MOD_GEN_CONTROL_REG_OFFSET : %x\r\n", temp);
+    temp = mod_read_all(MODEL_GENERATOR_ADDR,MOD_GEN_STATUS_REG_OFFSET);
+    debug_printf("\r\n MOD_GEN_STATUS_REG_OFFSET : %x\r\n", temp);
 
+    temp = mod_read_all(MODEL_ANALYZER_ADDR,MOD_ANA_STATUS_REG_OFFSET);
+    debug_printf("\r\n MOD_ANA_STATUS_REG_OFFSET : %x\r\n", temp);
+    error_cnt = wait_end_test();
 
     if ((error_cnt != 0)){
         step_1_failed = 1; 
@@ -808,6 +815,11 @@ void scenario_loopback_step1(void){
     //Pull until Test End
     error_cnt = wait_end_test();
 
+    temp = mod_read_all(MODEL_CONFIGURATOR_ADDR, MOD_CONF_PARAM_LANE_REG_OFFSET);
+    debug_printf("\r\n MOD_CONF_PARAM_LANE_REG_OFFSET: %x \r\n", temp);
+    temp = mod_read_all(MODEL_CONFIGURATOR_ADDR, MOD_CONF_PARAM_PHY_REG_OFFSET);
+    debug_printf("\r\n  MOD_CONF_PARAM_PHY_REG_OFFSET: %x \r\n", temp);
+
     if (error_cnt != 0){
         step_1_failed = 1; 
         debug_printf("\r\nstep 1.5 result: FAILED\r\n");
@@ -845,6 +857,10 @@ void scenario_loopback_step2(void){
     debug_printf("\r\n Step 2: Near-End Loopback START \r\n");
     uint32_t step_2_failed = 0;
     mod_write(MODEL_CONFIGURATOR_ADDR, MOD_CONF_PARAM_PHY_REG_OFFSET, NEAR_END_LOOPBACK_MASK, 1 << NEAR_END_LOOPBACK_SHIFT);
+    temp = mod_read_all(MODEL_CONFIGURATOR_ADDR, MOD_CONF_PARAM_LANE_REG_OFFSET);
+    debug_printf("\r\n MOD_CONF_PARAM_LANE_REG_OFFSET: %x \r\n", temp);
+    temp = mod_read_all(MODEL_CONFIGURATOR_ADDR, MOD_CONF_PARAM_PHY_REG_OFFSET);
+    debug_printf("\r\n  MOD_CONF_PARAM_PHY_REG_OFFSET: %x \r\n", temp);
     // init_to_started();
     //###########################
     //#With loopback during init
@@ -1024,7 +1040,10 @@ void scenario_loopback_step2(void){
     
     //Pull until Test End
     error_cnt = wait_end_test();
-
+    temp = mod_read_all(MODEL_CONFIGURATOR_ADDR, MOD_CONF_PARAM_LANE_REG_OFFSET);
+    debug_printf("\r\n MOD_CONF_PARAM_LANE_REG_OFFSET: %x \r\n", temp);
+    temp = mod_read_all(MODEL_CONFIGURATOR_ADDR, MOD_CONF_PARAM_PHY_REG_OFFSET);
+    debug_printf("\r\n  MOD_CONF_PARAM_PHY_REG_OFFSET: %x \r\n", temp);
     if (error_cnt != 0){
         step_2_failed = 1; 
         debug_printf("\r\nstep 2.5 result: FAILED\r\n");
@@ -1062,7 +1081,10 @@ void scenario_loopback_step3(void){
     //###########################
     //#With loopback during init
     //###########################
-    
+    temp = mod_read_all(MODEL_CONFIGURATOR_ADDR, MOD_CONF_PARAM_LANE_REG_OFFSET);
+    debug_printf("\r\n MOD_CONF_PARAM_LANE_REG_OFFSET: %x \r\n", temp);
+    temp = mod_read_all(MODEL_CONFIGURATOR_ADDR, MOD_CONF_PARAM_PHY_REG_OFFSET);
+    debug_printf("\r\n  MOD_CONF_PARAM_PHY_REG_OFFSET: %x \r\n", temp);
     //wait_for_started_to_active();
 
     //Incremental data generation
@@ -1225,7 +1247,7 @@ void scenario_loopback_step3(void){
     mod_write_all(MODEL_GENERATOR_ADDR, MOD_GEN_INIT_VALUE_REG_OFFSET, data_lane_gen_seed);
 
     //Seed of Lane_Analyzer
-    data_lane_ana_seed = bytearray(0x00,0x00,0x00,0x03);
+    data_lane_ana_seed = bytearray(0x00,0x00,0x00,0x04);
     mod_write_all(MODEL_ANALYZER_ADDR, MOD_ANA_INIT_VALUE_REG_OFFSET, data_lane_ana_seed);
 
     // Start Test
@@ -1237,7 +1259,10 @@ void scenario_loopback_step3(void){
     
     //Pull until Test End
     error_cnt = wait_end_test();
-
+    temp = mod_read_all(MODEL_CONFIGURATOR_ADDR, MOD_CONF_PARAM_LANE_REG_OFFSET);
+    debug_printf("\r\n MOD_CONF_PARAM_LANE_REG_OFFSET: %x \r\n", temp);
+    temp = mod_read_all(MODEL_CONFIGURATOR_ADDR, MOD_CONF_PARAM_PHY_REG_OFFSET);
+    debug_printf("\r\n  MOD_CONF_PARAM_PHY_REG_OFFSET: %x \r\n", temp);
     if (error_cnt != 0){
         step_3_failed = 1; 
         debug_printf("\r\nstep 3.5 result: FAILED\r\n");
@@ -1247,7 +1272,6 @@ void scenario_loopback_step3(void){
         debug_printf("\r\nstep 3.5 result: PASS\r\n");
     }
     debug_printf("\r\n Step 3 END \r\n");
-    mod_write(MODEL_CONFIGURATOR_ADDR, MOD_CONF_PARAM_PHY_REG_OFFSET, NEAR_END_LOOPBACK_MASK, 0 << NEAR_END_LOOPBACK_SHIFT);
     //print results of test
     debug_printf("\r\n TEST RESULTS Scenario Loopback:");
     if (step_3_failed == 0){

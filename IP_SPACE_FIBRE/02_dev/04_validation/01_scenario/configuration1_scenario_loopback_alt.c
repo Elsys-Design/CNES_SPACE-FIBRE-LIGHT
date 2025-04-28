@@ -86,7 +86,7 @@ static const struct test_config step1_test[STEP1_TESTS_COUNT] =
 static const struct test_config step2_test[STEP2_TESTS_COUNT] =
 	{
 		// Test 1
-		BASIC_CONFIG(NO_BROADCAST_CHANS, 0x00000000, {.packet_number = 4, .packet_size = 260}),
+		BASIC_CONFIG(NO_BROADCAST_CHANS, 0x00000000, {.packet_number = 4, .packet_size = 104}),
 		// Test 2
 		BASIC_CONFIG
 		(
@@ -135,11 +135,14 @@ static const struct test_config step2_test[STEP2_TESTS_COUNT] =
 
 void alt_scenario_loopback_step_1 (void)
 {
+	uint32_t temp;
 	debug_printf("\r\n Start scenario loopback\r\n");
 	debug_printf("\r\n Step 1: Parallel loopback START \r\n");
 
-	initialization_sequence();
-	
+	temp = mod_read_all(MODEL_CONFIGURATOR_ADDR, MOD_CONF_PARAM_LANE_REG_OFFSET);
+	debug_printf("\r\n  MOD_CONF_PARAM_LANE_REG_OFFSET before: %x \r\n", temp);
+
+	//DL_CONFIGURATOR_LANE_PARAMETER_SET_IN_PLACE(LANESTART, 1, *DL_CONFIGURATOR_LANE_PARAMETER_PTR);
 
 	DL_CONFIGURATOR_LANE_PARAMETER_SET_IN_PLACE
 	(
@@ -147,6 +150,17 @@ void alt_scenario_loopback_step_1 (void)
 		1,
 		*DL_CONFIGURATOR_LANE_PARAMETER_PTR
 	);
+
+
+	temp = mod_read_all(MODEL_CONFIGURATOR_ADDR, MOD_CONF_PARAM_LANE_REG_OFFSET);
+	debug_printf("\r\n  MOD_CONF_PARAM_LANE_REG_OFFSET after: %x \r\n", temp);
+
+	// mod_write(MODEL_CONFIGURATOR_ADDR, MOD_CONF_PARAM_LANE_REG_OFFSET, PARALLEL_LOOPBACK_MASK, 1 << PARALLEL_LOOPBACK_SHIFT);
+
+	temp = mod_read_all(MODEL_CONFIGURATOR_ADDR, MOD_CONF_PARAM_LANE_REG_OFFSET);
+	debug_printf("\r\n  MOD_CONF_PARAM_PHY_REG_OFFSET: %x \r\n", temp);
+
+	initialization_sequence();
 
 	run_tests(STEP1_TESTS_COUNT, step1_test);
 
@@ -165,7 +179,7 @@ void alt_scenario_loopback_step_2 (void)
 {
 	debug_printf("\r\n Step 2 START \r\n");
 
-	initialization_sequence();
+	
 
 	DL_CONFIGURATOR_PHY_PARAMETER_SET_IN_PLACE
 	(
@@ -173,6 +187,9 @@ void alt_scenario_loopback_step_2 (void)
 		1,
 		*DL_CONFIGURATOR_PHY_PARAMETER_PTR
 	);
+
+	initialization_sequence();
+	debug_printf("\r\n  Init ok\r\n");
 
 	run_tests(STEP2_TESTS_COUNT, step2_test);
 

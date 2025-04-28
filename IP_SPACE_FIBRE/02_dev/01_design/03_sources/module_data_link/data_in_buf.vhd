@@ -122,7 +122,7 @@ architecture rtl of data_in_buf is
   signal axis_data_valid_reg2   : std_logic;
   signal link_reset_dlre_r      : std_logic;
   signal fct_send_counter       : unsigned(1 downto 0);
-  signal rst_n_i                : std_logic;
+  signal rst_n_fifo             : std_logic;
 
 begin
 ---------------------------------------------------------
@@ -133,7 +133,6 @@ M_AXIS_TDATA_DIBUF	 <= m_axis_tdata;
 M_AXIS_TLAST_DIBUF	 <= m_axis_tlast;
 m_axis_tready        <= M_AXIS_TREADY_NW;
 M_AXIS_TUSER_DIBUF   <= m_axis_tuser;
-rst_n_i              <= M_AXIS_ARSTN_NW and RST_N;
 ---------------------------------------------------------
 -----                     Instanciation             -----
 ---------------------------------------------------------
@@ -146,7 +145,7 @@ rst_n_i              <= M_AXIS_ARSTN_NW and RST_N;
       M_AXIS_TUSER_WIDTH      => C_BYTE_BY_WORD_LENGTH
   )
   port map (
-      aresetn                => rst_n_i,
+      aresetn                => rst_n_fifo,
       WR_CLK                 => CLK,
       WR_DATA                => data_in,
       WR_DATA_EN             => data_in_en,
@@ -169,6 +168,18 @@ rst_n_i              <= M_AXIS_ARSTN_NW and RST_N;
 ---------------------------------------------------------
 -----                     Process                   -----
 ---------------------------------------------------------
+---------------------------------------------------------
+-- Process: p_rst_fifo
+-- Description: Manages the reste signal of the Fifo
+---------------------------------------------------------
+p_rst_fifo: process(M_AXIS_ACLK_NW, RST_N, M_AXIS_ARSTN_NW)
+begin
+  if RST_N = '0' or M_AXIS_ARSTN_NW = '0' then
+    rst_n_fifo <= '0';
+  elsif rising_edge(M_AXIS_ACLK_NW) then
+    rst_n_fifo <= '1';
+  end if;
+end process p_rst_fifo;
 ---------------------------------------------------------
 -- Process: p_buffer_ful
 -- Description: Manages full status of the Fifo
