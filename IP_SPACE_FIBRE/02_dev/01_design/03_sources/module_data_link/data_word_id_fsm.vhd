@@ -207,7 +207,7 @@ begin
 			  if (current_state_r = RX_IDLE_FRAME_ST) then
 			    data_word_cnt      <= to_unsigned(1,data_word_cnt'length);
 			  else
-					if (FIFO_RX_DATA_VALID_PPL ='1') then
+					if (FIFO_RX_DATA_VALID_PPL ='1' and detected_fct ='0' and detected_ack ='0' and detected_nack ='0' and detected_full ='0') then
 			    	data_word_cnt    <= data_word_cnt + 1;
 					end if;
 			  end if;
@@ -215,14 +215,14 @@ begin
 			elsif current_state = RX_BROADCAST_FRAME_ST then
 			  receiving_frame      <= '1';
 			  type_incom_frame     <= "10";               -- receiving broadcast frame
-				if (FIFO_RX_DATA_VALID_PPL ='1') then
+				if (FIFO_RX_DATA_VALID_PPL ='1' and detected_fct ='0' and detected_ack ='0' and detected_nack ='0' and detected_full ='0') then
 			  	bc_word_cnt          <= bc_word_cnt + 1;
 				end if;
 			  data_word_cnt        <= (others =>'0');
 			elsif current_state = RX_BROADCAST_AND_DATA_FRAME_ST then
 			  receiving_frame      <= '1';
 			  type_incom_frame     <= "10";               -- receiving broadcast frame
-				if (FIFO_RX_DATA_VALID_PPL ='1') then
+				if (FIFO_RX_DATA_VALID_PPL ='1' and detected_fct ='0' and detected_ack ='0' and detected_nack ='0' and detected_full ='0') then
 			  	bc_word_cnt          <= bc_word_cnt + 1;
 				end if;
 			elsif current_state = RX_IDLE_FRAME_ST then
@@ -230,7 +230,7 @@ begin
 			  type_incom_frame     <= "11";               -- receiving idle frame
 				if (FIFO_RX_DATA_VALID_PPL ='1') and DATA_RX_PPL(15 downto 0) = C_SIF_WORD and VALID_K_CHARAC_PPL = "0001" then
 					data_word_cnt        <= (others => '0');
-				elsif (FIFO_RX_DATA_VALID_PPL ='1') then
+				elsif (FIFO_RX_DATA_VALID_PPL ='1' and detected_fct ='0' and detected_ack ='0' and detected_nack ='0' and detected_full ='0') then
 					data_word_cnt        <= data_word_cnt + 1;
 				end if;
 			end if;

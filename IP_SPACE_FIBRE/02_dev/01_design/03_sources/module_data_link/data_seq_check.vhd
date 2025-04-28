@@ -258,7 +258,6 @@ begin
 				elsif CRC_ERR_DCCHECK ='1' then
 					SEQ_NUM_ERR_DSCHECK  <= '0';
 					END_FRAME_DSCHECK    <= END_FRAME_DCCHECK;
-					
 				else
 					FCT_PULSE_RX_DSCHECK <= '1';
 					fct_counter          <= fct_counter + 1;
