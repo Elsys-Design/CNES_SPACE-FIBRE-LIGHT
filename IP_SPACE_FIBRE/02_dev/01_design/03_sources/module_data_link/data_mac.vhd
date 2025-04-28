@@ -248,13 +248,13 @@ begin
           else
             current_state_vc  <= current_state_req;
             cnt_wait          <= '0';
-            if REQ_ACK_DERRM = '1' then -- ACK Request
+            if REQ_ACK_DERRM = '1' and cnt_wait_ack = 15 then -- ACK Request
               NEW_WORD_DMAC   <= '1';
               END_PACKET_DMAC <= '1';
               ack_counter     <= ack_counter + 1;
               req_ack_done    <= '1';
               type_frame      <= C_ACK_FRM;
-            elsif REQ_NACK_DERRM = '1' then -- NACK Request
+            elsif REQ_NACK_DERRM = '1' and cnt_wait_ack = 15  then -- NACK Request
               NEW_WORD_DMAC   <= '1';
               END_PACKET_DMAC <= '1';
               nack_counter    <= nack_counter + 1;
