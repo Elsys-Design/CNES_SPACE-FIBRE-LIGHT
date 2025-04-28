@@ -1,14 +1,14 @@
 ##########################################################################
 ## COMPANY       : ELSYS Design
 ##########################################################################
-## TITLE         : configuration_1_scenario_receiver.py
+## TITLE         : data_link_transmission.py
 ## PROJECT       : SPACE FIBRE LIGHT
 ##########################################################################
 ## AUTHOR        : Thomas FAVRE-FELIX
-## CREATED       : 02/10/2024
+## CREATED       : 14/03/2025
 ##########################################################################
 ## DESCRIPTION   : Runs tests for verification of the SpaceFibre_Light IP
-##                 receiver process
+##                 transmission chain processes of the data link layer
 ##########################################################################
 ## History       :	V1.0: Creation of the file
 ##########################################################################
@@ -140,7 +140,7 @@ async def wait_end_test_all_dl(tb):
 
 async def wait_end_test_all_vc_dl(tb):
     """
-    Wait for test end to be raised by all analyzer.
+    Wait for test end to be raised by all analyzer except for broadcast.
     Return the Error counter of all analyzer as a list.
     """
     result = []
@@ -175,7 +175,7 @@ async def start_all_dl(tb):
 
 async def start_all_vc_dl(tb):
     """
-    Start test on all data link analyzer and all data link generator.
+    Start test on all data link analyzer and all data link generator except for broadcast.
     """
     action = []
     Data_lane_ana_control.data = bytearray([0x01,0x00,0x00,0x00])
@@ -199,7 +199,7 @@ async def start_all_vc_dl(tb):
 
 async def configure_all_vc_dl(tb, conf, seed):
     """
-    Start test on all data link analyzer and all data link generator.
+    Configure test on all data link analyzer and all data link generator except for broadcast.
     """
     action = []
     Data_lane_ana_config.data = bytearray(conf)
@@ -244,7 +244,7 @@ async def configure_all_vc_dl(tb, conf, seed):
 
 async def start_gen_vc_dl(tb):
     """
-    Start test on all data link analyzer and all data link generator.
+    Start test on all data link generators except for broadcast.
     """
 
     action = []
@@ -259,7 +259,7 @@ async def start_gen_vc_dl(tb):
 
 async def configure_gen_vc_dl(tb, conf, seed):
     """
-    Start test on all data link analyzer and all data link generator.
+    Configure test on all data link generators except for broadcast..
     """
     Data_lane_gen_config.data = bytearray(conf)
     action = []
@@ -283,7 +283,7 @@ async def configure_gen_vc_dl(tb, conf, seed):
 
 async def configure_model_dl(tb, model, conf, seed):
     """
-    Start test on all data link analyzer and all data link generator.
+    Configure test on specified model.
     """
     # configure generator
     Data_lane_gen_config.data = bytearray(conf)
@@ -302,7 +302,7 @@ async def configure_model_dl(tb, model, conf, seed):
 
 async def start_model_dl(tb, model):
     """
-    Start test on all data link analyzer and all data link generator.
+    Start test on specified model.
     """
     Data_lane_gen_control.data = bytearray([0x01,0x00,0x00,0x00])
     # Start model
@@ -357,7 +357,7 @@ async def send_FCT(tb, vc, value, seq_num):
 
 async def send_full(tb, seq_num):
     """
-    Send an FCT control word to the RX port of the SpaceFibreLight IP
+    Send a FULL control word to the RX port of the SpaceFibreLight IP
     """
     await tb.spacefibre_driver.write_to_Rx("11111100", delay = 0, k_encoding = 1)
     await tb.spacefibre_driver.write_to_Rx("11001110", delay = 0, k_encoding = 0)
@@ -377,111 +377,6 @@ async def send_full(tb, seq_num):
     crc_8 = tb.spacefibre_random_generator_data_link.compute_crc_8(seq_num , crc_8)
     crc_8 = tb.spacefibre_random_generator_data_link.invert_string(crc_8)
     await tb.spacefibre_driver.write_to_Rx(crc_8, delay = 0, k_encoding = 0)
-
-def check_last_broadcast_frame(tb, path):
-    """
-    Check that a broadcast frame was sent within the last two frames
-    """
-    if os.path.exists(path):
-        tb.logger.info("sim_time %d ns: Source file %s to check does exist, open in read mode", get_sim_time(units = "ns"), path)
-        file = open(path, "r")
-    else:
-        tb.logger.error("sim_time %d ns: File %s to check doesn't exist", get_sim_time(units = "ns"), path)
-
-    #store all line in a list
-    lines = []
-    for line in file:
-        input_splitted = line.split(';')
-        if input_splitted[-1] == "\n":
-            input_splitted.remove("\n")
-        elif '\n' in input_splitted[-1]:
-            input_splitted[-1] = input_splitted[-1].replace("\n", "")
-        lines+=[input_splitted]
-    
-    #store last broadcast frame and count data frame before it
-    bc_stored = 0
-    counter_data_frame = 0
-    index = 1
-    while bc_stored == 0 and index <= len(lines) :
-        if lines[-index][1] == "0001" and lines[-index][0][4:8] == "5DFC":  #detect SBF
-            if lines[-index+3][1] == "0001" and lines[-index+3][0][4:8] == "005C": #detect EBF
-                return 0
-            
-def check_ACK(tb, number_of_line_to_check, number_of_ack, path):
-    """
-    Check that the right number of ACK word were sent within the last frames
-    """
-    if os.path.exists(path):
-        tb.logger.info("sim_time %d ns: Source file %s to check does exist, open in read mode", get_sim_time(units = "ns"), path)
-        file = open(path, "r")
-    else:
-        tb.logger.error("sim_time %d ns: File %s to check doesn't exist", get_sim_time(units = "ns"), path)
-
-    #store all line in a list
-    lines = []
-    for line in file:
-        input_splitted = line.split(';')
-        if input_splitted[-1] == "\n":
-            input_splitted.remove("\n")
-        elif '\n' in input_splitted[-1]:
-            input_splitted[-1] = input_splitted[-1].replace("\n", "")
-        lines+=[input_splitted]
-    
-    index = 1
-    ACK_counter = 0
-    data_counter = 0
-    while index <= number_of_line_to_check :
-        data_counter += 1
-        if lines[-index][1] == "0001" and lines[-index][0][4:8] == "A2FC":  #detect ACK
-            ACK_counter +=1
-            if data_counter>=15:
-                return 1
-            data_counter = 0
-        index += 1
-    if ACK_counter < number_of_ack:
-        return 2
-    elif ACK_counter > number_of_ack:
-        return 3
-    else:
-        return 0      
-
-def check_NACK(tb, number_of_line_to_check, number_of_nack, path):
-    """
-    Check that the right number of ACK word were sent within the last frames
-    """
-    if os.path.exists(path):
-        tb.logger.info("sim_time %d ns: Source file %s to check does exist, open in read mode", get_sim_time(units = "ns"), path)
-        file = open(path, "r")
-    else:
-        tb.logger.error("sim_time %d ns: File %s to check doesn't exist", get_sim_time(units = "ns"), path)
-
-    #store all line in a list
-    lines = []
-    for line in file:
-        input_splitted = line.split(';')
-        if input_splitted[-1] == "\n":
-            input_splitted.remove("\n")
-        elif '\n' in input_splitted[-1]:
-            input_splitted[-1] = input_splitted[-1].replace("\n", "")
-        lines+=[input_splitted]
-    
-    index = 1
-    ACK_counter = 0
-    data_counter = 0
-    while index <= number_of_line_to_check :
-        data_counter += 1
-        if lines[-index][1] == "0001" and lines[-index][0][4:8] == "BBFC":  #detect ACK
-            ACK_counter +=1
-            if data_counter>=15:
-                return 1
-            data_counter = 0
-        index += 1
-    if ACK_counter < number_of_nack:
-        return 2
-    elif ACK_counter > number_of_nack:
-        return 3
-    else:
-        return 0
 
 def check_CRC(tb, path):
     """
@@ -663,6 +558,9 @@ def check_CRC(tb, path):
 
 
 async def send_idle_ctrl_word(tb, number_of_words):
+    """
+    Send number_of_words IDLE control word to the RX port of the SpaceFibreLight IP
+    """
     for x in range(number_of_words):
         await tb.spacefibre_driver.write_to_Rx("11111100", delay = 0, k_encoding = 1)
         await tb.spacefibre_driver.write_to_Rx("11001110", delay = 0, k_encoding = 0)
@@ -705,11 +603,14 @@ async def cocotb_run(dut):
     #Send first FCT to each virtual channel
     for x in range(8):
         await send_FCT(tb, x, 0, "0"+ f"{(x+1):0>7b}")
-    
+
+
+    #Send a packet of 255 bytes on each virtual channel
     await configure_gen_vc_dl(tb, [0xE1,0x1F,0x00,0x00], [0x00,0x00,0x00,0x00])
 
     await start_gen_vc_dl(tb)
 
+    #Maintain RX link alive
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/100_IDLE.dat", file_format = 16)
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/100_IDLE.dat", file_format = 16)
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/100_IDLE.dat", file_format = 16)
@@ -735,6 +636,7 @@ async def cocotb_run(dut):
     for x in range(8):
         await send_FCT(tb, x, 0, "0"+ f"{(x+9):0>7b}")
 
+    #Send a pseudo-random number of packet of pseudo-random size on each virtual channel
     await configure_model_dl(tb, 3, [0x08,0x04,0x00,0x00], [0x00,0x00,0x00,0x01])
     await configure_model_dl(tb, 5, [0x04,0x08,0x00,0x00], [0x00,0x00,0x00,0x02])
     await configure_model_dl(tb, 7, [0x02,0x10,0x00,0x00], [0x00,0x00,0x00,0x03])
@@ -746,7 +648,7 @@ async def cocotb_run(dut):
 
     await start_gen_vc_dl(tb)
 
-
+    #Maintain RX link alive
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/100_IDLE.dat", file_format = 16)
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/100_IDLE.dat", file_format = 16)
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/100_IDLE.dat", file_format = 16)
@@ -767,7 +669,7 @@ async def cocotb_run(dut):
 
     monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_1", number_of_word = 20))
 
-
+    #Send a broadcast frame on TX
     await configure_model_dl(tb, 19, [0x01,0x01,0x00,0x00], [0x00,0x00,0x00,0x42])
     await start_model_dl(tb, 19)
 
@@ -781,13 +683,16 @@ async def cocotb_run(dut):
     for x in range(8):
         await send_FCT(tb, x, 0, "0"+ f"{(x+17):0>7b}")
 
-    
+
+    #Send a broadcast frame on TX during a data frame
     await configure_model_dl(tb, 3, [0xE1,0x1F,0x00,0x00], [0x00,0x00,0x00,0x00])
     await start_model_dl(tb, 3)
+
 
     await configure_model_dl(tb, 19, [0x01,0x01,0x00,0x00], [0x00,0x00,0x00,0x43])
     await start_model_dl(tb, 19)
     
+    #Maintain RX link alive
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16)
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16)
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16)
@@ -812,10 +717,12 @@ async def cocotb_run(dut):
 
     monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_1", number_of_word = 55))
 
+    #Send a broadcast frame on TX
     await configure_model_dl(tb, 19, [0x01,0x01,0x00,0x00], [0x00,0x00,0x00,0x42])
     await start_model_dl(tb, 19)
 
     #wait for idle frame (32 words)
+    #Maintain RX link alive
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16)
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16)
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/5_IDLE.dat", file_format = 16)
@@ -829,10 +736,12 @@ async def cocotb_run(dut):
 
     monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_1", number_of_word = 20+66*8+23))
 
+    #Send a data frame on TX
     await configure_gen_vc_dl(tb, [0xE1,0x1F,0x00,0x00], [0x00,0x00,0x00,0x00])
 
     await start_gen_vc_dl(tb)
 
+    #Maintain RX link alive
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/100_IDLE.dat", file_format = 16)
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/100_IDLE.dat", file_format = 16)
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/100_IDLE.dat", file_format = 16)
@@ -1337,13 +1246,16 @@ async def cocotb_run(dut):
     
     monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_6", number_of_word = 200+31*64+7*16*64+100+16*64+100))
 
+    #Enable Continuous mode on virtual channel 0
     Data_read_dl_config_parameters.data = bytearray([0x04, 0x40, 0x00, 0x00])
 
     await tb.masters[0].write_data(Data_read_dl_config_parameters)
 
+    #Send data continuously on virtual channel 0
     await configure_model_dl(tb, 3, [0xF0,0x1F,0x00,0x00], [0x00,0x00,0x00,0x2A])
     await start_model_dl(tb, 3)
     
+    # Maintain RX link alive
     for x in range (16):
         await send_FCT(tb,0,0,"0" + f"{(x+1):0>7b}")
         await send_idle_ctrl_word(tb, 64)

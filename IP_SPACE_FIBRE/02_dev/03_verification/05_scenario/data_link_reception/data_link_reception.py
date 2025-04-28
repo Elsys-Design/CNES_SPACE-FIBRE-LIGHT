@@ -1,14 +1,14 @@
 ##########################################################################
 ## COMPANY       : ELSYS Design
 ##########################################################################
-## TITLE         : configuration_1_scenario_receiver.py
+## TITLE         : data_link_transmission.py
 ## PROJECT       : SPACE FIBRE LIGHT
 ##########################################################################
 ## AUTHOR        : Thomas FAVRE-FELIX
-## CREATED       : 02/10/2024
+## CREATED       : 16/03/2025
 ##########################################################################
 ## DESCRIPTION   : Runs tests for verification of the SpaceFibre_Light IP
-##                 receiver process
+##                 reception chain processes of the data link layer
 ##########################################################################
 ## History       :	V1.0: Creation of the file
 ##########################################################################
