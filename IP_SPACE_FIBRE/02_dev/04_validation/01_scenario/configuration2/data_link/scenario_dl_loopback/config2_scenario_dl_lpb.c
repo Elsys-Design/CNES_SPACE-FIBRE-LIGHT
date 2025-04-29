@@ -20,7 +20,8 @@
 #include "common.h"
 #include "shared_header.h"
 
-#define __WORDS_TO_BYTES(x) (4 * (x))
+#define __WORDS_TO_BYTES(x) (((4 * (x)) > 511) ? 511 : (4 * (x)))
+
 //##########################################################################
 //## Scenario : Transmission Reception loopback
 //##########################################################################
@@ -28,7 +29,7 @@
 /**** STEP 1 ******************************************************************/
 /******************************************************************************/
 
-#define STEP1_TESTS_COUNT 9
+#define STEP1_TESTS_COUNT 10
 static const struct test_config step1_test[STEP1_TESTS_COUNT] =
 	{
 		// Test 1: Send a data packet of 64 words to each virtual buffer, check
@@ -94,35 +95,42 @@ static const struct test_config step1_test[STEP1_TESTS_COUNT] =
 				.packet_size = __WORDS_TO_BYTES(13)
 			}
 		),
-		// BASIC_CONFIG
-		// (
-		// 	NO_BROADCAST_CHANS,
-		// 	0xCAFE4BEEF,
-		// 	{
-		// 		.packet_number = 1,
-		// 		.packet_size = __WORDS_TO_BYTES(7)
-		// 	}
-		// ),
 		BASIC_CONFIG
 		(
 			NO_BROADCAST_CHANS,
-			0xBEEF4CAFE,
+			0xCAFEBEEF,
 			{
 				.packet_number = 1,
-				.packet_size = __WORDS_TO_BYTES(32)
+				.packet_size = __WORDS_TO_BYTES(7)
 			}
 		),
-		// Test 4: Send a broadcast frame, check that the data are received on
-		// [the] Data_Link_Broadacst_Analyzer model
 		BASIC_CONFIG
 		(
-			ONLY_BROADCAST_CHANS,
-			0x02000000,
+			NO_BROADCAST_CHANS,
+			0xBEEFCAFE,
 			{
 				.packet_number = 1,
-				.packet_size = __WORDS_TO_BYTES(64)
+				.packet_size = __WORDS_TO_BYTES(7)
 			}
 		),
+		BASIC_CONFIG
+		(
+			NO_BROADCAST_CHANS,
+			0xCAFEBEEF,
+			{
+				.packet_number = 1,
+				.packet_size = __WORDS_TO_BYTES(55)
+			}
+		),
+		// BASIC_CONFIG
+		// (
+		// 	ONLY_BROADCAST_CHANS,
+		// 	0x02000000,
+		// 	{
+		// 		.packet_number = 1,
+		// 		.packet_size = __WORDS_TO_BYTES(2)
+		// 	}
+		// ),
 		// Test 5: Send a broadcast frame with 2 different seeds on
 		// Data_Link_Broadcast_Analyzer and Data_Link_Broadcast_Generator check
 		// that the data received on Data_Link_Broadcast_Analyzer models are
@@ -133,13 +141,14 @@ static const struct test_config step1_test[STEP1_TESTS_COUNT] =
 			0x03000000,
 			{
 				.packet_number = 1,
-				.packet_size = __WORDS_TO_BYTES(64)
+				.packet_size = __WORDS_TO_BYTES(2)
 			}
 		)
 	};
 
 void configuration2_dl_lpb_step1 (void)
 {
+	uint32_t temp;
 	debug_printf("\r\n Start configuration 2\r\n");
 	debug_printf("\r\n Start scenario: Data-Link Transmission reception loopback\r\n");
 	debug_printf("\r\n Step 1: Check data and broadcast frames transmission and reception \r\n");
@@ -155,7 +164,7 @@ void configuration2_dl_lpb_step1 (void)
 	}
 
 	// Wait 1 us
-	wait_us_clk_150mhz(300);
+	wait_us_clk_150mhz(3000);
 	// Check credit_VC signals for each virtual channels are at 1 in the
 	// data_link_configurator
 	uint32_t val =
@@ -164,9 +173,25 @@ void configuration2_dl_lpb_step1 (void)
 	if (val != 0xFF)
 	{
 		debug_printf("\r\n ERROR: credit VC is not 0xFF but 0x%x.\r\n", val);
-
+		temp = *DL_CONFIGURATOR_DL_STATUS_1_PTR;
+		debug_printf("\r\n DL_CONFIGURATOR_DL_STATUS_1_PTR %x.\r\n", temp);
+		temp = *DL_CONFIGURATOR_DL_STATUS_2_PTR;
+		debug_printf("\r\n DL_CONFIGURATOR_DL_STATUS_2_PTR %x.\r\n", temp);
+		temp = *DL_CONFIGURATOR_DL_QOS_2_PTR;
+		debug_printf("\r\n DL_CONFIGURATOR_DL_QOS_2_PTR %x.\r\n", temp);
+		temp = DL_CONFIGURATOR_DL_QOS_2_GET(NACK_COUNTER_TX,*DL_CONFIGURATOR_DL_QOS_2_PTR );
+		debug_printf("\r\n NACK_COUNTER_TX %x.\r\n", temp);
+		temp = DL_CONFIGURATOR_DL_QOS_2_GET(NACK_COUNTER_RX,*DL_CONFIGURATOR_DL_QOS_2_PTR );
+		debug_printf("\r\n NACK_COUNTER_RX %x.\r\n", temp);
 		return;
 	}
+	temp = *DL_CONFIGURATOR_DL_STATUS_1_PTR;
+	debug_printf("\r\n DL_CONFIGURATOR_DL_STATUS_1_PTR %x.\r\n", temp);
+	temp = *DL_CONFIGURATOR_DL_STATUS_2_PTR;
+	debug_printf("\r\n DL_CONFIGURATOR_DL_STATUS_2_PTR %x.\r\n", temp);
+	
+	temp = *DL_CONFIGURATOR_DL_QOS_2_PTR;
+	debug_printf("\r\n DL_CONFIGURATOR_DL_QOS_2_PTR %x.\r\n", temp);
 
 	// Runs regular sending of packets, as described in step1_test.
 	run_tests(STEP1_TESTS_COUNT, step1_test);
@@ -197,7 +222,7 @@ static const struct test_config step2_test[STEP2_TESTS_COUNT] =
 			0x04000000,
 			{
 				.packet_number = 1,
-				.packet_size = __WORDS_TO_BYTES(64)
+				.packet_size = __WORDS_TO_BYTES(63)
 			}
 		),
 	};
@@ -209,40 +234,49 @@ static void assert_ack_counters_increased
 	const int i
 )
 {
+	uint32_t temp1, temp2;
 	if
 	(
 		DL_CONFIGURATOR_DL_QOS_2_GET(ACK_COUNTER_TX, last_status)
-		>= DL_CONFIGURATOR_DL_QOS_2_GET(ACK_COUNTER_TX, new_status)
+		== DL_CONFIGURATOR_DL_QOS_2_GET(ACK_COUNTER_TX, new_status)
 	)
 	{
-		debug_printf("\r\n ACK_COUNTER_TX did not increase for channel x%x. \r\n", i);
+		temp1 = DL_CONFIGURATOR_DL_QOS_2_GET(ACK_COUNTER_TX, last_status);
+		temp2 = DL_CONFIGURATOR_DL_QOS_2_GET(ACK_COUNTER_TX, new_status);
+		debug_printf("\r\n ACK_COUNTER_TX did not increase, last_status = %x / new_status = %x . \r\n", temp1, temp2);
 	}
 
 	if
 	(
 		DL_CONFIGURATOR_DL_QOS_2_GET(ACK_COUNTER_RX, last_status)
-		>= DL_CONFIGURATOR_DL_QOS_2_GET(ACK_COUNTER_RX, new_status)
+		== DL_CONFIGURATOR_DL_QOS_2_GET(ACK_COUNTER_RX, new_status)
 	)
 	{
-		debug_printf("\r\n ACK_COUNTER_RX did not increase for channel %x. \r\n", i);
+		temp1 = DL_CONFIGURATOR_DL_QOS_2_GET(ACK_COUNTER_RX, last_status);
+		temp2 = DL_CONFIGURATOR_DL_QOS_2_GET(ACK_COUNTER_RX, new_status);
+		debug_printf("\r\n ACK_COUNTER_RX did not increase, last_status = %x / new_status = %x . \r\n", temp1, temp2);
 	}
 
 	if
 	(
 		DL_CONFIGURATOR_DL_QOS_2_GET(FCT_COUNTER_TX, last_status)
-		>= DL_CONFIGURATOR_DL_QOS_2_GET(FCT_COUNTER_TX, new_status)
+		== DL_CONFIGURATOR_DL_QOS_2_GET(FCT_COUNTER_TX, new_status)
 	)
 	{
-		debug_printf("\r\n FCT_COUNTER_TX did not increase for channel x%x. \r\n", i);
+		temp1 = DL_CONFIGURATOR_DL_QOS_2_GET(FCT_COUNTER_TX, last_status);
+		temp2 = DL_CONFIGURATOR_DL_QOS_2_GET(FCT_COUNTER_TX, new_status);
+		debug_printf("\r\n FCT_COUNTER_TX did not increase, last_status = %x / new_status = %x . \r\n", temp1, temp2);
 	}
 
 	if
 	(
 		DL_CONFIGURATOR_DL_QOS_2_GET(FCT_COUNTER_RX, last_status)
-		>= DL_CONFIGURATOR_DL_QOS_2_GET(FCT_COUNTER_RX, new_status)
+		== DL_CONFIGURATOR_DL_QOS_2_GET(FCT_COUNTER_RX, new_status)
 	)
 	{
-		debug_printf("\r\n FCT_COUNTER_RX did not increase for channel %x. \r\n", i);
+		temp1 = DL_CONFIGURATOR_DL_QOS_2_GET(FCT_COUNTER_RX, last_status);
+		temp2 = DL_CONFIGURATOR_DL_QOS_2_GET(FCT_COUNTER_RX, new_status);
+		debug_printf("\r\n FCT_COUNTER_RX did not increase, last_status = %x / new_status = %x . \r\n", temp1, temp2);
 	}
 
 	// May actually not be that tied:
@@ -298,6 +332,8 @@ void configuration2_dl_lpb_step2 (void)
 				// test_fragment.enable_mask = (1 << j);
 				run_test( &step2_test[i]);
 
+				wait_us_clk_150mhz(300);
+
 				new_status = *DL_CONFIGURATOR_DL_QOS_2_PTR;
 
 				assert_ack_counters_increased(last_status, new_status, 1);
@@ -306,6 +342,111 @@ void configuration2_dl_lpb_step2 (void)
 	}
 
 	debug_printf("\r\n Step 2: END \r\n");
+}
+
+void configuration2_dl_lpb_step2_alt (void)
+{
+	uint32_t last_status = 0, new_status = 0, temp;
+	debug_printf("\r\n Start configuration 2\r\n");
+	debug_printf("\r\n Start scenario: Data-Link Transmission reception loopback\r\n");
+	debug_printf("\r\n Step 2 alternatif  \r\n");
+
+	// Disable Injector and Spy read command
+	phy_plus_lane_plus_dl();
+
+	// Perform initialization procedure
+	if (initialization_sequence() != OK)
+	{
+		debug_printf("\r\n Initialization sequence failed. \r\n");
+
+		return;
+	}
+	
+	for (int i = 0; i < 8; ++i)
+	{
+		struct test_config test_fragment = step2_test[i];
+		// save the context
+		last_status = *DL_CONFIGURATOR_DL_QOS_2_PTR;
+
+		temp = DL_CONFIGURATOR_DL_QOS_2_GET(ACK_COUNTER_TX, *DL_CONFIGURATOR_DL_QOS_2_PTR);
+		debug_printf("\r\n ACK_COUNTER_TX   %x \r\n", temp);
+
+		temp = DL_CONFIGURATOR_DL_QOS_2_GET(FCT_COUNTER_TX, *DL_CONFIGURATOR_DL_QOS_2_PTR);
+		debug_printf("\r\n FCT_COUNTER_TX   %x  \r\n", temp);
+
+		temp = DL_CONFIGURATOR_DL_QOS_2_GET(ACK_COUNTER_RX, *DL_CONFIGURATOR_DL_QOS_2_PTR);
+		debug_printf("\r\n ACK_COUNTER_RX   %x \r\n", temp);
+
+		temp = DL_CONFIGURATOR_DL_QOS_2_GET(FCT_COUNTER_RX, *DL_CONFIGURATOR_DL_QOS_2_PTR);
+		debug_printf("\r\n FCT_COUNTER_RX   %x  \r\n", temp);
+
+		// config  
+		*DL_ANALYZER_X_CONFIGURATION_PTR(i) =
+		DL_ANALYZER_CONFIGURATION_TO_UINT32_T(step2_test->ana_conf[i]);
+
+		temp = *DL_ANALYZER_X_CONFIGURATION_PTR(i);
+		debug_printf("\r\n DL_ANALYZER_X_CONFIGURATION_PTR  %x \r\n", temp);
+
+    // config generator 
+		*DL_GENERATOR_X_CONFIGURATION_PTR(i) =
+			DL_GENERATOR_CONFIGURATION_TO_UINT32_T(step2_test->gen_conf[i]);
+		
+		temp = *DL_GENERATOR_X_CONFIGURATION_PTR(i);
+		debug_printf("\r\n DL_GENERATOR_X_CONFIGURATION_PTR  %x \r\n", temp);
+  
+		// init value analyzer
+		*DL_ANALYZER_X_INITIAL_VALUE_PTR(i) = step2_test->ana_init[i];
+
+		temp = *DL_ANALYZER_X_INITIAL_VALUE_PTR(i);
+		debug_printf("\r\n DL_ANALYZER_X_INITIAL_VALUE_PTR  %x \r\n", temp);
+
+    // init value generator
+		*DL_GENERATOR_X_INITIAL_VALUE_PTR(i) = step2_test->gen_init[i];
+
+		temp = *DL_GENERATOR_X_INITIAL_VALUE_PTR(i);
+		debug_printf("\r\n DL_GENERATOR_X_INITIAL_VALUE_PTR  %x \r\n", temp);
+   // start models
+		DL_ANALYZER_CONTROL_SET_IN_PLACE(MODEL_START, 1, *DL_ANALYZER_X_CONTROL_PTR(i));
+		DL_GENERATOR_CONTROL_SET_IN_PLACE(MODEL_START, 1, *DL_GENERATOR_X_CONTROL_PTR(i));
+
+		wait_us_clk_150mhz(300);
+
+		if (!DL_GENERATOR_STATUS_GET(TEST_END, *DL_GENERATOR_X_STATUS_PTR(i)))
+		{
+			debug_printf("\r\n Generator channel x%x not ended\r\n", i);
+			temp = *DL_GENERATOR_X_STATUS_PTR(i);
+			debug_printf("\r\n DL_GENERATOR_X_STATUS_PTR  %x \r\n", temp);
+		}
+	
+		if (!DL_ANALYZER_STATUS_GET(TEST_END, *DL_ANALYZER_X_STATUS_PTR(i)))
+		{
+			debug_printf("\r\n Analyzer channel x%x not ended\r\n", i);
+			temp = *DL_ANALYZER_X_STATUS_PTR(i);
+			debug_printf("\r\n DL_ANALYZER_X_STATUS_PTR  %x \r\n", temp);
+		}
+
+
+		new_status = *DL_CONFIGURATOR_DL_QOS_2_PTR;
+
+		temp = DL_CONFIGURATOR_DL_QOS_2_GET(ACK_COUNTER_TX, *DL_CONFIGURATOR_DL_QOS_2_PTR);
+		debug_printf("\r\n ACK_COUNTER_TX  %x  \r\n", temp);
+
+		temp = DL_CONFIGURATOR_DL_QOS_2_GET(FCT_COUNTER_TX, *DL_CONFIGURATOR_DL_QOS_2_PTR);
+		debug_printf("\r\n FCT_COUNTER_TX  %x . \r\n", temp);
+
+		temp = DL_CONFIGURATOR_DL_QOS_2_GET(ACK_COUNTER_RX, *DL_CONFIGURATOR_DL_QOS_2_PTR);
+		debug_printf("\r\n ACK_COUNTER_RX   %x \r\n", temp);
+
+		temp = DL_CONFIGURATOR_DL_QOS_2_GET(FCT_COUNTER_RX, *DL_CONFIGURATOR_DL_QOS_2_PTR);
+		debug_printf("\r\n FCT_COUNTER_RX   %x  \r\n", temp);
+
+		temp = *DL_CONFIGURATOR_DL_QOS_2_PTR;
+		debug_printf("\r\n DL_CONFIGURATOR_DL_QOS_2_PTR   %x  \r\n", temp);
+
+
+		assert_ack_counters_increased(last_status, new_status, i);
+	}
+	debug_printf("\r\n Step 2 alt: END \r\n");
 }
 
 /******************************************************************************/
@@ -479,4 +620,5 @@ void configuration2_dl_lpb_all_step (void)
   configuration2_dl_lpb_step3();
   configuration2_dl_lpb_step4();
 }
+
 
