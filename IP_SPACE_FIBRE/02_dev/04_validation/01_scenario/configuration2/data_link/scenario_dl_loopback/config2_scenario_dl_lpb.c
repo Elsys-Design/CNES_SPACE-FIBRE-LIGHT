@@ -222,12 +222,12 @@ static const struct test_config step2_test[STEP2_TESTS_COUNT] =
 			0x04000000,
 			{
 				.packet_number = 1,
-				.packet_size = __WORDS_TO_BYTES(63)
+				.packet_size = __WORDS_TO_BYTES(64)
 			}
 		),
 	};
 
-static void assert_ack_counters_increased
+static uint32_t assert_ack_counters_increased
 (
 	const uint32_t last_status,
 	const uint32_t new_status,
@@ -235,6 +235,7 @@ static void assert_ack_counters_increased
 )
 {
 	uint32_t temp1, temp2;
+	uint32_t step2_success = 0;
 	if
 	(
 		DL_CONFIGURATOR_DL_QOS_2_GET(ACK_COUNTER_TX, last_status)
@@ -243,7 +244,8 @@ static void assert_ack_counters_increased
 	{
 		temp1 = DL_CONFIGURATOR_DL_QOS_2_GET(ACK_COUNTER_TX, last_status);
 		temp2 = DL_CONFIGURATOR_DL_QOS_2_GET(ACK_COUNTER_TX, new_status);
-		debug_printf("\r\n ACK_COUNTER_TX did not increase, last_status = %x / new_status = %x . \r\n", temp1, temp2);
+		debug_printf("\r\n ACK_COUNTER_TX did not change, last_status = %x / new_status = %x. For channel 0x%x \r\n", temp1, temp2, i);
+		step2_success = 1;
 	}
 
 	if
@@ -254,7 +256,8 @@ static void assert_ack_counters_increased
 	{
 		temp1 = DL_CONFIGURATOR_DL_QOS_2_GET(ACK_COUNTER_RX, last_status);
 		temp2 = DL_CONFIGURATOR_DL_QOS_2_GET(ACK_COUNTER_RX, new_status);
-		debug_printf("\r\n ACK_COUNTER_RX did not increase, last_status = %x / new_status = %x . \r\n", temp1, temp2);
+		debug_printf("\r\n ACK_COUNTER_RX did not change, last_status = %x / new_status = %x. For channel 0x%x  \r\n", temp1, temp2, i);
+		step2_success = 1;
 	}
 
 	if
@@ -265,7 +268,8 @@ static void assert_ack_counters_increased
 	{
 		temp1 = DL_CONFIGURATOR_DL_QOS_2_GET(FCT_COUNTER_TX, last_status);
 		temp2 = DL_CONFIGURATOR_DL_QOS_2_GET(FCT_COUNTER_TX, new_status);
-		debug_printf("\r\n FCT_COUNTER_TX did not increase, last_status = %x / new_status = %x . \r\n", temp1, temp2);
+		debug_printf("\r\n FCT_COUNTER_TX did not change, last_status = %x / new_status = %x. For channel 0x%x  \r\n", temp1, temp2, i);
+		step2_success = 1;
 	}
 
 	if
@@ -276,35 +280,19 @@ static void assert_ack_counters_increased
 	{
 		temp1 = DL_CONFIGURATOR_DL_QOS_2_GET(FCT_COUNTER_RX, last_status);
 		temp2 = DL_CONFIGURATOR_DL_QOS_2_GET(FCT_COUNTER_RX, new_status);
-		debug_printf("\r\n FCT_COUNTER_RX did not increase, last_status = %x / new_status = %x . \r\n", temp1, temp2);
+		debug_printf("\r\n FCT_COUNTER_RX did not change, last_status = %x / new_status = %x.For channel 0x%x  \r\n", temp1, temp2, i);
+		step2_success = 1;
 	}
-
-	// May actually not be that tied:
-#ifdef nopedynope
-	if
-	(
-		(
-			DL_CONFIGURATOR_DL_QOS_2_GET(ACK_COUNTER_RX, new_status)
-			- DL_CONFIGURATOR_DL_QOS_2_GET(ACK_COUNTER_RX, last_status)
-		)
-		!=
-		(
-			DL_CONFIGURATOR_DL_QOS_2_GET(ACK_COUNTER_TX, new_status)
-			- DL_CONFIGURATOR_DL_QOS_2_GET(ACK_COUNTER_TX, last_status)
-		)
-	)
-	{
-		debug_printf("\r\n ACK_COUNTER_RX and ACK_COUNTER_TX did not increase at the same rate for channel %i. \r\n", i);
-	}
-#endif
+  return step2_success;
 }
+
 
 void configuration2_dl_lpb_step2 (void)
 {
+	uint32_t last_status = 0, new_status = 0, step2_success=0;
 	debug_printf("\r\n Start configuration 2\r\n");
 	debug_printf("\r\n Start scenario: Data-Link Transmission reception loopback\r\n");
-	debug_printf("\r\n Step 2: Check ACK transmission and reception \r\n");
-	uint32_t last_status = 0, new_status = 0, temp;
+	debug_printf("\r\n Step 2: CHECK ACK TRANSMISSION AND RECEPTION  \r\n");
 
 	// Disable Injector and Spy read command
 	phy_plus_lane_plus_dl();
@@ -317,136 +305,65 @@ void configuration2_dl_lpb_step2 (void)
 		return;
 	}
 
-	// FCT REQUEST CHECK?
-
-	for (int i = 0; i < STEP2_TESTS_COUNT; ++i)
+	for (int j = 0; j < STEP2_TESTS_COUNT-1; j++)
 	{
-		struct test_config test_fragment = step2_test[i];
+		for (int i = 0; i < CHANNEL_COUNT-1; ++i)
+		{
+			// save the context of tcounters
+			last_status = *DL_CONFIGURATOR_DL_QOS_2_PTR;
 
-		//for (int j = 0; j < CHANNEL_COUNT; j++)
-		//{
-			//if (step2_test[i].enable_mask & (1 << j))
-			//{
-				last_status = *DL_CONFIGURATOR_DL_QOS_2_PTR;
 
-				// test_fragment.enable_mask = (1 << j);
-				run_test( &step2_test[i]);
+			// config analyzer
+			*DL_ANALYZER_X_CONFIGURATION_PTR(i) =
+			DL_ANALYZER_CONFIGURATION_TO_UINT32_T((step2_test+j)->ana_conf[i]);
 
-				wait_us_clk_150mhz(300);
 
-				new_status = *DL_CONFIGURATOR_DL_QOS_2_PTR;
+  	  // config generator 
+			*DL_GENERATOR_X_CONFIGURATION_PTR(i) =
+				DL_GENERATOR_CONFIGURATION_TO_UINT32_T((step2_test+j)->gen_conf[i]);
 
-				assert_ack_counters_increased(last_status, new_status, 1);
-			//}
-		//}
-	}
-
-	debug_printf("\r\n Step 2: END \r\n");
-}
-
-void configuration2_dl_lpb_step2_alt (void)
-{
-	uint32_t last_status = 0, new_status = 0, temp;
-	debug_printf("\r\n Start configuration 2\r\n");
-	debug_printf("\r\n Start scenario: Data-Link Transmission reception loopback\r\n");
-	debug_printf("\r\n Step 2 alternatif  \r\n");
-
-	// Disable Injector and Spy read command
-	phy_plus_lane_plus_dl();
-
-	// Perform initialization procedure
-	if (initialization_sequence() != OK)
-	{
-		debug_printf("\r\n Initialization sequence failed. \r\n");
-
-		return;
-	}
-	
-	for (int i = 0; i < 8; ++i)
-	{
-		struct test_config test_fragment = step2_test[i];
-		// save the context
-		last_status = *DL_CONFIGURATOR_DL_QOS_2_PTR;
-
-		temp = DL_CONFIGURATOR_DL_QOS_2_GET(ACK_COUNTER_TX, *DL_CONFIGURATOR_DL_QOS_2_PTR);
-		debug_printf("\r\n ACK_COUNTER_TX   %x \r\n", temp);
-
-		temp = DL_CONFIGURATOR_DL_QOS_2_GET(FCT_COUNTER_TX, *DL_CONFIGURATOR_DL_QOS_2_PTR);
-		debug_printf("\r\n FCT_COUNTER_TX   %x  \r\n", temp);
-
-		temp = DL_CONFIGURATOR_DL_QOS_2_GET(ACK_COUNTER_RX, *DL_CONFIGURATOR_DL_QOS_2_PTR);
-		debug_printf("\r\n ACK_COUNTER_RX   %x \r\n", temp);
-
-		temp = DL_CONFIGURATOR_DL_QOS_2_GET(FCT_COUNTER_RX, *DL_CONFIGURATOR_DL_QOS_2_PTR);
-		debug_printf("\r\n FCT_COUNTER_RX   %x  \r\n", temp);
-
-		// config  
-		*DL_ANALYZER_X_CONFIGURATION_PTR(i) =
-		DL_ANALYZER_CONFIGURATION_TO_UINT32_T(step2_test->ana_conf[i]);
-
-		temp = *DL_ANALYZER_X_CONFIGURATION_PTR(i);
-		debug_printf("\r\n DL_ANALYZER_X_CONFIGURATION_PTR  %x \r\n", temp);
-
-    // config generator 
-		*DL_GENERATOR_X_CONFIGURATION_PTR(i) =
-			DL_GENERATOR_CONFIGURATION_TO_UINT32_T(step2_test->gen_conf[i]);
 		
-		temp = *DL_GENERATOR_X_CONFIGURATION_PTR(i);
-		debug_printf("\r\n DL_GENERATOR_X_CONFIGURATION_PTR  %x \r\n", temp);
-  
-		// init value analyzer
-		*DL_ANALYZER_X_INITIAL_VALUE_PTR(i) = step2_test->ana_init[i];
+			// init value analyzer
+			*DL_ANALYZER_X_INITIAL_VALUE_PTR(i) = (step2_test+j)->ana_init[i];
 
-		temp = *DL_ANALYZER_X_INITIAL_VALUE_PTR(i);
-		debug_printf("\r\n DL_ANALYZER_X_INITIAL_VALUE_PTR  %x \r\n", temp);
 
-    // init value generator
-		*DL_GENERATOR_X_INITIAL_VALUE_PTR(i) = step2_test->gen_init[i];
+  	  // init value generator
+			*DL_GENERATOR_X_INITIAL_VALUE_PTR(i) = (step2_test+j)->gen_init[i];
 
-		temp = *DL_GENERATOR_X_INITIAL_VALUE_PTR(i);
-		debug_printf("\r\n DL_GENERATOR_X_INITIAL_VALUE_PTR  %x \r\n", temp);
-   // start models
-		DL_ANALYZER_CONTROL_SET_IN_PLACE(MODEL_START, 1, *DL_ANALYZER_X_CONTROL_PTR(i));
-		DL_GENERATOR_CONTROL_SET_IN_PLACE(MODEL_START, 1, *DL_GENERATOR_X_CONTROL_PTR(i));
+  	 // start models
+			DL_ANALYZER_CONTROL_SET_IN_PLACE(MODEL_START, 1, *DL_ANALYZER_X_CONTROL_PTR(i));
+			DL_GENERATOR_CONTROL_SET_IN_PLACE(MODEL_START, 1, *DL_GENERATOR_X_CONTROL_PTR(i));
 
-		wait_us_clk_150mhz(300);
+			wait_us_clk_150mhz(300);
 
-		if (!DL_GENERATOR_STATUS_GET(TEST_END, *DL_GENERATOR_X_STATUS_PTR(i)))
-		{
-			debug_printf("\r\n Generator channel x%x not ended\r\n", i);
-			temp = *DL_GENERATOR_X_STATUS_PTR(i);
-			debug_printf("\r\n DL_GENERATOR_X_STATUS_PTR  %x \r\n", temp);
+			// test ended ?
+			if (!DL_GENERATOR_STATUS_GET(TEST_END, *DL_GENERATOR_X_STATUS_PTR(i)))
+			{
+				debug_printf("\r\n Generator channel x%x not ended\r\n", i);
+				step2_success = 1;
+			}
+		
+			if (!DL_ANALYZER_STATUS_GET(TEST_END, *DL_ANALYZER_X_STATUS_PTR(i)))
+			{
+				debug_printf("\r\n Analyzer channel x%x not ended\r\n", i);
+				step2_success = 1;
+			}
+
+			// New counters value
+			new_status = *DL_CONFIGURATOR_DL_QOS_2_PTR;
+
+      // Counters comparison
+			step2_success = assert_ack_counters_increased(last_status, new_status, i) | step2_success;
 		}
-	
-		if (!DL_ANALYZER_STATUS_GET(TEST_END, *DL_ANALYZER_X_STATUS_PTR(i)))
-		{
-			debug_printf("\r\n Analyzer channel x%x not ended\r\n", i);
-			temp = *DL_ANALYZER_X_STATUS_PTR(i);
-			debug_printf("\r\n DL_ANALYZER_X_STATUS_PTR  %x \r\n", temp);
-		}
-
-
-		new_status = *DL_CONFIGURATOR_DL_QOS_2_PTR;
-
-		temp = DL_CONFIGURATOR_DL_QOS_2_GET(ACK_COUNTER_TX, *DL_CONFIGURATOR_DL_QOS_2_PTR);
-		debug_printf("\r\n ACK_COUNTER_TX  %x  \r\n", temp);
-
-		temp = DL_CONFIGURATOR_DL_QOS_2_GET(FCT_COUNTER_TX, *DL_CONFIGURATOR_DL_QOS_2_PTR);
-		debug_printf("\r\n FCT_COUNTER_TX  %x . \r\n", temp);
-
-		temp = DL_CONFIGURATOR_DL_QOS_2_GET(ACK_COUNTER_RX, *DL_CONFIGURATOR_DL_QOS_2_PTR);
-		debug_printf("\r\n ACK_COUNTER_RX   %x \r\n", temp);
-
-		temp = DL_CONFIGURATOR_DL_QOS_2_GET(FCT_COUNTER_RX, *DL_CONFIGURATOR_DL_QOS_2_PTR);
-		debug_printf("\r\n FCT_COUNTER_RX   %x  \r\n", temp);
-
-		temp = *DL_CONFIGURATOR_DL_QOS_2_PTR;
-		debug_printf("\r\n DL_CONFIGURATOR_DL_QOS_2_PTR   %x  \r\n", temp);
-
-
-		assert_ack_counters_increased(last_status, new_status, i);
 	}
-	debug_printf("\r\n Step 2 alt: END \r\n");
+
+	if (step2_success == 0)
+	{
+		debug_printf("\r\n Step 2 END: PASS \r\n");
+	}
+	else{
+		debug_printf("\r\n Step 2 END: FAILED \r\n");
+	}
 }
 
 /******************************************************************************/
