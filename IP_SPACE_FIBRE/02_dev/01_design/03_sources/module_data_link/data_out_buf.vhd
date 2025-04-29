@@ -135,7 +135,6 @@ type data_in_fsm is (
   signal cnt_eip_out_reg        : unsigned(6-1 downto 0);     -- cnt_word sent, max= 64
   signal data_out               : std_logic_vector(C_DATA_LENGTH-1 downto 0);
   signal valid_k_char_out       : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
-  signal vc_end_packet          : std_logic;
   signal cnt_word_sent          : unsigned(7-1 downto 0);     -- cnt_word sent, max= 64
   signal status_level_rd        : std_logic_vector(C_OUT_BUF_SIZE-1 downto 0);
   signal m_value_for_credit     : std_logic_vector(C_M_SIZE + 5 downto 0);

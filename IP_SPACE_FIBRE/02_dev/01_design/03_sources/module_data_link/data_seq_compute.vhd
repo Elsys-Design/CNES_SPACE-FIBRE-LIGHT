@@ -82,7 +82,6 @@ begin
 					trans_seq_cnt   <= trans_seq_cnt +1;
 				elsif TYPE_FRAME_DENC = C_ACK_FRM or TYPE_FRAME_DENC = C_NACK_FRM then
 					DATA_DSCOM      <= C_RESERVED_SYMB & SEQ_NUM_ACK_DENC & DATA_DENC(15 downto 0);
-					SEQ_NUM_DSCOM   <= SEQ_NUM_ACK_DENC;
 				else
 					DATA_DSCOM      <= C_RESERVED_SYMB & TRANS_POL_FLG_DENC & std_logic_vector(trans_seq_cnt) & DATA_DENC(15 downto 0);
 					SEQ_NUM_DSCOM   <= TRANS_POL_FLG_DENC & std_logic_vector(trans_seq_cnt);

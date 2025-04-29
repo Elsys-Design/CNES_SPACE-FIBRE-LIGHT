@@ -50,7 +50,6 @@ architecture rtl of data_crc_compute is
   -- CRC 16 Bits compute
   signal crc_reg_16b            : std_logic_vector(16-1 downto 0);
   signal crc_reg_16b_comp       : std_logic_vector(16-1 downto 0);
-  signal crc_reg_16b_check      : std_logic_vector(16-1 downto 0);
   signal crc_to_inv_16b         : std_logic;
   -- CRC 8 Bits compute
   signal crc_reg_8b             : std_logic_vector(8-1 downto 0);
