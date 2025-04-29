@@ -292,7 +292,7 @@ architecture rtl of DATA_LINK_GENERATOR is
          packet_number    <= unsigned(reg_lg_config(C_LG_FRAME_NB_MAX_BTFD downto 0));                                 -- packet_number update via its bit field in the register
          packet_size      <= unsigned(reg_lg_config(C_LG_FRAME_SIZE_MAX_BTFD downto C_LG_FRAME_NB_MAX_BTFD+1));        -- packet_size update via its bit field in the register
          gen_data        <= reg_lg_config(C_LG_GEN_DATA_BTFD);
-         data_mode       <= unsigned(reg_lg_config(C_LG_DATA_MODE_MAX_BTFD downto C_LG_GEN_DATA_BTFD +1)); -- data_mode update via its bit field in the register
+         data_mode       <= unsigned(reg_lg_config(C_LG_DATA_MODE_MAX_BTFD downto C_LG_GEN_DATA_BTFD +1));             -- data_mode update via its bit field in the register
          -- gen_data update via its bit field in the register
       end if;
    end process P_CONFIGURATION;
@@ -307,7 +307,7 @@ architecture rtl of DATA_LINK_GENERATOR is
       if (RST_N ='0') then
          model_start       <= C_DEFAULT_LG_MODEL_START;                   -- Default value of model_start
       elsif rising_edge(CLK) then
-         model_start       <= reg_lg_control(C_LG_MODEL_START_BTFD);                                  -- model_start update via its bit field in the register
+         model_start       <= reg_lg_control(C_LG_MODEL_START_BTFD);      -- model_start update via its bit field in the register
       end if;
    end process P_CONTROL;
 
@@ -376,19 +376,18 @@ architecture rtl of DATA_LINK_GENERATOR is
                TVALID                <= '0';
                TLAST                 <= '0';
                if (model_start = '1') then
-                  busy_frame        <= '1';                  -- model busy_frame
-                  test_end_frame    <= '0';                  -- reset for a new test
-                  cnt_byte          <= unsigned(packet_size); -- number of bytes = frame size
-                  err_counter_frame <= (others=>'0');
-                  cnt_packet        <= (others=>'0');
-                  -- select data tx in function of the number of bytes remaining in the frame
-                  if (gen_data = C_INCREMENTAL) then  -- incremental data
+                  busy_frame        <= '1';                   -- model busy_frame
+                  test_end_frame    <= '0';                   -- reset for a new test
+                  cnt_byte          <= unsigned(packet_size); -- number of bytes = packet size
+                  err_counter_frame <= (others=>'0');         -- reset for a new test
+                  cnt_packet        <= (others=>'0');         -- reset for a new test
+                  if (gen_data = C_INCREMENTAL) then                     -- incremental data
                      val_data  <= val_data + C_INCR_VAL_DATA;
-                     reg_data_tx_frame <= std_logic_vector(val_data);-- push data in the register tx
+                     reg_data_tx_frame <= std_logic_vector(val_data);    -- push data in the register tx
                      
-                  else -- PRBS data
+                  else                                                   -- PRBS data
                      prbs_data <= prbs_data(C_INTERNAL_BUS_WIDTH-2 downto 0) & (prbs_data(C_INTERNAL_BUS_WIDTH-1) xor prbs_data(C_INTERNAL_BUS_WIDTH-2) xor prbs_data(C_INTERNAL_BUS_WIDTH-4) xor prbs_data(C_INTERNAL_BUS_WIDTH-5)); -- prbs data generation
-                     reg_data_tx_frame <= prbs_data; -- push PRBS data in the register tx
+                     reg_data_tx_frame <= prbs_data;                     -- push PRBS data in the register tx
                      
                   end if;
                   generation_state  <= GEN_FRAME;
@@ -397,7 +396,6 @@ architecture rtl of DATA_LINK_GENERATOR is
             when GEN_FRAME =>
                --if previous data sent
                if (TREADY = '1') then
-                  -- select data tx in function of the number of bytes remaining in the frame
                   if (gen_data = C_INCREMENTAL) then  -- incremental data
                      val_data  <= val_data + C_INCR_VAL_DATA;
                      reg_data_tx_frame <= std_logic_vector(val_data);-- push data in the register tx
@@ -408,7 +406,7 @@ architecture rtl of DATA_LINK_GENERATOR is
                      
                   end if;
                   
-                  -- word management
+                  -- word management with EOP and FILL
                   if packet_size = 2 then
                      if (cnt_packet = packet_number-1) then
                         TDATA <= C_FILL & C_FILL & C_EOP & reg_data_tx_frame(7 downto 0);
@@ -440,6 +438,7 @@ architecture rtl of DATA_LINK_GENERATOR is
                      end loop;
                   end if;
 
+                  -- cnt_packet management to monitor current size of the packet sent
                   if (packet_size = 2) then
                      if (cnt_packet = packet_number-1) then
                         cnt_packet <= cnt_packet + 1;
@@ -463,8 +462,10 @@ architecture rtl of DATA_LINK_GENERATOR is
                      cnt_byte      <= cnt_byte-4;
                      TLAST <= '0';
                   end if;
-                  -- packet management
+                  
                end if;
+
+               -- state transition
                if (TREADY = '1' and cnt_packet >= packet_number) then
                   TVALID <= '0';
                   generation_state <= END_TEST;
