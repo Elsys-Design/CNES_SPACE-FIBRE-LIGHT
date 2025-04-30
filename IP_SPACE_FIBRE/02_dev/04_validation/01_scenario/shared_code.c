@@ -129,15 +129,22 @@ static enum action_result wait_test_end
 
 void initiate_test (const struct test_config test [const static 1])
 {
+	uint32_t temp;
 	for (uint32_t i = 0; i < CHANNEL_COUNT; ++i)
 	{
 		if (test->enable_mask & (1 << i))
 		{
 			*DL_ANALYZER_X_CONFIGURATION_PTR(i) =
 				DL_ANALYZER_CONFIGURATION_TO_UINT32_T(test->ana_conf[i]);
+			
+			temp=DL_ANALYZER_CONFIGURATION_TO_UINT32_T(test->ana_conf[i]);
+			debug_printf("\r\n  run DL_ANALYZER_CONFIGURATION_TO_UINT32_T %x \r\n", temp);
 
 			*DL_GENERATOR_X_CONFIGURATION_PTR(i) =
 				DL_GENERATOR_CONFIGURATION_TO_UINT32_T(test->gen_conf[i]);
+		
+			temp=DL_GENERATOR_CONFIGURATION_TO_UINT32_T(test->gen_conf[i]);
+			debug_printf("\r\n  run DL_GENERATOR_CONFIGURATION_TO_UINT32_T %x \r\n", temp);
 
 			*DL_ANALYZER_X_INITIAL_VALUE_PTR(i) = test->ana_init[i];
 

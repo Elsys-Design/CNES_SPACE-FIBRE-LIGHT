@@ -290,6 +290,7 @@ static uint32_t assert_ack_counters_increased
 void configuration2_dl_lpb_step2 (void)
 {
 	uint32_t last_status = 0, new_status = 0, step2_success=0;
+	uint32_t temp;
 	debug_printf("\r\n Start configuration 2\r\n");
 	debug_printf("\r\n Start scenario: Data-Link Transmission reception loopback\r\n");
 	debug_printf("\r\n Step 2: CHECK ACK TRANSMISSION AND RECEPTION  \r\n");
@@ -317,10 +318,19 @@ void configuration2_dl_lpb_step2 (void)
 			*DL_ANALYZER_X_CONFIGURATION_PTR(i) =
 			DL_ANALYZER_CONFIGURATION_TO_UINT32_T((step2_test+j)->ana_conf[i]);
 
+			temp= DL_ANALYZER_CONFIGURATION_TO_UINT32_T((step2_test+j)->ana_conf[i]);
+			debug_printf("\r\n DL_ANALYZER_CONFIGURATION_TO_UINT32_T  x%x not ended\r\n", temp);
+
+			temp= *DL_ANALYZER_X_CONFIGURATION_PTR(i);
+			debug_printf("\r\n DL_ANALYZER_CONFIGURATION_TO_UINT32_T  x%x not ended\r\n", temp);
+
 
   	  // config generator 
 			*DL_GENERATOR_X_CONFIGURATION_PTR(i) =
 				DL_GENERATOR_CONFIGURATION_TO_UINT32_T((step2_test+j)->gen_conf[i]);
+			
+				temp= *DL_GENERATOR_X_CONFIGURATION_PTR(i);
+				debug_printf("\r\n DL_GENERATOR_X_CONFIGURATION_PTR  x%x not ended\r\n", temp);
 
 		
 			// init value analyzer
@@ -415,9 +425,9 @@ static const struct test_config step3_test[STEP3_TESTS_COUNT] =
 			0xCA0000FE,
 			{
 				.packet_number = 1,
-				.packet_size = 1
+				.packet_size =1
 			}
-		),
+		)
 	};
 
 void configuration2_dl_lpb_step3 (void)
@@ -463,14 +473,15 @@ static const struct test_config step4_test[STEP4_TESTS_COUNT] =
 			0x1, // Channel 0
 			0x0C0A0F0E,
 			{
-				.packet_number = 1,
-				.packet_size = __WORDS_TO_BYTES(64)
+				.packet_number = 2,
+				.packet_size = 1
 			}
 		)
 	};
 
 void configuration2_dl_lpb_step4 (void)
 {
+	uint32_t temp;
 	debug_printf("\r\n Start configuration 2\r\n");
 	debug_printf("\r\n Start scenario: Data-Link Transmission reception loopback\r\n");
 	debug_printf("\r\n Step 4: Check continuous mode output buffers \r\n");
@@ -484,6 +495,12 @@ void configuration2_dl_lpb_step4 (void)
 
 		return;
 	}
+	DL_CONFIGURATOR_DL_PARAMETER_SET_IN_PLACE
+	(
+		CONTINUOUS_VC,
+		0x1, /* Channel 0 */
+		*DL_CONFIGURATOR_DL_PARAMETER_PTR
+	);
 
 	DL_CONFIGURATOR_DL_PARAMETER_SET_IN_PLACE
 	(
@@ -491,12 +508,11 @@ void configuration2_dl_lpb_step4 (void)
 		0x1, /* Channel 0 */
 		*DL_CONFIGURATOR_DL_PARAMETER_PTR
 	);
-	DL_CONFIGURATOR_DL_PARAMETER_SET_IN_PLACE
-	(
-		CONTINUOUS_VC,
-		0x1, /* Channel 0 */
-		*DL_CONFIGURATOR_DL_PARAMETER_PTR
-	);
+
+
+
+	temp = *DL_CONFIGURATOR_DL_PARAMETER_PTR;
+	debug_printf("\r\n DL_CONFIGURATOR_DL_PARAMETER_PTR %x \r\n", temp);
 
 	// This one should timeout
 	debug_printf("\r\n Ignore the timeout error below: we want it to occur.\r\n");
@@ -506,14 +522,17 @@ void configuration2_dl_lpb_step4 (void)
 	}
 	debug_printf("\r\n From this point on, no timeouts are expected.\r\n");
 
-	initiate_test(step4_test + 1);
-
 	DL_CONFIGURATOR_DL_PARAMETER_SET_IN_PLACE
 	(
 		PAUSE_VC,
 		0x0,
 		*DL_CONFIGURATOR_DL_PARAMETER_PTR
 	);
+
+	temp = *DL_CONFIGURATOR_DL_PARAMETER_PTR;
+	debug_printf("\r\n DL_CONFIGURATOR_DL_PARAMETER_PTR %x \r\n", temp);
+
+	initiate_test(step4_test + 1);
 
 	finalize_test(step4_test + 1);
 
