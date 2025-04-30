@@ -336,6 +336,11 @@ begin
                                     s_axis_tlast_i  <= '0';
                                     s_axis_tvalid_i <= '0';
                                   end if;
+                                else 
+                                    s_axis_tdata_i       <= (others => '0');
+                                    s_axis_tuser_i       <= (others => '0');
+                                    s_axis_tlast_i       <= '0';
+                                    s_axis_tvalid_i      <= '0';
                                 end if;
     end case;
   end if;
