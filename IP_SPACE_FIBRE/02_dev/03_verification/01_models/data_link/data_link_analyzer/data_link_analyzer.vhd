@@ -502,7 +502,7 @@ architecture rtl of DATA_LINK_ANALYZER is
                   end if;
                end if;
 
-               if (cnt_packet >= packet_number) then
+               if (cnt_packet >= packet_number) and (TVALID = '1') and not((TDATA(7 downto 0) = C_EEP and TUSER(0) = '1') or (TDATA(15 downto 8) = C_EEP and TUSER(1) = '1') or (TDATA(23 downto 16) = C_EEP and TUSER(2) = '1') or (TDATA(31 downto 24) = C_EEP and TUSER(3) = '1') ) then
                   generation_state <= END_TEST;
                   tready_i           <= '0';
                elsif TVALID = '1' and ((TDATA(7 downto 0) = C_EEP and TUSER(0) = '1') or (TDATA(15 downto 8) = C_EEP and TUSER(1) = '1') or (TDATA(23 downto 16) = C_EEP and TUSER(2) = '1') or (TDATA(31 downto 24) = C_EEP and TUSER(3) = '1')) then
