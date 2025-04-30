@@ -325,10 +325,10 @@ begin
                                     s_axis_tvalid_i <= '1';
                                     current_state   <= IDLE_ST;
                                   elsif S_AXIS_TUSER_NW(3)='1' and (S_AXIS_TDATA_NW(31 downto 24) = C_EEP_SYMB or S_AXIS_TDATA_NW(31 downto 24) = C_EOP_SYMB) then
-                                    s_axis_tdata_i  <=  C_FILL_SYMB & C_FILL_SYMB & C_FILL_SYMB & C_FILL_SYMB;
-                                    s_axis_tuser_i  <= "1111";
+                                    s_axis_tdata_i  <= (others => '0');
+                                    s_axis_tuser_i  <= (others => '0');
                                     s_axis_tlast_i  <= '0';
-                                    s_axis_tvalid_i <= '1';
+                                    s_axis_tvalid_i <= '0;
                                     current_state   <= IDLE_ST;
                                   else
                                     s_axis_tdata_i  <= (others => '0');
@@ -337,10 +337,10 @@ begin
                                     s_axis_tvalid_i <= '0';
                                   end if;
                                 else 
-                                    s_axis_tdata_i       <= (others => '0');
-                                    s_axis_tuser_i       <= (others => '0');
-                                    s_axis_tlast_i       <= '0';
-                                    s_axis_tvalid_i      <= '0';
+                                  s_axis_tdata_i       <= (others => '0');
+                                  s_axis_tuser_i       <= (others => '0');
+                                  s_axis_tlast_i       <= '0';
+                                  s_axis_tvalid_i      <= '0';
                                 end if;
     end case;
   end if;
