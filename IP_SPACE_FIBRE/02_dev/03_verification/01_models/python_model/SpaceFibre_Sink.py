@@ -311,7 +311,7 @@ class SpaceFibre_Sink:
             self.dut_Tx_disparity[0] -=2
         elif ls_encoded_data == "001111" :
             ls_decoded_data = "11100"
-            self.dut_Tx_disparity[0] -=2
+            self.dut_Tx_disparity[0] +=2
             k_encoded = 1
         elif ls_encoded_data == "110000" :
             ls_decoded_data = "11100"
@@ -319,7 +319,7 @@ class SpaceFibre_Sink:
             k_encoded = 1
         else:
             ls_decoded_data = "00000"
-            self.logger.warning("sim_time %s ns : Invalid symbole on sub-block 5b/6b", get_sim_time(units = 'ns'))
+            self.logger.warning("sim_time %s ns : Invalid symbole on sub-block 5b/6b. Sub-block : %s", get_sim_time(units = 'ns'), ls_encoded_data)
             return "00000000" , 1
 
         #check disparity
@@ -396,7 +396,7 @@ class SpaceFibre_Sink:
                 ms_decoded_data = "111"
                 self.dut_Tx_disparity[0] +=2
                 if not primary == 0:
-                    self.logger.error("sim_tim %s ns: Error K1: Alternative encoding of D.x.7 when uneeded", get_sim_time(units = 'ns'))
+                    self.logger.error("sim_tim %s ns: Error K1: Alternative encoding of D.x.7 when uneeded. Sub block : %s", get_sim_time(units = 'ns'), ms_encoded_data)
         elif ms_encoded_data == "1000" :
             if k_encoded == -1 or k_encoded == 1:
                 ms_decoded_data = "111"
@@ -406,11 +406,11 @@ class SpaceFibre_Sink:
                 ms_decoded_data = "111"
                 self.dut_Tx_disparity[0] -=2
                 if not primary == 0:
-                    self.logger.error("sim_time %s ns : Error K2: Alternative encoding of D.x.7 when uneeded", get_sim_time(units = 'ns'))
+                    self.logger.error("sim_time %s ns : Error K2: Alternative encoding of D.x.7 when uneeded. Sub block : %s", get_sim_time(units = 'ns'), ms_encoded_data)
 
         else :
             ms_decoded_data = "000"
-            self.logger.warning("sim_time %s ns : Invalid symbole on sub-block 3b/4b", get_sim_time(units = 'ns'))
+            self.logger.warning("sim_time %s ns : Invalid symbole on sub-block 3b/4b. Sub block : %s", get_sim_time(units = 'ns'), ms_encoded_data)
             return "00000000" , 1
 
         if k_encoded == -1 :

@@ -1,14 +1,14 @@
 ##########################################################################
 ## COMPANY       : ELSYS Design
 ##########################################################################
-## TITLE         : configuration_1_scenario_receiver.py
+## TITLE         : data_link_transmission.py
 ## PROJECT       : SPACE FIBRE LIGHT
 ##########################################################################
 ## AUTHOR        : Thomas FAVRE-FELIX
-## CREATED       : 02/10/2024
+## CREATED       : 16/03/2025
 ##########################################################################
 ## DESCRIPTION   : Runs tests for verification of the SpaceFibre_Light IP
-##                 receiver process
+##                 reception chain processes of the data link layer
 ##########################################################################
 ## History       :	V1.0: Creation of the file
 ##########################################################################
@@ -574,30 +574,7 @@ async def cocotb_run(dut):
     #Specific variable for the scenario
     global test_failed 
 
-    #BC seq count
-    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_8("01011100", "11001110")
-    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_8("00000000", crc_16)
-    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_8("00001101", crc_16)
-
-
-    #BC seq pola
-    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_8("01011100", "11001110")
-    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_8("00000000", crc_16)
-    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_8("10010000", crc_16)
-
-
-    #idle seq count
-    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_8("11111100")
-    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_8("10000100", crc_16)
-    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_8("00001001", crc_16)
-
-    #idle seq pola
-    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_8("11111100")
-    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_8("10000100", crc_16)
-    crc_16 = tb.spacefibre_random_generator_data_link.compute_crc_8("00010000", crc_16)
     
-
-
     ##########################################################################
     ##########################################################################
     ##########################################################################

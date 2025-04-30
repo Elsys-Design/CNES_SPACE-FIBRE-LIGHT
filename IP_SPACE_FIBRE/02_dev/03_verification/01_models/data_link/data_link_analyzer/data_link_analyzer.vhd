@@ -411,63 +411,63 @@ architecture rtl of DATA_LINK_ANALYZER is
                      
                      prbs_data <= prbs_data(C_INTERNAL_BUS_WIDTH-2 downto 0) & (prbs_data(C_INTERNAL_BUS_WIDTH-1) xor prbs_data(C_INTERNAL_BUS_WIDTH-2) xor prbs_data(C_INTERNAL_BUS_WIDTH-4) xor prbs_data(C_INTERNAL_BUS_WIDTH-5)); -- prbs data generation
                   end if;
-               end if;
-               
-               -- word management
-               if eep_detected = '0' then 
-                  if packet_size = 2 then
-                     if (cnt_packet = packet_number-1) then
-                        tdata_i <= C_FILL & C_FILL & C_EOP & reg_data_rx_frame(7 downto 0);
-                        tuser_i <= "1110";
-                     else
-                        tdata_i <= C_EOP & reg_data_rx_frame(23 downto 16) & C_EOP & reg_data_rx_frame(7 downto 0);
-                        tuser_i <= "1010";
-                     end if;
-                  elsif (packet_size = 3 and cnt_byte = 1) then
-                     if (cnt_packet = packet_number-1) then
-                        tdata_i <= C_FILL & C_FILL & C_FILL & C_EOP;
-                        tuser_i <= "1111";
-                     else
-                        tdata_i <= C_EOP & reg_data_rx_frame(23 downto 8) & C_EOP;
-                        tuser_i <= "1001";
-                     end if;
-                  else
-                     EOP_word_management : for j in 0 to 3 loop
-                        if (j = cnt_byte - 1) then  --EOP needed
-                           tdata_i ((8*(j+1) -1) downto 8*j) <= C_EOP;
-                           tuser_i (j) <= '1';
-                        elsif (j > cnt_byte - 1 and cnt_packet = packet_number-1) then  -- FILL needed
-                           tdata_i ((8*(j+1) -1) downto 8*j) <= C_FILL;
-                           tuser_i (j) <= '1';
-                        else  --Normal data
-                           tdata_i ((8*(j+1) -1) downto 8*j) <= reg_data_rx_frame((8*(j+1) -1) downto 8*j);
-                           tuser_i (j) <= '0';
-                        end if;
-                     end loop;
-                  end if;
-
                   
-                  if (packet_size = 2) then
-                     if (cnt_packet = packet_number-1) then
-                        cnt_packet <= cnt_packet + 1;
+                  -- word management
+                  if eep_detected = '0' then 
+                     if packet_size = 2 then
+                        if (cnt_packet = packet_number-1) then
+                           tdata_i <= C_FILL & C_FILL & C_EOP & reg_data_rx_frame(7 downto 0);
+                           tuser_i <= "1110";
+                        else
+                           tdata_i <= C_EOP & reg_data_rx_frame(23 downto 16) & C_EOP & reg_data_rx_frame(7 downto 0);
+                           tuser_i <= "1010";
+                        end if;
+                     elsif (packet_size = 3 and cnt_byte = 1) then
+                        if (cnt_packet = packet_number-1) then
+                           tdata_i <= C_FILL & C_FILL & C_FILL & C_EOP;
+                           tuser_i <= "1111";
+                        else
+                           tdata_i <= C_EOP & reg_data_rx_frame(23 downto 8) & C_EOP;
+                           tuser_i <= "1001";
+                        end if;
                      else
-                        cnt_packet <= cnt_packet + 2;
-                     end if;
-                  elsif (packet_size = 3 and cnt_byte = 1) then
-                     cnt_byte  <= unsigned(packet_size);  -- reset the counter of byte for the nexte frame
-                     if (cnt_packet = packet_number-1) then
-                        cnt_packet <= cnt_packet + 1;
-                     else
-                        cnt_packet <= cnt_packet + 2;
-                     end if;
-                  elsif (cnt_byte <= 4) then  -- last packet of the frame
-                     cnt_byte  <= unsigned(packet_size)-(4-cnt_byte);  -- reset the counter of byte for the nexte frame
-                     cnt_packet <= cnt_packet+1;
-                  else
-                     cnt_byte      <= cnt_byte-4;
+                        EOP_word_management : for j in 0 to 3 loop
+                           if (j = cnt_byte - 1) then  --EOP needed
+                              tdata_i ((8*(j+1) -1) downto 8*j) <= C_EOP;
+                              tuser_i (j) <= '1';
+                           elsif (j > cnt_byte - 1 and cnt_packet = packet_number-1) then  -- FILL needed
+                              tdata_i ((8*(j+1) -1) downto 8*j) <= C_FILL;
+                              tuser_i (j) <= '1';
+                           else  --Normal data
+                              tdata_i ((8*(j+1) -1) downto 8*j) <= reg_data_rx_frame((8*(j+1) -1) downto 8*j);
+                              tuser_i (j) <= '0';
+                           end if;
+                        end loop;
+                        end if;
+                        
+                        
+                        if (packet_size = 2) then
+                           if (cnt_packet = packet_number-1) then
+                              cnt_packet <= cnt_packet + 1;
+                           else
+                              cnt_packet <= cnt_packet + 2;
+                           end if;
+                        elsif (packet_size = 3 and cnt_byte = 1) then
+                           cnt_byte  <= unsigned(packet_size);  -- reset the counter of byte for the nexte frame
+                           if (cnt_packet = packet_number-1) then
+                              cnt_packet <= cnt_packet + 1;
+                           else
+                              cnt_packet <= cnt_packet + 2;
+                           end if;
+                        elsif (cnt_byte <= 4) then  -- last packet of the frame
+                           cnt_byte  <= unsigned(packet_size)-(4-cnt_byte);  -- reset the counter of byte for the nexte frame
+                           cnt_packet <= cnt_packet+1;
+                        else
+                           cnt_byte      <= cnt_byte-4;
+                        end if;
                   end if;
+                  
                end if;
-               
                -- packet management
                tready_i <= '1';
 
@@ -502,7 +502,7 @@ architecture rtl of DATA_LINK_ANALYZER is
                   end if;
                end if;
 
-               if (cnt_packet >= packet_number) then
+               if (cnt_packet >= packet_number) and (TVALID = '1') and not((TDATA(7 downto 0) = C_EEP and TUSER(0) = '1') or (TDATA(15 downto 8) = C_EEP and TUSER(1) = '1') or (TDATA(23 downto 16) = C_EEP and TUSER(2) = '1') or (TDATA(31 downto 24) = C_EEP and TUSER(3) = '1') ) then
                   generation_state <= END_TEST;
                   tready_i           <= '0';
                elsif TVALID = '1' and ((TDATA(7 downto 0) = C_EEP and TUSER(0) = '1') or (TDATA(15 downto 8) = C_EEP and TUSER(1) = '1') or (TDATA(23 downto 16) = C_EEP and TUSER(2) = '1') or (TDATA(31 downto 24) = C_EEP and TUSER(3) = '1')) then

@@ -270,8 +270,8 @@ package pkg_model is
   constant C_DEFAULT_INTERFACE_RST        : std_logic                                        := '0';
   constant C_DEFAULT_LINK_RST             : std_logic                                        := '0';
   constant C_DEFAULT_LINK_RST_ASSERTED    : std_logic                                        := '0';
-  constant C_DEFAULT_NACK_RST_EN          : std_logic                                        := '0';
-  constant C_DEFAULT_NACK_RST_MODE        : std_logic                                        := '0';
+  constant C_DEFAULT_NACK_RST_EN          : std_logic                                        := '1';
+  constant C_DEFAULT_NACK_RST_MODE        : std_logic                                        := '1';
   constant C_DEFAULT_PAUSE_VC             : std_logic_vector(8 downto 0)                     := (others =>'0');
   constant C_DEFAULT_CONTINUOUS_VC        : std_logic_vector(7 downto 0)                     := (others =>'0');
   constant C_DEFAULT_CLEAR_ERROR_FLAG     : std_logic                                        := '0';
