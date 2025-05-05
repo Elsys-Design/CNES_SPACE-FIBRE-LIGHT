@@ -124,7 +124,7 @@ begin
       current_channel      <= 0;
       data_counter         <= (others => '0');
       req_ack_done         <= '0';
-      cnt_wait           <= '1';
+      cnt_wait             <= '1';
       VC_END_EMISSION_DMAC <= (others => '0');
       VC_RUN_EMISSION_DMAC <= (others => '0');
       DATA_DMAC            <= (others => '0');
