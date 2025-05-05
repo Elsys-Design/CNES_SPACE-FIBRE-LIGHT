@@ -499,6 +499,8 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
          end if;
          if (reset_param_dl_i = '1') then                    -- Configuration reset from data link
             reg_dl_param                            <= init_dl_dl_param;
+            reg_lane_param                          <= init_lc_lane_param;
+            reg_phy_param                           <= init_lc_phy_param;
          end if;
          if link_rst_asserted_i = '1' then                   -- Link reset command from data link
             reg_dl_param(C_LINK_RST_ASSERTED_BTFD)  <= link_rst_asserted_i;
