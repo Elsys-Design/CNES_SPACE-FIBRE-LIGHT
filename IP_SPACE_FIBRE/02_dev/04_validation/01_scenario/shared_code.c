@@ -222,6 +222,42 @@ enum action_result run_test (const struct test_config test [const static 1])
 	return finalize_test(test);
 }
 
+enum action_result run_test_gen_only (const struct test_config test [const static 1])
+{
+	debug_printf("\r\n  run test \r\n");
+	initiate_test_gen_only(test);
+	debug_printf("\r\n  end test \r\n");
+
+	return finalize_test(test);
+}
+
+void initiate_test_gen_only (const struct test_config test [const static 1])
+{
+	uint32_t temp;
+	for (uint32_t i = 0; i < CHANNEL_COUNT; ++i)
+	{
+		if (test->enable_mask & (1 << i))
+		{
+
+			*DL_GENERATOR_X_CONFIGURATION_PTR(i) =
+				DL_GENERATOR_CONFIGURATION_TO_UINT32_T(test->gen_conf[i]);
+		
+			temp=DL_GENERATOR_CONFIGURATION_TO_UINT32_T(test->gen_conf[i]);
+			debug_printf("\r\n  run DL_GENERATOR_CONFIGURATION_TO_UINT32_T %x \r\n", temp);
+
+			*DL_GENERATOR_X_INITIAL_VALUE_PTR(i) = test->gen_init[i];
+		}
+	}
+	for (uint32_t i = 0; i < CHANNEL_COUNT; ++i)
+	{
+		if (test->enable_mask & (1 << i))
+		{
+			DL_GENERATOR_CONTROL_SET_IN_PLACE(MODEL_START, 1, *DL_GENERATOR_X_CONTROL_PTR(i));
+		}
+	}
+}
+
+
 enum action_result initialization_sequence (void)
 {
 	if

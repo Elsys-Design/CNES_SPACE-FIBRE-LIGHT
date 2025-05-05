@@ -80,3 +80,6 @@ enum action_result init_and_run_tests
 );
 
 enum action_result wait_active (void);
+
+enum action_result run_test_gen_only (const struct test_config test [const static 1]);
+void initiate_test_gen_only (const struct test_config test [const static 1]);

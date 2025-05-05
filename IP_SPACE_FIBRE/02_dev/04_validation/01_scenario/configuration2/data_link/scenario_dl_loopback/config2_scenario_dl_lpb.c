@@ -122,15 +122,15 @@ static const struct test_config step1_test[STEP1_TESTS_COUNT] =
 				.packet_size = __WORDS_TO_BYTES(55)
 			}
 		),
-		// BASIC_CONFIG
-		// (
-		// 	ONLY_BROADCAST_CHANS,
-		// 	0x02000000,
-		// 	{
-		// 		.packet_number = 1,
-		// 		.packet_size = __WORDS_TO_BYTES(2)
-		// 	}
-		// ),
+		BASIC_CONFIG
+		(
+			ONLY_BROADCAST_CHANS,
+			0x02000000,
+			{
+				.packet_number = 1,
+				.packet_size = __WORDS_TO_BYTES(2)
+			}
+		),
 		// Test 5: Send a broadcast frame with 2 different seeds on
 		// Data_Link_Broadcast_Analyzer and Data_Link_Broadcast_Generator check
 		// that the data received on Data_Link_Broadcast_Analyzer models are
@@ -324,7 +324,7 @@ void configuration2_dl_lpb_step2 (void)
 			temp= *DL_ANALYZER_X_CONFIGURATION_PTR(i);
 			debug_printf("\r\n DL_ANALYZER_CONFIGURATION_TO_UINT32_T  x%x not ended\r\n", temp);
 
-
+	
   	  // config generator 
 			*DL_GENERATOR_X_CONFIGURATION_PTR(i) =
 				DL_GENERATOR_CONFIGURATION_TO_UINT32_T((step2_test+j)->gen_conf[i]);
@@ -473,8 +473,8 @@ static const struct test_config step4_test[STEP4_TESTS_COUNT] =
 			0x1, // Channel 0
 			0x0C0A0F0E,
 			{
-				.packet_number = 2,
-				.packet_size = 1
+				.packet_number = 1,
+				.packet_size = __WORDS_TO_BYTES(5)
 			}
 		)
 	};
@@ -514,13 +514,11 @@ void configuration2_dl_lpb_step4 (void)
 	temp = *DL_CONFIGURATOR_DL_PARAMETER_PTR;
 	debug_printf("\r\n DL_CONFIGURATOR_DL_PARAMETER_PTR %x \r\n", temp);
 
-	// This one should timeout
-	debug_printf("\r\n Ignore the timeout error below: we want it to occur.\r\n");
-	if (run_test(step4_test + 0) != TIMEOUT)
+	// 2 packets of 64 words 
+	if (run_test_gen_only(step4_test + 0) != OK)
 	{
-		debug_printf("\r\n Error: the 2 packets of 64 words did not timeout. \r\n");
+		debug_printf("\r\n Error: the 2 packets of 64 words did not generate correctly. \r\n");
 	}
-	debug_printf("\r\n From this point on, no timeouts are expected.\r\n");
 
 	DL_CONFIGURATOR_DL_PARAMETER_SET_IN_PLACE
 	(
@@ -532,9 +530,27 @@ void configuration2_dl_lpb_step4 (void)
 	temp = *DL_CONFIGURATOR_DL_PARAMETER_PTR;
 	debug_printf("\r\n DL_CONFIGURATOR_DL_PARAMETER_PTR %x \r\n", temp);
 
-	initiate_test(step4_test + 1);
+  // 2 packets of 64 words 
+	if (run_test(step4_test + 1) != OK)
+	{
+		debug_printf("\r\n Error: 2 packets of 1 byte . \r\n");
+	}
 
-	finalize_test(step4_test + 1);
+	temp= *DL_ANALYZER_X_CONFIGURATION_PTR(0);
+	debug_printf("\r\n DL_ANALYZER_CONFIGURATION_TO_UINT32_T  x%x not ended\r\n", temp);
+
+	temp= *DL_GENERATOR_X_CONFIGURATION_PTR(0);
+	debug_printf("\r\n DL_GENERATOR_X_CONFIGURATION_PTR  x%x not ended\r\n", temp);
+
+	temp= *DL_ANALYZER_X_CONTROL_PTR(0);
+	debug_printf("\r\n DL_ANALYZER_X_CONTROL_PTR  x%x not ended\r\n", temp);
+
+	temp= *DL_GENERATOR_X_CONTROL_PTR(0);
+	debug_printf("\r\n DL_GENERATOR_X_CONTROL_PTR  x%x not ended\r\n", temp);
+
+	temp= *DL_ANALYZER_X_STATUS_PTR(0);
+	debug_printf("\r\n DL_ANALYZER_X_STATUS_PTR  x%x not ended\r\n", temp);
+
 
 	DL_CONFIGURATOR_DL_PARAMETER_SET_IN_PLACE
 	(
@@ -546,6 +562,144 @@ void configuration2_dl_lpb_step4 (void)
 	debug_printf("\r\n Step 4: END \r\n");
 }
 
+void configuration2_dl_lpb_step4_alt (void)
+{
+	uint32_t temp;
+	debug_printf("\r\n Start configuration 2\r\n");
+	debug_printf("\r\n Start scenario: Data-Link Transmission reception loopback\r\n");
+	debug_printf("\r\n Step 4: Check continuous mode output buffers \r\n");
+
+	// Disable Injector and Spy read command
+	phy_plus_lane_plus_dl();
+
+	if (initialization_sequence() != OK)
+	{
+		debug_printf("\r\n Initialization sequence failed. \r\n");
+
+		return;
+	}
+	DL_CONFIGURATOR_DL_PARAMETER_SET_IN_PLACE
+	(
+		CONTINUOUS_VC,
+		0x1, /* Channel 0 */
+		*DL_CONFIGURATOR_DL_PARAMETER_PTR
+	);
+
+	DL_CONFIGURATOR_DL_PARAMETER_SET_IN_PLACE
+	(
+		PAUSE_VC,
+		0x1, /* Channel 0 */
+		*DL_CONFIGURATOR_DL_PARAMETER_PTR
+	);
+
+
+
+	temp = *DL_CONFIGURATOR_DL_PARAMETER_PTR;
+	debug_printf("\r\n DL_CONFIGURATOR_DL_PARAMETER_PTR %x \r\n", temp);
+
+	////////////////////////////////////// 1st send /////////////////////////////
+
+	// 2 packets of 64 words 
+
+  // config generator 
+	*DL_GENERATOR_X_CONFIGURATION_PTR(0) =
+		DL_GENERATOR_CONFIGURATION_TO_UINT32_T((step4_test+0)->gen_conf[0]);
+	
+		temp= *DL_GENERATOR_X_CONFIGURATION_PTR(0);
+		debug_printf("\r\n DL_GENERATOR_X_CONFIGURATION_PTR  x%x\r\n", temp);
+
+  // init value generator
+	*DL_GENERATOR_X_INITIAL_VALUE_PTR(0) = (step4_test+0)->gen_init[0];
+
+  // start models
+	DL_GENERATOR_CONTROL_SET_IN_PLACE(MODEL_START, 1, *DL_GENERATOR_X_CONTROL_PTR(0));
+
+	wait_us_clk_150mhz(300);
+
+	// test ended ?
+	if (!DL_GENERATOR_STATUS_GET(TEST_END, *DL_GENERATOR_X_STATUS_PTR(0)))
+	{
+		debug_printf("\r\n Generator channel x%x not ended\r\n", 0);
+	}
+
+	temp= *DL_ANALYZER_X_STATUS_PTR(0);
+	debug_printf("\r\n DL_ANALYZER STATUS x%x\r\n", temp);
+
+  ////////////////////////////////////// 2nd send ///////////////////////////// 
+
+	// config analyzer
+	*DL_ANALYZER_X_CONFIGURATION_PTR(0) =
+	DL_ANALYZER_CONFIGURATION_TO_UINT32_T((step4_test+1)->ana_conf[0]);
+
+	temp= *DL_ANALYZER_X_CONFIGURATION_PTR(0);
+	debug_printf("\r\n DL_ANALYZER_CONFIGURATION_TO_UINT32_T  x%x \r\n", temp);
+
+
+  // config generator 
+	*DL_GENERATOR_X_CONFIGURATION_PTR(0) =
+		DL_GENERATOR_CONFIGURATION_TO_UINT32_T((step4_test+1)->gen_conf[0]);
+	
+	temp= *DL_GENERATOR_X_CONFIGURATION_PTR(0);
+	debug_printf("\r\n DL_GENERATOR_X_CONFIGURATION_PTR  x%x \r\n", temp);
+
+	
+	// init value analyzer
+	*DL_ANALYZER_X_INITIAL_VALUE_PTR(0) = (step4_test+1)->ana_init[0];
+
+
+  // init value generator
+	*DL_GENERATOR_X_INITIAL_VALUE_PTR(0) = (step4_test+1)->gen_init[0];
+  
+	// start model generator to send an EOP
+	DL_GENERATOR_CONTROL_SET_IN_PLACE(MODEL_START, 1, *DL_GENERATOR_X_CONTROL_PTR(0));
+
+	wait_us_clk_150mhz(300);
+
+	// test ended ?
+	if (!DL_GENERATOR_STATUS_GET(TEST_END, *DL_GENERATOR_X_STATUS_PTR(0)))
+	{
+		debug_printf("\r\n Generator channel x%x not ended waiting EOP generation\r\n", 0);
+	}
+
+  // start models
+	DL_ANALYZER_CONTROL_SET_IN_PLACE(MODEL_START, 1, *DL_ANALYZER_X_CONTROL_PTR(0));
+	DL_GENERATOR_CONTROL_SET_IN_PLACE(MODEL_START, 1, *DL_GENERATOR_X_CONTROL_PTR(0));
+
+	// Disable pause
+	DL_CONFIGURATOR_DL_PARAMETER_SET_IN_PLACE
+	(
+		PAUSE_VC,
+		0x0, /* Channel 0 */
+		*DL_CONFIGURATOR_DL_PARAMETER_PTR
+	);
+
+	temp = *DL_CONFIGURATOR_DL_PARAMETER_PTR;
+	debug_printf("\r\n DL_CONFIGURATOR_DL_PARAMETER_PTR %x \r\n", temp);
+
+	wait_us_clk_150mhz(300);
+
+	// test ended ?
+	if (!DL_GENERATOR_STATUS_GET(TEST_END, *DL_GENERATOR_X_STATUS_PTR(0)))
+	{
+		debug_printf("\r\n Generator channel x%x not ended\r\n", 0);
+	}
+	
+	if (!DL_ANALYZER_STATUS_GET(TEST_END, *DL_ANALYZER_X_STATUS_PTR(0)))
+	{
+		debug_printf("\r\n Analyzer channel x%x not ended\r\n", 0);
+	}
+
+	temp= *DL_ANALYZER_X_STATUS_PTR(0);
+	debug_printf("\r\n DL_ANALYZER STATUS x%x\r\n", temp);
+	DL_CONFIGURATOR_DL_PARAMETER_SET_IN_PLACE
+	(
+		CONTINUOUS_VC,
+		0x0,
+		*DL_CONFIGURATOR_DL_PARAMETER_PTR
+	);
+
+	debug_printf("\r\n Step 4: END \r\n");
+}
 /******************************************************************************/
 /**** Function wiath all steps*************************************************/
 /******************************************************************************/
