@@ -724,6 +724,8 @@ architecture Behavioral of CONFIGURATION_2_BENCH is
         port map(
             CLK                   => CLK,
             RST_N                 => RST_N,
+            CLK_DL                => CLK,
+            RST_N_DL              => RST_N,
             CLK_TX                => clk_tx,
             RST_TXCLK_N           => rst_txclk_n,
 

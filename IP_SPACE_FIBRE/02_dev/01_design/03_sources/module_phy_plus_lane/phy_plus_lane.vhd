@@ -511,7 +511,7 @@ begin
    -- Instance of TX FIFO_1MB_wrapper module
    ------------------------------------------------------------------------------ 
    ctrl_in_dl      <= LANE_RESET_DL & CAPABILITY_TX;
-   lane_reset_dl_i <= ctrl_in_dl_sync(8) when fifo_in_ctrl_data_valid ='1';
+   lane_reset_dl_i <= '0' when lane_state_from_lif = "0000" else ctrl_in_dl_sync(8) when fifo_in_ctrl_data_valid ='1';
    capability_tx_i <= ctrl_in_dl_sync(7 downto 0) when fifo_in_ctrl_data_valid ='1';
    inst_fifo_in_ctrl : FIFO_DC
    generic map(
