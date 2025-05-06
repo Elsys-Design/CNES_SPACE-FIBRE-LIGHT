@@ -50,7 +50,7 @@ architecture rtl of data_link_reset is
   );
 
   signal current_state          : link_rst_fsm;
-  signal cnt_link_reset         : unsigned (2 downto 0);
+  signal cnt_link_reset         : unsigned (4 downto 0);
   signal lane_active_ppl_r      : std_logic;
 
 begin
@@ -99,7 +99,7 @@ begin
                                   RESET_PARAM_DLRE <= '0';
                                   if INTERFACE_RESET_MIB ='1' then
                                     current_state  <= CONF_RST_ST;
-                                  elsif cnt_link_reset > 3 then
+                                  elsif cnt_link_reset > 20 then
                                     cnt_link_reset <= (others =>'0');
                                     current_state  <= CHECK_FAR_END_RST_ST;
                                   else
