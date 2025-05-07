@@ -41,6 +41,15 @@ entity data_link_reset is
 end data_link_reset;
 
 architecture rtl of data_link_reset is
+  COMPONENT axis_ila_1 IS
+  PORT (
+    clk : IN STD_LOGIC;
+    probe0 : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
+    probe1 : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
+    probe2 : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
+    probe3 : IN STD_LOGIC_VECTOR(0 DOWNTO 0)
+  );
+ END COMPONENT;
 ----------------------------- Declaration signals -----------------------------
   type link_rst_fsm is (
     CONF_RST_ST,
@@ -52,14 +61,28 @@ architecture rtl of data_link_reset is
   signal current_state          : link_rst_fsm;
   signal cnt_link_reset         : unsigned (4 downto 0);
   signal lane_active_ppl_r      : std_logic;
+  signal link_reset_dlre_i      : std_logic;
+  signal lane_reset_dlre_i      : std_logic;
+  signal current_state_vector      : std_logic_vector(1 downto 0);
 
 begin
 ---------------------------------------------------------
 -----                     Assignation               -----
 ---------------------------------------------------------
+LINK_RESET_DLRE <= link_reset_dlre_i;
+LANE_RESET_DLRE <= lane_reset_dlre_i;
+
 ---------------------------------------------------------
 -----                     Instanciation             -----
 ---------------------------------------------------------
+inst_axis_ila_1 : axis_ila_1
+port map(
+   clk       => CLK,
+   probe0(0) => RST_N,
+   probe1    => current_state_vector,
+   probe2(0) => link_reset_dlre_i,
+   probe3(0) => lane_reset_dlre_i
+);
 ---------------------------------------------------------
 -----                     Process                   -----
 ---------------------------------------------------------
@@ -71,21 +94,23 @@ p_data_in_fifo: process(CLK, RST_N)
 begin
   if RST_N ='0' then
     current_state      <= CONF_RST_ST;
-    LINK_RESET_DLRE    <= '1';
-    LANE_RESET_DLRE    <= '1';
+    link_reset_dlre_i    <= '1';
+    lane_reset_dlre_i    <= '1';
     RESET_PARAM_DLRE   <= '1';
     NEAR_END_CAPA_DLRE <= (others =>'0');
     cnt_link_reset     <= (others =>'0');
     lane_active_ppl_r  <= '1';
+    current_state_vector <= "00";
   elsif rising_edge(CLK) then
-    LINK_RESET_DLRE    <= '0';
-    LANE_RESET_DLRE    <= '0';
+    link_reset_dlre_i    <= '0';
+    lane_reset_dlre_i    <= '0';
     RESET_PARAM_DLRE   <= '0';
     lane_active_ppl_r  <= LANE_ACTIVE_PPL;
     case current_state is
       when CONF_RST_ST          =>
-                                  LINK_RESET_DLRE  <= '1';
-                                  LANE_RESET_DLRE  <= '1';
+                                  current_state_vector <= "00";
+                                  link_reset_dlre_i  <= '1';
+                                  lane_reset_dlre_i  <= '1';
                                   RESET_PARAM_DLRE <= '1';
                                   if cnt_link_reset > 2 then
                                     cnt_link_reset     <= (others =>'0');
@@ -94,8 +119,9 @@ begin
                                     cnt_link_reset     <= cnt_link_reset+1;
                                   end if;
       when NEAR_END_RST_ST      =>
-                                  LINK_RESET_DLRE  <= '1';
-                                  LANE_RESET_DLRE  <= '1';
+                                  current_state_vector <= "01";
+                                  link_reset_dlre_i  <= '1';
+                                  lane_reset_dlre_i  <= '1';
                                   RESET_PARAM_DLRE <= '0';
                                   if INTERFACE_RESET_MIB ='1' then
                                     current_state  <= CONF_RST_ST;
@@ -106,6 +132,7 @@ begin
                                     cnt_link_reset <= cnt_link_reset+1;
                                   end if;
       when CHECK_FAR_END_RST_ST =>
+                                  current_state_vector <= "10";
                                   NEAR_END_CAPA_DLRE(C_CAPA_LINK_RST) <= '1';
                                   if INTERFACE_RESET_MIB ='1' then
                                     current_state <= CONF_RST_ST;
@@ -115,6 +142,7 @@ begin
                                     current_state <= LINK_INIT_ST;
                                   end if;
       when LINK_INIT_ST         =>
+                                  current_state_vector <= "11";
                                   NEAR_END_CAPA_DLRE(C_CAPA_LINK_RST) <= '0';
                                   if INTERFACE_RESET_MIB ='1' then
                                     current_state <= CONF_RST_ST;

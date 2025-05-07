@@ -26,7 +26,7 @@ entity mux_tx is
     NEW_DATA_TX_INJ        : in  std_logic;                          --! Flag to write data in FIFO TX from injetor
     VALID_K_CHARAC_TX_INJ  : in  std_logic_vector(03 downto 00);     --! K charachter valid in the 32-bit DATA_TX_INJ vector
     FIFO_TX_FULL_INJ       : out std_logic;
-    LANE_RESET_INJ         : in  std_logic;  
+    LANE_RESET_INJ         : in  std_logic;
 		-- Data-Link interface
     DATA_TX_DL             : in  std_logic_vector(31 downto 00);     --! Data parallel to be send from Data-Link Layer
     CAPABILITY_TX_DL       : in  std_logic_vector(07 downto 00);     --! Capability send on TX link in INIT3 control word

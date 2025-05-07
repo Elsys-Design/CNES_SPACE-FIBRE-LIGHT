@@ -18,6 +18,7 @@ entity reset_gen is
       RST_N                : in  std_logic;     --! global reset
       CLK                  : in  std_logic;     --! General clock
       RST_TX_DONE          : in  std_logic;     --! Reset tx of IP GTY done flag
+      LANE_RESET           : in  std_logic;     --! LANE RESET command
       INTERNAL_SYNC_RST_N  : out std_logic      --! Internal reset resynchronized on 150MHz internal clock
    );
 end reset_gen;
@@ -39,15 +40,21 @@ begin
          reset_gen_rr_n <= '0';
          rst_tx_done_r  <= '1';
       elsif rising_edge(CLK) then   -- Synchronous deactivation reset
-         if rst_tx_done_r = '0' and RST_TX_DONE = '1'  then
-            reset_gen_r_n  <= '1';
-         elsif RST_TX_DONE = '1' then
-            reset_gen_rr_n <= reset_gen_r_n;
+         if LANE_RESET ='1' then
+           reset_gen_r_n  <= '0';
+           reset_gen_rr_n <= '0';
+           rst_tx_done_r  <= '1';
          else
-            reset_gen_r_n  <= '0';
-            reset_gen_rr_n <= '0';
+           if rst_tx_done_r = '0' and RST_TX_DONE = '1'  then
+              reset_gen_r_n  <= '1';
+           elsif RST_TX_DONE = '1' then
+              reset_gen_rr_n <= reset_gen_r_n;
+           else
+              reset_gen_r_n  <= '0';
+              reset_gen_rr_n <= '0';
+           end if;
+           rst_tx_done_r <= RST_TX_DONE;
          end if;
-         rst_tx_done_r <= RST_TX_DONE;
       end if;
    end process p_reset_gen;
 
