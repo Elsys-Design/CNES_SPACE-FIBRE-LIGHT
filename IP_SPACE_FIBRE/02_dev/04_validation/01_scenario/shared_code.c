@@ -41,7 +41,6 @@ static enum action_result _wait_for_started_to_active (void)
 
 	wait(1023);
 	
-	// debug_printf("\r\n toto\r\n");
 	// The set of allowed states shrinks at each iteration.
 	for (int i = 3; i >= 1; i--)
 	{
@@ -52,7 +51,7 @@ static enum action_result _wait_for_started_to_active (void)
 				DL_CONFIGURATOR_LANE_STATUS_PTR,
 				i,
 				valid_states,
-				5000
+				DEFAULT_TIMEOUT
 			)
 			!= OK
 		)

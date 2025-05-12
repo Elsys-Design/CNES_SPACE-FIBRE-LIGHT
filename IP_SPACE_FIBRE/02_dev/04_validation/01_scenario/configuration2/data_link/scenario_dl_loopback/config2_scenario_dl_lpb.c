@@ -608,8 +608,8 @@ void configuration2_dl_lpb_step4_alt (void)
 		*DL_GENERATOR_X_CONFIGURATION_PTR(i) =
 			DL_GENERATOR_CONFIGURATION_TO_UINT32_T((step4_test+0)->gen_conf[i]);
 
-			temp= *DL_GENERATOR_X_CONFIGURATION_PTR(i);
-			debug_printf("\r\n DL_GENERATOR_X_CONFIGURATION_PTR  x%x\r\n", temp);
+		temp= *DL_GENERATOR_X_CONFIGURATION_PTR(i);
+		debug_printf("\r\n DL_GENERATOR_X_CONFIGURATION_PTR  x%x\r\n", temp);
 
   	// init value generator
 		*DL_GENERATOR_X_INITIAL_VALUE_PTR(i) = (step4_test+0)->gen_init[i];
