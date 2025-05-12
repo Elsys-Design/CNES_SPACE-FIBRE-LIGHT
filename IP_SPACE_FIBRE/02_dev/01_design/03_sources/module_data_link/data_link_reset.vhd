@@ -41,15 +41,7 @@ entity data_link_reset is
 end data_link_reset;
 
 architecture rtl of data_link_reset is
-  COMPONENT axis_ila_1 IS
-  PORT (
-    clk : IN STD_LOGIC;
-    probe0 : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
-    probe1 : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
-    probe2 : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
-    probe3 : IN STD_LOGIC_VECTOR(0 DOWNTO 0)
-  );
- END COMPONENT;
+
 ----------------------------- Declaration signals -----------------------------
   type link_rst_fsm is (
     CONF_RST_ST,
@@ -75,14 +67,6 @@ LANE_RESET_DLRE <= lane_reset_dlre_i;
 ---------------------------------------------------------
 -----                     Instanciation             -----
 ---------------------------------------------------------
-inst_axis_ila_1 : axis_ila_1
-port map(
-   clk       => CLK,
-   probe0(0) => RST_N,
-   probe1    => current_state_vector,
-   probe2(0) => link_reset_dlre_i,
-   probe3(0) => lane_reset_dlre_i
-);
 ---------------------------------------------------------
 -----                     Process                   -----
 ---------------------------------------------------------
@@ -122,9 +106,11 @@ begin
                                   current_state_vector <= "01";
                                   link_reset_dlre_i  <= '1';
                                   lane_reset_dlre_i  <= '1';
-                                  RESET_PARAM_DLRE <= '0';
+                                  RESET_PARAM_DLRE   <= '0';
                                   if INTERFACE_RESET_MIB ='1' then
                                     current_state  <= CONF_RST_ST;
+                                  elsif LINK_RESET_MIB  ='1' then
+                                    cnt_link_reset <= (others =>'0');
                                   elsif cnt_link_reset > 20 then
                                     cnt_link_reset <= (others =>'0');
                                     current_state  <= CHECK_FAR_END_RST_ST;
