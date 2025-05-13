@@ -359,28 +359,6 @@ architecture rtl of phy_plus_lane is
     );
  end component;
 
---  COMPONENT axis_ila_0 IS
---  PORT (
---    clk : IN STD_LOGIC;
---    probe0 : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
---    probe1 : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
---    probe2 : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
---    probe3 : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
---    probe4 : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
---    probe5 : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
---    probe6 : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
---    probe7 : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
---    probe8 : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
---    probe9 : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
---    probe10 : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
---    probe11 : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
---    probe12 : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
---    probe13 : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
---    probe14 : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
---    probe15 : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
---    probe16 : IN STD_LOGIC_VECTOR(0 DOWNTO 0)
---  );
--- END COMPONENT;
    ----------------------------------------------------------------------------------------------------------------------------------------
    -------------------------------------------------------- Internal signals declaration --------------------------------------------------
    ----------------------------------------------------------------------------------------------------------------------------------------
@@ -489,27 +467,6 @@ begin
 
    LANE_RESET_PPL_OUT <= lane_reset_dl_i or LANE_RESET;
 
-   -- inst_axis_ila_0 : axis_ila_0
-   -- port map(
-   --    clk       => CLK,
-   --    probe0(0) => RST_TXCLK_N,
-   --    probe1    => lane_state_from_lif,
-   --    probe2(0) => LANE_START,
-   --    probe3(0) => lane_reset_dl_i,
-   --    probe4(0) => send_init1_ctrl_word_from_lif,
-   --    probe5(0) => send_init2_ctrl_word_from_lif,
-   --    probe6(0) => send_init3_ctrl_word_from_lif,
-   --    probe7(0) => new_data_from_lcwi,
-   --    probe8    => data_tx_from_lcwi,
-   --    probe9(0) => detected_init1_from_lcwd,
-   --    probe10(0) => INTF0_RX0_ch_rxcdrlock_0(0),
-   --    probe11(0) => INTF0_RX0_ch_rxcdrhold(0),
-   --    probe12(0) => INTF0_RX0_ch_rxcdrovrden(0),
-   --    probe13(0) => cdr_from_lif,
-   --    probe14    => data_tx_from_plb,
-   --    probe15    => valid_k_charac_from_plb,
-   --    probe16(0) => data_rdy_from_plb
-   -- );
    ------------------------------------------------------------------------------
    --! Instance of lane_init_fsm module
    ------------------------------------------------------------------------------

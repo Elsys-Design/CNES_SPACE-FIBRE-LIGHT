@@ -5,7 +5,7 @@
 --
 -- Creation date : 12/03/2025
 --
--- Description : This module permits to desencapsulate the frame
+-- Description : This module permits to desencapsulate the BROADCAST frame
 ----------------------------------------------------------------------------
 
 library ieee;
@@ -17,22 +17,22 @@ use data_link_lib.data_link_lib.all;
 
 entity data_desencapsulation_bc is
   port (
-    CLK                      : in  std_logic;                                    --! Clock signal
-    -- Link Reset
-    LINK_RESET_DLRE          : in std_logic;
+    CLK                      : in  std_logic;                                    --! Global Clock
+    -- data_link_reset (DLRE) interface
+    LINK_RESET_DLRE        : in std_logic;                                       --! Link Reset command
     -- data_mid_buffer_bc (DMBUFBC)interface
-    DATA_DMBUFBC             : in  std_logic_vector(C_DATA_K_WIDTH-1 downto 0);  --! Data read bus
+    DATA_DMBUFBC             : in  std_logic_vector(C_DATA_K_WIDTH-1 downto 0);  --! Data parallel (K character + DATA) from data_mid_buffer_bc
     DATA_RD_DDESBC           : out std_logic;                                    --! Read command
-    DATA_VALID_DMBUFBC       : in  std_logic;                                    --! Data valid
-    -- DIBUFBC interface
-    DATA_DDESBC              : out  std_logic_vector(C_DATA_K_WIDTH-1 downto 0); --! Data write broadcast
-    DATA_EN_DDESBC           : out  std_logic                                    --! Write command broadcast
+    DATA_VALID_DMBUFBC       : in  std_logic;                                    --! Data valid flag associated with DATA_DMBUFBC
+    -- data_in_bc_buf (DIBUFBC) interface
+    DATA_DDESBC              : out  std_logic_vector(C_DATA_K_WIDTH-1 downto 0); --! Data parallel (K character + DATA) to data_in_bc_buf (BRODACST channel)
+    DATA_EN_DDESBC           : out  std_logic                                    --! Data valid flag associated with DATA_DDESBC
   );
 end data_desencapsulation_bc;
 
 architecture rtl of data_desencapsulation_bc is
 ---------------------------------------------------------
------                  Declaration signals          -----
+-----                  Signal declaration           -----
 ---------------------------------------------------------
 signal broadcast_detected   : std_logic; --high when sbf read
 
@@ -55,7 +55,7 @@ begin
     else
       DATA_RD_DDESBC      <= '1';
       if DATA_VALID_DMBUFBC = '1' then
-        --                      msb = 35
+        --                              33 downto 32
         if DATA_DMBUFBC(C_DATA_K_WIDTH - 3 downto C_DATA_K_WIDTH - 4) = "01" then --reading a K character
           --                               15 downto 0
           if DATA_DMBUFBC(C_BYTE_WIDTH*2 - 1 downto 0) =  C_SBF_SYMB & C_K28_7_SYMB then --SBF
@@ -65,11 +65,9 @@ begin
             broadcast_detected <= '0';
             DATA_EN_DDESBC     <= '0';
           end if;
-        else --just normal data
-          if broadcast_detected = '1' then
+        elsif broadcast_detected = '1' then -- frame running
               DATA_DDESBC    <= DATA_DMBUFBC(C_DATA_K_WIDTH-1 downto 0);
               DATA_EN_DDESBC <= '1';
-          end if;
         end if;
       else --not valid
         DATA_DDESBC    <= (others => '0');

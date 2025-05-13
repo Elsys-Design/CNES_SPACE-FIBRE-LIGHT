@@ -243,7 +243,6 @@ architecture Behavioral of data_link is
       VALID_K_CHARAC_DSCHECK    : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
       NEW_WORD_DSCHECK          : out std_logic;                                     -- Write command
       END_FRAME_FIFO_DSCHECK    : out std_logic;
-      FIFO_FULL_DMBUF           : in  std_logic;
       FRAME_ERR_DATA_DSCHECK    : out std_logic;
       SEQ_NUM_ERR_DATA_DSCHECK  : out std_logic;
       CRC_ERR_DATA_DSCHECK      : out std_logic;
@@ -699,7 +698,6 @@ architecture Behavioral of data_link is
   signal data_rd_dmbuf              : std_logic;
   signal data_valid_dmbuf           : std_logic;
   signal status_busy_flush_dmbuf    : std_logic;
-  signal fifo_full_dmbuf            : std_logic;
   signal frame_err_fifo_mid         : std_logic;
   -- data_desencapsulation
   signal data_ddes                  : vc_data_k_array(G_VC_NUM-1 downto 0);
@@ -841,7 +839,7 @@ begin
     STATUS_BUSY_FLUSH     => status_busy_flush_dmbuf,
     STATUS_THRESHOLD_HIGH => open,
     STATUS_THRESHOLD_LOW  => open,
-    STATUS_FULL           => fifo_full_dmbuf,
+    STATUS_FULL           => open,
     STATUS_EMPTY          => open,
     STATUS_LEVEL_WR       => open,
     STATUS_LEVEL_RD       => open
@@ -874,7 +872,6 @@ begin
       NEW_WORD_DSCHECK          => new_word_dscheck,
       END_FRAME_FIFO_DSCHECK    => end_frame_fifo_dscheck,
       CRC_ERR_DSCHECK           => crc_err_dscheck,
-      FIFO_FULL_DMBUF           => fifo_full_dmbuf,
       FRAME_ERR_DSCHECK         => frame_err_dscheck,
       FRAME_ERR_DATA_DSCHECK    => frame_err_data_dscheck,
       SEQ_NUM_ERR_DATA_DSCHECK  => seq_num_err_data_dscheck,

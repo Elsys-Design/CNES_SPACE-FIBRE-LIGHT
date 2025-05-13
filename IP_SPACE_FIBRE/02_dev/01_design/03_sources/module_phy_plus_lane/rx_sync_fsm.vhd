@@ -41,25 +41,6 @@ end rx_sync_fsm;
 
 architecture rtl of rx_sync_fsm is
 
---   COMPONENT axis_ila_1 IS
---     PORT (
---       clk : IN STD_LOGIC;
---       probe0 : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
---       probe1 : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
---       probe2 : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
---       probe3 : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
---       probe4 : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
---       probe5 : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
---       probe6 : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
---       probe7 : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
---       probe8 : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
---       probe9 : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
---       probe10 : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
---       probe11 : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
---       probe12 : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
---       probe13 : IN STD_LOGIC_VECTOR(1 DOWNTO 0)
---     );
---   END COMPONENT;
 ----------------------------- Declaration signals -----------------------------
 -- Receiver synchronisation FSM transition conditions process
    -- Type
@@ -85,37 +66,18 @@ signal test_state : std_logic_vector(1 downto 0);
 
 begin
 
-   -- inst_axis_ila_1 : axis_ila_1
-   -- port map(
-   --    clk       => CLK_SYS,
-   --    probe0(0) => RST_N,
-   --    probe1(0) => LANE_RESET_DL,
-   --    probe2    => data_rx_to_lcwd_i,
-   --    probe3    => valid_k_charac_to_lcwd_i,
-   --    probe4(0) => data_rdy_to_lcwd_i,
-   --    probe5    => DATA_RX_FROM_IP,
-   --    probe6    => VALID_K_CARAC_FROM_IP,
-   --    probe7(0) => DATA_RDY_FROM_IP,
-   --    probe8    => INVALID_CHAR_FROM_IP,
-   --    probe9    => DISPARITY_ERR_FROM_IP,
-   --    probe10(0)=> RX_WORD_REALIGN_FROM_IP,
-   --    probe11(0)=> COMMA_DET_FROM_IP,
-   --    probe12(0)=> LANE_RESET,
-   --    probe13   => test_state
-   -- );
-
    -- Receiver word synchronisation FSM tansition process
    p_rx_sync_fsm_transition : process(CLK,RST_N)
    begin
       if RST_N = '0' then
          current_state              <= LOST_SYNC_ST;
          rx_word_realign_from_ip_r  <= '0';
-         rx_word_realign_from_ip_rr  <= '0';
+         rx_word_realign_from_ip_rr <= '0';
          comma_det_from_ip_r        <= '0';
          test_state <="00";
       elsif rising_edge(CLK) then
          rx_word_realign_from_ip_r  <= RX_WORD_REALIGN_FROM_IP;
-         rx_word_realign_from_ip_rr  <= rx_word_realign_from_ip_r;
+         rx_word_realign_from_ip_rr <= rx_word_realign_from_ip_r;
          comma_det_from_ip_r        <= COMMA_DET_FROM_IP;
 
          case current_state is

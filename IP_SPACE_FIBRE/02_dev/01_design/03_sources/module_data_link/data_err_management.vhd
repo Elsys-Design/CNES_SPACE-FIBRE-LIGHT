@@ -5,7 +5,7 @@
 --
 -- Creation date : 14/03/2025
 --
--- Description : This module describe the management of the ACK, NACK request
+-- Description : This module describes the management of the ACK, NACK request
 --							 and the polarity flags
 ----------------------------------------------------------------------------
 
@@ -17,32 +17,26 @@ use data_link_lib.data_link_lib.all;
 
 entity data_err_management is
   port (
-    CLK                      : in std_logic;                                --! Clock signal
-    -- Link Reset
-    LINK_RESET_DLRE        : in std_logic;
-    -- data_word_interface (DWI) Interface
-    TYPE_FRAME_DWI           : in std_logic_vector(3 downto 0);             --! Type of frame from DWI
-    RXERR_DSCHECK             : in std_logic;                                --! Receive error flag from DWI
-    -- crc_check (DCCHECK) Interface
-    TYPE_FRAME_DCCHECK       : in std_logic_vector(3 downto 0);             --! Type of frame from CRC check
-    -- seq_check (DSCHECK) interface
-    TYPE_FRAME_DSCHECK       : in std_logic_vector(3 downto 0);             --! Type of frame from sequence check
-    END_FRAME_DSCHECK        : in std_logic;                                --! End of frame flag from sequence check
-    SEQ_ERR_DSCHECK          : in std_logic;                                --! Sequence error flag from sequence check
-    SEQ_NUM_ACK_DSCHECK      : in std_logic_vector(6 downto 0);
-    FAR_END_RPF_DSCHECK      : in std_logic;                                --! Far-end RPF flag from sequence check
-    NEAR_END_RPF_DERRM       : out std_logic;                               --! Near-end RPF flag to error management
-    CRC_ERR_DSCHECK          : in std_logic;                                --! CRC error flag from CRC check
-    FRAME_ERR_DSCHECK        : in std_logic;
-    -- data_mac (DMAC) interface
-    REQ_ACK_DERRM            : out std_logic;                               --! Acknowledge request to DMAC
-    REQ_NACK_DERRM           : out std_logic;                               --! Non-acknowledge request to DMAC
-    TRANS_POL_FLG_DERRM      : out std_logic;                               --! Transmission polarity flag to error management
-    SEQ_NUM_ACK_DERRM        : out std_logic_vector(7 downto 0);
-    REQ_ACK_DONE_DMAC        : in std_logic;                                --! Acknowledge done signal from DMAC
+    CLK                      : in std_logic;                                --! Global Clock
     -- data_link_reset (DLRE) interface
-    LINK_RESET_DERRM         : out std_logic;
-    -- DSCOM
+    LINK_RESET_DLRE          : in  std_logic;                               --! Link Reset command
+    LINK_RESET_DERRM         : out std_logic;                               --! Link Reset request
+    -- data_seq_check (DSCHECK) interface
+    TYPE_FRAME_DSCHECK       : in std_logic_vector(3 downto 0);             --! Current frame/control word type from data_seq_check
+    END_FRAME_DSCHECK        : in std_logic;                                --! End flag of the current frame/control word from data_seq_check
+    SEQ_ERR_DSCHECK          : in std_logic;                                --! SEQ_NUM error for the current frame/control word from data_seq_check
+    SEQ_NUM_ACK_DSCHECK      : in std_logic_vector(6 downto 0);             --! SEQ_NUM ACK value from data_seq_check
+    FAR_END_RPF_DSCHECK      : in std_logic;                                --! Far-end RPF flag
+    NEAR_END_RPF_DERRM       : out std_logic;                               --! Near-end RPF flag
+    CRC_ERR_DSCHECK          : in std_logic;                                --! CRC error flag for the current frame/control word from data_seq_check
+    FRAME_ERR_DSCHECK        : in std_logic;                                --! Frame error flag for the current frame/control word from data_seq_check
+    RXERR_DSCHECK            : in std_logic;                                --! Receive error flag from data_word_interface
+    -- data_mac (DMAC) interface
+    REQ_ACK_DERRM            : out std_logic;                               --! ACK request to data_mac
+    REQ_NACK_DERRM           : out std_logic;                               --! NACK request to data_mac
+    TRANS_POL_FLG_DERRM      : out std_logic;                               --! Transmission polarity flag to data_mac
+    SEQ_NUM_ACK_DERRM        : out std_logic_vector(7 downto 0);            --! SEQ_NUM ACK value to data_mac
+    REQ_ACK_DONE_DMAC        : in std_logic;                                --! Acknowledge done signal from data_mac
     -- MIB  interface
     NACK_RST_EN_MIB          : in std_logic;                                --! Enable automatic link reset on NACK reception
     NACK_RST_MODE_MIB        : in std_logic                                 --! Up for instant link reset on NACK reception, down for link reset at the end of the current received frame on NACK reception
@@ -50,12 +44,14 @@ entity data_err_management is
 end data_err_management;
 
 architecture Behavioral of data_err_management is
-
+---------------------------------------------------------
+-----                  Signal declaration           -----
+---------------------------------------------------------
   type state_type is (
-		VALID_POSITIVE_ST,
-		VALID_NEGATIVE_ST,
-		ERROR_POSITIVE_ST,
-		ERROR_NEGATIVE_ST
+		VALID_POSITIVE_ST,  --! Valid Positive State
+		VALID_NEGATIVE_ST,  --! Valid Negative State
+		ERROR_POSITIVE_ST,  --! Error Positive State
+		ERROR_NEGATIVE_ST   --! Error Negative State
 	);
 
   signal state               : state_type;
@@ -76,9 +72,9 @@ architecture Behavioral of data_err_management is
   signal trans_pol_flg       : std_logic;
   signal ack_pol_flg       : std_logic;
 begin
----------------------------------------------------------
------                     Assignation               -----
----------------------------------------------------------
+	--------------------------------------------------------
+	--                  Assignements                     ---
+	--------------------------------------------------------
   REQ_NACK_DERRM      <= nack_request_out;
   REQ_ACK_DERRM       <= ack_request_out;
   SEQ_NUM_ACK_DERRM   <= ack_pol_flg & s_seq_num_fsm;
@@ -113,34 +109,34 @@ begin
         s_seq_num_fsm    <= s_seq_num_request;
         case state is
           when VALID_POSITIVE_ST =>
-              									near_end_rpf        <= '0';
-                                ack_pol_flg         <= '0';
-              									if s_nack_request = '1' then
+              									near_end_rpf        <= '0';  -- positive
+                                ack_pol_flg         <= '0';  -- positive
+              									if s_nack_request = '1' then -- NACK Request
               									    state <= ERROR_NEGATIVE_ST;
               									end if;
 
           when VALID_NEGATIVE_ST =>
-              									near_end_rpf        <= '1';
-                                ack_pol_flg         <= '1';
-              									if s_nack_request = '1' then
+              									near_end_rpf        <= '1';  -- negative
+                                ack_pol_flg         <= '1';  -- negative
+              									if s_nack_request = '1' then -- NACK Request
               									    state <= ERROR_POSITIVE_ST;
               									end if;
 
           when ERROR_POSITIVE_ST =>
-              									near_end_rpf        <= '0';
-                                ack_pol_flg         <= '1';
-              									if s_ack_request = '1' then
+              									near_end_rpf        <= '0'; -- positive
+                                ack_pol_flg         <= '1'; -- negative
+              									if s_ack_request = '1' then -- ACK Request
               									    state <= VALID_POSITIVE_ST;
-              									elsif s_far_end_rpf = '0' and s_seq_err = '1' then
+              									elsif s_far_end_rpf = '0' and s_seq_err = '1' then --Invalid Sequence Number received with positive polarity
               									    state <= ERROR_NEGATIVE_ST;
               									end if;
 
           when ERROR_NEGATIVE_ST  =>
-              									near_end_rpf         <= '1';
-                                ack_pol_flg         <= '0';
-              									if s_ack_request = '1' then
+              									near_end_rpf         <= '1'; -- negative
+                                ack_pol_flg          <= '0'; -- positive
+              									if s_ack_request = '1' then -- ACK Request
               									    state <= VALID_NEGATIVE_ST;
-              									elsif s_far_end_rpf = '1' and s_seq_err = '1' then
+              									elsif s_far_end_rpf = '1' and s_seq_err = '1' then --Invalid Sequence Number received with negative polarity
               									    state <= ERROR_POSITIVE_ST;
               									end if;
         end case;
@@ -160,7 +156,7 @@ begin
         s_seq_num_request <= (others => '0');
       else
         -- Nack requested for broadcast and data frames if rx_err or crc_err
-        if RXERR_DSCHECK = '1' and (TYPE_FRAME_DWI = C_DATA_FRM or TYPE_FRAME_DWI = C_BC_FRM) then
+        if RXERR_DSCHECK = '1' and (TYPE_FRAME_DSCHECK = C_DATA_FRM or TYPE_FRAME_DSCHECK = C_BC_FRM) then
           s_nack_request <= '1';
           s_ack_request  <= '0';
         elsif CRC_ERR_DSCHECK = '1' and (TYPE_FRAME_DSCHECK = C_DATA_FRM or TYPE_FRAME_DSCHECK = C_BC_FRM) then
@@ -178,7 +174,7 @@ begin
         elsif SEQ_ERR_DSCHECK = '0' and END_FRAME_DSCHECK = '1'  and (TYPE_FRAME_DSCHECK = C_DATA_FRM or TYPE_FRAME_DSCHECK = C_BC_FRM or TYPE_FRAME_DSCHECK = C_FCT_FRM or TYPE_FRAME_DSCHECK = C_FULL_FRM) then
           s_ack_request     <= '1';
           s_nack_request    <= '0';
-          s_seq_num_request <=SEQ_NUM_ACK_DSCHECK;
+          s_seq_num_request <= SEQ_NUM_ACK_DSCHECK;
         else
           s_ack_request  <= '0';
           s_nack_request <= '0';
@@ -268,7 +264,7 @@ begin
 end process p_tpf;
 ---------------------------------------------------------
 -- Process: p_nack_rst_strat
--- Description: Error detection, internal request management
+-- Description: NACK reset strategy
 ---------------------------------------------------------
 p_nack_rst_strat : process(CLK)
 begin
