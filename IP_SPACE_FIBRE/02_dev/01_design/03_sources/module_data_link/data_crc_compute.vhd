@@ -30,9 +30,9 @@ entity data_crc_compute is
 		END_FRAME_DSCOM       : in  std_logic;                                          --! End frame/control word associated with DATA_DSCOM
 		-- FIFO_TX_LANE interface
 		FIFO_FULL_TX_LANE     : in  std_logic;                                          --! Fifo TX full flag from the lane layer
-		VALID_K_CHARAC_DCCOM  : out  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);--! Data parallel to lane layer
-		DATA_DCCOM            : out  std_logic_vector(C_DATA_LENGTH-1 downto 0);        --! K charachter valid in the 32-bit DATA_DCCOM vector
-		NEW_WORD_DCCOM        : out  std_logic                                          --! New word Flag associated with DATA_DCCOM
+		VALID_K_CHARAC_DCCOM  : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! Data parallel to lane layer
+		DATA_DCCOM            : out std_logic_vector(C_DATA_LENGTH-1 downto 0);         --! K charachter valid in the 32-bit DATA_DCCOM vector
+		NEW_WORD_DCCOM        : out std_logic                                           --! New word Flag associated with DATA_DCCOM
  	);
 end data_crc_compute;
 

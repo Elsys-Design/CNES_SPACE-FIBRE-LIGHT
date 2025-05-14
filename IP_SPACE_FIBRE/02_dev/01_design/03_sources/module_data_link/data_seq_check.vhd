@@ -61,7 +61,7 @@ entity data_seq_check is
 		SEQ_NUM_ERR_BC_DSCHECK    : out std_logic;                                          --! SEQ_NUM error for the current broadcast frame
 		CRC_ERR_BC_DSCHECK        : out std_logic;                                          --! CRC error flag for the current broadcast frame
 		RXERR_BC_DSCHECK          : out std_logic;                                          --! RXERR flag for the current broadcast frame
-		-- DOBUF interface
+		-- data_out_buff (DOBUF) interface
 		FCT_FAR_END_DSCHECK       : out std_logic_vector(C_VC_NUM-1 downto 0);              --! FCT received flag for each virtual channel
 		M_VAL_DSCHECK             : out std_logic_vector(C_M_SIZE-1 downto 0);              --! M value associated with FCT_FAR_END_DSCHECK
 		-- MIB

@@ -31,11 +31,11 @@ port (
 	SEQ_NUM_ACK_DENC      : in  std_logic_vector(7 downto 0);                        --! SEQ_NUM ACK value
 	TRANS_POL_FLG_DENC    : in  std_logic;                                           --! Transmission polarity flag
 	-- data_crc_compute (DCCHECK) interface
-	NEW_WORD_DSCOM        : out  std_logic;                                          --! New word flag associated with DATA_DSCOM
-	DATA_DSCOM            : out  std_logic_vector(C_DATA_LENGTH-1 downto 0);         --! Data parallel to data_encapsulation
-	VALID_K_CHARAC_DSCOM  : out  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! K charachter valid in the 32-bit DATA_DSCOM vector
-	TYPE_FRAME_DSCOM      : out  std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);   --! Type of the frame associated with DATA_DSCOM
-	END_FRAME_DSCOM       : out  std_logic;                                          --! End frame/control word associated with DATA_DSCOM
+	NEW_WORD_DSCOM        : out std_logic;                                           --! New word flag associated with DATA_DSCOM
+	DATA_DSCOM            : out std_logic_vector(C_DATA_LENGTH-1 downto 0);          --! Data parallel to data_encapsulation
+	VALID_K_CHARAC_DSCOM  : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);  --! K charachter valid in the 32-bit DATA_DSCOM vector
+	TYPE_FRAME_DSCOM      : out std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);    --! Type of the frame associated with DATA_DSCOM
+	END_FRAME_DSCOM       : out std_logic;                                           --! End frame/control word associated with DATA_DSCOM
 	-- MIB interface
 	SEQ_NUM_DSCOM         : out std_logic_vector(7 downto 0)                         --! Current SEQ_NUM value
   );

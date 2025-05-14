@@ -198,7 +198,7 @@ begin
 end process p_fsm_data_word_id_transition;
 ---------------------------------------------------------
 -- Process: p_comb_state
--- Description: Data Word Identification FSM action on 
+-- Description: Data Word Identification FSM action on
 --              state process
 ---------------------------------------------------------
 p_comb_state : process(CLK)

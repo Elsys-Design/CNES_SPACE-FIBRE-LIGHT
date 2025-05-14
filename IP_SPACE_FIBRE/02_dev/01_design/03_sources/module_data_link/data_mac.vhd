@@ -31,7 +31,7 @@ entity data_mac is
     TRANS_POL_FLG_DERRM  : in  std_logic;                                          --! Transmission polarity flag from data_err_management
     REQ_ACK_DONE_DMAC    : out std_logic;                                          --! Acknowledge done signal to data_err_management
     SEQ_NUM_ACK_DERRM    : in  std_logic_vector(7 downto 0);                       --! SEQ_NUM ACK value from data_err_management
-    --data_in_buf (DIBUF) interface
+    -- data_in_buf (DIBUF) interface
     REQ_FCT_DIBUF        : in  std_logic_vector(G_VC_NUM-1 downto 0);              --! FCT request from data_in_buf
     REQ_FCT_DONE_DMAC    : out std_logic_vector(G_VC_NUM-1 downto 0);              --! FCT request done flag to data_in_buf
     -- data_out_buff (DOBUF) interface

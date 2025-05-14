@@ -20,11 +20,11 @@ entity data_encapsulation is
       G_VC_NUM       : integer := 8                                                             --! Number of virtual channel
    );
   port (
-    CLK                               : in  std_logic;                                          --! Global Clock
+    CLK                               : in std_logic;                                           --! Global Clock
     -- data_link_reset (DLRE) interface
-    LINK_RESET_DLRE        :in  std_logic;                                                      --! Link Reset command
+    LINK_RESET_DLRE                   : in std_logic;                                           --! Link Reset command
     -- phy_plus_lane (PPL) interface
-    LANE_ACTIVE_PPL      : in  std_logic;                                                       --! Lane Active flag for the DATA Link Layer
+    LANE_ACTIVE_PPL                   : in std_logic;                                           --! Lane Active flag for the DATA Link Layer
     -- data_mac (DMAC) interface
     DATA_DMAC                         : in std_logic_vector(C_DATA_LENGTH-1 downto 0);          --! Data parallel from data_mac
     VALID_K_CHAR_DMAC                 : in std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);  --! K charachter valid in the 32-bit DATA_DMAC vector
