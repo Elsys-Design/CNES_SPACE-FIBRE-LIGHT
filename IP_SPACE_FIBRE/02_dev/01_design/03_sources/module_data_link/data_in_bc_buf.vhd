@@ -81,7 +81,6 @@ architecture rtl of data_in_bc_buf is
 ---------------------------------------------------------
 -----                  Signal declaration           -----
 ---------------------------------------------------------
-  signal current_state          : data_in_fsm;
   signal link_reset_cmd         : std_logic;
   signal status_busy_flush      : std_logic;
   signal status_full            : std_logic;
