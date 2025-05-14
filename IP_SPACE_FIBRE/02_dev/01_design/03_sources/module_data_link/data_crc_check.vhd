@@ -36,7 +36,7 @@ entity data_crc_check is
 		RXERR_ALL_DWI          : in std_logic;                                            --! RXERR flag detection during broadcast and data frame status
     RXNOTHING_ACTIVE_DWI   : in std_logic;                                            --! RXNOTHING state of the data_word_id_fsm flag
     -- data_seq_check (DSCHECK) interface
-    NEW_WORD_DCCHECK       : out std_logic;                                           --! New word flag associated to DATA_DCCHECK
+    NEW_WORD_DCCHECK       : out std_logic;                                           --! New word flag associated with DATA_DCCHECK
     DATA_DCCHECK           : out std_logic_vector(C_DATA_LENGTH-1 downto 0);          --! Data parallel to data_seq_check
     VALID_K_CHARAC_DCCHECK : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);  --! K character valid in the 32-bit DATA_DCCHECK vector
     END_FRAME_DCCHECK      : out std_logic;                                           --! End frame/control word flag

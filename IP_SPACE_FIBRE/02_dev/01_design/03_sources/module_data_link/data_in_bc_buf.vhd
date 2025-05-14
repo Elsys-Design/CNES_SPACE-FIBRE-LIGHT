@@ -58,14 +58,14 @@ architecture rtl of data_in_bc_buf is
       WR_DATA                 : in  std_logic_vector(G_DWIDTH-1 downto 0);    -- Data write bus
       WR_DATA_EN              : in  std_logic;                                -- Write command
       -- STATUS FIFO
-      CMD_FLUSH               : in  std_logic;                                -- fifo flush
-      STATUS_BUSY_FLUSH       : out std_logic;                                -- fifo is flushing
-      STATUS_THRESHOLD_HIGH   : out std_logic;                                -- threshold high reached flag (sur WR_CLK)
-      STATUS_THRESHOLD_LOW    : out std_logic;                                -- threshold low reached flag (sur RD_CLK)
-      STATUS_FULL             : out std_logic;                                -- full fifo flag (sur WR_CLK)
-      STATUS_EMPTY            : out std_logic;                                -- empty fifo flag (sur RD_CLK)
-      STATUS_LEVEL_WR         : out std_logic_vector(G_AWIDTH-1 downto 0);    -- Niveau de remplissage de la FIFO (sur WR_CLK)
-      STATUS_LEVEL_RD         : out std_logic_vector(G_AWIDTH-1 downto 0) ;   -- Niveau de remplissage de la FIFO (sur RD_CLK)
+      CMD_FLUSH               : in  std_logic;                                -- Fifo flush
+      STATUS_BUSY_FLUSH       : out std_logic;                                -- Fifo is flushing
+      STATUS_THRESHOLD_HIGH   : out std_logic;                                -- Threshold high reached flag (on WR_CLK)
+      STATUS_THRESHOLD_LOW    : out std_logic;                                -- Threshold low reached flag (on RD_CLK)
+      STATUS_FULL             : out std_logic;                                -- Full fifo flag (on WR_CLK)
+      STATUS_EMPTY            : out std_logic;                                -- Empty fifo flag (on RD_CLK)
+      STATUS_LEVEL_WR         : out std_logic_vector(G_AWIDTH-1 downto 0);    -- FIFO fill level (on WR_CLK)
+      STATUS_LEVEL_RD         : out std_logic_vector(G_AWIDTH-1 downto 0) ;   -- FIFO fill level (on RD_CLK)
       -- User ports ends
       -- Do not modify the ports beyond this line
       -- Ports of Axi Master Bus Interface M00_AXIS

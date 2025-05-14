@@ -17,60 +17,60 @@ use data_link_lib.data_link_lib.all;
 
 entity data_encapsulation is
   generic (
-      G_VC_NUM       : integer := 8                                                          --! Number of virtual channel
+      G_VC_NUM       : integer := 8                                                             --! Number of virtual channel
    );
   port (
-    CLK                               : in  std_logic;                                       --! Global Clock
-    -- Link Reset
-    LINK_RESET_DLRE                   : in std_logic;
-    -- Lane Interface
-		LANE_ACTIVE_PPL                   : in  std_logic;                                       --! Lane Active flag
-    -- DMAC interface
-    DATA_DMAC                         : in std_logic_vector(C_DATA_LENGTH-1 downto 0);         --! Data parallel from data_mac
-    VALID_K_CHAR_DMAC                 : in std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! K charachter valid in the 32-bit DATA_DMAC vector
-    NEW_WORD_DMAC                     : in std_logic;                                          --! New word Flag from data_mac
-	  END_PACKET_DMAC                   : in std_logic;                                          --! End frame/control word from data_mac
-    TYPE_FRAME_DMAC                   : in std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);   --! Type of the frame associated to DATA_DMAC
-    VIRTUAL_CHANNEL_DMAC              : in std_logic_vector (G_VC_NUM-1 downto 0);             --! Virtual channel of the frame associated to DATA_DMAC
-    BC_TYPE_DMAC                      : in std_logic_vector (G_VC_NUM-1 downto 0);
-    BC_CHANNEL_DMAC                   : in std_logic_vector (G_VC_NUM-1 downto 0);
-	  BC_STATUS_DMAC                    : in std_logic_vector (2-1 downto 0);
-    MULT_CHANNEL_DMAC                 : in std_logic_vector (G_VC_NUM-1 downto 0);
-    SEQ_NUM_ACK_DMAC                  : in std_logic_vector(7 downto 0);
-    TRANS_POL_FLG_DMAC                : in std_logic;
-    -- DSCC interface
-    NEW_WORD_DENC                     : out std_logic;                                          --! New word Flag from data_encapsulation
-    DATA_DENC                         : out std_logic_vector(C_DATA_LENGTH-1 downto 0);         --! Data parallel from data_encapsulation
+    CLK                               : in  std_logic;                                          --! Global Clock
+    -- data_link_reset (DLRE) interface
+    LINK_RESET_DLRE        :in  std_logic;                                                      --! Link Reset command
+    -- phy_plus_lane (PPL) interface
+    LANE_ACTIVE_PPL      : in  std_logic;                                                       --! Lane Active flag for the DATA Link Layer
+    -- data_mac (DMAC) interface
+    DATA_DMAC                         : in std_logic_vector(C_DATA_LENGTH-1 downto 0);          --! Data parallel from data_mac
+    VALID_K_CHAR_DMAC                 : in std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);  --! K charachter valid in the 32-bit DATA_DMAC vector
+    NEW_WORD_DMAC                     : in std_logic;                                           --! New word flag from data_mac
+	  END_PACKET_DMAC                   : in std_logic;                                           --! End frame/control word from data_mac
+    TYPE_FRAME_DMAC                   : in std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);    --! Type of the frame associated with DATA_DMAC
+    VIRTUAL_CHANNEL_DMAC              : in std_logic_vector (G_VC_NUM-1 downto 0);              --! Virtual channel of the frame associated with DATA_DMAC
+    BC_TYPE_DMAC                      : in std_logic_vector (G_VC_NUM-1 downto 0);              --! BROADCAST Type
+    BC_CHANNEL_DMAC                   : in std_logic_vector (G_VC_NUM-1 downto 0);              --! BROADCAST Channel (one channel in this implementation)
+	  BC_STATUS_DMAC                    : in std_logic_vector (2-1 downto 0);                     --! BOADCAST status
+    MULT_CHANNEL_DMAC                 : in std_logic_vector (G_VC_NUM-1 downto 0);              --! Multiplier and Channel field for FCT word
+    SEQ_NUM_ACK_DMAC                  : in std_logic_vector(7 downto 0);                        --! SEQ_NUM ACK value
+    TRANS_POL_FLG_DMAC                : in std_logic;                                           --! Transmission polarity flag
+    -- data_seq_compute (DSCC) interface
+    NEW_WORD_DENC                     : out std_logic;                                          --! New word flag to data_seq_compute
+    DATA_DENC                         : out std_logic_vector(C_DATA_LENGTH-1 downto 0);         --! Data parallel to data_seq_compute
     VALID_K_CHARAC_DENC               : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! K charachter valid in the 32-bit DATA_DENC vector
-    TYPE_FRAME_DENC                   : out std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);   --! End frame/control word from data_encapsulation
-    END_FRAME_DENC                    : out std_logic;
-    SEQ_NUM_ACK_DENC                  : out std_logic_vector(7 downto 0);
-    TRANS_POL_FLG_DENC                : out std_logic
+    TYPE_FRAME_DENC                   : out std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);   --! Type of the frame associated with DATA_DENC
+    END_FRAME_DENC                    : out std_logic;                                          --! End frame/control word associated with DATA_DENC
+    SEQ_NUM_ACK_DENC                  : out std_logic_vector(7 downto 0);                       --! SEQ_NUM ACK value
+    TRANS_POL_FLG_DENC                : out std_logic                                           --! Transmission polarity flag
   );
 end data_encapsulation;
 
 architecture rtl of data_encapsulation is
 
 ---------------------------------------------------------
------             Signals declaration               -----
+-----                  Signal declaration           -----
 ---------------------------------------------------------
 type data_encapsulation_fsm_type is (
-  START_FRAME_ST,
-  TRANSFER_ST,
-  END_FRAME_ST
+  START_FRAME_ST, --! Start frame state add SDF/SBF/SIF or control word
+  TRANSFER_ST,    --! Transfer state : data transfer or control word
+  END_FRAME_ST    --! End frame state : add EDF/EBF
   );
 
-signal current_state     : data_encapsulation_fsm_type;                         --! Current state of the Dat Word Identification FSM
-signal current_state_r   : data_encapsulation_fsm_type;                         --! Current state of the Dat Word Identification FSM
-signal sif_done          : std_logic;                                           --! SIF done flag
-signal type_frame_denc_i : std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);    --! SIF done flag
+signal current_state     : data_encapsulation_fsm_type;
+signal current_state_r   : data_encapsulation_fsm_type;
+signal sif_done          : std_logic;
+signal type_frame_denc_i : std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);
 begin
 ---------------------------------------------------------
 -----                  Process                      -----
 ---------------------------------------------------------
 ---------------------------------------------------------
 -- Process: p_encapsulation
--- Description: Encapsulate each frame via fsm
+-- Description: Encapsulates each frame via fsm
 ---------------------------------------------------------
 
 p_encapsulation_fsm: process(CLK)

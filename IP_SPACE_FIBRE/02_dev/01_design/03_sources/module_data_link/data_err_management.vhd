@@ -70,7 +70,7 @@ architecture Behavioral of data_err_management is
   signal s_seq_num_out       : std_logic_vector(6 downto 0);
   signal near_end_rpf        : std_logic;
   signal trans_pol_flg       : std_logic;
-  signal ack_pol_flg       : std_logic;
+  signal ack_pol_flg         : std_logic;
 begin
 	--------------------------------------------------------
 	--                  Assignements                     ---

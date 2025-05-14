@@ -91,9 +91,9 @@ signal fct_counter    : unsigned(3 downto 0);
 signal full_counter   : unsigned(1 downto 0);
 
 begin
-	--------------------------------------------------------
-	--                  Assignements
-	--------------------------------------------------------
+--------------------------------------------------------
+--                  Assignements                     ---
+--------------------------------------------------------
 	SEQ_NUM_ACK_DSCHECK      <= std_logic_vector(seq_num_cnt);
 	ACK_COUNTER_RX_DSCHECK   <= std_logic_vector(ack_counter);
 	NACK_COUNTER_RX_DSCHECK  <= std_logic_vector(nack_counter);
@@ -199,7 +199,7 @@ begin
 						END_FRAME_FIFO_DSCHECK    <= END_FRAME_DCCHECK;
 						END_FRAME_DSCHECK         <= END_FRAME_DCCHECK;
 						NEW_WORD_DSCHECK          <= NEW_WORD_DCCHECK;
-					else -- DATA frame valid 
+					else -- DATA frame valid
 						seq_num_cnt               <= seq_num_cnt+1;
 						SEQ_NUM_ERR_DSCHECK       <= '0';
 						SEQ_NUM_ERR_DATA_DSCHECK  <= '0';

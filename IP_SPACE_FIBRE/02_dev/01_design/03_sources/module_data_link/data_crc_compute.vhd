@@ -18,28 +18,28 @@ use data_link_lib.data_link_lib.all;
 entity data_crc_compute is
  	port (
     CLK                   : in  std_logic;                                          --! Global Clock
-		-- Link Reset
-		LINK_RESET_DLRE       : in std_logic;
-		-- Lane Interface
-		LANE_ACTIVE_PPL       : in  std_logic;                                          --! Lane Active flag
-   	-- DSCOM (data_seq_compute) interface
-		NEW_WORD_DSCOM        : in  std_logic;                                          --! New word Flag from data_sed_compute
-		DATA_DSCOM            : in  std_logic_vector(C_DATA_LENGTH-1 downto 0);         --! Data parallel from data_sed_compute
+    -- data_link_reset (DLRE) interface
+    LINK_RESET_DLRE       : in  std_logic;                                          --! Link Reset command
+    -- phy_plus_lane (PPL) interface
+    LANE_ACTIVE_PPL       : in  std_logic;                                          --! Lane Active flag for the DATA Link Layer
+   	-- data_seq_compute (DSCOM) interface
+		NEW_WORD_DSCOM        : in  std_logic;                                          --! New word flag associated with DATA_DSCOM
+		DATA_DSCOM            : in  std_logic_vector(C_DATA_LENGTH-1 downto 0);         --! Data parallel from data_seq_compute
 		VALID_K_CHARAC_DSCOM  : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! K charachter valid in the 32-bit DATA_DSCOM vector
-		TYPE_FRAME_DSCOM      : in  std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);   --! Type of the frame associated to DATA_DSCOM
-		END_FRAME_DSCOM       : in  std_logic;                                          --! End frame/control word from data_sed_compute
+		TYPE_FRAME_DSCOM      : in  std_logic_vector(C_TYPE_FRAME_LENGTH-1 downto 0);   --! Type of the frame associated with DATA_DSCOM
+		END_FRAME_DSCOM       : in  std_logic;                                          --! End frame/control word associated with DATA_DSCOM
 		-- FIFO_TX_LANE interface
 		FIFO_FULL_TX_LANE     : in  std_logic;                                          --! Fifo TX full flag from the lane layer
-		VALID_K_CHARAC_DCCOM  : out  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);--! Data parallel from data_crc_compute
+		VALID_K_CHARAC_DCCOM  : out  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);--! Data parallel to lane layer
 		DATA_DCCOM            : out  std_logic_vector(C_DATA_LENGTH-1 downto 0);        --! K charachter valid in the 32-bit DATA_DCCOM vector
-		NEW_WORD_DCCOM        : out  std_logic                                          --! New word Flag from data_crc_compute
+		NEW_WORD_DCCOM        : out  std_logic                                          --! New word Flag associated with DATA_DCCOM
  	);
 end data_crc_compute;
 
 architecture rtl of data_crc_compute is
-  ---------------------------------------------------------
-  -----                  Declaration signals          -----
-  ---------------------------------------------------------
+---------------------------------------------------------
+-----                  Signal declaration           -----
+---------------------------------------------------------
   -- Arrays to identify usefull byte
   type int_array      is array (0 to 3) of integer;
   type int_array_tier is array (0 to 2) of integer;
@@ -69,10 +69,10 @@ begin
 ---------------------------------------------------------
 ---------------------------------------------------------
 -- Process: p_crc_16b
--- Description: Compute the CRC for a data frame
+-- Description: Computes the CRC for a data frame
 ---------------------------------------------------------
 p_crc_16b: process(CLK)
-	variable crc_var : std_logic_vector(15 downto 0);
+	variable crc_var : std_logic_vector(15 downto 0); -- variable used to calculate the CRC
 begin
   if rising_edge(CLK)  then
     if LINK_RESET_DLRE ='1' then
@@ -85,14 +85,14 @@ begin
 			if (TYPE_FRAME_DSCOM = C_DATA_FRM) then
 				if END_FRAME_DSCOM = '1' and NEW_WORD_DSCOM = '1'then -- Last word
 					crc_to_inv_16b <='1';
-					-- calculates the crc 8 byte by byte
+					-- calculates the crc 16-bit byte by byte
 					for i in indices_dem'range loop
 							crc_var := calculate_crc_16(DATA_DSCOM(7+ indices_dem(i) downto 0 + indices_dem(i)), crc_var);
 					end loop;
 					crc_reg_16b_comp   <= (others => '1'); -- Reset CRC to seed value
 					crc_reg_16b        <= crc_var;
 				elsif NEW_WORD_DSCOM = '1' then
-					-- calculates the crc 8 byte by byte
+					-- calculates the crc 16-bit byte by byte
 					for i in indices'range loop
 							crc_var := calculate_crc_16(DATA_DSCOM(7+ indices(i) downto 0 + indices(i)), crc_var);
 					end loop;
@@ -104,11 +104,11 @@ begin
 end process p_crc_16b;
 ---------------------------------------------------------
 -- Process: p_crc_8b
--- Description: Compute the CRC for broadcast frame,
+-- Description: Computes the CRC for broadcast frame,
 --              FCT, ACK, NACK and SIF
 ---------------------------------------------------------
 p_crc_8b: process(CLK)
-	variable crc_var : std_logic_vector(7 downto 0);
+	variable crc_var : std_logic_vector(7 downto 0); -- variable used to calculate the CRC
 begin
 	if rising_edge(CLK)  then
     if LINK_RESET_DLRE ='1' then
@@ -121,14 +121,14 @@ begin
 			if TYPE_FRAME_DSCOM = C_BC_FRM then -- Broadcast frame
 				if END_FRAME_DSCOM = '1'and NEW_WORD_DSCOM = '1'then -- Last word
 				crc_to_inv_8b <= '1';
-				 -- calculates the crc 8bits  byte by byte
+				 -- calculates the crc 8-bit byte by byte
 				 for i in indices_tier'range loop
 					 crc_var := calculate_crc_8(DATA_DSCOM(7+ indices_tier(i) downto 0 + indices_tier(i)), crc_var);
 				 end loop;
 				 crc_reg_8b_comp <= (others => '0'); -- Reset CRC to seed value
 				 crc_reg_8b      <= crc_var;
 				elsif NEW_WORD_DSCOM = '1' then
-				 -- calculates the crc 8 byte by byte
+				 -- calculates the crc 8-bit byte by byte
 				 for i in indices'range loop
 						 crc_var := calculate_crc_8(DATA_DSCOM(7+ indices(i) downto 0 + indices(i)), crc_var);
 				 end loop;
@@ -136,7 +136,7 @@ begin
 				end if;
 			elsif END_FRAME_DSCOM = '1'and NEW_WORD_DSCOM = '1'then -- Control word
 				crc_to_inv_8b <= '1';
-				 -- calculates the crc 8 byte by byte
+				 -- calculates the crc 8-bit byte by byte
 				 for i in indices_tier'range loop
 					 crc_var := calculate_crc_8(DATA_DSCOM(7+ indices_tier(i) downto 0 + indices_tier(i)), crc_var);
 				 end loop;
@@ -144,7 +144,7 @@ begin
 				 crc_reg_8b      <= crc_var;
 			elsif DATA_DSCOM(15 downto 0) = C_SIF_WORD and VALID_K_CHARAC_DSCOM = "0001" and NEW_WORD_DSCOM = '1'then -- SIF
 				crc_to_inv_8b <= '1';
-				 -- calculates the crc 8 byte by byte
+				 -- calculates the crc 8_bit byte by byte
 				 for i in indices_tier'range loop
 					 crc_var := calculate_crc_8(DATA_DSCOM(7+ indices_tier(i) downto 0 + indices_tier(i)), crc_var);
 				 end loop;
@@ -205,7 +205,7 @@ begin
 			else
 				DATA_DCCOM <= data_dscom_r;
 			end if;
-		else 
+		else
 			NEW_WORD_DCCOM         <= '0';
 			new_word_dccom_i       <= '0';
 		end if;
