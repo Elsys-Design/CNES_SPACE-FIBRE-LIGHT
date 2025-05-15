@@ -37,6 +37,12 @@ IP_SPACE_FIBRE/02_dev/03_verification/05_scenario/environnement
 **/firmware_data_mem_*.fw
 **/firmware_inst_mem_*.fw
 **/test_fw_*.fw
+
+# ignore individual code coverage
+IP_SPACE_FIBRE/02_dev/03_verification/05_scenario/*/covhtmlreport*
+IP_SPACE_FIBRE/02_dev/03_verification/05_scenario/*/*_cov.txt
+IP_SPACE_FIBRE/02_dev/03_verification/05_scenario/*/*_cov.ucdb
+
 # ignore cocotb generated files
 **/results.xml
 
