@@ -136,8 +136,8 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
 ---------------------------------------
 -- TYPES
 ---------------------------------------
-   type axi_wr_state_t is (IDLE_WAIT_WR_ADDR, WR_RESPONSE);                      -- Write states for FSM declaration
-   type axi_rd_state_t is (IDLE_WAIT_RD_ADDR, RD_RESPONSE);                      -- Read states for FSM declaration
+   type axi_wr_state_t is (IDLE_WAIT_WR_ADDR, WR_RESPONSE);                           -- Write states for FSM declaration
+   type axi_rd_state_t is (IDLE_WAIT_RD_ADDR, RD_RESPONSE);                           -- Read states for FSM declaration
 
 ---------------------------------------
 -- SIGNAL DECLARATION
@@ -146,23 +146,23 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
    signal axi_rd_state : axi_rd_state_t;
    -- Registers
    ------------
-   signal reg_dl_param     : std_logic_vector(G_DATA_WIDTH-1 downto 0);          -- Data Link parameters register
-   signal reg_dl_err_mngt  : std_logic_vector(G_DATA_WIDTH-1 downto 0);          -- Data Link error management register
-   signal reg_dl_status_1  : std_logic_vector(G_DATA_WIDTH-1 downto 0);          -- Data Link status register
-   signal reg_dl_status_2  : std_logic_vector(G_DATA_WIDTH-1 downto 0);          -- Data Link status register
-   signal reg_dl_qos_1     : std_logic_vector(G_DATA_WIDTH-1 downto 0);          -- Data Link status register
-   signal reg_dl_qos_2     : std_logic_vector(G_DATA_WIDTH-1 downto 0);          -- Data Link status register
-   signal reg_lane_param   : std_logic_vector(G_DATA_WIDTH-1 downto 0);          -- Lane parameters register
-   signal reg_lane_status  : std_logic_vector(G_DATA_WIDTH-1 downto 0);          -- Lane status register
-   signal reg_phy_param    : std_logic_vector(G_DATA_WIDTH-1 downto 0);          -- PHY parameters register
-   signal reg_global       : std_logic_vector(G_DATA_WIDTH-1 downto 0);          -- Global register
+   signal reg_dl_param     : std_logic_vector(G_DATA_WIDTH-1 downto 0);               -- Data Link parameters register
+   signal reg_dl_err_mngt  : std_logic_vector(G_DATA_WIDTH-1 downto 0);               -- Data Link error management register
+   signal reg_dl_status_1  : std_logic_vector(G_DATA_WIDTH-1 downto 0);               -- Data Link status register
+   signal reg_dl_status_2  : std_logic_vector(G_DATA_WIDTH-1 downto 0);               -- Data Link status register
+   signal reg_dl_qos_1     : std_logic_vector(G_DATA_WIDTH-1 downto 0);               -- Data Link status register
+   signal reg_dl_qos_2     : std_logic_vector(G_DATA_WIDTH-1 downto 0);               -- Data Link status register
+   signal reg_lane_param   : std_logic_vector(G_DATA_WIDTH-1 downto 0);               -- Lane parameters register
+   signal reg_lane_status  : std_logic_vector(G_DATA_WIDTH-1 downto 0);               -- Lane status register
+   signal reg_phy_param    : std_logic_vector(G_DATA_WIDTH-1 downto 0);               -- PHY parameters register
+   signal reg_global       : std_logic_vector(G_DATA_WIDTH-1 downto 0);               -- Global register
    -- internal signals dl
    ------------
    signal vc_credit_i           :  std_logic_vector(G_CHANNEL_NUMBER-1 downto 0);     -- Up if each corresponding virtual channel has credit in the far-end input buffer
    signal fct_credit_overflow_i :  std_logic_vector(G_CHANNEL_NUMBER-1 downto 0);     -- Up if each corresponding virtual channel credit counter overflowed
    signal crc_long_error_i      :  std_logic;                                         -- RX error in CRC-16bit
    signal crc_short_error_i     :  std_logic;                                         -- RX error in CRC-8bit
-   signal frame_error_i        :  std_logic;                                         -- RX frame error
+   signal frame_error_i        :  std_logic;                                          -- RX frame error
    signal seq_error_i           :  std_logic;                                         -- RX SEQUENCE_NUMBER error
    signal far_end_link_rst_i    :  std_logic;                                         -- Far-end Link reset status
    signal seq_number_tx_i       :  std_logic_vector(7 downto 0);                      -- SEQ_NUMBER in transmission
@@ -170,44 +170,44 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
    signal input_buffer_ovfl_i   :  std_logic_vector(7 downto 0);                      -- Up if each corresponding virtual channel input buffer overflowed
    -- internal signals lane and phy
    ------------
-   signal lane_start_pulse : std_logic;                                          -- SpaceFibre lane start initialization signal pulsed
+   signal lane_start_pulse : std_logic;                                               -- SpaceFibre lane start initialization signal pulsed
 
-   signal lane_state_i     : std_logic_vector(C_LANESTATE_WIDTH-1 downto 0);    -- Lane state field
-   signal rx_error_cnt_i   : std_logic_vector(C_RX_ERR_CNT_WIDTH-1 downto 0);   -- RX Error Counter
-   signal rx_error_ovf_i   : std_logic;                                         -- RX Error Overflow
-   signal loss_signal_i    : std_logic;                                         -- Far-end lost Signal
-   signal far_end_capa_i   : std_logic_vector(C_FAR_CAPA_WIDTH-1 downto 0);     -- Far-end Capablities
-   signal rx_polarity_i    : std_logic;                                         -- RX Polarity
+   signal lane_state_i     : std_logic_vector(C_LANESTATE_WIDTH-1 downto 0);          -- Lane state field
+   signal rx_error_cnt_i   : std_logic_vector(C_RX_ERR_CNT_WIDTH-1 downto 0);         -- RX Error Counter
+   signal rx_error_ovf_i   : std_logic;                                               -- RX Error Overflow
+   signal loss_signal_i    : std_logic;                                               -- Far-end lost Signal
+   signal far_end_capa_i   : std_logic_vector(C_FAR_CAPA_WIDTH-1 downto 0);           -- Far-end Capablities
+   signal rx_polarity_i    : std_logic;                                               -- RX Polarity
    -- inputs resynchronization
-   signal outputs_to_sync_lane  : std_logic_vector(13 downto 0);
-   signal outputs_to_dut_lane   : std_logic_vector(13 downto 0);
+   signal outputs_to_sync_lane  : std_logic_vector(13 downto 0);                      -- Signal to Lane layer of the DUT before synchronization
+   signal outputs_to_dut_lane   : std_logic_vector(13 downto 0);                      -- Signal to Lane layer of the DUT after synchronization
 
-   signal outputs_to_sync_dl  : std_logic_vector(22 downto 0);
-   signal outputs_to_dut_dl   : std_logic_vector(22 downto 0);
+   signal outputs_to_sync_dl  : std_logic_vector(22 downto 0);                        -- Signal to Data Link layer of the DUT before synchronization
+   signal outputs_to_dut_dl   : std_logic_vector(22 downto 0);                        -- Signal to Data Link layer of the DUT after synchronization
    -- inputs resynchronization
-   signal inputs_to_sync   : std_logic_vector(149 downto 0);
-   signal inputs_to_model  : std_logic_vector(149 downto 0);
+   signal inputs_to_sync   : std_logic_vector(149 downto 0);                          -- Signal from the DUT before synchronization
+   signal inputs_to_model  : std_logic_vector(149 downto 0);                          -- Signal from the DUT after synchronization
 
-   signal frame_tx_i           : std_logic_vector(8 downto 0);
-   signal frame_finished_i     : std_logic_vector(8 downto 0);
-   signal data_cnt_tx_i        : std_logic_vector(6 downto 0);
-   signal data_cnt_rx_i        : std_logic_vector(6 downto 0);
-   signal ack_counter_tx_i     : std_logic_vector(2 downto 0);
-   signal nack_counter_tx_i    : std_logic_vector(2 downto 0);
-   signal fct_counter_tx_i     : std_logic_vector(3 downto 0);
-   signal ack_counter_rx_i     : std_logic_vector(2 downto 0);
-   signal nack_counter_rx_i    : std_logic_vector(2 downto 0);
-   signal fct_counter_rx_i     : std_logic_vector(3 downto 0);
-   signal full_counter_rx_i    : std_logic_vector(1 downto 0);
-   signal retry_counter_rx_i   : std_logic_vector(1 downto 0);
-   signal current_time_slot_i  : std_logic_vector(7 downto 0);
-   signal link_rst_asserted_i  : std_logic; -- link has been reseted
-   signal reset_param_dl_i     : std_logic;
-   signal clear_error_flag     : std_logic;
-   signal ack_seq_num_i        : std_logic_vector(7 downto 0);
-   signal nack_seq_num_i       : std_logic_vector(7 downto 0);
-   signal dl_en_i              : std_logic;
-   signal lane_spy_en_i        : std_logic;
+   signal frame_tx_i           : std_logic_vector(8 downto 0);                        -- Frame Tx 
+   signal frame_finished_i     : std_logic_vector(8 downto 0);                        -- Frame Finished
+   signal data_cnt_tx_i        : std_logic_vector(6 downto 0);                        -- Data Cnt TX
+   signal data_cnt_rx_i        : std_logic_vector(6 downto 0);                        -- Data Cnt RX
+   signal ack_counter_tx_i     : std_logic_vector(2 downto 0);                        -- Ack Counter TX
+   signal nack_counter_tx_i    : std_logic_vector(2 downto 0);                        -- Nack Counter TX
+   signal fct_counter_tx_i     : std_logic_vector(3 downto 0);                        -- Fct Counter TX
+   signal ack_counter_rx_i     : std_logic_vector(2 downto 0);                        -- Ack Counter RX
+   signal nack_counter_rx_i    : std_logic_vector(2 downto 0);                        -- Nack Counter RX
+   signal fct_counter_rx_i     : std_logic_vector(3 downto 0);                        -- Fct Counter RX
+   signal full_counter_rx_i    : std_logic_vector(1 downto 0);                        -- Full Counter RX
+   signal retry_counter_rx_i   : std_logic_vector(1 downto 0);                        -- Retry Counter RX
+   signal current_time_slot_i  : std_logic_vector(7 downto 0);                        -- Current Time-Slot
+   signal link_rst_asserted_i  : std_logic;                                           -- Link Rst Asserted
+   signal reset_param_dl_i     : std_logic;                                           -- Reset Param DL
+   signal clear_error_flag     : std_logic;                                           -- Clear Error Flag
+   signal ack_seq_num_i        : std_logic_vector(7 downto 0);                        -- Ack Seq num
+   signal nack_seq_num_i       : std_logic_vector(7 downto 0);                        -- Nack Seq num
+   signal dl_en_i              : std_logic;                                           -- Injector enable
+   signal lane_spy_en_i        : std_logic;                                           -- Lane Spy enable
 
    begin
 ---------------------------------------
@@ -352,8 +352,8 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
    clk    => CLK_TX,                                                               --- main clock
    rst_n  => RST_TXCLK_N,                                                          --- main reset (active low)
    -- I/Os
-   input  => outputs_to_sync_lane,                                                      --- vector to synchronize
-   output => outputs_to_dut_lane                                                        --- double synchronized vector
+   input  => outputs_to_sync_lane,                                                 --- vector to synchronize
+   output => outputs_to_dut_lane                                                   --- double synchronized vector
   );
   ---------------------------------------------------------------------------
   -- INSTANCE: I_RESYNC_OUT_DL
@@ -366,10 +366,10 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
   port map (
    -- system signals
    clk    => CLK_DL,                                                               --- main clock
-   rst_n  => RST_N_DL,                                                          --- main reset (active low)
+   rst_n  => RST_N_DL,                                                             --- main reset (active low)
    -- I/Os
-   input  => outputs_to_sync_dl,                                                      --- vector to synchronize
-   output => outputs_to_dut_dl                                                        --- double synchronized vector
+   input  => outputs_to_sync_dl,                                                   --- vector to synchronize
+   output => outputs_to_dut_dl                                                     --- double synchronized vector
   );
   ---------------------------------------------------------------------------
   -- INSTANCE: I_RESYNC_IN
@@ -553,6 +553,7 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
                      S_AXI_BRESP    <= "00";        -- OKAY response
                      S_AXI_BVALID   <= '1';         -- Valid response
                      axi_wr_state   <= WR_RESPONSE;
+                  -- Global control register address
                   elsif (S_AXI_AWADDR(C_SLAVE_ADDR_WIDTH-1 downto 0) = C_ADDR_DL_GLOBAL) then
                      reg_global     <= S_AXI_WDATA; -- Write global signals
                      S_AXI_BRESP    <= "00";        -- OKAY response
