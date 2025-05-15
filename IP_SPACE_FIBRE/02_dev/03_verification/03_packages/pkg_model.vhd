@@ -277,7 +277,7 @@ package pkg_model is
   constant C_DEFAULT_CLEAR_ERROR_FLAG     : std_logic                                        := '0';
   -- Global register
   constant C_DEFAULT_RST_DUT              : std_logic                                        := '0';            --- reset DUT default value
-  constant C_DEFAULT_DL_EN                : std_logic                                        := '1';            --- Data Link layer enable default value
+  constant C_DEFAULT_DL_EN                : std_logic                                        := '0';            --- Lane injector enable default value
   constant C_DEFAULT_LANE_SPY             : std_logic                                        := '0';            --- Lane spy enable default value
 
   -- ### lane_generator ###
@@ -419,7 +419,7 @@ package body pkg_model is
    begin
       temp(C_AXI_DATA_WIDTH-1 downto C_DL_EN_BTFD +1)  := (others => '0');
       temp(C_DL_EN_BTFD)                               := C_DEFAULT_DL_EN;
-      temp(C_LANE_SPY_EN_BTFD)                            := C_DEFAULT_LANE_SPY;
+      temp(C_LANE_SPY_EN_BTFD)                         := C_DEFAULT_LANE_SPY;
       temp(C_RST_DUT_BTFD)                             := C_DEFAULT_RST_DUT;
       return temp;
    end function;

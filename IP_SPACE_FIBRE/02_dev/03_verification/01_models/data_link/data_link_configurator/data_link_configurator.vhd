@@ -64,25 +64,25 @@ entity DATA_LINK_CONFIGURATOR is
 
    -- LANE + PHY interface
    ---------------------------------------
-   -- to the DATA LINK 
+   -- to the DATA LINK
    INTERFACE_RST         : out std_logic;                                        -- Enable interface reset
    LINK_RST              : out std_logic;                                        -- Reset link
    NACK_RST_EN           : out std_logic;                                        -- Enable automatic reset on NACK reception
    NACK_RST_MODE         : out std_logic;                                        -- Select automatic reset mode on NACK reception
    PAUSE_VC              : out std_logic_vector(G_CHANNEL_NUMBER downto 0);      -- Pause each corresponding channel at the end of the current frame being sent
    CONTINUOUS_VC         : out std_logic_vector(G_CHANNEL_NUMBER-1 downto 0);    -- Enable continuous mode of each corresponding virtual channel
-   
+
    -- to the LANE
    LANE_START            : out std_logic;                                        -- SpaceFibre lane start initialization signal
    AUTOSTART             : out std_logic;                                        -- Enables communication lane to initialize automatically when a link is established
    LANE_RESET            : out std_logic;                                        -- Reset Lane layer signal
    PARALLEL_LOOPBACK_EN  : out std_logic;                                        -- Parallel loopback enables signal
    STANDBY_REASON        : out std_logic_vector(C_STDBYREASON_WIDTH-1 downto 0); -- Standby reason field
-   
+
    -- to the PHY
    NEAR_END_SERIAL_LB_EN : out std_logic;                                        -- Near-End Serial Loopback
    FAR_END_SERIAL_LB_EN  : out std_logic;                                        -- Far -End Serial Loopback
-   
+
    -- from the DATA LINK
    VC_CREDIT             : in std_logic_vector(G_CHANNEL_NUMBER-1 downto 0);     -- Up if each corresponding virtual channel has credit in the far-end input buffer
    FCT_CREDIT_OVERFLOW   : in std_logic_vector(G_CHANNEL_NUMBER-1 downto 0);     -- Up if each corresponding virtual channel credit counter overflowed
@@ -93,11 +93,11 @@ entity DATA_LINK_CONFIGURATOR is
    FAR_END_LINK_RST      : in std_logic;                                         -- Far-end Link reset status
    SEQ_NUMBER_TX         : in std_logic_vector(7 downto 0);                      -- SEQ_NUMBER in transmission
    SEQ_NUMBER_RX         : in std_logic_vector(7 downto 0);                      -- SEQ_NUMBER in reception
-   INPUT_BUFFER_OVFL     : in std_logic_vector(7 downto 0);     -- Up if the corresponding input buffer has overflowed
-   FRAME_TX              : in std_logic_vector(8 downto 0);       -- 
-   FRAME_FINISHED        : in std_logic_vector(8 downto 0);       -- 
-   DATA_CNT_TX           : in std_logic_vector(6 downto 0);                      -- 
-   DATA_CNT_RX           : in std_logic_vector(6 downto 0);                      --
+   INPUT_BUFFER_OVFL     : in std_logic_vector(7 downto 0);                      -- Up if the corresponding input buffer has overflowed
+   FRAME_TX              : in std_logic_vector(8 downto 0);
+   FRAME_FINISHED        : in std_logic_vector(8 downto 0);
+   DATA_CNT_TX           : in std_logic_vector(6 downto 0);
+   DATA_CNT_RX           : in std_logic_vector(6 downto 0);
    ACK_COUNTER_TX        : in std_logic_vector(2 downto 0);
    NACK_COUNTER_TX       : in std_logic_vector(2 downto 0);
    FCT_COUNTER_TX        : in std_logic_vector(3 downto 0);
@@ -110,8 +110,7 @@ entity DATA_LINK_CONFIGURATOR is
    LINK_RST_ASSERTED     : in std_logic;                                         -- Link has been reseted
    ACK_SEQ_NUM           : in std_logic_vector(7 downto 0);
    NACK_SEQ_NUM          : in std_logic_vector(7 downto 0);
-   
-   
+
    -- from the LANE
    LANE_STATE            : in std_logic_vector(C_LANESTATE_WIDTH-1 downto 0);    -- Lane state field
    RX_ERROR_CNT          : in std_logic_vector(C_RX_ERR_CNT_WIDTH-1 downto 0);   -- RX Error Counter
@@ -119,14 +118,14 @@ entity DATA_LINK_CONFIGURATOR is
    LOSS_SIGNAL           : in std_logic;                                         -- Far-end lost Signal
    FAR_END_CAPA          : in std_logic_vector(C_FAR_CAPA_WIDTH-1 downto 0);     -- Far-end Capablities
    RX_POLARITY           : in std_logic;                                         -- RX Polarity
-   
+
    -- to the DUT
    RST_DUT_N             : out std_logic;                                         -- Reset DUT (active low)
-   DL_EN                 : out std_logic;
-   LANE_SPY_EN           : out std_logic;
-   
+   DL_EN                 : out std_logic;                                         -- Lane injector enable command
+   LANE_SPY_EN           : out std_logic;                                         -- Lane spy enable command
+
    -- from the DUT
-   RESET_PARAM_DL        : in std_logic                                         -- Reset configuration parameters control
+   RESET_PARAM_DL        : in std_logic                                           -- Reset configuration parameters control
    );
 end DATA_LINK_CONFIGURATOR;
 
@@ -203,7 +202,7 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
    signal retry_counter_rx_i   : std_logic_vector(1 downto 0);
    signal current_time_slot_i  : std_logic_vector(7 downto 0);
    signal link_rst_asserted_i  : std_logic; -- link has been reseted
-   signal reset_param_dl_i     : std_logic; 
+   signal reset_param_dl_i     : std_logic;
    signal clear_error_flag     : std_logic;
    signal ack_seq_num_i        : std_logic_vector(7 downto 0);
    signal nack_seq_num_i       : std_logic_vector(7 downto 0);
@@ -214,7 +213,7 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
 ---------------------------------------
 -- SIGNAL CONNECTION
 ---------------------------------------
-   
+
     -- Parameter from Configurator to Lane
     outputs_to_sync_lane(0)           <= reg_lane_param(C_LANESTART_BTFD) or lane_start_pulse;
     outputs_to_sync_lane(1)           <= reg_lane_param(C_AUTOSTART_BTFD);
@@ -226,15 +225,15 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
     AUTOSTART                    <= outputs_to_dut_lane(1);
     LANE_RESET                   <= outputs_to_dut_lane(2);
     PARALLEL_LOOPBACK_EN         <= outputs_to_dut_lane(3);
-    STANDBY_REASON               <= outputs_to_dut_lane(11 downto 4);  
-    
+    STANDBY_REASON               <= outputs_to_dut_lane(11 downto 4);
+
     -- Parameter from Configurator to Phy
     outputs_to_sync_lane(13)          <= reg_phy_param(C_FAR_END_LPB_BTFD);
     outputs_to_sync_lane(12)          <= reg_phy_param(C_NEAR_END_LPB_BTFD);
-    
+
     NEAR_END_SERIAL_LB_EN        <= outputs_to_dut_lane(12);
     FAR_END_SERIAL_LB_EN         <= outputs_to_dut_lane(13);
-    
+
     -- Parameter from Configurator to Data Link
     outputs_to_sync_dl(0)           <= reg_dl_param(C_INTERFACE_RST_BTFD);
     outputs_to_sync_dl(1)           <= reg_dl_param(C_LINK_RST_BTFD);
@@ -242,22 +241,21 @@ architecture rtl of DATA_LINK_CONFIGURATOR is
     outputs_to_sync_dl(3)           <= reg_dl_param(C_NACK_RST_MODE_BTFD);
     outputs_to_sync_dl(12 downto 4) <= reg_dl_param(C_PAUSE_VC_BTFD downto C_NACK_RST_MODE_BTFD + 1);
     outputs_to_sync_dl(20 downto 13) <= reg_dl_param(C_CONTINUOUS_VC_BTFD downto C_PAUSE_VC_BTFD + 1);
-    
+
     outputs_to_sync_dl(21)            <= dl_en_i;
     outputs_to_sync_dl(22)            <= lane_spy_en_i;
     clear_error_flag              <= reg_dl_param (C_CLEAR_ERROR_FLAG_BTFD);
-    
+
     INTERFACE_RST                <= outputs_to_dut_dl(0);
     LINK_RST                     <= outputs_to_dut_dl(1);
     NACK_RST_EN                  <= outputs_to_dut_dl(2);
     NACK_RST_MODE                <= outputs_to_dut_dl(3);
     PAUSE_VC                     <= outputs_to_dut_dl(12 downto 4);
     CONTINUOUS_VC                <= outputs_to_dut_dl(20 downto 13);
-    
+
     DL_EN                        <= outputs_to_dut_dl(21);
     LANE_SPY_EN                  <= outputs_to_dut_dl(22);
-    
-    
+
     -- Status from Lane  to Configurator
     inputs_to_sync(3 downto 0)              <= LANE_STATE;
     inputs_to_sync(11 downto 4)             <= RX_ERROR_CNT;
