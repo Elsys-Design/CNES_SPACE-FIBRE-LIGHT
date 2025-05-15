@@ -1,7 +1,7 @@
 //##########################################################################
 //## COMPANY       : CNES
 //##########################################################################
-//## TITLE         : config2_scenario_dl_link_reset.c
+//## TITLE         : data_link_link_reset.c
 //## PROJECT       : SPACE FIBRE LIGHT
 //##########################################################################
 
@@ -15,8 +15,7 @@
 // Private
 #include "lib_print.h"
 #include "config.h"
-#include "config2_scenario_dl_link_reset.h"
-
+#include "data_link_link_reset.h"
 // Common
 #include "common.h"
 #include "shared_header.h"
@@ -51,7 +50,7 @@ static const struct test_config step1_test[STEP1_TESTS_COUNT] =
 			}
 		)
 	};
-void configuration2_dl_link_reset_step1 (void)
+void data_link_link_reset_step1 (void)
 {
 	uint32_t temp1, temp2;
 	uint32_t step1_failed =0;
@@ -156,12 +155,12 @@ void configuration2_dl_link_reset_step1 (void)
   //Send a data packet of 64 words to each virtual channel check that the data are received on Data_Link_Data_Analyzer model
 	if((run_test(step1_test+1) != OK) || (step1_failed == 1))
 	{
-		debug_printf("\r\n RESULT : Step 1 end FAILED \r\n");
+		debug_printf("\r\n RESULT : Step 1 FAILED \r\n");
 		debug_printf("\r\n ------------------------------------------------------------------------\r\n");
 	}
 	else
 	{
-		debug_printf("\r\n RESULT : Step 1 end PASS \r\n");
+		debug_printf("\r\n RESULT : Step 1 PASS \r\n");
 		debug_printf("\r\n ------------------------------------------------------------------------\r\n");
 	}
 	
@@ -193,7 +192,7 @@ static const struct test_config step2_test[STEP2_TESTS_COUNT] =
 		)
 	};
 
-void configuration2_dl_link_reset_step2(void)
+void data_link_link_reset_step2(void)
 {
 	uint32_t temp1, temp2;
 	uint32_t step2_failed =0;
@@ -312,12 +311,12 @@ void configuration2_dl_link_reset_step2(void)
   //Send a data packet of 64 words to each virtual channel check that the data are received on Data_Link_Data_Analyzer models
 	if((run_test(step2_test+1) != OK) || (step2_failed == 1))
 	{
-		debug_printf("\r\n RESULT : Step 2 end FAILED \r\n");
+		debug_printf("\r\n RESULT : Step 2 FAILED \r\n");
 		debug_printf("\r\n ------------------------------------------------------------------------\r\n");
 	}
 	else
 	{
-		debug_printf("\r\n RESULT : Step 2 end PASS \r\n");
+		debug_printf("\r\n RESULT : Step 2 PASS \r\n");
 		debug_printf("\r\n ------------------------------------------------------------------------\r\n");
 	}
 }
@@ -325,8 +324,8 @@ void configuration2_dl_link_reset_step2(void)
 /******************************************************************************/
 /**** Function with all steps**************************************************/
 /******************************************************************************/
-void configuration2_dl_link_reset_all_step (void)
+void data_link__link_reset_all_step (void)
 {
-  configuration2_dl_link_reset_step1();
-  configuration2_dl_link_reset_step2();
+  data_link_link_reset_step1();
+  data_link_link_reset_step2();
 }

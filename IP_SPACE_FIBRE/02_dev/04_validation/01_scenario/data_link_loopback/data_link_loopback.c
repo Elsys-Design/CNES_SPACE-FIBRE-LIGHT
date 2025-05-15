@@ -1,7 +1,7 @@
 //##########################################################################
 //## COMPANY       : CNES
 //##########################################################################
-//## TITLE         : config2_scenario_dl_lpb.c
+//## TITLE         : data_link_loopback.c
 //## PROJECT       : SPACE FIBRE LIGHT
 //##########################################################################
 
@@ -15,7 +15,7 @@
 // Private
 #include "lib_print.h"
 #include "config.h"
-#include "config2_scenario_dl_lpb.h"
+#include "data_link_loopback.h"
 // Common
 #include "common.h"
 #include "shared_header.h"
@@ -146,12 +146,19 @@ static const struct test_config step1_test[STEP1_TESTS_COUNT] =
 		)
 	};
 
-void configuration2_dl_lpb_step1 (void)
+void data_link_lpb_step1 (void)
 {
 	uint32_t temp;
+	uint32_t step1_failed = 0;
 	debug_printf("\r\n Start configuration 2\r\n");
 	debug_printf("\r\n Start scenario: Data-Link Transmission reception loopback\r\n");
 	debug_printf("\r\n Step 1: Check data and broadcast frames transmission and reception \r\n");
+	debug_printf("\r\n -----------------------------------------------------------------------\r\n");
+	debug_printf("\r\n ----------------------------- DATA-LINK--------------------------------\r\n");
+	debug_printf("\r\n ------ Start scenario: Data-Link Transmission reception loopback-------\r\n");
+	debug_printf("\r\n --Step 1: Check data and broadcast frames transmission and reception --\r\n");
+	
+
 	// Disable Injector and Spy read command
 	phy_plus_lane_plus_dl();
 
@@ -163,7 +170,7 @@ void configuration2_dl_lpb_step1 (void)
 		return;
 	}
 
-	// Wait 1 us
+	// Wait
 	wait_us_clk_150mhz(3000);
 	// Check credit_VC signals for each virtual channels are at 1 in the
 	// data_link_configurator
@@ -183,20 +190,21 @@ void configuration2_dl_lpb_step1 (void)
 		debug_printf("\r\n NACK_COUNTER_TX %x.\r\n", temp);
 		temp = DL_CONFIGURATOR_DL_QOS_2_GET(NACK_COUNTER_RX,*DL_CONFIGURATOR_DL_QOS_2_PTR );
 		debug_printf("\r\n NACK_COUNTER_RX %x.\r\n", temp);
+		step1_failed = 1;
 		return;
 	}
-	temp = *DL_CONFIGURATOR_DL_STATUS_1_PTR;
-	debug_printf("\r\n DL_CONFIGURATOR_DL_STATUS_1_PTR %x.\r\n", temp);
-	temp = *DL_CONFIGURATOR_DL_STATUS_2_PTR;
-	debug_printf("\r\n DL_CONFIGURATOR_DL_STATUS_2_PTR %x.\r\n", temp);
-	
-	temp = *DL_CONFIGURATOR_DL_QOS_2_PTR;
-	debug_printf("\r\n DL_CONFIGURATOR_DL_QOS_2_PTR %x.\r\n", temp);
+
 
 	// Runs regular sending of packets, as described in step1_test.
-	run_tests(STEP1_TESTS_COUNT, step1_test);
-
-	debug_printf("\r\n Step 1: END \r\n");
+	if (run_tests(STEP1_TESTS_COUNT, step1_test)!= OK || step1_failed ==1){
+		debug_printf("\r\n RESULT : Step 1 FAILED \r\n");
+		debug_printf("\r\n ------------------------------------------------------------------------\r\n");
+	}
+	else{
+		debug_printf("\r\n RESULT : Step 1 PASS  \r\n");
+		debug_printf("\r\n ------------------------------------------------------------------------\r\n");
+	
+	}
 }
 
 
@@ -287,14 +295,15 @@ static uint32_t assert_ack_counters_increased
 }
 
 
-void configuration2_dl_lpb_step2 (void)
+void data_link_lpb_step2 (void)
 {
 	uint32_t last_status = 0, new_status = 0, step2_success=0;
 	uint32_t temp;
-	debug_printf("\r\n Start configuration 2\r\n");
-	debug_printf("\r\n Start scenario: Data-Link Transmission reception loopback\r\n");
-	debug_printf("\r\n Step 2: CHECK ACK TRANSMISSION AND RECEPTION  \r\n");
-
+	debug_printf("\r\n -----------------------------------------------------------------------\r\n");
+	debug_printf("\r\n ----------------------------- DATA-LINK-------------------------------- \r\n");
+	debug_printf("\r\n ------ Start scenario: Data-Link Transmission reception loopback-------\r\n");
+	debug_printf("\r\n -------------Step 2: check ack transmission and reception ------------------\r\n");
+	
 	// Disable Injector and Spy read command
 	phy_plus_lane_plus_dl();
 
@@ -318,19 +327,11 @@ void configuration2_dl_lpb_step2 (void)
 			*DL_ANALYZER_X_CONFIGURATION_PTR(i) =
 			DL_ANALYZER_CONFIGURATION_TO_UINT32_T((step2_test+j)->ana_conf[i]);
 
-			temp= DL_ANALYZER_CONFIGURATION_TO_UINT32_T((step2_test+j)->ana_conf[i]);
-			debug_printf("\r\n DL_ANALYZER_CONFIGURATION_TO_UINT32_T  x%x not ended\r\n", temp);
-
-			temp= *DL_ANALYZER_X_CONFIGURATION_PTR(i);
-			debug_printf("\r\n DL_ANALYZER_CONFIGURATION_TO_UINT32_T  x%x not ended\r\n", temp);
-
 	
   	  // config generator 
 			*DL_GENERATOR_X_CONFIGURATION_PTR(i) =
 				DL_GENERATOR_CONFIGURATION_TO_UINT32_T((step2_test+j)->gen_conf[i]);
 			
-				temp= *DL_GENERATOR_X_CONFIGURATION_PTR(i);
-				debug_printf("\r\n DL_GENERATOR_X_CONFIGURATION_PTR  x%x not ended\r\n", temp);
 
 		
 			// init value analyzer
@@ -369,10 +370,13 @@ void configuration2_dl_lpb_step2 (void)
 
 	if (step2_success == 0)
 	{
-		debug_printf("\r\n Step 2 END: PASS \r\n");
+		debug_printf("\r\n RESULT : Step 2 PASS \r\n");
+		debug_printf("\r\n ------------------------------------------------------------------------\r\n");
+	
 	}
 	else{
-		debug_printf("\r\n Step 2 END: FAILED \r\n");
+		debug_printf("\r\n RESULT : Step 2 FAILED \r\n");
+		debug_printf("\r\n ------------------------------------------------------------------------\r\n");
 	}
 }
 
@@ -430,11 +434,12 @@ static const struct test_config step3_test[STEP3_TESTS_COUNT] =
 		)
 	};
 
-void configuration2_dl_lpb_step3 (void)
+void data_link_lpb_step3 (void)
 {
-	debug_printf("\r\n Start configuration 2\r\n");
-	debug_printf("\r\n Start scenario: Data-Link Transmission reception loopback\r\n");
-	debug_printf("\r\n Step 3: Check output buffer flow control  \r\n");
+	debug_printf("\r\n -----------------------------------------------------------------------\r\n");
+	debug_printf("\r\n ----------------------------- DATA-LINK-------------------------------- \r\n");
+	debug_printf("\r\n ------ Start scenario: Data-Link Transmission reception loopback-------\r\n");
+	debug_printf("\r\n -------------Step 3: Check output buffer flow control------------------\r\n");
 
 	// Disable Injector and Spy read command
 	phy_plus_lane_plus_dl();
@@ -442,6 +447,8 @@ void configuration2_dl_lpb_step3 (void)
 	init_and_run_tests(STEP3_TESTS_COUNT, step3_test);
 
 	debug_printf("\r\n Step 3: END \r\n");
+			debug_printf("\r\n RESULT : Step 2 FAILED \r\n");
+		debug_printf("\r\n ------------------------------------------------------------------------\r\n");
 }
 
 /******************************************************************************/
@@ -479,96 +486,14 @@ static const struct test_config step4_test[STEP4_TESTS_COUNT] =
 		)
 	};
 
-void configuration2_dl_lpb_step4 (void)
-{
-	uint32_t temp;
-	debug_printf("\r\n Start configuration 2\r\n");
-	debug_printf("\r\n Start scenario: Data-Link Transmission reception loopback\r\n");
-	debug_printf("\r\n Step 4: Check continuous mode output buffers \r\n");
-
-	// Disable Injector and Spy read command
-	phy_plus_lane_plus_dl();
-
-	if (initialization_sequence() != OK)
-	{
-		debug_printf("\r\n Initialization sequence failed. \r\n");
-
-		return;
-	}
-	DL_CONFIGURATOR_DL_PARAMETER_SET_IN_PLACE
-	(
-		CONTINUOUS_VC,
-		0x1, /* Channel 0 */
-		*DL_CONFIGURATOR_DL_PARAMETER_PTR
-	);
-
-	DL_CONFIGURATOR_DL_PARAMETER_SET_IN_PLACE
-	(
-		PAUSE_VC,
-		0x1, /* Channel 0 */
-		*DL_CONFIGURATOR_DL_PARAMETER_PTR
-	);
-
-
-
-	temp = *DL_CONFIGURATOR_DL_PARAMETER_PTR;
-	debug_printf("\r\n DL_CONFIGURATOR_DL_PARAMETER_PTR %x \r\n", temp);
-
-	// 2 packets of 64 words 
-	if (run_test_gen_only(step4_test + 0) != OK)
-	{
-		debug_printf("\r\n Error: the 2 packets of 64 words did not generate correctly. \r\n");
-	}
-
-	DL_CONFIGURATOR_DL_PARAMETER_SET_IN_PLACE
-	(
-		PAUSE_VC,
-		0x0,
-		*DL_CONFIGURATOR_DL_PARAMETER_PTR
-	);
-
-	temp = *DL_CONFIGURATOR_DL_PARAMETER_PTR;
-	debug_printf("\r\n DL_CONFIGURATOR_DL_PARAMETER_PTR %x \r\n", temp);
-
-  // 2 packets of 64 words 
-	if (run_test(step4_test + 1) != OK)
-	{
-		debug_printf("\r\n Error: 2 packets of 1 byte . \r\n");
-	}
-
-	temp= *DL_ANALYZER_X_CONFIGURATION_PTR(0);
-	debug_printf("\r\n DL_ANALYZER_CONFIGURATION_TO_UINT32_T  x%x not ended\r\n", temp);
-
-	temp= *DL_GENERATOR_X_CONFIGURATION_PTR(0);
-	debug_printf("\r\n DL_GENERATOR_X_CONFIGURATION_PTR  x%x not ended\r\n", temp);
-
-	temp= *DL_ANALYZER_X_CONTROL_PTR(0);
-	debug_printf("\r\n DL_ANALYZER_X_CONTROL_PTR  x%x not ended\r\n", temp);
-
-	temp= *DL_GENERATOR_X_CONTROL_PTR(0);
-	debug_printf("\r\n DL_GENERATOR_X_CONTROL_PTR  x%x not ended\r\n", temp);
-
-	temp= *DL_ANALYZER_X_STATUS_PTR(0);
-	debug_printf("\r\n DL_ANALYZER_X_STATUS_PTR  x%x not ended\r\n", temp);
-
-
-	DL_CONFIGURATOR_DL_PARAMETER_SET_IN_PLACE
-	(
-		CONTINUOUS_VC,
-		0x0,
-		*DL_CONFIGURATOR_DL_PARAMETER_PTR
-	);
-
-	debug_printf("\r\n Step 4: END \r\n");
-}
-
-void configuration2_dl_lpb_step4_alt (void)
+void data_link_lpb_step4 (void)
 {
 	uint32_t temp;
 	uint32_t step4_failed = 0;
-	debug_printf("\r\n Start configuration 2\r\n");
-	debug_printf("\r\n Start scenario: Data-Link Transmission reception loopback\r\n");
-	debug_printf("\r\n Step 4: Check continuous mode output buffers \r\n");
+	debug_printf("\r\n -----------------------------------------------------------------------\r\n");
+	debug_printf("\r\n ----------------------------- DATA-LINK-------------------------------- \r\n");
+	debug_printf("\r\n ------ Start scenario: Data-Link Transmission reception loopback-------\r\n");
+	debug_printf("\r\n -------------Step 4: Check continuous mode output buffers -------------\r\n");
 
 	// Disable Injector and Spy read command
 	phy_plus_lane_plus_dl();
@@ -741,12 +666,12 @@ void configuration2_dl_lpb_step4_alt (void)
 /******************************************************************************/
 /**** Function wiath all steps*************************************************/
 /******************************************************************************/
-void configuration2_dl_lpb_all_step (void)
+void data_link_lpb_all_step (void)
 {
-  configuration2_dl_lpb_step1();
-  configuration2_dl_lpb_step2();
-  configuration2_dl_lpb_step3();
-  configuration2_dl_lpb_step4();
+  data_link_lpb_step1();
+  data_link_lpb_step2();
+  data_link_lpb_step3();
+  data_link_lpb_step4();
 }
 
 

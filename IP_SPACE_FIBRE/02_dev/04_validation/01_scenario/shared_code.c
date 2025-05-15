@@ -7,7 +7,7 @@
 // Private
 #include "lib_print.h"
 #include "config.h"
-#include "configuration1_scenario_loopback.h"
+#include "lane_loopback/lane_loopback.h"
 // Common
 #include "common.h"
 #include "shared_header.h"
