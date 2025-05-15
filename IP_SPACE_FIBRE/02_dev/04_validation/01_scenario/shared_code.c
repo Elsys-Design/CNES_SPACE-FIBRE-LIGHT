@@ -7,7 +7,7 @@
 // Private
 #include "lib_print.h"
 #include "config.h"
-#include "configuration1_scenario_loopback.h"
+#include "lane_loopback/lane_loopback.h"
 // Common
 #include "common.h"
 #include "shared_header.h"
@@ -69,7 +69,6 @@ static enum action_result wait_test_end
 )
 {
 	unsigned int timer = 0;
-	debug_printf("\r\n run wait_test_end\r\n");
 	for (;;)
 	{
 		timer++;
@@ -136,14 +135,8 @@ void initiate_test (const struct test_config test [const static 1])
 			*DL_ANALYZER_X_CONFIGURATION_PTR(i) =
 				DL_ANALYZER_CONFIGURATION_TO_UINT32_T(test->ana_conf[i]);
 			
-			temp=DL_ANALYZER_CONFIGURATION_TO_UINT32_T(test->ana_conf[i]);
-			debug_printf("\r\n  run DL_ANALYZER_CONFIGURATION_TO_UINT32_T %x \r\n", temp);
-
 			*DL_GENERATOR_X_CONFIGURATION_PTR(i) =
 				DL_GENERATOR_CONFIGURATION_TO_UINT32_T(test->gen_conf[i]);
-		
-			temp=DL_GENERATOR_CONFIGURATION_TO_UINT32_T(test->gen_conf[i]);
-			debug_printf("\r\n  run DL_GENERATOR_CONFIGURATION_TO_UINT32_T %x \r\n", temp);
 
 			*DL_ANALYZER_X_INITIAL_VALUE_PTR(i) = test->ana_init[i];
 
@@ -166,7 +159,6 @@ enum action_result finalize_test
 )
 {
 	uint32_t error_counter = 0;
-	debug_printf("\r\n  run finalize_test \r\n");
 	if (wait_test_end(test) == OK)
 	{
 		const bool expect_errors = test->expect_errors;
@@ -198,7 +190,6 @@ enum action_result finalize_test
 
 			error_counter += local_errors_count;
 		}
-		debug_printf("\r\n  end wait_test_end \r\n");
 		if
 		(
 			((error_counter == 0) && !expect_errors)
@@ -214,18 +205,14 @@ enum action_result finalize_test
 
 enum action_result run_test (const struct test_config test [const static 1])
 {
-	debug_printf("\r\n  run test \r\n");
 	initiate_test(test);
-	debug_printf("\r\n  end test \r\n");
 
 	return finalize_test(test);
 }
 
 enum action_result run_test_gen_only (const struct test_config test [const static 1])
 {
-	debug_printf("\r\n  run test \r\n");
 	initiate_test_gen_only(test);
-	debug_printf("\r\n  end test \r\n");
 
 	return finalize_test(test);
 }

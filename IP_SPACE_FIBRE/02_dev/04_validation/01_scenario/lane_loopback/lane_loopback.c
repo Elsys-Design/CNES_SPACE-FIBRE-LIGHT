@@ -1,14 +1,14 @@
 //##########################################################################
 //## COMPANY       : CNES
 //##########################################################################
-//## TITLE         : configuration_1_scenario_loopback.py
+//## TITLE         : lane_loopback.c
 //## PROJECT       : SPACE FIBRE LIGHT
 //##########################################################################
 //## AUTHOR        : Elsys-Design (Yvan DAURIAC)
 //## CREATED       : 05/12/2024
 //##########################################################################
 //## DESCRIPTION   : Runs tests for verification of the SpaceFibre_Light IP
-//##                 loopback in configuration 1
+//##                 loopback for the layer PHY and LANE
 //##########################################################################
 //## History       :	V1.0: Creation of the file
 //##########################################################################
@@ -22,7 +22,7 @@
 // Private
 #include "lib_print.h"
 #include "config.h"
-#include "configuration1_scenario_loopback.h"
+#include "lane_loopback.h"
 // Common
 #include "common.h"
 #include "shared_header.h"
@@ -615,7 +615,7 @@ void scenario_loopback(void){
     }
 }
 
-void scenario_loopback_step1(void){
+void lane_loopback_step1(void){
     uint32_t data_lane_gen_config, data_lane_ana_config,  data_lane_gen_seed, data_lane_ana_seed, data_lane_ana_control, data_lane_gen_control, error_cnt, temp;
 	debug_printf("\r\n Start scenraio loopback\r\n");
     debug_printf("\r\n Step 1: Parallel loopback START \r\n");
@@ -843,7 +843,7 @@ void scenario_loopback_step1(void){
     }
 }
 
-void scenario_loopback_step2(void){
+void lane_loopback_step2(void){
     uint32_t data_lane_gen_config, data_lane_ana_config,  data_lane_gen_seed, data_lane_ana_seed, data_lane_ana_control, data_lane_gen_control, error_cnt, temp;
 	debug_printf("\r\n Start scenraio loopback\r\n");	
 
@@ -1064,7 +1064,7 @@ void scenario_loopback_step2(void){
     }
 }
 
-void scenario_loopback_step3(void){
+void lane_loopback_step3(void){
     uint32_t data_lane_gen_config, data_lane_ana_config,  data_lane_gen_seed, data_lane_ana_seed, data_lane_ana_control, data_lane_gen_control, error_cnt, temp;
 	debug_printf("\r\n Start scenraio loopback\r\n");	
 
