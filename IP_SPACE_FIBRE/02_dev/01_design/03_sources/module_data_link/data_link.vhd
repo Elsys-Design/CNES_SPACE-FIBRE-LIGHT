@@ -1,3 +1,17 @@
+-----------------------------------------------------------------------------------
+-- #                          Copyright CNES 2025                                 #
+-- #                                                                              #
+-- # This source describes Open Hardware and is licensed under the CERN-OHL-W v2. #
+-- #                                                                              #
+-- # You may redistribute and modify this documentation and make products         #
+-- # using it under the terms of the CERN-OHL-W v2 (https:/cern.ch/cern-ohl).     #
+-- #                                                                              #
+-- # This documentation is distributed WITHOUT ANY EXPRESS OR IMPLIED             #
+-- # WARRANTY, INCLUDING OF MERCHANTABILITY, SATISFACTORY QUALITY                 #
+-- # AND FITNESS FOR A PARTICULAR PURPOSE.                                        #
+-- #                                                                              #
+-- # Please see the CERN-OHL-W v2 for applicable conditions.                      #
+-----------------------------------------------------------------------------------
 ----------------------------------------------------------------------------
 -- Author(s) : Y. DAURIAC
 --
@@ -726,10 +740,10 @@ begin
   CURRENT_TIME_SLOT_DL  <= CURRENT_TIME_SLOT_NW;
   FAR_END_LINK_RESET_DL <= FAR_END_CAPA_PPL(C_CAPA_LINK_RST);
   FRAME_ERROR_DL        <= frame_err_dwi;
-  wr_data_dscheck       <= valid_k_charac_dscheck & data_dscheck;
-  wr_data_bc_dscheck    <= valid_k_charac_bc_dscheck & data_bc_dscheck;
-  frame_err_fifo_mid    <= seq_num_err_data_dscheck or crc_err_data_dscheck or frame_err_data_dscheck or rxerr_data_dscheck;
-  frame_err_fifo_mid_bc <= seq_num_err_bc_dscheck or crc_err_bc_dscheck or frame_err_bc_dscheck or rxerr_bc_dscheck;
+  wr_data_dscheck       <= valid_k_charac_dscheck & data_dscheck;                                                            -- data and k character concatenation (broadcast frame)
+  wr_data_bc_dscheck    <= valid_k_charac_bc_dscheck & data_bc_dscheck;                                                      -- data and k character concatenation (data frame)
+  frame_err_fifo_mid    <= seq_num_err_data_dscheck or crc_err_data_dscheck or frame_err_data_dscheck or rxerr_data_dscheck; -- drop wrong data frame
+  frame_err_fifo_mid_bc <= seq_num_err_bc_dscheck or crc_err_bc_dscheck or frame_err_bc_dscheck or rxerr_bc_dscheck;         -- drop wrong broadcast frame
 --------------------------------------------------------
 -----                     Instantiation            -----
 --------------------------------------------------------
@@ -806,6 +820,7 @@ begin
         INPUT_BUF_OVF_DIBUF    => INPUT_BUF_OVF_VC_DL(i)
     );
   end generate;
+
   inst_data_desencapsulation: data_desencapsulation
   generic map (
     G_VC_NUM => G_VC_NUM
@@ -1021,7 +1036,7 @@ begin
       END_PACKET_DOBUF      => vc_end_packet_dobuf(G_VC_NUM),
       VC_RD_EN_DMAC         => vc_rd_en_dmac(G_VC_NUM)
     );
- 
+
   gen_data_out_buff: for i in 0 to G_VC_NUM-1 generate
     inst_data_out_buff: data_out_buff
       port map (
