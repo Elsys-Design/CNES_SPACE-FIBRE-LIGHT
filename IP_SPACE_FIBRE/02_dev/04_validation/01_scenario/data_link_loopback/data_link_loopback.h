@@ -1,5 +1,5 @@
 /**
- * @brief Data-Link Scenraio loopback
+ * @brief Data-Link Scenario loopback
  * @author Yvan DAURIAC
  * @date 2025-14-04
 */

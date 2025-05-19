@@ -1,7 +1,7 @@
 ##########################################################################
-## COMPANY       : ELSYS Design
+## COMPANY       : CNES
 ##########################################################################
-## TITLE         : main.py
+## TITLE         : lane_status_and_parameters_access.py
 ## PROJECT       : SPACE FIBRE LIGHT
 ##########################################################################
 ## AUTHOR        : Thomas FAVRE-FELIX

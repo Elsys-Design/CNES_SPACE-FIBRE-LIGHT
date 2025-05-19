@@ -1,7 +1,7 @@
 ##########################################################################
-## COMPANY       : ELSYS Design
+## COMPANY       : CNES
 ##########################################################################
-## TITLE         : data_link_transmission.py
+## TITLE         : data_link_link_reset.py
 ## PROJECT       : SPACE FIBRE LIGHT
 ##########################################################################
 ## AUTHOR        : Thomas FAVRE-FELIX

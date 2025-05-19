@@ -74,8 +74,8 @@ if [ "$MYSIM" == "all" ]; then
     for dir in */; do
         #remove / at the end of listed folder
         export MYSIM="${dir::-1}"
-        #don't execute archived tests
-        if [ "$MYSIM" != "archive" ]; then
+        #don't execute archived tests and coverage html directory
+        if [ "$MYSIM" != "archive" ] && [ "$MYSIM" != "covhtmlreport" ]; then
             echo "Found test $MYSIM and execute it!"
 
             cd $MYSIM 

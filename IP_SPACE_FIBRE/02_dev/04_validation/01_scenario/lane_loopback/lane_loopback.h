@@ -1,5 +1,5 @@
 /**
- * @brief Scenraio loopback
+ * @brief Scenario loopback
  * @author Yvan DAURIAC
  * @date 2024-12-03
 */

@@ -1,5 +1,5 @@
 ##########################################################################
-## COMPANY       : ELSYS Design
+## COMPANY       : CNES
 ##########################################################################
 ## TITLE         : data_link_transmission.py
 ## PROJECT       : SPACE FIBRE LIGHT

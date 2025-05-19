@@ -1503,7 +1503,6 @@ add wave -noupdate -expand -group DUT -expand -group DATA_LINK -group DATA_LINK_
 add wave -noupdate -expand -group DUT -expand -group DATA_LINK -group DATA_LINK_TOP /configuration_2_bench/spacefibre_instance/inst_data_link/data_rd_dmbuf
 add wave -noupdate -expand -group DUT -expand -group DATA_LINK -group DATA_LINK_TOP /configuration_2_bench/spacefibre_instance/inst_data_link/data_valid_dmbuf
 add wave -noupdate -expand -group DUT -expand -group DATA_LINK -group DATA_LINK_TOP /configuration_2_bench/spacefibre_instance/inst_data_link/status_busy_flush_dmbuf
-add wave -noupdate -expand -group DUT -expand -group DATA_LINK -group DATA_LINK_TOP /configuration_2_bench/spacefibre_instance/inst_data_link/fifo_full_dmbuf
 add wave -noupdate -expand -group DUT -expand -group DATA_LINK -group DATA_LINK_TOP /configuration_2_bench/spacefibre_instance/inst_data_link/frame_err_fifo_mid
 add wave -noupdate -expand -group DUT -expand -group DATA_LINK -group DATA_LINK_TOP /configuration_2_bench/spacefibre_instance/inst_data_link/data_ddes
 add wave -noupdate -expand -group DUT -expand -group DATA_LINK -group DATA_LINK_TOP /configuration_2_bench/spacefibre_instance/inst_data_link/data_en_ddes
@@ -1851,8 +1850,6 @@ add wave -noupdate -expand -group DUT -expand -group DATA_LINK -group INPUT_BUFF
 add wave -noupdate -expand -group DUT -expand -group DATA_LINK -group INPUT_BUFFERS -group INPUT_BUFFER_BC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_in_bc_buf/M_AXIS_TUSER_DIBUF
 add wave -noupdate -expand -group DUT -expand -group DATA_LINK -group INPUT_BUFFERS -group INPUT_BUFFER_BC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_in_bc_buf/DATA_DDESBC
 add wave -noupdate -expand -group DUT -expand -group DATA_LINK -group INPUT_BUFFERS -group INPUT_BUFFER_BC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_in_bc_buf/DATA_EN_DDESBC
-add wave -noupdate -expand -group DUT -expand -group DATA_LINK -group INPUT_BUFFERS -group INPUT_BUFFER_BC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_in_bc_buf/current_state
-add wave -noupdate -expand -group DUT -expand -group DATA_LINK -group INPUT_BUFFERS -group INPUT_BUFFER_BC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_in_bc_buf/current_state_fct
 add wave -noupdate -expand -group DUT -expand -group DATA_LINK -group INPUT_BUFFERS -group INPUT_BUFFER_BC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_in_bc_buf/link_reset_cmd
 add wave -noupdate -expand -group DUT -expand -group DATA_LINK -group INPUT_BUFFERS -group INPUT_BUFFER_BC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_in_bc_buf/status_busy_flush
 add wave -noupdate -expand -group DUT -expand -group DATA_LINK -group INPUT_BUFFERS -group INPUT_BUFFER_BC /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_in_bc_buf/status_full
@@ -1979,9 +1976,7 @@ add wave -noupdate -expand -group DUT -expand -group DATA_LINK -group INTERNAL_B
 add wave -noupdate -expand -group DUT -expand -group DATA_LINK -group INTERNAL_BUFFER_DATA /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf/ptr_last_valid_gray
 add wave -noupdate -expand -group DUT -expand -group DATA_LINK -group ERROR_MANAGEMENT /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_err_management/CLK
 add wave -noupdate -expand -group DUT -expand -group DATA_LINK -group ERROR_MANAGEMENT /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_err_management/LINK_RESET_DLRE
-add wave -noupdate -expand -group DUT -expand -group DATA_LINK -group ERROR_MANAGEMENT /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_err_management/TYPE_FRAME_DWI
 add wave -noupdate -expand -group DUT -expand -group DATA_LINK -group ERROR_MANAGEMENT /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_err_management/RXERR_DSCHECK
-add wave -noupdate -expand -group DUT -expand -group DATA_LINK -group ERROR_MANAGEMENT /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_err_management/TYPE_FRAME_DCCHECK
 add wave -noupdate -expand -group DUT -expand -group DATA_LINK -group ERROR_MANAGEMENT /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_err_management/TYPE_FRAME_DSCHECK
 add wave -noupdate -expand -group DUT -expand -group DATA_LINK -group ERROR_MANAGEMENT /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_err_management/END_FRAME_DSCHECK
 add wave -noupdate -expand -group DUT -expand -group DATA_LINK -group ERROR_MANAGEMENT /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_err_management/SEQ_ERR_DSCHECK
@@ -2041,7 +2036,6 @@ add wave -noupdate -expand -group DUT -expand -group DATA_LINK -group SEQ_NUM_CH
 add wave -noupdate -expand -group DUT -expand -group DATA_LINK -group SEQ_NUM_CHECKER /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/VALID_K_CHARAC_DSCHECK
 add wave -noupdate -expand -group DUT -expand -group DATA_LINK -group SEQ_NUM_CHECKER /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/NEW_WORD_DSCHECK
 add wave -noupdate -expand -group DUT -expand -group DATA_LINK -group SEQ_NUM_CHECKER /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/END_FRAME_FIFO_DSCHECK
-add wave -noupdate -expand -group DUT -expand -group DATA_LINK -group SEQ_NUM_CHECKER /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/FIFO_FULL_DMBUF
 add wave -noupdate -expand -group DUT -expand -group DATA_LINK -group SEQ_NUM_CHECKER /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/FRAME_ERR_DATA_DSCHECK
 add wave -noupdate -expand -group DUT -expand -group DATA_LINK -group SEQ_NUM_CHECKER /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/SEQ_NUM_ERR_DATA_DSCHECK
 add wave -noupdate -expand -group DUT -expand -group DATA_LINK -group SEQ_NUM_CHECKER /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check/CRC_ERR_DATA_DSCHECK

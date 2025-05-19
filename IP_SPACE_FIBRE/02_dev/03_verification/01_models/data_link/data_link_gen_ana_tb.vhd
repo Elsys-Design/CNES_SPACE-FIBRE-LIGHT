@@ -1,13 +1,13 @@
 --------------------------------------------------------------------------
--- COMPANY       : ELSYS Design
+-- COMPANY       : CNES
 --------------------------------------------------------------------------
--- TITLE         : lane_gen_ana_tb.vhd
+-- TITLE         : data_link_gen_ana_tb.vhd
 -- PROJECT       : SPACE FIBRE LIGHT
 --------------------------------------------------------------------------
--- AUTHOR        : Yvan DAURIAC
--- CREATED       : 17/09/2024
+-- AUTHOR        : Thomas Favre-Felix
+-- CREATED       : 14/03/2024
 --------------------------------------------------------------------------
--- DESCRIPTION   : testbench for the lane_generator and lane_analyzer model
+-- DESCRIPTION   : testbench for the data_link_generator and data_link_analyzer model
 --------------------------------------------------------------------------
 -- History       : V1.0: Creation of the file
 --------------------------------------------------------------------------

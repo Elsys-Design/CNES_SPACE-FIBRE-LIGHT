@@ -1,5 +1,5 @@
 ##########################################################################
-## COMPANY       : ELSYS Design
+## COMPANY       : CNES
 ##########################################################################
 ## TITLE         : configuration_1_scenario_receiver.py
 ## PROJECT       : SPACE FIBRE LIGHT

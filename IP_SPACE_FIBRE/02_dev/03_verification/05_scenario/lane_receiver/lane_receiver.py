@@ -1,7 +1,7 @@
 ##########################################################################
-## COMPANY       : ELSYS Design
+## COMPANY       : CNES
 ##########################################################################
-## TITLE         : configuration_1_scenario_receiver.py
+## TITLE         : lane_receiver.py
 ## PROJECT       : SPACE FIBRE LIGHT
 ##########################################################################
 ## AUTHOR        : Thomas FAVRE-FELIX

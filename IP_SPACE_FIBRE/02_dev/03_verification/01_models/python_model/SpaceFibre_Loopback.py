@@ -1,5 +1,5 @@
 ##########################################################################
-## COMPANY       : ELSYS Design
+## COMPANY       : CNES
 ##########################################################################
 ## TITLE         : SpaceFibre_Loopback.py
 ## PROJECT       : SPACE FIBRE LIGHT

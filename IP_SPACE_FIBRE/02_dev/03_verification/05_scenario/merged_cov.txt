@@ -529,7 +529,7 @@ Coverage Report Summary Data by instance
 =================================================================================
     Enabled Coverage              Bins      Hits    Misses  Coverage
     ----------------              ----      ----    ------  --------
-    Branches                        12        10         2    83.33%
+    Branches                        11         9         2    81.81%
     Statements                      12        12         0   100.00%
 
 =================================================================================
@@ -1177,8 +1177,8 @@ Coverage Report Summary Data by instance
 =================================================================================
     Enabled Coverage              Bins      Hits    Misses  Coverage
     ----------------              ----      ----    ------  --------
-    Statements                      31        18        13    58.06%
+    Statements                      26        18         8    69.23%
 
 
-Total Coverage By Instance (filtered view): 85.34%
+Total Coverage By Instance (filtered view): 85.37%
 

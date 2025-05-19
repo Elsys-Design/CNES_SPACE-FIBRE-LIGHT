@@ -1,13 +1,26 @@
+-----------------------------------------------------------------------------------
+-- #                          Copyright CNES 2025                                 #
+-- #                                                                              #
+-- # This source describes Open Hardware and is licensed under the CERN-OHL-W v2. #
+-- #                                                                              #
+-- # You may redistribute and modify this documentation and make products         #
+-- # using it under the terms of the CERN-OHL-W v2 (https:/cern.ch/cern-ohl).     #
+-- #                                                                              #
+-- # This documentation is distributed WITHOUT ANY EXPRESS OR IMPLIED             #
+-- # WARRANTY, INCLUDING OF MERCHANTABILITY, SATISFACTORY QUALITY                 #
+-- # AND FITNESS FOR A PARTICULAR PURPOSE.                                        #
+-- #                                                                              #
+-- # Please see the CERN-OHL-W v2 for applicable conditions.                      #
 --------------------------------------------------------------------------
--- COMPANY       : ELSYS Design
+-- COMPANY       : CNES
 --------------------------------------------------------------------------
--- TITLE         : lane_generator_tb.vhd
+-- TITLE         : data_link_generator_tb.vhd
 -- PROJECT       : SPACE FIBRE LIGHT
 --------------------------------------------------------------------------
--- AUTHOR        : Yvan DAURIAC
--- CREATED       : 10/09/2024
+-- AUTHOR        : Thomas Favre-FELIX
+-- CREATED       : 05/03/2024
 --------------------------------------------------------------------------
--- DESCRIPTION   : testbench for the lane_generator model
+-- DESCRIPTION   : testbench for the data_link_generator model
 --------------------------------------------------------------------------
 -- History       : V1.0: Creation of the file
 --------------------------------------------------------------------------
