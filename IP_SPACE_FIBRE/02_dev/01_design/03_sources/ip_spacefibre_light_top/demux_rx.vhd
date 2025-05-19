@@ -19,7 +19,8 @@
 --
 -- Creation date : 24/02/2025
 --
--- Description : This module checks the validity of the SEQ_num
+-- Description : This module interfaces the RX flow of the phy plus lane
+--               layer with the data link layer or spyware.
 ----------------------------------------------------------------------------
 
 library ieee;
@@ -44,19 +45,16 @@ entity demux_rx is
 end demux_rx;
 
 architecture rtl of demux_rx is
----------------------------------------------------------
------                  Declaration signals          -----
----------------------------------------------------------
 begin
 
 ---------------------------------------------------------
 -----                     Process                   -----
 ---------------------------------------------------------
 ---------------------------------------------------------
--- Process: p_mux
--- Description: Multiplex Injector and data_link signals
+-- Process: p_demux
+-- Description: Demultiplex phy_plus_lane signals
 ---------------------------------------------------------
-p_mux: process(CLK, RST_N)
+p_demux: process(CLK, RST_N)
 begin
 	if RST_N = '0' then
 	  FIFO_RX_RD_EN_DEMUX             <= '0';
@@ -67,6 +65,6 @@ begin
       FIFO_RX_RD_EN_DEMUX           <= FIFO_RX_RD_EN_DL;
 	  end if;
 	end if;
-end process p_mux;
+end process p_demux;
 
 end architecture rtl;

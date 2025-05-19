@@ -1,80 +1,92 @@
+-----------------------------------------------------------------------------------
+-- #                          Copyright CNES 2025                                 #
+-- #                                                                              #
+-- # This source describes Open Hardware and is licensed under the CERN-OHL-W v2. #
+-- #                                                                              #
+-- # You may redistribute and modify this documentation and make products         #
+-- # using it under the terms of the CERN-OHL-W v2 (https:/cern.ch/cern-ohl).     #
+-- #                                                                              #
+-- # This documentation is distributed WITHOUT ANY EXPRESS OR IMPLIED             #
+-- # WARRANTY, INCLUDING OF MERCHANTABILITY, SATISFACTORY QUALITY                 #
+-- # AND FITNESS FOR A PARTICULAR PURPOSE.                                        #
+-- #                                                                              #
+-- # Please see the CERN-OHL-W v2 for applicable conditions.                      #
+-----------------------------------------------------------------------------------
 ----------------------------------------------------------------------------
--- Auteur(s)        : Florian TUTZO
+-- Author(s)         : Florian TUTZO
 --
--- Projet           : Capitalisation
+-- Project           : Capitalization
 --
--- Date de creation : 10/02/15
+-- Creation Date     : 10/02/15
 --
--- Description      : Module FIFO dual clock
--- Modification     : Avec suppression des trames erron�es
+-- Description       : Dual Clock FIFO Module
+-- Modification      : With removal of erroneous frames
 ----------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------
--- DECLARATION DES LIBRAIRIES
+-- LIBRARY DECLARATION
 ---------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-
 ---------------------------------------------------------------------------
--- DECLARATION DE L'ENTITE
+-- ENTITY DECLARATION
 ---------------------------------------------------------------------------
 entity FIFO_DC_DROP_BAD_FRAME is
     generic (
-        G_DWIDTH                : integer := 8;                                 -- Data bus fifo length
-        G_AWIDTH                : integer := 8;                                 -- Address bus fifo length
-        G_THRESHOLD_HIGH        : integer := 2**8;                              -- high threshold
-        G_THRESHOLD_LOW         : integer := 0                                  -- low threshold
+        G_DWIDTH                : integer := 8;                                 --! Data bus fifo length
+        G_AWIDTH                : integer := 8;                                 --! Address bus fifo length
+        G_THRESHOLD_HIGH        : integer := 2**8;                              --! high threshold
+        G_THRESHOLD_LOW         : integer := 0                                  --! low threshold
     );
     port (
         RST_N                   : in  std_logic;
         -- Writing port
-        WR_CLK                  : in  std_logic;                                -- Clock
-        WR_DATA                 : in  std_logic_vector(G_DWIDTH-1 downto 0);    -- Data write bus
-        WR_DATA_EN              : in  std_logic;                                -- Write command
+        WR_CLK                  : in  std_logic;                                --! Clock
+        WR_DATA                 : in  std_logic_vector(G_DWIDTH-1 downto 0);    --! Data write bus
+        WR_DATA_EN              : in  std_logic;                                --! Write command
         -- Frame control port
-        FRAME_ERROR             : in std_logic;                                 -- Valid received data
-        END_FRAME               : in std_logic;                                 -- End of frame
+        FRAME_ERROR             : in std_logic;                                 --! Valid received data
+        END_FRAME               : in std_logic;                                 --! End of frame
         ------------------
         -- Reading port
-        RD_CLK                  : in  std_logic;                                -- Clock
-        RD_DATA                 : out std_logic_vector(G_DWIDTH-1 downto 0);    -- Data read bus
-        RD_DATA_EN              : in  std_logic;                                -- Read command
-        RD_DATA_VLD             : out std_logic;                                -- Data valid
+        RD_CLK                  : in  std_logic;                                --! Clock
+        RD_DATA                 : out std_logic_vector(G_DWIDTH-1 downto 0);    --! Data read bus
+        RD_DATA_EN              : in  std_logic;                                --! Read command
+        RD_DATA_VLD             : out std_logic;                                --! Data valid
         -- Command port
-        CMD_FLUSH               : in  std_logic;                                -- fifo flush
-        STATUS_BUSY_FLUSH       : out std_logic;                                -- fifo is flushing
+        CMD_FLUSH               : in  std_logic;                                --! fifo flush
+        STATUS_BUSY_FLUSH       : out std_logic;                                --! fifo is flushing
         -- Status port
-        STATUS_THRESHOLD_HIGH   : out std_logic;                                -- threshold high reached flag (sur WR_CLK)
-        STATUS_THRESHOLD_LOW    : out std_logic;                                -- threshold low reached flag (sur RD_CLK)
-        STATUS_FULL             : out std_logic;                                -- full fifo flag (sur WR_CLK)
-        STATUS_EMPTY            : out std_logic;                                -- empty fifo flag (sur RD_CLK)
-        STATUS_LEVEL_WR         : out std_logic_vector(G_AWIDTH-1 downto 0);    -- Niveau de remplissage de la FIFO (sur WR_CLK)
-        STATUS_LEVEL_RD         : out std_logic_vector(G_AWIDTH-1 downto 0)     -- Niveau de remplissage de la FIFO (sur RD_CLK)
+        STATUS_THRESHOLD_HIGH   : out std_logic;                                --! threshold high reached flag (on WR_CLK)
+        STATUS_THRESHOLD_LOW    : out std_logic;                                --! threshold low reached flag (on RD_CLK)
+        STATUS_FULL             : out std_logic;                                --! full fifo flag (on WR_CLK)
+        STATUS_EMPTY            : out std_logic;                                --! empty fifo flag (on RD_CLK)
+        STATUS_LEVEL_WR         : out std_logic_vector(G_AWIDTH-1 downto 0);    --! FIFO fill level (on WR_CLK)
+        STATUS_LEVEL_RD         : out std_logic_vector(G_AWIDTH-1 downto 0)     --! FIFO fill level (on RD_CLK)
     );
 end entity FIFO_DC_DROP_BAD_FRAME;
 
-
 ---------------------------------------------------------------------------
--- DECLARATION DE L'ARCHITECTURE
+-- ARCHITECTURE DECLARATION
 ---------------------------------------------------------------------------
 architecture RTL of FIFO_DC_DROP_BAD_FRAME is
 
    ---------------------------------------------------------------------------
-   -- DECLARATION DES CONSTANTES
+   -- CONSTANT DECLARATION
    ---------------------------------------------------------------------------
     constant RAM_DEPTH            : integer := 2**G_AWIDTH;
 
    ---------------------------------------------------------------------------
-   -- DECLARATION DES TYPES
+   -- TYPE DECLARATION
    ---------------------------------------------------------------------------
     type t_ram is array(0 to RAM_DEPTH-1) of std_logic_vector(G_DWIDTH-1 downto 0);
 
    ---------------------------------------------------------------------------
-   -- DECLARATION DES SIGNAUX
+   -- SIGNAL DECLARATION
    ---------------------------------------------------------------------------
-    
+
     -- ram
     signal ram                  : t_ram;
 
@@ -115,10 +127,9 @@ architecture RTL of FIFO_DC_DROP_BAD_FRAME is
     signal full                 : std_logic;
     signal full_prev            : std_logic;
     signal empty                : std_logic;
-    
-    
+
     ------------------
-    -- MODIF
+    -- MODIFICATION
     ------------------
     -- Frame control signals
     signal ptr_last_valid       : unsigned(G_AWIDTH-1 downto 0); -- Pointer to the end of last valid frame
@@ -126,7 +137,7 @@ architecture RTL of FIFO_DC_DROP_BAD_FRAME is
     ------------------
 
     ---------------------------------------------------------------------------
-    -- DECLARATION DES FONCTIONS
+    -- FUNCTION DECLARATION
     ---------------------------------------------------------------------------
     function binary_to_gray_code (data : unsigned(G_AWIDTH-1 downto 0)) return unsigned is
     begin
@@ -143,8 +154,6 @@ architecture RTL of FIFO_DC_DROP_BAD_FRAME is
         return data;
     end function gray_to_binary_code;
 
-
-
 begin
 
     ---------------------------------------------------------------------------
@@ -155,7 +164,7 @@ begin
     STATUS_BUSY_FLUSH   <= cmd_flush_req;
 
     ram_level           <= ptr_wr - ptr_rd;
- 
+
     ---------------------------------------------------------------------------
     ---------------------------------------------------------------------------
     -- Writing
@@ -167,7 +176,7 @@ begin
     ptr_wr_inc2         <= ptr_wr + 2;
 
     wr_en               <= WR_DATA_EN and not (full or cmd_flush_req);
-   
+
     ---------------------------------------------------------------------------
     -- process : p_wr_ram
     -- Description : writing in the RAM_DP when the write command is asserted
@@ -183,7 +192,6 @@ begin
         end if;
     end process;
 
-
     ---------------------------------------------------------------------------
     -- process : p_wr_inc_ptr
     -- Description :-increasing the ptr_wr when the write command is asserted
@@ -195,44 +203,44 @@ begin
             ptr_wr          <= (others => '0');
             cmd_flush_inv_wr<= '0';
             flush_ack_inv_wr<= '0';
-            
+
             ------------------
-            -- MODIF
+            -- MODIFICATION
             ------------------
             ptr_last_valid  <= (others => '0');
             ------------------
 
         elsif rising_edge(WR_CLK) then
             cmd_flush_inv_wr<= cmd_flush_inv;
-             -- Reset du pointeur en cas de flush
+             -- Reset pointer in case of flush
             if (cmd_flush_inv_wr xor cmd_flush_inv) = '1' then
                 ptr_wr          <= (others => '0');
                 flush_ack_inv_wr<= not flush_ack_inv_wr;
-                
+
                 ------------------
-                -- MODIF
+                -- MODIFICATION
                 ------------------
                 ptr_last_valid  <= (others => '0');
 
                 ------------------
-                
+
             end if;
-            
-            -- Gestion du pointeur d'�criture normal
+
+            -- Normal write pointer management
             if wr_en = '1' then
                 ------------------
-                -- MODIF
+                -- MODIFICATION
                 ------------------
                if FRAME_ERROR = '1' then
                     ptr_wr         <= ptr_last_valid;
-                elsif END_FRAME = '1' then 
+                elsif END_FRAME = '1' then
                     ptr_wr         <= ptr_wr_inc;
                     ptr_last_valid <= ptr_wr_inc;
-                else 
+                else
                     ptr_wr         <= ptr_wr_inc;
                 end if;
-                ------------------ 
-                
+                ------------------
+
             end if;
         end if;
     end process;
@@ -254,7 +262,6 @@ begin
         end if;
     end process;
 
-
     ----------------------------------------------------------------------------
     -- process : p_wr_ptr_gray
     -- Description : conversion of ptr_wr to gray code
@@ -270,10 +277,9 @@ begin
         end if;
     end process;
 
-
     ----------------------------------------------------------------------------
     -- process : p_wr_status
-    -- Description : This process manages the fallowing status :
+    -- Description : This process manages the following status :
     --              - full
     --              - threshold high
     ----------------------------------------------------------------------------
@@ -303,8 +309,6 @@ begin
         end if;
     end process;
 
-
-
     ---------------------------------------------------------------------------
     ---------------------------------------------------------------------------
     -- Reading
@@ -315,10 +319,9 @@ begin
     ptr_rd_inc          <= ptr_rd + 1;
     rd_en               <= RD_DATA_EN and not(empty or cmd_flush_req);
 
-
     ---------------------------------------------------------------------------
     -- process : p_rd_ram
-    -- Description : reading in the RAM_DP when the rdite command is asserted
+    -- Description : reading in the RAM_DP when the read command is asserted
     ---------------------------------------------------------------------------
     P_RD_RAM : process (RST_N, RD_CLK)
         variable ptr_rd_i : integer;
@@ -336,10 +339,9 @@ begin
         end if;
     end process;
 
-
     ---------------------------------------------------------------------------
     -- process : p_rd_inc_ptr
-    -- Description :-increasing the ptr_rd when the rdite command is asserted
+    -- Description :-increasing the ptr_rd when the read command is asserted
     --              -reset pointer when flush FIFO and then send ack
     ---------------------------------------------------------------------------
     P_RD_INC_PTR : process (RST_N, RD_CLK)
@@ -360,7 +362,6 @@ begin
         end if;
     end process;
 
-
     ----------------------------------------------------------------------------
     -- process : p_wr_in_rd_ptr
     -- Description : get the ptr_rd_gray and conversion to binary code
@@ -378,7 +379,6 @@ begin
         end if;
     end process;
 
-
     ----------------------------------------------------------------------------
     -- process : p_rd_ptr_gray
     -- Description : conversion of ptr_rd to gray code
@@ -392,10 +392,9 @@ begin
         end if;
     end process;
 
-
     ----------------------------------------------------------------------------
     -- process : p_rd_status
-    -- Description : This process manages the fallowing status :
+    -- Description : This process manages the following status :
     --              - empty
     --              - threshold low
     ----------------------------------------------------------------------------
@@ -421,7 +420,6 @@ begin
         end if;
     end process;
 
-
     ---------------------------------------------------------------------------
     -- PROCESS : P_STATUS_LEVEL_WR
     -- Description : indicates the filling level of the FIFO
@@ -435,7 +433,6 @@ begin
        end if;
     end process;
 
-
     ---------------------------------------------------------------------------
     -- PROCESS : P_STATUS_LEVEL_RD
     -- Description : indicates the filling level of the FIFO
@@ -448,8 +445,6 @@ begin
           STATUS_LEVEL_RD   <= std_logic_vector(ram_level);
        end if;
     end process;
-
-
 
     ---------------------------------------------------------------------------
     ---------------------------------------------------------------------------
@@ -483,7 +478,7 @@ begin
                 cmd_flush_inv   <= not cmd_flush_inv;
             end if;
 
-            -- ACK from WR clock dommain
+            -- ACK from WR clock domain
             if (flush_ack_inv_wr xor flush_ack_inv_wr_r) = '1' then
                 flush_ack_wr    <= '1';
             end if;
@@ -501,6 +496,5 @@ begin
             end if;
         end if;
     end process;
-
 
 end architecture;
