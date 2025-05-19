@@ -19,7 +19,8 @@
 --
 -- Creation date : 24/02/2025
 --
--- Description : This module checks the validity of the SEQ_num
+-- Description : This module interfaces the TX flow of the phy plus lane layer 
+--               with the data link layer or injectors
 ----------------------------------------------------------------------------
 
 library ieee;
@@ -33,35 +34,33 @@ entity mux_tx is
     RST_N                  : in  std_logic;                          --! Global reset
     CLK                    : in  std_logic;                          --! Global clock
     -- Ctrl signal
-    ENABLE_INJ             : in std_logic;
+    ENABLE_INJ             : in std_logic;                           --! Enable injector command
     -- Injector interface
     DATA_TX_INJ            : in  std_logic_vector(31 downto 00);     --! Data parallel to be send from injector
     CAPABILITY_TX_INJ      : in  std_logic_vector(07 downto 00);     --! Capability send on TX link in INIT3 control word from injector
     NEW_DATA_TX_INJ        : in  std_logic;                          --! Flag to write data in FIFO TX from injetor
     VALID_K_CHARAC_TX_INJ  : in  std_logic_vector(03 downto 00);     --! K charachter valid in the 32-bit DATA_TX_INJ vector
-    FIFO_TX_FULL_INJ       : out std_logic;
-    LANE_RESET_INJ         : in  std_logic;
+    FIFO_TX_FULL_INJ       : out std_logic;                          --! Fifo TX full flag to Injector
+    LANE_RESET_INJ         : in  std_logic;                          --! Lane Reset command from Injector
 		-- Data-Link interface
     DATA_TX_DL             : in  std_logic_vector(31 downto 00);     --! Data parallel to be send from Data-Link Layer
     CAPABILITY_TX_DL       : in  std_logic_vector(07 downto 00);     --! Capability send on TX link in INIT3 control word
     NEW_DATA_TX_DL         : in  std_logic;                          --! Flag to write data in FIFO TX
     VALID_K_CHARAC_TX_DL   : in  std_logic_vector(03 downto 00);     --! K charachter valid in the 32-bit DATA_TX_DL vector
-    FIFO_TX_FULL_DL        : out std_logic;
-    LANE_RESET_DL          : in  std_logic;
+    FIFO_TX_FULL_DL        : out std_logic;                          --! Fifo TX full flag to dl
+    LANE_RESET_DL          : in  std_logic;                          --! Lane Reset command from dl
     -- Phy Plus Lane interface
     DATA_TX_MUX            : out  std_logic_vector(31 downto 00);    --! Data parallel
     CAPABILITY_TX_MUX      : out  std_logic_vector(07 downto 00);    --! Capability send on TX link in INIT3 control word
     NEW_DATA_TX_MUX        : out  std_logic;                         --! Flag to write data in FIFO TX
     VALID_K_CHARAC_TX_MUX  : out  std_logic_vector(03 downto 00);    --! K charachter valid in the 32-bit DATA_TX_MUX vector
-    FIFO_TX_FULL_PPL       : in   std_logic;
-    LANE_RESET_MUX         : out  std_logic
+    FIFO_TX_FULL_PPL       : in   std_logic;                         --! Fifo TX full flag from ppl
+    LANE_RESET_MUX         : out  std_logic                          --! Lane Reset command to ppl
   );
 end mux_tx;
 
 architecture rtl of mux_tx is
----------------------------------------------------------
------                  Declaration signals          -----
----------------------------------------------------------
+
 begin
 
 ---------------------------------------------------------

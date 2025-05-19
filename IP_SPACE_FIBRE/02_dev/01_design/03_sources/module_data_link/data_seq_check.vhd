@@ -118,7 +118,7 @@ begin
 ---------------------------------------------------------
 ---------------------------------------------------------
 -- Process: p_seq_num
--- Description: Check the SEQ_NUM for each frame
+-- Description: Checks the SEQ_NUM for each frame
 ---------------------------------------------------------
 p_seq_num: process(CLK)
 begin

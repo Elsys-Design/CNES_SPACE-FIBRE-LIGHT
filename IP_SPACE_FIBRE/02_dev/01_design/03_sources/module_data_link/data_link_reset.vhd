@@ -154,6 +154,6 @@ begin
                                   end if;
     end case;
   end if;
-end process p_data_in_fifo;
+end process p_link_reset_fsm;
 
 end architecture rtl;

@@ -100,7 +100,7 @@ begin
 ---------------------------------------------------------
 ---------------------------------------------------------
 -- Process: p_crc_16b
--- Description: Compute and check the CRC for a data frame
+-- Description: Computes and checks the CRC for a data frame
 ---------------------------------------------------------
  p_crc_16b: process(CLK)
     variable crc_var : std_logic_vector(15 downto 0); -- variable used to calculate the CRC
@@ -146,7 +146,7 @@ end process p_crc_16b;
 
 ---------------------------------------------------------
 -- Process: p_crc_8b
--- Description: Compute and check the CRC for broadcast frame,
+-- Description: Computes and checks the CRC for broadcast frame,
 --              FCT, ACK, NACK and SIF
 ---------------------------------------------------------
 p_crc_8b: process(CLK)

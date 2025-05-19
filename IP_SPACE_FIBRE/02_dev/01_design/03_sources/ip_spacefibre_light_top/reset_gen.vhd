@@ -39,13 +39,17 @@ end reset_gen;
 
 architecture rtl of reset_gen is
 
-   -- internal signals
+---------------------------------------------------------
+-----                  Signal declaration           -----
+---------------------------------------------------------
    signal reset_gen_r_n    : std_logic;         --! internal reset simple resynchro
    signal reset_gen_rr_n   : std_logic;         --! internal reset double resynchro
    signal rst_tx_done_r       : std_logic;      --! internal rst_tx_done simple resynchro
 
 begin
-
+---------------------------------------------------------
+-----                     Process                   -----
+---------------------------------------------------------
    -- Resynchronized reset on 50MHz internal clock
    p_reset_gen : process(CLK,RST_N)
    begin

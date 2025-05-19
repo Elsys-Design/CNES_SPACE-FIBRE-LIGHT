@@ -60,7 +60,7 @@ begin
 ---------------------------------------------------------
 ---------------------------------------------------------
 -- Process: p_desencapsulation
--- Description: desencapsulate each frame
+-- Description: Desencapsulates each frame
 ---------------------------------------------------------
 p_desencapsulation : process(CLK)
 begin

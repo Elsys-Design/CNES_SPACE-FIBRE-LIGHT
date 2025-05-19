@@ -56,7 +56,7 @@ begin
 ---------------------------------------------------------
 ---------------------------------------------------------
 -- Process: p_desencapsulation_bc
--- Description: desencapsulate each broadcast frame
+-- Description: Desencapsulates each broadcast frame
 ---------------------------------------------------------
 p_desencapsulation_bc : process(CLK)
 begin
