@@ -1,3 +1,17 @@
+-----------------------------------------------------------------------------------
+-- #                          Copyright CNES 2025                                 #
+-- #                                                                              #
+-- # This source describes Open Hardware and is licensed under the CERN-OHL-W v2. #
+-- #                                                                              #
+-- # You may redistribute and modify this documentation and make products         #
+-- # using it under the terms of the CERN-OHL-W v2 (https:/cern.ch/cern-ohl).     #
+-- #                                                                              #
+-- # This documentation is distributed WITHOUT ANY EXPRESS OR IMPLIED             #
+-- # WARRANTY, INCLUDING OF MERCHANTABILITY, SATISFACTORY QUALITY                 #
+-- # AND FITNESS FOR A PARTICULAR PURPOSE.                                        #
+-- #                                                                              #
+-- # Please see the CERN-OHL-W v2 for applicable conditions.                      #
+-----------------------------------------------------------------------------------
 ----------------------------------------------------------------------------
 -- Author(s) : Y. DAURIAC
 --
@@ -46,10 +60,10 @@ architecture rtl of data_link_reset is
 -----                  Signal declaration           -----
 ---------------------------------------------------------
   type link_rst_fsm is (
-    CONF_RST_ST,
-    NEAR_END_RST_ST,
-    CHECK_FAR_END_RST_ST,
-    LINK_INIT_ST
+    CONF_RST_ST,          --! Configuration Reset state
+    NEAR_END_RST_ST,      --! Near-End Reset state
+    CHECK_FAR_END_RST_ST, --! Check Far-End Reset state
+    LINK_INIT_ST          --! Link initialised state
   );
 
   signal current_state          : link_rst_fsm;
@@ -57,7 +71,7 @@ architecture rtl of data_link_reset is
   signal lane_active_ppl_r      : std_logic;
   signal link_reset_dlre_i      : std_logic;
   signal lane_reset_dlre_i      : std_logic;
-  signal current_state_vector      : std_logic_vector(1 downto 0);
+  signal current_state_vector   : std_logic_vector(1 downto 0);
 
 begin
 --------------------------------------------------------
@@ -70,10 +84,10 @@ LANE_RESET_DLRE <= lane_reset_dlre_i;
 -----                     Process                   -----
 ---------------------------------------------------------
 ---------------------------------------------------------
--- Process: p_data_in_fifo
--- Description: Manages the data written into the fifo
+-- Process: p_link_reset_fsm
+-- Description: Implements the link reset fsm
 ---------------------------------------------------------
-p_data_in_fifo: process(CLK, RST_N)
+p_link_reset_fsm: process(CLK, RST_N)
 begin
   if RST_N ='0' then
     current_state      <= CONF_RST_ST;

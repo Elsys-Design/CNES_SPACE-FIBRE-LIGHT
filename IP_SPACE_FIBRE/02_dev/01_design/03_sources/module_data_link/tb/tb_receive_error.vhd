@@ -1,22 +1,17 @@
-----------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
--- 
--- Create Date: 05.03.2025 12:18:33
--- Design Name: 
--- Module Name: tb_receive_error - Behavioral
--- Project Name: 
--- Target Devices: 
--- Tool Versions: 
--- Description: 
--- 
--- Dependencies: 
--- 
--- Revision:
--- Revision 0.01 - File Created
--- Additional Comments:
--- 
-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+-- #                          Copyright CNES 2025                                 #
+-- #                                                                              #
+-- # This source describes Open Hardware and is licensed under the CERN-OHL-W v2. #
+-- #                                                                              #
+-- # You may redistribute and modify this documentation and make products         #
+-- # using it under the terms of the CERN-OHL-W v2 (https:/cern.ch/cern-ohl).     #
+-- #                                                                              #
+-- # This documentation is distributed WITHOUT ANY EXPRESS OR IMPLIED             #
+-- # WARRANTY, INCLUDING OF MERCHANTABILITY, SATISFACTORY QUALITY                 #
+-- # AND FITNESS FOR A PARTICULAR PURPOSE.                                        #
+-- #                                                                              #
+-- # Please see the CERN-OHL-W v2 for applicable conditions.                      #
+-----------------------------------------------------------------------------------
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
@@ -129,11 +124,11 @@ begin
         wait for 4 ns;
         
        
--- Test 1 : détection des erreurs, priorité entre les requêtes, types de trames, fsm
+-- Test 1 : dï¿½tection des erreurs, prioritï¿½ entre les requï¿½tes, types de trames, fsm
 
         -- Cas 1: Erreur SEQ_ERR 
         -- Resultat attendu : NACK, RPF = 1, TPF = 0, error_negative
-        s_type_frame_seq <= C_FCT_FRM; -- Trame de contrôle
+        s_type_frame_seq <= C_FCT_FRM; -- Trame de contrï¿½le
         s_seq_err <= '1';
         s_far_end <= '1';
         wait for CLK_PERIOD;
@@ -155,7 +150,7 @@ begin
 
         -- Cas 3: Erreur SEQ_ERR
         -- Resultat attendu : NACK, RPF = 0, TPF = 1, error_positive
-        s_type_frame_seq <= C_FCT_FRM; -- Trame de contrôle
+        s_type_frame_seq <= C_FCT_FRM; -- Trame de contrï¿½le
         s_seq_err <= '1';
         wait for CLK_PERIOD;
         s_seq_err <= '0';
@@ -183,7 +178,7 @@ begin
 
 -- Test 2 : Gestion du done et cas critiques
     -- choisir la requete de ack ou de nack
-    -- et choisir entre les 5 choix pour générer le done dans différentes cnditions 
+    -- et choisir entre les 5 choix pour gï¿½nï¿½rer le done dans diffï¿½rentes cnditions 
 
         -- Requete de ack
         s_type_frame_seq <= C_FCT_FRM; 
@@ -209,7 +204,7 @@ begin
 
         -- Choix 2        
         -- NACK 1 cycle avant le done 
-        -- Resultat attendu : NACK request doit etre à 0 après le done 
+        -- Resultat attendu : NACK request doit etre ï¿½ 0 aprï¿½s le done 
         wait for CLK_PERIOD;
         -- Requete de nack
         s_type_frame_seq <= C_DATA_FRM; -- Trame DATA
@@ -227,7 +222,7 @@ begin
         
         -- Choix 3
         -- ACK 1 cycle avant le done 
-        -- Resultat attendu : ACK request doit etre à 0 après le done 
+        -- Resultat attendu : ACK request doit etre ï¿½ 0 aprï¿½s le done 
 --        wait for CLK_PERIOD;
 --        -- Requete de nack
 --        s_type_frame_seq <= C_DATA_FRM; -- Trame DATA
@@ -242,8 +237,8 @@ begin
 --        s_done <= '0';
 
 --        -- Choix 4        
---        -- NACK et done simultané 
---        -- Resultat attendu : NACK request doit resté à 1 après le done 
+--        -- NACK et done simultanï¿½ 
+--        -- Resultat attendu : NACK request doit restï¿½ ï¿½ 1 aprï¿½s le done 
 --        wait for CLK_PERIOD;
 --        wait for CLK_PERIOD; 
 --        -- Requete de nack
@@ -260,8 +255,8 @@ begin
 --        s_done <= '0';
 
 --        -- Choix 5
---      -- ACK et done simultané 
---      -- Resultat attendu : ACK request doit resté à 1 après le done 
+--      -- ACK et done simultanï¿½ 
+--      -- Resultat attendu : ACK request doit restï¿½ ï¿½ 1 aprï¿½s le done 
 --        wait for CLK_PERIOD;
 --        wait for CLK_PERIOD; 
 --        -- Requete de nack
