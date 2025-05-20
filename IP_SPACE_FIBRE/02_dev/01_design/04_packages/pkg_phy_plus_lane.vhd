@@ -1,3 +1,17 @@
+-----------------------------------------------------------------------------------
+-- #                          Copyright CNES 2025                                 #
+-- #                                                                              #
+-- # This source describes Open Hardware and is licensed under the CERN-OHL-W v2. #
+-- #                                                                              #
+-- # You may redistribute and modify this documentation and make products         #
+-- # using it under the terms of the CERN-OHL-W v2 (https:/cern.ch/cern-ohl).     #
+-- #                                                                              #
+-- # This documentation is distributed WITHOUT ANY EXPRESS OR IMPLIED             #
+-- # WARRANTY, INCLUDING OF MERCHANTABILITY, SATISFACTORY QUALITY                 #
+-- # AND FITNESS FOR A PARTICULAR PURPOSE.                                        #
+-- #                                                                              #
+-- # Please see the CERN-OHL-W v2 for applicable conditions.                      #
+-----------------------------------------------------------------------------------
 ----------------------------------------------------------------------------
 -- Auteur(s) : J.PIQUEMAL
 --
@@ -9,10 +23,6 @@
 -- SpaceFibre Light.
 -- The Physical layer is carried by an Xilinx IP
 -- The Lane layer is carried by owner's code and an Xilinx IP
-----------------------------------------------------------------------------
--- Copyright (c) 2014 par ELSYS Design Group
--- Tous les droits sont reserves. Toute reproduction totale ou partielle est
--- interdite sans le consentement ecrit du proprietaire des droits d'auteur.
 ----------------------------------------------------------------------------
 
 library ieee;
@@ -58,4 +68,8 @@ package pkg_phy_plus_lane is
    --FIFOs size
    constant C_DWIDTH              : integer := 36;
    constant C_AWIDTH              : integer := 10; -- Nb of bit
+   constant C_DWIDTH_CTRL_TX      : integer := 9;
+   constant C_AWIDTH_CTRL_TX      : integer := 3;
+   constant C_DWIDTH_CTRL_RX      : integer := 9;
+   constant C_AWIDTH_CTRL_RX      : integer := 3;   
 end package pkg_phy_plus_lane;

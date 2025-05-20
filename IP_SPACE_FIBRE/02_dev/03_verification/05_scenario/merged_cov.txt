@@ -1,0 +1,1184 @@
+Coverage Report Summary Data by instance
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_in_buff(0)/inst_data_in_buf/ints_fifo_dc_axis_m/AXIS_MASTER_inst
+=== Design Unit: data_link_lib.axis_master(implementation)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        29        17        12    58.62%
+    Statements                      76        40        36    52.63%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_in_buff(0)/inst_data_in_buf/ints_fifo_dc_axis_m/fifo_dc_inst
+=== Design Unit: data_link_lib.fifo_dc(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        60        60         0   100.00%
+    Statements                      82        82         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_in_buff(0)/inst_data_in_buf
+=== Design Unit: data_link_lib.data_in_buf(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        56        54         2    96.42%
+    Statements                      69        68         1    98.55%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_in_buff(1)/inst_data_in_buf/ints_fifo_dc_axis_m/AXIS_MASTER_inst
+=== Design Unit: data_link_lib.axis_master(implementation)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        29        17        12    58.62%
+    Statements                      76        40        36    52.63%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_in_buff(1)/inst_data_in_buf/ints_fifo_dc_axis_m/fifo_dc_inst
+=== Design Unit: data_link_lib.fifo_dc(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        60        57         3    95.00%
+    Statements                      82        79         3    96.34%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_in_buff(1)/inst_data_in_buf
+=== Design Unit: data_link_lib.data_in_buf(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        56        53         3    94.64%
+    Statements                      69        66         3    95.65%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_in_buff(2)/inst_data_in_buf/ints_fifo_dc_axis_m/AXIS_MASTER_inst
+=== Design Unit: data_link_lib.axis_master(implementation)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        29        17        12    58.62%
+    Statements                      76        40        36    52.63%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_in_buff(2)/inst_data_in_buf/ints_fifo_dc_axis_m/fifo_dc_inst
+=== Design Unit: data_link_lib.fifo_dc(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        60        57         3    95.00%
+    Statements                      82        79         3    96.34%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_in_buff(2)/inst_data_in_buf
+=== Design Unit: data_link_lib.data_in_buf(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        56        51         5    91.07%
+    Statements                      69        64         5    92.75%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_in_buff(3)/inst_data_in_buf/ints_fifo_dc_axis_m/AXIS_MASTER_inst
+=== Design Unit: data_link_lib.axis_master(implementation)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        29        17        12    58.62%
+    Statements                      76        40        36    52.63%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_in_buff(3)/inst_data_in_buf/ints_fifo_dc_axis_m/fifo_dc_inst
+=== Design Unit: data_link_lib.fifo_dc(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        60        57         3    95.00%
+    Statements                      82        79         3    96.34%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_in_buff(3)/inst_data_in_buf
+=== Design Unit: data_link_lib.data_in_buf(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        56        51         5    91.07%
+    Statements                      69        64         5    92.75%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_in_buff(4)/inst_data_in_buf/ints_fifo_dc_axis_m/AXIS_MASTER_inst
+=== Design Unit: data_link_lib.axis_master(implementation)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        29        17        12    58.62%
+    Statements                      76        40        36    52.63%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_in_buff(4)/inst_data_in_buf/ints_fifo_dc_axis_m/fifo_dc_inst
+=== Design Unit: data_link_lib.fifo_dc(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        60        57         3    95.00%
+    Statements                      82        79         3    96.34%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_in_buff(4)/inst_data_in_buf
+=== Design Unit: data_link_lib.data_in_buf(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        56        51         5    91.07%
+    Statements                      69        64         5    92.75%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_in_buff(5)/inst_data_in_buf/ints_fifo_dc_axis_m/AXIS_MASTER_inst
+=== Design Unit: data_link_lib.axis_master(implementation)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        29        17        12    58.62%
+    Statements                      76        40        36    52.63%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_in_buff(5)/inst_data_in_buf/ints_fifo_dc_axis_m/fifo_dc_inst
+=== Design Unit: data_link_lib.fifo_dc(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        60        57         3    95.00%
+    Statements                      82        79         3    96.34%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_in_buff(5)/inst_data_in_buf
+=== Design Unit: data_link_lib.data_in_buf(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        56        51         5    91.07%
+    Statements                      69        64         5    92.75%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_in_buff(6)/inst_data_in_buf/ints_fifo_dc_axis_m/AXIS_MASTER_inst
+=== Design Unit: data_link_lib.axis_master(implementation)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        29        17        12    58.62%
+    Statements                      76        40        36    52.63%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_in_buff(6)/inst_data_in_buf/ints_fifo_dc_axis_m/fifo_dc_inst
+=== Design Unit: data_link_lib.fifo_dc(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        60        57         3    95.00%
+    Statements                      82        79         3    96.34%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_in_buff(6)/inst_data_in_buf
+=== Design Unit: data_link_lib.data_in_buf(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        56        51         5    91.07%
+    Statements                      69        64         5    92.75%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_in_buff(7)/inst_data_in_buf/ints_fifo_dc_axis_m/AXIS_MASTER_inst
+=== Design Unit: data_link_lib.axis_master(implementation)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        29        17        12    58.62%
+    Statements                      76        40        36    52.63%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_in_buff(7)/inst_data_in_buf/ints_fifo_dc_axis_m/fifo_dc_inst
+=== Design Unit: data_link_lib.fifo_dc(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        60        57         3    95.00%
+    Statements                      82        79         3    96.34%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_in_buff(7)/inst_data_in_buf
+=== Design Unit: data_link_lib.data_in_buf(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        56        51         5    91.07%
+    Statements                      69        64         5    92.75%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/ints_fifo_dc_axis_s/AXIS_SLAVE_inst
+=== Design Unit: data_link_lib.axis_slave(implementation)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                         2         2         0   100.00%
+    Statements                       5         5         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/ints_fifo_dc_axis_s/fifo_dc_inst
+=== Design Unit: data_link_lib.fifo_dc(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        60        60         0   100.00%
+    Statements                      82        82         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff/ints_fifo_dc_axis_s
+=== Design Unit: data_link_lib.fifo_dc_axis_s(arch_imp)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                       2         2         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(0)/inst_data_out_buff
+=== Design Unit: data_link_lib.data_out_buff(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                       113       111         2    98.23%
+    Statements                     146       144         2    98.63%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(1)/inst_data_out_buff/ints_fifo_dc_axis_s/AXIS_SLAVE_inst
+=== Design Unit: data_link_lib.axis_slave(implementation)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                         2         2         0   100.00%
+    Statements                       5         5         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(1)/inst_data_out_buff/ints_fifo_dc_axis_s/fifo_dc_inst
+=== Design Unit: data_link_lib.fifo_dc(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        60        60         0   100.00%
+    Statements                      82        82         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(1)/inst_data_out_buff/ints_fifo_dc_axis_s
+=== Design Unit: data_link_lib.fifo_dc_axis_s(arch_imp)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                       2         2         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(1)/inst_data_out_buff
+=== Design Unit: data_link_lib.data_out_buff(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                       113        99        14    87.61%
+    Statements                     146       114        32    78.08%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(2)/inst_data_out_buff/ints_fifo_dc_axis_s/AXIS_SLAVE_inst
+=== Design Unit: data_link_lib.axis_slave(implementation)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                         2         2         0   100.00%
+    Statements                       5         5         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(2)/inst_data_out_buff/ints_fifo_dc_axis_s/fifo_dc_inst
+=== Design Unit: data_link_lib.fifo_dc(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        60        60         0   100.00%
+    Statements                      82        82         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(2)/inst_data_out_buff/ints_fifo_dc_axis_s
+=== Design Unit: data_link_lib.fifo_dc_axis_s(arch_imp)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                       2         2         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(2)/inst_data_out_buff
+=== Design Unit: data_link_lib.data_out_buff(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                       113        98        15    86.72%
+    Statements                     146       113        33    77.39%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(3)/inst_data_out_buff/ints_fifo_dc_axis_s/AXIS_SLAVE_inst
+=== Design Unit: data_link_lib.axis_slave(implementation)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                         2         2         0   100.00%
+    Statements                       5         5         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(3)/inst_data_out_buff/ints_fifo_dc_axis_s/fifo_dc_inst
+=== Design Unit: data_link_lib.fifo_dc(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        60        60         0   100.00%
+    Statements                      82        82         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(3)/inst_data_out_buff/ints_fifo_dc_axis_s
+=== Design Unit: data_link_lib.fifo_dc_axis_s(arch_imp)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                       2         2         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(3)/inst_data_out_buff
+=== Design Unit: data_link_lib.data_out_buff(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                       113        99        14    87.61%
+    Statements                     146       114        32    78.08%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(4)/inst_data_out_buff/ints_fifo_dc_axis_s/AXIS_SLAVE_inst
+=== Design Unit: data_link_lib.axis_slave(implementation)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                         2         2         0   100.00%
+    Statements                       5         5         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(4)/inst_data_out_buff/ints_fifo_dc_axis_s/fifo_dc_inst
+=== Design Unit: data_link_lib.fifo_dc(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        60        60         0   100.00%
+    Statements                      82        82         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(4)/inst_data_out_buff/ints_fifo_dc_axis_s
+=== Design Unit: data_link_lib.fifo_dc_axis_s(arch_imp)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                       2         2         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(4)/inst_data_out_buff
+=== Design Unit: data_link_lib.data_out_buff(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                       113        98        15    86.72%
+    Statements                     146       113        33    77.39%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(5)/inst_data_out_buff/ints_fifo_dc_axis_s/AXIS_SLAVE_inst
+=== Design Unit: data_link_lib.axis_slave(implementation)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                         2         2         0   100.00%
+    Statements                       5         5         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(5)/inst_data_out_buff/ints_fifo_dc_axis_s/fifo_dc_inst
+=== Design Unit: data_link_lib.fifo_dc(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        60        60         0   100.00%
+    Statements                      82        82         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(5)/inst_data_out_buff/ints_fifo_dc_axis_s
+=== Design Unit: data_link_lib.fifo_dc_axis_s(arch_imp)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                       2         2         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(5)/inst_data_out_buff
+=== Design Unit: data_link_lib.data_out_buff(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                       113        98        15    86.72%
+    Statements                     146       113        33    77.39%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(6)/inst_data_out_buff/ints_fifo_dc_axis_s/AXIS_SLAVE_inst
+=== Design Unit: data_link_lib.axis_slave(implementation)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                         2         2         0   100.00%
+    Statements                       5         5         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(6)/inst_data_out_buff/ints_fifo_dc_axis_s/fifo_dc_inst
+=== Design Unit: data_link_lib.fifo_dc(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        60        60         0   100.00%
+    Statements                      82        82         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(6)/inst_data_out_buff/ints_fifo_dc_axis_s
+=== Design Unit: data_link_lib.fifo_dc_axis_s(arch_imp)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                       2         2         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(6)/inst_data_out_buff
+=== Design Unit: data_link_lib.data_out_buff(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                       113        98        15    86.72%
+    Statements                     146       113        33    77.39%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(7)/inst_data_out_buff/ints_fifo_dc_axis_s/AXIS_SLAVE_inst
+=== Design Unit: data_link_lib.axis_slave(implementation)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                         2         2         0   100.00%
+    Statements                       5         5         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(7)/inst_data_out_buff/ints_fifo_dc_axis_s/fifo_dc_inst
+=== Design Unit: data_link_lib.fifo_dc(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        60        60         0   100.00%
+    Statements                      82        82         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(7)/inst_data_out_buff/ints_fifo_dc_axis_s
+=== Design Unit: data_link_lib.fifo_dc_axis_s(arch_imp)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                       2         2         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/gen_data_out_buff(7)/inst_data_out_buff
+=== Design Unit: data_link_lib.data_out_buff(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                       113       100        13    88.49%
+    Statements                     146       114        32    78.08%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_in_bc_buf/ints_fifo_dc_axis_m/AXIS_MASTER_inst
+=== Design Unit: data_link_lib.axis_master(implementation)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        29        13        16    44.82%
+    Statements                      76        35        41    46.05%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_in_bc_buf/ints_fifo_dc_axis_m/fifo_dc_inst
+=== Design Unit: data_link_lib.fifo_dc(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        60        57         3    95.00%
+    Statements                      82        79         3    96.34%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_in_bc_buf
+=== Design Unit: data_link_lib.data_in_bc_buf(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                         6         6         0   100.00%
+    Statements                       5         5         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_desencapsulation_bc
+=== Design Unit: data_link_lib.data_desencapsulation_bc(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        11         9         2    81.81%
+    Statements                      12        12         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf_bc
+=== Design Unit: data_link_lib.fifo_dc_drop_bad_frame(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        63        63         0   100.00%
+    Statements                      89        89         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_desencapsulation
+=== Design Unit: data_link_lib.data_desencapsulation(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        11        10         1    90.90%
+    Statements                      14        14         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/inst_mid_buf
+=== Design Unit: data_link_lib.fifo_dc_drop_bad_frame(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        63        63         0   100.00%
+    Statements                      89        89         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_check
+=== Design Unit: data_link_lib.data_seq_check(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        35        32         3    91.42%
+    Statements                     159       157         2    98.74%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_check
+=== Design Unit: data_link_lib.data_crc_check(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        25        25         0   100.00%
+    Statements                      67        67         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_word_id_fsm
+=== Design Unit: data_link_lib.data_word_id_fsm(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        99        89        10    89.89%
+    Statements                     189       175        14    92.59%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_err_management
+=== Design Unit: data_link_lib.data_err_management(behavioral)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        58        51         7    87.93%
+    Statements                      82        69        13    84.14%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_link_reset
+=== Design Unit: data_link_lib.data_link_reset(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        21        20         1    95.23%
+    Statements                      41        40         1    97.56%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_out_bc_buf/ints_fifo_dc_axis_s/AXIS_SLAVE_inst
+=== Design Unit: data_link_lib.axis_slave(implementation)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                         2         2         0   100.00%
+    Statements                       5         5         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_out_bc_buf/ints_fifo_dc_axis_s/fifo_dc_inst
+=== Design Unit: data_link_lib.fifo_dc(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        60        57         3    95.00%
+    Statements                      82        79         3    96.34%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_out_bc_buf/ints_fifo_dc_axis_s
+=== Design Unit: data_link_lib.fifo_dc_axis_s(arch_imp)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                       2         2         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_out_bc_buf
+=== Design Unit: data_link_lib.data_out_bc_buf(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        18        18         0   100.00%
+    Statements                      22        22         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_mac
+=== Design Unit: data_link_lib.data_mac(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        49        46         3    93.87%
+    Statements                     137       136         1    99.27%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_encapsulation
+=== Design Unit: data_link_lib.data_encapsulation(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        35        27         8    77.14%
+    Statements                     100        83        17    83.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_seq_compute
+=== Design Unit: data_link_lib.data_seq_compute(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        11        10         1    90.90%
+    Statements                      23        21         2    91.30%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link/inst_data_crc_compute
+=== Design Unit: data_link_lib.data_crc_compute(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        35        34         1    97.14%
+    Statements                      78        78         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_data_link
+=== Design Unit: data_link_lib.data_link(behavioral)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                         2         2         0   100.00%
+    Statements                       9         9         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_mib_data_link
+=== Design Unit: data_link_lib.mib_data_link(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                      39        39         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_mux_tx
+=== Design Unit: interlayer_lib.mux_tx(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                         4         4         0   100.00%
+    Statements                      19        19         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_demux_rx
+=== Design Unit: interlayer_lib.demux_rx(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                         4         4         0   100.00%
+    Statements                       3         3         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_lane_init_fsm
+=== Design Unit: phy_plus_lane_lib.lane_init_fsm(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                       149       122        27    81.87%
+    Statements                     227       200        27    88.10%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_fifo_in_ctrl
+=== Design Unit: commun.fifo_dc(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        60        47        13    78.33%
+    Statements                      82        64        18    78.04%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_fifo_tx_data
+=== Design Unit: commun.fifo_dc(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        60        56         4    93.33%
+    Statements                      82        76         6    92.68%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_lane_ctrl_word_insert
+=== Design Unit: phy_plus_lane_lib.lane_ctrl_word_insert(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        28        20         8    71.42%
+    Statements                      63        55         8    87.30%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_skip_insertion
+=== Design Unit: phy_plus_lane_lib.skip_insertion(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        10         8         2    80.00%
+    Statements                      22        22         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_parallel_loopback
+=== Design Unit: phy_plus_lane_lib.parallel_loopback(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                         8         8         0   100.00%
+    Statements                       9         9         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_rx_sync_fsm
+=== Design Unit: phy_plus_lane_lib.rx_sync_fsm(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        33        28         5    84.84%
+    Statements                      65        61         4    93.84%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_lane_ctrl_word_detect
+=== Design Unit: phy_plus_lane_lib.lane_ctrl_word_detect(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        25        21         4    84.00%
+    Statements                      98        89         9    90.81%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_fifo_rx_data
+=== Design Unit: commun.fifo_dc(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        60        57         3    95.00%
+    Statements                      82        79         3    96.34%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_fifo_out_ctrl
+=== Design Unit: commun.fifo_dc(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        60        47        13    78.33%
+    Statements                      82        66        16    80.48%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_bufg_gt_tx_clock/BufG_GT_bd_i
+=== Design Unit: phy_plus_lane_lib.bufg_gt_bd(structure)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                       7         7         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/extended_phy_layer_gtwiz_versal_0_0_gtreset_inst_0
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_reset_ip
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        94        74        20    78.72%
+    Statements                     268       210        58    78.35%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/ch0_tx_function_inst
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_tx_function
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                       103        77        26    74.75%
+    Statements                     162       133        29    82.09%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/ch1_tx_function_inst
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_tx_function
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                       103        65        38    63.10%
+    Statements                     162       118        44    72.83%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/ch2_tx_function_inst
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_tx_function
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                       103        65        38    63.10%
+    Statements                     162       118        44    72.83%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/ch3_tx_function_inst
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_tx_function
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                       103        65        38    63.10%
+    Statements                     162       118        44    72.83%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/ch0_rx_function_inst
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_rx_function
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        82        60        22    73.17%
+    Statements                     126       101        25    80.15%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/ch1_rx_function_inst
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_rx_function
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        82        48        34    58.53%
+    Statements                     126        86        40    68.25%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/ch2_rx_function_inst
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_rx_function
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        82        48        34    58.53%
+    Statements                     126        86        40    68.25%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/ch3_rx_function_inst
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_rx_function
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        82        48        34    58.53%
+    Statements                     126        86        40    68.25%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/u_ch0_txpmaresetdone
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_gtyp_rstdone
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                      10        10         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/u_ch1_txpmaresetdone
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_gtyp_rstdone
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                      10        10         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/u_ch2_txpmaresetdone
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_gtyp_rstdone
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                      10        10         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/u_ch3_txpmaresetdone
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_gtyp_rstdone
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                      10        10         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/u_ch0_rxpmaresetdone
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_gtyp_rstdone
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                      10        10         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/u_ch1_rxpmaresetdone
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_gtyp_rstdone
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                      10        10         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/u_ch2_rxpmaresetdone
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_gtyp_rstdone
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                      10        10         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/u_ch3_rxpmaresetdone
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_gtyp_rstdone
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                      10        10         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/u_ch0_txresetdone
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_gtyp_rstdone
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                      10        10         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/u_ch1_txresetdone
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_gtyp_rstdone
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                      10        10         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/u_ch2_txresetdone
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_gtyp_rstdone
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                      10        10         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/u_ch3_txresetdone
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_gtyp_rstdone
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                      10        10         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/u_ch0_rxresetdone
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_gtyp_rstdone
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                      10        10         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/u_ch1_rxresetdone
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_gtyp_rstdone
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                      10        10         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/u_ch2_rxresetdone
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_gtyp_rstdone
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                      10        10         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/u_ch3_rxresetdone
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_gtyp_rstdone
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                      10        10         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/u_ch0_msttxresetdone
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_gtyp_rstdone
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                      10        10         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/u_ch1_msttxresetdone
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_gtyp_rstdone
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                      10        10         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/u_ch2_msttxresetdone
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_gtyp_rstdone
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                      10        10         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/u_ch3_msttxresetdone
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_gtyp_rstdone
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                      10        10         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/u_ch0_mstrxresetdone
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_gtyp_rstdone
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                      10        10         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/u_ch1_mstrxresetdone
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_gtyp_rstdone
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                      10        10         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/u_ch2_mstrxresetdone
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_gtyp_rstdone
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                      10        10         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/u_ch3_mstrxresetdone
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_gtyp_rstdone
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                      10        10         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/u_ch0_10_pcsrsvdout
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_gtyp_rstdone
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                      10        10         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/u_ch1_10_pcsrsvdout
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_gtyp_rstdone
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                      10        10         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/u_ch2_10_pcsrsvdout
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_gtyp_rstdone
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                      10        10         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/u_ch3_10_pcsrsvdout
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_gtyp_rstdone
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                      10        10         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/u_ch0_11_pcsrsvdout
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_gtyp_rstdone
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                      10        10         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/u_ch1_11_pcsrsvdout
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_gtyp_rstdone
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                      10        10         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/u_ch2_11_pcsrsvdout
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_gtyp_rstdone
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                      10        10         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst/u_ch3_11_pcsrsvdout
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_gtyp_rstdone
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                      10        10         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane/inst_extended_phy_layer_wrapper/extended_phy_layer_i/gtwiz_versal_0/inst/intf_quad_map_inst/quad_top_inst/gt_quad_base_0_inst/inst
+=== Design Unit: phy_plus_lane_lib.extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_inst
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                         8         8         0   100.00%
+    Statements                      17        17         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_phy_plus_lane
+=== Design Unit: phy_plus_lane_lib.phy_plus_lane(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Branches                        20        20         0   100.00%
+    Statements                      30        30         0   100.00%
+
+=================================================================================
+=== Instance: /configuration_2_bench/spacefibre_instance/inst_mib_phy_plus_lane
+=== Design Unit: phy_plus_lane_lib.mib_phy_plus_lane(rtl)
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                      13        13         0   100.00%
+
+=================================================================================
+=== Instance: /data_link_lib
+=== Design Unit: data_link_lib.data_link_lib
+=================================================================================
+    Enabled Coverage              Bins      Hits    Misses  Coverage
+    ----------------              ----      ----    ------  --------
+    Statements                      26        18         8    69.23%
+
+
+Total Coverage By Instance (filtered view): 85.37%
+

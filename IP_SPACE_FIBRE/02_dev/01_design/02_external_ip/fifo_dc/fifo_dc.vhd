@@ -1,3 +1,17 @@
+-----------------------------------------------------------------------------------
+-- #                          Copyright CNES 2025                                 #
+-- #                                                                              #
+-- # This source describes Open Hardware and is licensed under the CERN-OHL-W v2. #
+-- #                                                                              #
+-- # You may redistribute and modify this documentation and make products         #
+-- # using it under the terms of the CERN-OHL-W v2 (https:/cern.ch/cern-ohl).     #
+-- #                                                                              #
+-- # This documentation is distributed WITHOUT ANY EXPRESS OR IMPLIED             #
+-- # WARRANTY, INCLUDING OF MERCHANTABILITY, SATISFACTORY QUALITY                 #
+-- # AND FITNESS FOR A PARTICULAR PURPOSE.                                        #
+-- #                                                                              #
+-- # Please see the CERN-OHL-W v2 for applicable conditions.                      #
+-----------------------------------------------------------------------------------
 ----------------------------------------------------------------------------
 -- Auteur(s)        : Florian TUTZO
 --
@@ -7,12 +21,7 @@
 --
 -- Description      : Module FIFO dual clock
 --
-----------------------------------------------------------------------------
--- Copyright (c) 2014 par ELSYS Design Group
--- Tous les droits sont reserves. Toute reproduction totale ou partielle est
--- interdite sans le consentement ecrit du proprietaire des droits d'auteur.
-----------------------------------------------------------------------------
-
+---------------------------------------------------------------------------
 ---------------------------------------------------------------------------
 -- DECLARATION DES LIBRAIRIES
 ---------------------------------------------------------------------------
@@ -459,7 +468,7 @@ begin
             end if;
 
             -- Flush is finished
-            if flush_ack_wr = '1' and flush_ack_rd = '1' then
+            if flush_ack_wr = '1' and flush_ack_rd = '1' and CMD_FLUSH  = '0' then
                 flush_ack_rd    <= '0';
                 flush_ack_wr    <= '0';
                 cmd_flush_req   <= '0';
