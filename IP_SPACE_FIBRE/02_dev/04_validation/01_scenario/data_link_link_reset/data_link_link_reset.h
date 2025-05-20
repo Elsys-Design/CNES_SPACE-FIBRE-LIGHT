@@ -9,6 +9,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-void data_link_link_reset_step1(void);
-void data_link_link_reset_step2(void);
+int data_link_link_reset_step1(void);
+int data_link_link_reset_step2(void);
 void data_link__link_reset_all_step(void);

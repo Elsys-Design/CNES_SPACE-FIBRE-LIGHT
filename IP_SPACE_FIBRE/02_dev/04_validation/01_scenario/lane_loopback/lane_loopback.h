@@ -14,9 +14,9 @@ void wait_for_started_to_active(void);
 uint32_t wait_end_test(void);
 void started_to_active(void);
 
-void scenario_loopback(void);
-void lane_loopback_step2(void);
-void lane_loopback_step1(void);
-void lane_loopback_step3(void);
+int lane_loopback_step2(void);
+int lane_loopback_step1(void);
+int lane_loopback_step3(void);
+void lane_loopback_all_step (void);
 
 
