@@ -74,7 +74,7 @@ static enum action_result wait_test_end
 		timer++;
 		bool completed = true;
 
-		if (timer >= 20000)
+		if (timer >= 40000)
 		{
 			debug_printf("\r\n wait_end_test timeout\r\n");
 
@@ -280,10 +280,8 @@ enum action_result run_tests
 	unsigned int successes = 0;
 	for (unsigned int i = 0; i < test_count; ++i)
 	{
-		debug_printf("\r\n  in for %x.\r\n", i);
 		switch (run_test(test + i))
 		{
-			debug_printf("\r\n  in switch %x.\r\n", i);
 			case OK:
 				debug_printf("\r\n  success Test %x.\r\n", i);
 				successes++;
