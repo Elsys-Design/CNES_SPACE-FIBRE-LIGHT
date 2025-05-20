@@ -146,7 +146,7 @@ static const struct test_config step1_test[STEP1_TESTS_COUNT] =
 		)
 	};
 
-void data_link_lpb_step1 (void)
+int data_link_lpb_step1 (void)
 {
 	uint32_t temp;
 	uint32_t step1_failed = 0;
@@ -199,10 +199,12 @@ void data_link_lpb_step1 (void)
 	if (run_tests(STEP1_TESTS_COUNT, step1_test)!= OK || step1_failed ==1){
 		debug_printf("\r\n RESULT : Step 1 FAILED \r\n");
 		debug_printf("\r\n ------------------------------------------------------------------------\r\n");
+		return 1;
 	}
 	else{
 		debug_printf("\r\n RESULT : Step 1 PASS  \r\n");
 		debug_printf("\r\n ------------------------------------------------------------------------\r\n");
+		return 0;
 	
 	}
 }
@@ -295,7 +297,7 @@ static uint32_t assert_ack_counters_increased
 }
 
 
-void data_link_lpb_step2 (void)
+int data_link_lpb_step2 (void)
 {
 	uint32_t last_status = 0, new_status = 0, step2_success=0;
 	uint32_t temp;
@@ -319,7 +321,7 @@ void data_link_lpb_step2 (void)
 	{
 		for (int i = 0; i < CHANNEL_COUNT-1; ++i)
 		{
-			// save the context of tcounters
+			// save the context of counters
 			last_status = *DL_CONFIGURATOR_DL_QOS_2_PTR;
 
 
@@ -327,16 +329,12 @@ void data_link_lpb_step2 (void)
 			*DL_ANALYZER_X_CONFIGURATION_PTR(i) =
 			DL_ANALYZER_CONFIGURATION_TO_UINT32_T((step2_test+j)->ana_conf[i]);
 
-	
   	  // config generator 
 			*DL_GENERATOR_X_CONFIGURATION_PTR(i) =
 				DL_GENERATOR_CONFIGURATION_TO_UINT32_T((step2_test+j)->gen_conf[i]);
 			
-
-		
 			// init value analyzer
 			*DL_ANALYZER_X_INITIAL_VALUE_PTR(i) = (step2_test+j)->ana_init[i];
-
 
   	  // init value generator
 			*DL_GENERATOR_X_INITIAL_VALUE_PTR(i) = (step2_test+j)->gen_init[i];
@@ -372,11 +370,13 @@ void data_link_lpb_step2 (void)
 	{
 		debug_printf("\r\n RESULT : Step 2 PASS \r\n");
 		debug_printf("\r\n ------------------------------------------------------------------------\r\n");
+		return 0;
 	
 	}
 	else{
 		debug_printf("\r\n RESULT : Step 2 FAILED \r\n");
 		debug_printf("\r\n ------------------------------------------------------------------------\r\n");
+		return 1;
 	}
 }
 
@@ -434,7 +434,7 @@ static const struct test_config step3_test[STEP3_TESTS_COUNT] =
 		)
 	};
 
-void data_link_lpb_step3 (void)
+int data_link_lpb_step3 (void)
 {
 	debug_printf("\r\n -----------------------------------------------------------------------\r\n");
 	debug_printf("\r\n ----------------------------- DATA-LINK-------------------------------- \r\n");
@@ -444,11 +444,17 @@ void data_link_lpb_step3 (void)
 	// Disable Injector and Spy read command
 	phy_plus_lane_plus_dl();
 
-	init_and_run_tests(STEP3_TESTS_COUNT, step3_test);
-
-	debug_printf("\r\n Step 3: END \r\n");
-			debug_printf("\r\n RESULT : Step 2 FAILED \r\n");
+	if (init_and_run_tests(STEP3_TESTS_COUNT, step3_test) != OK){
+		debug_printf("\r\n RESULT : Step 3 FAILED \r\n");
 		debug_printf("\r\n ------------------------------------------------------------------------\r\n");
+		return 1;
+	}
+	else{
+		debug_printf("\r\n RESULT : Step 3 PASS \r\n");
+		debug_printf("\r\n ------------------------------------------------------------------------\r\n");
+		return 0;
+	}
+
 }
 
 /******************************************************************************/
@@ -472,7 +478,7 @@ static const struct test_config step4_test[STEP4_TESTS_COUNT] =
 				.packet_size = __WORDS_TO_BYTES(64)
 			}
 		),
-		// Test 2: Send a packet of 64 words to the virtual buffer 0
+		// Test 2: Send a packet of 5 words
 		//
 		// This is the one that should succeed.
 		BASIC_CONFIG
@@ -486,7 +492,7 @@ static const struct test_config step4_test[STEP4_TESTS_COUNT] =
 		)
 	};
 
-void data_link_lpb_step4 (void)
+int data_link_lpb_step4 (void)
 {
 	uint32_t temp;
 	uint32_t step4_failed = 0;
@@ -506,13 +512,14 @@ void data_link_lpb_step4 (void)
 	}
 	for (int i = 0; i < CHANNEL_COUNT-1; ++i)
 	{
+		// Assert Continuous Mode of the virtual channel.
 		DL_CONFIGURATOR_DL_PARAMETER_SET_IN_PLACE
 		(
 			CONTINUOUS_VC,
 			0x1 << i, /* Channel i */
 			*DL_CONFIGURATOR_DL_PARAMETER_PTR
 		);
-
+    //	Assert VC_PAUSE of the virtual channel.
 		DL_CONFIGURATOR_DL_PARAMETER_SET_IN_PLACE
 		(
 			PAUSE_VC,
@@ -521,10 +528,6 @@ void data_link_lpb_step4 (void)
 		);
 
 
-
-		// temp = *DL_CONFIGURATOR_DL_PARAMETER_PTR;
-		// debug_printf("\r\n DL_CONFIGURATOR_DL_PARAMETER_PTR %x \r\n", temp);
-
 		////////////////////////////////////// 1st send /////////////////////////////
 
 		// 2 packets of 64 words 
@@ -532,9 +535,6 @@ void data_link_lpb_step4 (void)
   	// config generator 
 		*DL_GENERATOR_X_CONFIGURATION_PTR(i) =
 			DL_GENERATOR_CONFIGURATION_TO_UINT32_T((step4_test+0)->gen_conf[i]);
-
-		// temp= *DL_GENERATOR_X_CONFIGURATION_PTR(i);
-		// debug_printf("\r\n DL_GENERATOR_X_CONFIGURATION_PTR  x%x\r\n", temp);
 
   	// init value generator
 		*DL_GENERATOR_X_INITIAL_VALUE_PTR(i) = (step4_test+0)->gen_init[i];
@@ -551,25 +551,16 @@ void data_link_lpb_step4 (void)
 			step4_failed = 1;
 		}
 
-		// temp= *DL_ANALYZER_X_STATUS_PTR(i);
-		// debug_printf("\r\n DL_ANALYZER STATUS x%x\r\n", temp);
-
   	////////////////////////////////////// 2nd send ///////////////////////////// 
-
+    
 		// config analyzer
 		*DL_ANALYZER_X_CONFIGURATION_PTR(i) =
 		DL_ANALYZER_CONFIGURATION_TO_UINT32_T((step4_test+1)->ana_conf[i]);
-
-		// temp= *DL_ANALYZER_X_CONFIGURATION_PTR(i);
-		// debug_printf("\r\n DL_ANALYZER_CONFIGURATION_TO_UINT32_T  x%x \r\n", temp);
 
 
   	// config generator 
 		*DL_GENERATOR_X_CONFIGURATION_PTR(i) =
 			DL_GENERATOR_CONFIGURATION_TO_UINT32_T((step4_test+1)->gen_conf[i]);
-
-		// temp= *DL_GENERATOR_X_CONFIGURATION_PTR(i);
-		// debug_printf("\r\n DL_GENERATOR_X_CONFIGURATION_PTR  x%x \r\n", temp);
 
 		// init value analyzer
 		*DL_ANALYZER_X_INITIAL_VALUE_PTR(i) = (step4_test+1)->ana_init[i];
@@ -577,6 +568,7 @@ void data_link_lpb_step4 (void)
   	// init value generator
 		*DL_GENERATOR_X_INITIAL_VALUE_PTR(i) = (step4_test+1)->gen_init[i];
 	
+		// Send a packet of 5 word.
 		// start model generator to send an EOP
 		DL_GENERATOR_CONTROL_SET_IN_PLACE(MODEL_START, 1, *DL_GENERATOR_X_CONTROL_PTR(i));
 
@@ -588,7 +580,7 @@ void data_link_lpb_step4 (void)
 			debug_printf("\r\n ERROR: Generator channel x%x not ended waiting EOP generation\r\n", i);
 			step4_failed =1;
 		}
-
+    // Send a second packet of 5 word.
   	// start models
 		DL_ANALYZER_CONTROL_SET_IN_PLACE(MODEL_START, 1, *DL_ANALYZER_X_CONTROL_PTR(i));
 		DL_GENERATOR_CONTROL_SET_IN_PLACE(MODEL_START, 1, *DL_GENERATOR_X_CONTROL_PTR(i));
@@ -616,9 +608,6 @@ void data_link_lpb_step4 (void)
 			*DL_CONFIGURATOR_DL_PARAMETER_PTR
 		);
 
-		// temp = *DL_CONFIGURATOR_DL_PARAMETER_PTR;
-		// debug_printf("\r\n DL_CONFIGURATOR_DL_PARAMETER_PTR %x \r\n", temp);
-
 		wait_us_clk_150mhz(300);
 
 		// Generator ended ?
@@ -641,8 +630,6 @@ void data_link_lpb_step4 (void)
 			step4_failed =1;
 		}
 
-		// temp= *DL_ANALYZER_X_STATUS_PTR(i);
-		// debug_printf("\r\n DL_ANALYZER STATUS x%x\r\n", temp);
 		DL_CONFIGURATOR_DL_PARAMETER_SET_IN_PLACE
 		(
 			CONTINUOUS_VC,
@@ -655,11 +642,13 @@ void data_link_lpb_step4 (void)
 	{
 		debug_printf("\r\n Step 4 END : FAILED \r\n");
 		debug_printf("\r\n ------------------------------------------------------------------------\r\n");
+		return 1;
 	}
 	else
 	{
 		debug_printf("\r\n Step 4 END : PASS \r\n");
 		debug_printf("\r\n ------------------------------------------------------------------------\r\n");
+		return 0;
 	}
 	
 }
@@ -668,10 +657,20 @@ void data_link_lpb_step4 (void)
 /******************************************************************************/
 void data_link_lpb_all_step (void)
 {
-  data_link_lpb_step1();
-  data_link_lpb_step2();
-  data_link_lpb_step3();
-  data_link_lpb_step4();
+	int step1, step2, step3, step4;
+  step1 = data_link_lpb_step1();
+  step2 = data_link_lpb_step2();
+  step3 = data_link_lpb_step3();
+  step4 = data_link_lpb_step4();
+
+	if( (step1 != 0) || (step2 != 0) || (step3 != 0) || (step4 != 0)){
+		debug_printf("\r\n RESULT : ALL STEPS FAILED \r\n");
+		debug_printf("\r\n ------------------------------------------------------------------------\r\n");
+	}
+	else{
+		debug_printf("\r\n RESULT : ALL STEPS PASS \r\n");
+		debug_printf("\r\n ------------------------------------------------------------------------\r\n");
+	}
 }
 
 

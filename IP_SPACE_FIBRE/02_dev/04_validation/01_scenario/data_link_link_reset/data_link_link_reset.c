@@ -50,7 +50,7 @@ static const struct test_config step1_test[STEP1_TESTS_COUNT] =
 			}
 		)
 	};
-void data_link_link_reset_step1 (void)
+int data_link_link_reset_step1 (void)
 {
 	uint32_t temp1, temp2;
 	uint32_t step1_failed =0;
@@ -69,6 +69,7 @@ void data_link_link_reset_step1 (void)
 		return;
 	}
 
+  //Send a packet of 64 words to each virtual channel check that the data are received on Data_Link_Data_Analyzer models
 	if (run_test(step1_test)!= OK)
 	{
 		step1_failed = 1;
@@ -139,7 +140,7 @@ void data_link_link_reset_step1 (void)
 		step1_failed = 1;
 	}
 
-	//Clear Link_reset_asserted
+	//Clear Link_reset_asserted (not required)
 	DL_CONFIGURATOR_DL_PARAMETER_SET_IN_PLACE
 	(
 		LINK_RESET_ASSERTED,
@@ -149,6 +150,7 @@ void data_link_link_reset_step1 (void)
 
   //Enable LaneStart
 	DL_CONFIGURATOR_LANE_PARAMETER_SET_IN_PLACE(LANESTART, 1, *DL_CONFIGURATOR_LANE_PARAMETER_PTR);
+	
   //Wait that LaneState is “Active” (minimum 2 us)
 	wait_active();
 
@@ -157,11 +159,13 @@ void data_link_link_reset_step1 (void)
 	{
 		debug_printf("\r\n RESULT : Step 1 FAILED \r\n");
 		debug_printf("\r\n ------------------------------------------------------------------------\r\n");
+		return 1;
 	}
 	else
 	{
 		debug_printf("\r\n RESULT : Step 1 PASS \r\n");
 		debug_printf("\r\n ------------------------------------------------------------------------\r\n");
+		return 0;
 	}
 	
 }
@@ -192,7 +196,7 @@ static const struct test_config step2_test[STEP2_TESTS_COUNT] =
 		)
 	};
 
-void data_link_link_reset_step2(void)
+int data_link_link_reset_step2(void)
 {
 	uint32_t temp1, temp2;
 	uint32_t step2_failed =0;
@@ -282,7 +286,7 @@ void data_link_link_reset_step2(void)
 		step2_failed = 1;
 	}
 	
-  //	Assert PAUSE_VC for channel 0
+  //	De-assert PAUSE_VC for channel 0
 	DL_CONFIGURATOR_DL_PARAMETER_SET_IN_PLACE
 	(
 		PAUSE_VC,
@@ -313,11 +317,13 @@ void data_link_link_reset_step2(void)
 	{
 		debug_printf("\r\n RESULT : Step 2 FAILED \r\n");
 		debug_printf("\r\n ------------------------------------------------------------------------\r\n");
+		return 1;
 	}
 	else
 	{
 		debug_printf("\r\n RESULT : Step 2 PASS \r\n");
 		debug_printf("\r\n ------------------------------------------------------------------------\r\n");
+		return 0;
 	}
 }
 
@@ -326,6 +332,15 @@ void data_link_link_reset_step2(void)
 /******************************************************************************/
 void data_link__link_reset_all_step (void)
 {
-  data_link_link_reset_step1();
-  data_link_link_reset_step2();
+	int step1, step2;
+  step1 = data_link_link_reset_step1();
+  step2 = data_link_link_reset_step2();
+	if( (step1 != 0) || (step2 != 0)){
+		debug_printf("\r\n RESULT : ALL STEPS FAILED \r\n");
+		debug_printf("\r\n ------------------------------------------------------------------------\r\n");
+	}
+	else{
+		debug_printf("\r\n RESULT : ALL STEPS PASS \r\n");
+		debug_printf("\r\n ------------------------------------------------------------------------\r\n");
+	}
 }
