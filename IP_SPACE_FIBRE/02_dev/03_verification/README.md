@@ -28,6 +28,23 @@ The Questa binaries should be added to the environnement variable PATH before ru
 
 # Running a simulation
 - go into `IP_SPACE_FIBRE/02_dev/03_verification/05_scenario/` 
+- configure your environnement for runningthe simulation. To do so you have to set at least 3 variables:
+    - SPACEFIBRELIGHT_ROOT_PATH : the main absolute path location of your spacefibre cloned project (the one with .git folder)
+    - FRAMEWORK_COCOTB_INSTALL_PATH : the absolute path location for your cocotb_framework cloned project (the one with .git folder)
+    - GUI : set the variable to 1 to launch questa GUI or simply write 0 to directly run the simulaiton without GUI.
+
+   To do so you can execute in a terminal (or add them to you .bashrc)
+   ```
+   #set you absolute path to the root of the project spacefibrelight
+        export SPACEFIBRELIGHT_ROOT_PATH=<ABSOLUTE/PATH/>24-9771-ED_CNES_IP-SPACE-FIBRE
+
+        #set your framework location
+        export FRAMEWORK_COCOTB_INSTALL_PATH==<ABSOLUTE/PATH/>24-9771-ed-cnes_test-cocotb-framework
+
+        # Select 1 to have to gui loaded (you will have to click run all to start simualtion)
+        # select 0 to have automatic
+        export GUI=0
+   ```
 - edit `RunSim.sh` to 
     - match your framework installation path 
     - your spacefibrelight IP root dir 
@@ -36,3 +53,40 @@ The Questa binaries should be added to the environnement variable PATH before ru
 - to execute every test available in every folders use command `RunSim.sh all`
 
 
+# Configuration
+
+The `Runme.sh' script as several configuration variables:
+
+- `SPACEFIBRELIGHT_ROOT_PATH`:absolute path to the root of the project spacefibrelight
+- `FRAMEWORK_COCOTB_INSTALL_PATH`: absolute path to the root of the project cocotb framework 
+- `GUI` :
+    -Select `1` to have to gui loaded (you will have to click run all to start simulation)
+    -Select `0` to have automatic
+- `WAVES`
+    - Select `1` to create the full waveform for the test (questa WLF file)
+    - select `0` not ot generate the waveforms
+
+- `EXTRA_VSIM_CMD` : you can set addition vsim command with this variable
+
+For convenience , you can create a file called `IP_SPACE_FIBRE/02_dev/03_verification/05_scenario/environnement`.
+This file will include all paramaters and will be sourced prior to launch simulation.
+Here is an example of the content of the file (this file won't be part of the repository as this configuration is custom for each developper):
+```
+
+#set you absolute path to the root of the project spacefibrelight
+export SPACEFIBRELIGHT_ROOT_PATH=/home/user/document/24-9771-ED_CNES_IP-SPACE-FIBRE
+
+#set your framework location
+export FRAMEWORK_COCOTB_INSTALL_PATH=/home/user/document/24-9771-ed-cnes_test-cocotb-framework
+
+# Select 1 to have to gui loaded (you will have to click run all to start simualtion)
+# select 0 to have automatic
+export GUI=0
+
+# Select 1 to create the full waveform for the test (questa WLF file)
+# select 0 not ot generate the waveforms
+export WAVES=0
+
+##additionnal VSIM command  
+export EXTRA_VSIM_CMD="-do $SPACEFIBRELIGHT_ROOT_PATH/IP_SPACE_FIBRE/02_dev/03_verification/05_scenario/custom.do"
+```

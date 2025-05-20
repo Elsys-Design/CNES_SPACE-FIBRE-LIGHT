@@ -6,34 +6,57 @@
 #
 # Be carefull : The name of the folder as to match the name of the cocotb test inside it
 
-###################################
-#set your variable below
+### for convenience you can store all your bash variable commands  in a file called environnement
+## if this file exists it will be sourced automatically
+FILE=environnement
+if [ -f  ]; then
+   echo "File $FILE exists."
+   source $FILE
+   echo "sourcing this file for custom parameters."
+else
+   echo "File $FILE does not exist. Using gobal variable."
+fi
 
-#set your absolute path to the root of the project spacefibrelight
-export SPACEFIBRELIGHT_ROOT_PATH=/mnt/6ae9ae0d-927d-480b-9d98-fd506029b645/CNES_Project/24-9771-ED_CNES_IP-SPACE-FIBRE
 
-#set your framework location
-export FRAMEWORK_COCOTB_INSTALL_PATH=/mnt/6ae9ae0d-927d-480b-9d98-fd506029b645/CNES_Project/cosim_environment
-
-# Select 1 to have to gui loaded (you will have to click run all to start simualtion)
-# select 0 to have automatic
-export GUI=1
-
-# Select 1 to create the full waveform for the test (questa WLF file)
-# select 0 not ot generate the waveforms
-export WAVES=1
-
-##additionnal VSIM command  
-export EXTRA_VSIM_CMD="-do $SPACEFIBRELIGHT_ROOT_PATH/IP_SPACE_FIBRE/02_dev/03_verification/05_scenario/fast_sim.do"
-
-#############################################
-
+################## script run control ###########################
 # Check if exactly one parameter is passed
 if [ "$#" -ne 1 ]; then
   echo "Error: This script requires exactly one parameter."
   echo "Usage: $0 <MYTEST>"
   echo "          <MYTEST> : Name of the test to be ran |  all : to run all tests"
   exit 1
+fi
+
+# check if SPACEFIBRELIGHT_ROOT_PATH is set
+if  [ -z ${SPACEFIBRELIGHT_ROOT_PATH+x} ]; then
+echo "missing SPACEFIBRELIGHT_ROOT_PATH variable"
+echo "please execute in terminal prior to launch this script:"
+echo "      export SPACEFIBRELIGHT_ROOT_PATH=MY/ABSOLUTE/PATH/TO/SPACEFIBRELIBRELIGHT/MAIN/FOLDER"
+exit 1 
+fi
+
+# check if FRAMEWORK_COCOTB_INSTALL_PATH is set
+if  [ -z ${FRAMEWORK_COCOTB_INSTALL_PATH+x} ]; then
+    echo "missing FRAMEWORK_COCOTB_INSTALL_PATH variable"
+    echo "please execute in terminal prior to launch this script:"
+    echo "      export FRAMEWORK_COCOTB_INSTALL_PATH=MY/ABSOLUTE/PATH/TO/COCOTB_FRAMEWORK/MAIN/FOLDER"
+    exit 1 
+fi
+
+# check if SPACEFIBRELIGHT_ROOT_PATH is set
+if  [ -z ${SPACEFIBRELIGHT_ROOT_PATH+x} ]; then
+echo "missing SPACEFIBRELIGHT_ROOT_PATH variable"
+echo "please execute in terminal prior to launch this script:"
+echo "      export SPACEFIBRELIGHT_ROOT_PATH=MY/ABSOLUTE/PATH/TO/SPACEFIBRELIBRELIGHT/MAIN/FOLDER"
+exit 1 
+fi
+
+# check if FRAMEWORK_COCOTB_INSTALL_PATH is set
+if  [ -z ${FRAMEWORK_COCOTB_INSTALL_PATH+x} ]; then
+    echo "missing FRAMEWORK_COCOTB_INSTALL_PATH variable"
+    echo "please execute in terminal prior to launch this script:"
+    echo "      export FRAMEWORK_COCOTB_INSTALL_PATH=MY/ABSOLUTE/PATH/TO/COCOTB_FRAMEWORK/MAIN/FOLDER"
+    exit 1 
 fi
 
 ###################################
@@ -86,6 +109,8 @@ else
     trap 'echo -e "\n###############\nTest (or folder): $MYSIM doesnt exist! \nExiting.\n###############\n"' ERR
     cd $MYSIM # Will fail and trigger trap if doesn't exist
     
+    #change error message 
+    trap 'echo -e "\n###############\nError Running test : $MYSIM (see previous error message from cocotb)! \nExiting.\n###############\n"' ERR
     #clean sim build sometimes cocotb fail to refresh it
     rm -r sim_build
 

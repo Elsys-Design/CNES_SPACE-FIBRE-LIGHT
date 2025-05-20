@@ -11,7 +11,9 @@ This repository includes de Ip called Spacefibrelight. It was developped by Elsy
 - To be addaptable (that is to say, with additionnal development this IP could be fully compliant to ECSS standard)
 
 # Getting started
-The simulation environnement is based on cocotb python framework running on Questa simulator.
+The simulation environnement is based on cocotb python framework running on Questa simulator. See [cocotb installation](IP_SPACE_FIBRE/02_dev/03_verification/README.md#cocotb) for additionnal information.
+
+This repository use git-lfs (large file storage) to handle large model files for simulation. Please check the presence of every files listed in file `24-9771-ED_CNES_IP-SPACE-FIBRE/.gitattributes` in your repository prior to launch simulation. You will probably need to install [git-lfs](https://git-lfs.com/) prior to clone this repository. if file is not present use `git lfs fetch origin main' command to download them.
 
 ## Simulation
-To run simulation read 24-9771-ed_cnes_ip-space-fiber/IP_SPACE_FIBRE/02_dev/03_verification/05_scenario/README.md
+To run simulation read [simulation getting started](IP_SPACE_FIBRE/02_dev/03_verification/README.md#running-a-simulation)
