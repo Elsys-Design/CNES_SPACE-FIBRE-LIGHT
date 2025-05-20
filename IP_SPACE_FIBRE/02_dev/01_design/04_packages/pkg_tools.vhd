@@ -1,3 +1,17 @@
+-----------------------------------------------------------------------------------
+-- #                          Copyright CNES 2025                                 #
+-- #                                                                              #
+-- # This source describes Open Hardware and is licensed under the CERN-OHL-W v2. #
+-- #                                                                              #
+-- # You may redistribute and modify this documentation and make products         #
+-- # using it under the terms of the CERN-OHL-W v2 (https:/cern.ch/cern-ohl).     #
+-- #                                                                              #
+-- # This documentation is distributed WITHOUT ANY EXPRESS OR IMPLIED             #
+-- # WARRANTY, INCLUDING OF MERCHANTABILITY, SATISFACTORY QUALITY                 #
+-- # AND FITNESS FOR A PARTICULAR PURPOSE.                                        #
+-- #                                                                              #
+-- # Please see the CERN-OHL-W v2 for applicable conditions.                      #
+-----------------------------------------------------------------------------------
 ----------------------------------------------------------------------------
 -- Auteur(s)        :
 --
@@ -17,9 +31,6 @@
 -- Correction fonction log2
 --
 ----------------------------------------------------------------------------
--- Copyright (c) 2014 par ELSYS Design Group
--- Tous les droits sont reserves. Toute reproduction totale ou partielle est
--- interdite sans le consentement ecrit du proprietaire des droits d'auteur.
 ----------------------------------------------------------------------------
 
 
@@ -80,7 +91,7 @@ package PKG_TOOLS IS
 
    ---------------------------------------------------------------------------
    -- Fonction de saturation sur un vecteur signe
-   -- SatCmd est le nombre de bits à éliminer
+   -- SatCmd est le nombre de bits ï¿½ ï¿½liminer
    -- Ex : sat("00101",2) = "101"
    --      sat("01001",2) = "011"
    --      sat("10000",2) = "100",
@@ -92,7 +103,7 @@ package PKG_TOOLS IS
 
    ---------------------------------------------------------------------------
    -- Fonction de saturation sur un vecteur non signe
-   -- SatCmd est le nombre de bits à éliminer
+   -- SatCmd est le nombre de bits ï¿½ ï¿½liminer
    -- Ex : sat("10101",2) = "111"
    --      sat("00101",2) = "101"
    ---------------------------------------------------------------------------
@@ -104,7 +115,7 @@ package PKG_TOOLS IS
    ---------------------------------------------------------------------------
    -- Fonction de saturation sur un vecteur signe avec renvoi du statut de
    -- saturation
-   -- SatCmd est le nombre de bits à éliminer
+   -- SatCmd est le nombre de bits ï¿½ ï¿½liminer
    -- DataSat est le statut de saturation (0=non sature, 1=sature)
    -- Ex : sat("00101",2) = ("101",'0')
    --      sat("01001",2) = ("011",'1')
@@ -120,7 +131,7 @@ package PKG_TOOLS IS
    ---------------------------------------------------------------------------
    -- Fonction de saturation sur un vecteur non signe avec renvoi du statut de
    -- saturation
-   -- SatCmd est le nombre de bits à éliminer
+   -- SatCmd est le nombre de bits ï¿½ ï¿½liminer
    -- DataSat est le statut de saturation (0=non sature, 1=sature)
    -- Ex : sat("10101",2) = ("111",'1')
    --      sat("00101",2) = ("101",'0')
@@ -152,7 +163,7 @@ package PKG_TOOLS IS
 
    ---------------------------------------------------------------------------
    -- Fonction d'arrondi sur un vecteur signe
-   -- Cmd est le nombre de bits à éliminer
+   -- Cmd est le nombre de bits ï¿½ ï¿½liminer
    -- Ex : sat("10100",2) =
    --      sat("00100",3) = "01"
    ---------------------------------------------------------------------------
@@ -163,7 +174,7 @@ package PKG_TOOLS IS
 
    ---------------------------------------------------------------------------
    -- Fonction d'arrondi sur un vecteur non signe
-   -- Cmd est le nombre de bits à éliminer
+   -- Cmd est le nombre de bits ï¿½ ï¿½liminer
    -- Ex : sat("10100",2) = "110"
    --      sat("00100",3) = "01"
    ---------------------------------------------------------------------------
@@ -174,7 +185,7 @@ package PKG_TOOLS IS
 
    ---------------------------------------------------------------------------
    -- Fonction d'arrondi inferieur sur un vecteur signe
-   -- Cmd est le nombre de bits à éliminer
+   -- Cmd est le nombre de bits ï¿½ ï¿½liminer
    -- Ex : sat("10100",2) =
    --      sat("00100",3) = "00"
    ---------------------------------------------------------------------------
@@ -185,7 +196,7 @@ package PKG_TOOLS IS
 
    ---------------------------------------------------------------------------
    -- Fonction d'arrondi inferieur sur un vecteur non signe
-   -- Cmd est le nombre de bits à éliminer
+   -- Cmd est le nombre de bits ï¿½ ï¿½liminer
    -- Ex : sat("10111",2) = "101"
    --      sat("00100",3) = "00"
    ---------------------------------------------------------------------------
@@ -196,7 +207,7 @@ package PKG_TOOLS IS
 
    ---------------------------------------------------------------------------
    -- Fonction d'arrondi superieur sur un vecteur non signe
-   -- Cmd est le nombre de bits à éliminer
+   -- Cmd est le nombre de bits ï¿½ ï¿½liminer
    -- Ex : sat("10101",2) = "110"
    --      sat("00100",3) = "01"
    ---------------------------------------------------------------------------
@@ -308,7 +319,7 @@ package body PKG_TOOLS is
 
    ---------------------------------------------------------------------------
    -- Fonction de saturation sur un vecteur signe
-   -- SatCmd est le nombre de bits à éliminer
+   -- SatCmd est le nombre de bits ï¿½ ï¿½liminer
    -- Ex : sat("00101",2) = "101"
    --      sat("01001",2) = "011"
    --      sat("10000",2) = "100",
@@ -371,7 +382,7 @@ package body PKG_TOOLS is
 
    ---------------------------------------------------------------------------
    -- Fonction de saturation sur un vecteur non signe
-   -- SatCmd est le nombre de bits à éliminer
+   -- SatCmd est le nombre de bits ï¿½ ï¿½liminer
    -- Ex : sat("10101",2) = "111"
    --      sat("00101",2) = "101"
    ---------------------------------------------------------------------------
@@ -427,7 +438,7 @@ package body PKG_TOOLS is
    ---------------------------------------------------------------------------
    -- Fonction de saturation sur un vecteur signe avec renvoi du statut de
    -- saturation
-   -- SatCmd est le nombre de bits à éliminer
+   -- SatCmd est le nombre de bits ï¿½ ï¿½liminer
    -- DataSat est le statut de saturation (0=non sature, 1=sature)
    -- Ex : sat("00101",2) = ("101",'0')
    --      sat("01001",2) = ("011",'1')
@@ -494,7 +505,7 @@ package body PKG_TOOLS is
    ---------------------------------------------------------------------------
    -- Fonction de saturation sur un vecteur non signe avec renvoi du statut de
    -- saturation
-   -- SatCmd est le nombre de bits à éliminer
+   -- SatCmd est le nombre de bits ï¿½ ï¿½liminer
    -- DataSat est le statut de saturation (0=non sature, 1=sature)
    -- Ex : sat("10101",2) = ("111",'1')
    --      sat("00101",2) = ("101",'0')
@@ -592,7 +603,7 @@ package body PKG_TOOLS is
 
    ---------------------------------------------------------------------------
    -- Fonction d'arrondi sur un vecteur signe
-   -- Cmd est le nombre de bits à éliminer
+   -- Cmd est le nombre de bits ï¿½ ï¿½liminer
    -- Ex : sat("10100",2) =
    --      sat("00100",3) = "01"
    ---------------------------------------------------------------------------
@@ -607,10 +618,10 @@ package body PKG_TOOLS is
       -- pragma translate_off
       ---------------------------------------------------------------------------
       assert (Cmd < A'length)
-      report "Le nombre de bits d'arrondi est supérieur à celui du vecteur d'entrée"
+      report "Le nombre de bits d'arrondi est supï¿½rieur ï¿½ celui du vecteur d'entrï¿½e"
       severity ERROR;
       assert (Cmd > 1)
-      report "Le nombre de bits d'arrondi doit être supérieur à 1"
+      report "Le nombre de bits d'arrondi doit ï¿½tre supï¿½rieur ï¿½ 1"
       severity ERROR;
       ---------------------------------------------------------------------------
       -- pragma translate_on
@@ -631,7 +642,7 @@ package body PKG_TOOLS is
 
    ---------------------------------------------------------------------------
    -- Fonction d'arrondi sur un vecteur non signe
-   -- Cmd est le nombre de bits à éliminer
+   -- Cmd est le nombre de bits ï¿½ ï¿½liminer
    -- Ex : sat("10100",2) = "110"
    --      sat("00100",3) = "01"
    ---------------------------------------------------------------------------
@@ -645,10 +656,10 @@ package body PKG_TOOLS is
       -- pragma translate_off
       ---------------------------------------------------------------------------
       assert (Cmd < A'length)
-      report "Le nombre de bits d'arrondi est supérieur à celui du vecteur d'entrée"
+      report "Le nombre de bits d'arrondi est supï¿½rieur ï¿½ celui du vecteur d'entrï¿½e"
       severity FAILURE;
       assert (Cmd > 1)
-      report "Le nombre de bits d'arrondi doit être supérieur à 1"
+      report "Le nombre de bits d'arrondi doit ï¿½tre supï¿½rieur ï¿½ 1"
       severity FAILURE;
       ---------------------------------------------------------------------------
       -- pragma translate_on
@@ -660,7 +671,7 @@ package body PKG_TOOLS is
 
    ---------------------------------------------------------------------------
    -- Fonction d'arrondi inferieur sur un vecteur signe
-   -- Cmd est le nombre de bits à éliminer
+   -- Cmd est le nombre de bits ï¿½ ï¿½liminer
    -- Ex : sat("10100",2) =
    --      sat("00100",3) = "00"
    ---------------------------------------------------------------------------
@@ -675,7 +686,7 @@ package body PKG_TOOLS is
       -- pragma translate_off
       ---------------------------------------------------------------------------
       assert (Cmd < A'length)
-      report "Le nombre de bits de la partie décimale est supérieur à celui du vecteur d'entrée"
+      report "Le nombre de bits de la partie dï¿½cimale est supï¿½rieur ï¿½ celui du vecteur d'entrï¿½e"
       severity FAILURE;
       ---------------------------------------------------------------------------
       -- pragma translate_on
@@ -688,7 +699,7 @@ package body PKG_TOOLS is
 
    ---------------------------------------------------------------------------
    -- Fonction d'arrondi inferieur sur un vecteur non signe
-   -- Cmd est le nombre de bits à éliminer
+   -- Cmd est le nombre de bits ï¿½ ï¿½liminer
    -- Ex : sat("10111",2) = "101"
    --      sat("00100",3) = "00"
    ---------------------------------------------------------------------------
@@ -703,7 +714,7 @@ package body PKG_TOOLS is
       -- pragma translate_off
       ---------------------------------------------------------------------------
       assert (Cmd < A'length)
-      report "Le nombre de bits de la partie décimale est supérieur à celui du vecteur d'entrée"
+      report "Le nombre de bits de la partie dï¿½cimale est supï¿½rieur ï¿½ celui du vecteur d'entrï¿½e"
       severity FAILURE;
       ---------------------------------------------------------------------------
       -- pragma translate_on
@@ -716,7 +727,7 @@ package body PKG_TOOLS is
 
    ---------------------------------------------------------------------------
    -- Fonction d'arrondi superieur sur un vecteur non signe
-   -- Cmd est le nombre de bits à éliminer
+   -- Cmd est le nombre de bits ï¿½ ï¿½liminer
    -- Ex : sat("10101",2) = "110"
    --      sat("00100",3) = "01"
    ---------------------------------------------------------------------------
@@ -736,7 +747,7 @@ package body PKG_TOOLS is
       -- pragma translate_off
       ---------------------------------------------------------------------------
       assert (Cmd < A'length)
-      report "Le nombre de bits de la partie décimale est supérieur à celui du vecteur d'entrée"
+      report "Le nombre de bits de la partie dï¿½cimale est supï¿½rieur ï¿½ celui du vecteur d'entrï¿½e"
       severity FAILURE;
       ---------------------------------------------------------------------------
       -- pragma translate_on

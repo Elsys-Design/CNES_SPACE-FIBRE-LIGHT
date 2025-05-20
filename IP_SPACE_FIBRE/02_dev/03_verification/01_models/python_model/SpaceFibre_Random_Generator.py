@@ -1,5 +1,5 @@
 ##########################################################################
-## COMPANY       : ELSYS Design
+## COMPANY       : CNES
 ##########################################################################
 ## TITLE         : SpaceFibre_Random_Generator.py
 ## PROJECT       : SPACE FIBRE LIGHT
