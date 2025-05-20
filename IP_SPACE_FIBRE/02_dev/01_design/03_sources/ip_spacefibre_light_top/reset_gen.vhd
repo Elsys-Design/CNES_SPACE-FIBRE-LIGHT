@@ -1,3 +1,17 @@
+-----------------------------------------------------------------------------------
+-- #                          Copyright CNES 2025                                 #
+-- #                                                                              #
+-- # This source describes Open Hardware and is licensed under the CERN-OHL-W v2. #
+-- #                                                                              #
+-- # You may redistribute and modify this documentation and make products         #
+-- # using it under the terms of the CERN-OHL-W v2 (https:/cern.ch/cern-ohl).     #
+-- #                                                                              #
+-- # This documentation is distributed WITHOUT ANY EXPRESS OR IMPLIED             #
+-- # WARRANTY, INCLUDING OF MERCHANTABILITY, SATISFACTORY QUALITY                 #
+-- # AND FITNESS FOR A PARTICULAR PURPOSE.                                        #
+-- #                                                                              #
+-- # Please see the CERN-OHL-W v2 for applicable conditions.                      #
+-----------------------------------------------------------------------------------
 ----------------------------------------------------------------------------
 -- Author(s) : J.PIQUEMAL
 --
@@ -25,13 +39,17 @@ end reset_gen;
 
 architecture rtl of reset_gen is
 
-   -- internal signals
+---------------------------------------------------------
+-----                  Signal declaration           -----
+---------------------------------------------------------
    signal reset_gen_r_n    : std_logic;         --! internal reset simple resynchro
    signal reset_gen_rr_n   : std_logic;         --! internal reset double resynchro
    signal rst_tx_done_r       : std_logic;      --! internal rst_tx_done simple resynchro
 
 begin
-
+---------------------------------------------------------
+-----                     Process                   -----
+---------------------------------------------------------
    -- Resynchronized reset on 50MHz internal clock
    p_reset_gen : process(CLK,RST_N)
    begin

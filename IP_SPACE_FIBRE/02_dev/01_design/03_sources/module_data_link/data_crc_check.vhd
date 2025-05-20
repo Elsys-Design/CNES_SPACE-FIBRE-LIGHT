@@ -1,3 +1,17 @@
+-----------------------------------------------------------------------------------
+-- #                          Copyright CNES 2025                                 #
+-- #                                                                              #
+-- # This source describes Open Hardware and is licensed under the CERN-OHL-W v2. #
+-- #                                                                              #
+-- # You may redistribute and modify this documentation and make products         #
+-- # using it under the terms of the CERN-OHL-W v2 (https:/cern.ch/cern-ohl).     #
+-- #                                                                              #
+-- # This documentation is distributed WITHOUT ANY EXPRESS OR IMPLIED             #
+-- # WARRANTY, INCLUDING OF MERCHANTABILITY, SATISFACTORY QUALITY                 #
+-- # AND FITNESS FOR A PARTICULAR PURPOSE.                                        #
+-- #                                                                              #
+-- # Please see the CERN-OHL-W v2 for applicable conditions.                      #
+-----------------------------------------------------------------------------------
 ----------------------------------------------------------------------------
 -- Author(s) : Y. DAURIAC
 --
@@ -86,7 +100,7 @@ begin
 ---------------------------------------------------------
 ---------------------------------------------------------
 -- Process: p_crc_16b
--- Description: Compute and check the CRC for a data frame
+-- Description: Computes and checks the CRC for a data frame
 ---------------------------------------------------------
  p_crc_16b: process(CLK)
     variable crc_var : std_logic_vector(15 downto 0); -- variable used to calculate the CRC
@@ -132,7 +146,7 @@ end process p_crc_16b;
 
 ---------------------------------------------------------
 -- Process: p_crc_8b
--- Description: Compute and check the CRC for broadcast frame,
+-- Description: Computes and checks the CRC for broadcast frame,
 --              FCT, ACK, NACK and SIF
 ---------------------------------------------------------
 p_crc_8b: process(CLK)

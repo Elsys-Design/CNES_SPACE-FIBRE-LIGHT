@@ -1,3 +1,17 @@
+-----------------------------------------------------------------------------------
+-- #                          Copyright CNES 2025                                 #
+-- #                                                                              #
+-- # This source describes Open Hardware and is licensed under the CERN-OHL-W v2. #
+-- #                                                                              #
+-- # You may redistribute and modify this documentation and make products         #
+-- # using it under the terms of the CERN-OHL-W v2 (https:/cern.ch/cern-ohl).     #
+-- #                                                                              #
+-- # This documentation is distributed WITHOUT ANY EXPRESS OR IMPLIED             #
+-- # WARRANTY, INCLUDING OF MERCHANTABILITY, SATISFACTORY QUALITY                 #
+-- # AND FITNESS FOR A PARTICULAR PURPOSE.                                        #
+-- #                                                                              #
+-- # Please see the CERN-OHL-W v2 for applicable conditions.                      #
+-----------------------------------------------------------------------------------
 ----------------------------------------------------------------------------
 -- Author(s) : Y. DAURIAC
 --
@@ -24,7 +38,7 @@ entity data_out_bc_buf is
     -- AXI-Stream interface
     S_AXIS_ARSTN_NW	      : in std_logic;                                           --! Active-low asynchronous reset for the AXI-Stream interface
 		S_AXIS_ACLK_NW	      : in std_logic;                                           --! Clock signal for the AXI-Stream interface
-		S_AXIS_TREADY_DL      : out std_logic;                                          --! Indicates that TDATA, TUSER, and TLAST are valid 
+		S_AXIS_TREADY_DL      : out std_logic;                                          --! Indicates that TDATA, TUSER, and TLAST are valid
 		S_AXIS_TDATA_NW       : in std_logic_vector(C_DATA_LENGTH-1 downto 0);          --! AXI-Stream data bus
 		S_AXIS_TUSER_NW       : in std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);  --! Indicates the end of a data packet
 		S_AXIS_TLAST_NW       : in std_logic;                                           --! Receiver ready signal (slave is ready to accept data)
@@ -163,7 +177,7 @@ begin
 end process p_rst_fifo;
 ---------------------------------------------------------
 -- Process: p_link_reset
--- Description: Flush management
+-- Description: Flush management on link reset command
 ---------------------------------------------------------
 p_link_reset: process(CLK, RST_N)
 begin
