@@ -21,19 +21,29 @@ from cocotb.triggers import Edge, RisingEdge, FallingEdge, Timer, Join, Combine
 from cocotb.result import TestFailure, TestError
 from cocotb.utils import get_sim_time
 
-
-import framework
-
-from framework import Data
-
-from tb import TB, Data_read_phy_config_parameters, Data_read_lane_config_parameters, Data_read_lane_config_status, \
-                CLEARLINE, DISABLED, WAIT, STARTED, INVERTRXPOLARITY, CONNECTING, CONNECTED, \
-                ACTIVE, PREPARESTANDBY, LOSSOFSIGNAL, \
-                SpaceFibre_IP_freq, SpaceFibre_serial_port_freq, SpaceFibre_IP_period_ns, \
-                SpaceFibre_serial_port_period_ns, SpaceFibre_IP_period_ps_int, SpaceFibre_serial_port_period_ps_int, \
-                Data_lane_gen_config, Data_lane_gen_control, Data_lane_gen_status, Data_lane_gen_seed, \
-                Data_lane_ana_config, Data_lane_ana_control, Data_lane_ana_status, Data_lane_ana_seed 
-
+#check for cocotb framework existence and import it
+try:
+    import framework
+    from framework import Data
+    from tb import TB, Data_read_phy_config_parameters, Data_read_lane_config_parameters, Data_read_lane_config_status, \
+                    CLEARLINE, DISABLED, WAIT, STARTED, INVERTRXPOLARITY, CONNECTING, CONNECTED, \
+                    ACTIVE, PREPARESTANDBY, LOSSOFSIGNAL, \
+                    SpaceFibre_IP_freq, SpaceFibre_serial_port_freq, SpaceFibre_IP_period_ns, \
+                    SpaceFibre_serial_port_period_ns, SpaceFibre_IP_period_ps_int, SpaceFibre_serial_port_period_ps_int, \
+                    Data_lane_gen_config, Data_lane_gen_control, Data_lane_gen_status, Data_lane_gen_seed, \
+                    Data_lane_ana_config, Data_lane_ana_control, Data_lane_ana_status, Data_lane_ana_seed 
+    print("successfully Found cocotb Framework")
+except ImportError as e:
+    print("")
+    print("Error -> ", e)
+    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    print("!!   COCOTB framework library is not found.                                                      !!")
+    print("!!                                                                                               !!")
+    print("!!   Have you set FRAMEWORK_COCOTB_INSTALL_PATH variable? prior to launch Runme.sh script?       !!")
+    print("!!   Is PYTHONPATH variable include the location of the cocotb_framework python sources?         !!")
+    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    print("")
+    exit()
 
 #Global variable of test success or failure
 test_failed = 0
