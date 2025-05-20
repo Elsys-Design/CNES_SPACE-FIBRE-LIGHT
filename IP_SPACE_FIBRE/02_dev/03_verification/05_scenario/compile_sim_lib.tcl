@@ -80,7 +80,6 @@ echo "##############################################"
 echo "############# Start compile FIFO #############"
 echo "##############################################"
 vcom +acc -work commun  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/04_packages/pkg_tools.vhd
-vcom +acc -work commun  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/02_external_ip/fifo_sc/fifo_sc.vhd
 vcom +acc -work commun  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/02_external_ip/fifo_dc/fifo_dc.vhd
 
 echo "############# End compile FIFO #############"
