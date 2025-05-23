@@ -7,8 +7,8 @@ echo ""
 echo "Script execute in $rootpath"
 echo ""
 
-quietly set LIB_PATH_UNISIM_V    $rootpath/IP_SPACE_FIBRE/02_dev/01_design/05_libraries/unisim/verilog/src
-quietly set LIB_PATH_UNISIM_VHD  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/05_libraries/unisim/vhdl/src/unisims
+quietly set LIB_PATH_UNISIM_V    $rootpath/sim/libraries/unisim/verilog/src
+quietly set LIB_PATH_UNISIM_VHD  $rootpath/sim/libraries/unisim/vhdl/src/unisims
 quietly set LIB_PATH_BUF         $rootpath/IP_SPACE_FIBRE/02_dev/01_design/01_cores/BufG_GT_bd
 quietly set LIB_PATH_GTY         $rootpath/IP_SPACE_FIBRE/02_dev/01_design/01_cores/extended_phy_layer
 quietly set LIB_PATH_XPM         $rootpath/IP_SPACE_FIBRE/02_dev/01_design/05_libraries/xpm

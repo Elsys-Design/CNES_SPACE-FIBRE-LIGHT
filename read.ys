@@ -1,6 +1,6 @@
 #project files
-verific -work unisim  -vhdl IP_SPACE_FIBRE/02_dev/01_design/05_libraries/unisim/vhdl/src/unisims/unisim_VPKG.vhd
-verific -work unisim  -vhdl IP_SPACE_FIBRE/02_dev/01_design/05_libraries/unisim/vhdl/src/unisims/unisim_VCOMP.vhd
+verific -work unisim  -vhdl sim/libraries/unisim/vhdl/src/unisims/unisim_VPKG.vhd
+verific -work unisim  -vhdl sim/libraries/unisim/vhdl/src/unisims/unisim_VCOMP.vhd
 
 verific  -work phy_plus_lane_lib -vhdl IP_SPACE_FIBRE/02_dev/01_design/04_packages/pkg_tools.vhd
 verific  -work phy_plus_lane_lib -vhdl IP_SPACE_FIBRE/02_dev/01_design/04_packages/pkg_phy_plus_lane.vhd

@@ -64,4 +64,4 @@ COCOTB_MAKEFILES_DIR := $(shell cocotb-config --makefiles)
 include $(COCOTB_MAKEFILES_DIR)/Makefile.deprecations
 
 #include our own makefile cocotb
-include $(path_to_root_dir)/IP_SPACE_FIBRE/02_dev/03_verification/05_scenario/Makefile.questa
+include $(path_to_root_dir)/sim/scenario/Makefile.questa
