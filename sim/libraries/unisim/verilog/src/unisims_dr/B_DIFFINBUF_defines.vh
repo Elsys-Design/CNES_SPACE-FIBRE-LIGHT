@@ -1,0 +1,33 @@
+// BLH dynamic attribute configuration look-up table addresses
+//
+
+`ifdef B_DIFFINBUF_DEFINES_VH
+`else
+`define B_DIFFINBUF_DEFINES_VH
+
+// Look-up table parameters
+//
+
+`define DIFFINBUF_ADDR_N  5
+`define DIFFINBUF_ADDR_SZ 32
+`define DIFFINBUF_DATA_SZ 48
+
+// Attribute addresses
+//
+
+`define DIFFINBUF__DIFF_TERM    32'h00000000
+`define DIFFINBUF__DIFF_TERM_SZ 40
+
+`define DIFFINBUF__DQS_BIAS    32'h00000001
+`define DIFFINBUF__DQS_BIAS_SZ 40
+
+`define DIFFINBUF__IBUF_LOW_PWR    32'h00000002
+`define DIFFINBUF__IBUF_LOW_PWR_SZ 40
+
+`define DIFFINBUF__ISTANDARD    32'h00000003
+`define DIFFINBUF__ISTANDARD_SZ 48
+
+`define DIFFINBUF__SIM_INPUT_BUFFER_OFFSET    32'h00000004
+`define DIFFINBUF__SIM_INPUT_BUFFER_OFFSET_SZ 32
+
+`endif  // B_DIFFINBUF_DEFINES_VH

@@ -1,0 +1,36 @@
+// BLH dynamic attribute configuration look-up table addresses
+//
+
+`ifdef B_X5PLL_INTF_DEFINES_VH
+`else
+`define B_X5PLL_INTF_DEFINES_VH
+
+// Look-up table parameters
+//
+
+`define X5PLL_INTF_ADDR_N  6
+`define X5PLL_INTF_ADDR_SZ 32
+`define X5PLL_INTF_DATA_SZ 40
+
+// Attribute addresses
+//
+
+`define X5PLL_INTF__APBCLK_FREQ    32'h00000000
+`define X5PLL_INTF__APBCLK_FREQ_SZ 9
+
+`define X5PLL_INTF__DESKEW_SEL    32'h00000001
+`define X5PLL_INTF__DESKEW_SEL_SZ 40
+
+`define X5PLL_INTF__DMC_APB_SEL_XPLL    32'h00000002
+`define X5PLL_INTF__DMC_APB_SEL_XPLL_SZ 40
+
+`define X5PLL_INTF__DMC_PD_SEL    32'h00000003
+`define X5PLL_INTF__DMC_PD_SEL_SZ 40
+
+`define X5PLL_INTF__RIUCLK_DBLR_BYPASS    32'h00000004
+`define X5PLL_INTF__RIUCLK_DBLR_BYPASS_SZ 40
+
+`define X5PLL_INTF__RIU_CLK_DBL_DCC_XPLL    32'h00000005
+`define X5PLL_INTF__RIU_CLK_DBL_DCC_XPLL_SZ 3
+
+`endif  // B_X5PLL_INTF_DEFINES_VH

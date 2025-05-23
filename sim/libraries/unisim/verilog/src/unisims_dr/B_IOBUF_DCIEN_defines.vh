@@ -1,0 +1,36 @@
+// BLH dynamic attribute configuration look-up table addresses
+//
+
+`ifdef B_IOBUF_DCIEN_DEFINES_VH
+`else
+`define B_IOBUF_DCIEN_DEFINES_VH
+
+// Look-up table parameters
+//
+
+`define IOBUF_DCIEN_ADDR_N  6
+`define IOBUF_DCIEN_ADDR_SZ 32
+`define IOBUF_DCIEN_DATA_SZ 144
+
+// Attribute addresses
+//
+
+`define IOBUF_DCIEN__DRIVE    32'h00000000
+`define IOBUF_DCIEN__DRIVE_SZ 32
+
+`define IOBUF_DCIEN__IBUF_LOW_PWR    32'h00000001
+`define IOBUF_DCIEN__IBUF_LOW_PWR_SZ 40
+
+`define IOBUF_DCIEN__IOSTANDARD    32'h00000002
+`define IOBUF_DCIEN__IOSTANDARD_SZ 56
+
+`define IOBUF_DCIEN__SIM_DEVICE    32'h00000003
+`define IOBUF_DCIEN__SIM_DEVICE_SZ 144
+
+`define IOBUF_DCIEN__SLEW    32'h00000004
+`define IOBUF_DCIEN__SLEW_SZ 48
+
+`define IOBUF_DCIEN__USE_IBUFDISABLE    32'h00000005
+`define IOBUF_DCIEN__USE_IBUFDISABLE_SZ 72
+
+`endif  // B_IOBUF_DCIEN_DEFINES_VH

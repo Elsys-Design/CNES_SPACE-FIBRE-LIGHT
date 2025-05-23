@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root VersionMajor="1" VersionMinor="0">
+  <xpm_library name="xpm_noc">
+    <file_groups>
+      <simulation>
+        <files>
+          <file path="hdl/xpm_nmu_mm.sv" file_type="SystemVerilog" is_include="false">
+          </file>
+          <file path="hdl/xpm_nsu_mm.sv" file_type="SystemVerilog" is_include="false">
+          </file>
+          <file path="hdl/xpm_nmu_strm.sv" file_type="SystemVerilog" is_include="false">
+          </file>
+          <file path="hdl/xpm_nsu_strm.sv" file_type="SystemVerilog" is_include="false">
+          </file>
+        </files>
+      </simulation>
+      <synthesis>
+        <files>
+          <file path="hdl/xpm_nmu_mm.sv" file_type="SystemVerilog" is_include="false">
+          </file>
+          <file path="hdl/xpm_nsu_mm.sv" file_type="SystemVerilog" is_include="false">
+          </file>
+          <file path="hdl/xpm_nmu_strm.sv" file_type="SystemVerilog" is_include="false">
+          </file>
+          <file path="hdl/xpm_nsu_strm.sv" file_type="SystemVerilog" is_include="false">
+          </file>
+        </files>
+      </synthesis>
+    </file_groups>
+    <xpm_modules>
+      <module name="xpm_nmu_mm">
+      </module>
+      <module name="xpm_nsu_mm">
+      </module>
+      <module name="xpm_nmu_strm">
+      </module>
+      <module name="xpm_nsu_strm">
+      </module>
+    </xpm_modules>
+  </xpm_library>
+</root>

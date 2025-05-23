@@ -1,0 +1,45 @@
+`include "B_IBUF_IBUFDISABLE_defines.vh"
+
+reg [`IBUF_IBUFDISABLE_DATA_SZ-1:0] ATTR [0:`IBUF_IBUFDISABLE_ADDR_N-1];
+reg [`IBUF_IBUFDISABLE__IBUF_LOW_PWR_SZ:1] IBUF_LOW_PWR_REG = IBUF_LOW_PWR;
+reg [`IBUF_IBUFDISABLE__IOSTANDARD_SZ:1] IOSTANDARD_REG = IOSTANDARD;
+reg [`IBUF_IBUFDISABLE__SIM_DEVICE_SZ:1] SIM_DEVICE_REG = SIM_DEVICE;
+reg [`IBUF_IBUFDISABLE__USE_IBUFDISABLE_SZ:1] USE_IBUFDISABLE_REG = USE_IBUFDISABLE;
+
+initial begin
+  ATTR[`IBUF_IBUFDISABLE__IBUF_LOW_PWR] = IBUF_LOW_PWR;
+  ATTR[`IBUF_IBUFDISABLE__IOSTANDARD] = IOSTANDARD;
+  ATTR[`IBUF_IBUFDISABLE__SIM_DEVICE] = SIM_DEVICE;
+  ATTR[`IBUF_IBUFDISABLE__USE_IBUFDISABLE] = USE_IBUFDISABLE;
+end
+
+always @(trig_attr) begin
+  IBUF_LOW_PWR_REG = ATTR[`IBUF_IBUFDISABLE__IBUF_LOW_PWR];
+  IOSTANDARD_REG = ATTR[`IBUF_IBUFDISABLE__IOSTANDARD];
+  SIM_DEVICE_REG = ATTR[`IBUF_IBUFDISABLE__SIM_DEVICE];
+  USE_IBUFDISABLE_REG = ATTR[`IBUF_IBUFDISABLE__USE_IBUFDISABLE];
+end
+
+// procedures to override, read attribute values
+
+task write_attr;
+  input  [`IBUF_IBUFDISABLE_ADDR_SZ-1:0] addr;
+  input  [`IBUF_IBUFDISABLE_DATA_SZ-1:0] data;
+  begin
+    ATTR[addr] = data;
+    trig_attr = ~trig_attr; // to be removed
+  end
+endtask
+
+function [`IBUF_IBUFDISABLE_DATA_SZ-1:0] read_attr;
+  input  [`IBUF_IBUFDISABLE_ADDR_SZ-1:0] addr;
+  begin
+    read_attr = ATTR[addr];
+  end
+endfunction
+
+task commit_attr;
+  begin
+trig_attr = ~trig_attr;
+  end
+endtask

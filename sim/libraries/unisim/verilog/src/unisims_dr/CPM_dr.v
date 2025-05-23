@@ -1,0 +1,57 @@
+`include "B_CPM_defines.vh"
+
+reg [`CPM_DATA_SZ-1:0] ATTR [0:`CPM_ADDR_N-1];
+reg [`CPM__CPM_MODE_0_SZ:1] CPM_MODE_0_REG = CPM_MODE_0;
+reg [`CPM__CPM_MODE_1_SZ:1] CPM_MODE_1_REG = CPM_MODE_1;
+reg [`CPM__LINK_SPEED_0_SZ:1] LINK_SPEED_0_REG = LINK_SPEED_0;
+reg [`CPM__LINK_SPEED_1_SZ:1] LINK_SPEED_1_REG = LINK_SPEED_1;
+reg [`CPM__LINK_WIDTH_0_SZ-1:0] LINK_WIDTH_0_REG = LINK_WIDTH_0;
+reg [`CPM__LINK_WIDTH_1_SZ-1:0] LINK_WIDTH_1_REG = LINK_WIDTH_1;
+reg [`CPM__PCI_CHANNELS_SZ-1:0] PCI_CHANNELS_REG = PCI_CHANNELS;
+reg [`CPM__SIM_CPM_CDO_FILE_NAME_SZ:1] SIM_CPM_CDO_FILE_NAME_REG = SIM_CPM_CDO_FILE_NAME;
+
+initial begin
+  ATTR[`CPM__CPM_MODE_0] = CPM_MODE_0;
+  ATTR[`CPM__CPM_MODE_1] = CPM_MODE_1;
+  ATTR[`CPM__LINK_SPEED_0] = LINK_SPEED_0;
+  ATTR[`CPM__LINK_SPEED_1] = LINK_SPEED_1;
+  ATTR[`CPM__LINK_WIDTH_0] = LINK_WIDTH_0;
+  ATTR[`CPM__LINK_WIDTH_1] = LINK_WIDTH_1;
+  ATTR[`CPM__PCI_CHANNELS] = PCI_CHANNELS;
+  ATTR[`CPM__SIM_CPM_CDO_FILE_NAME] = SIM_CPM_CDO_FILE_NAME;
+end
+
+always @(trig_attr) begin
+  CPM_MODE_0_REG = ATTR[`CPM__CPM_MODE_0];
+  CPM_MODE_1_REG = ATTR[`CPM__CPM_MODE_1];
+  LINK_SPEED_0_REG = ATTR[`CPM__LINK_SPEED_0];
+  LINK_SPEED_1_REG = ATTR[`CPM__LINK_SPEED_1];
+  LINK_WIDTH_0_REG = ATTR[`CPM__LINK_WIDTH_0];
+  LINK_WIDTH_1_REG = ATTR[`CPM__LINK_WIDTH_1];
+  PCI_CHANNELS_REG = ATTR[`CPM__PCI_CHANNELS];
+  SIM_CPM_CDO_FILE_NAME_REG = ATTR[`CPM__SIM_CPM_CDO_FILE_NAME];
+end
+
+// procedures to override, read attribute values
+
+task write_attr;
+  input  [`CPM_ADDR_SZ-1:0] addr;
+  input  [`CPM_DATA_SZ-1:0] data;
+  begin
+    ATTR[addr] = data;
+    trig_attr = ~trig_attr; // to be removed
+  end
+endtask
+
+function [`CPM_DATA_SZ-1:0] read_attr;
+  input  [`CPM_ADDR_SZ-1:0] addr;
+  begin
+    read_attr = ATTR[addr];
+  end
+endfunction
+
+task commit_attr;
+  begin
+trig_attr = ~trig_attr;
+  end
+endtask

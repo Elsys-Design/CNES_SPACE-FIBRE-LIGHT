@@ -1,0 +1,121 @@
+///////////////////////////////////////////////////////////////////////////////
+//  Copyright (c) 1995/2018 Xilinx, Inc.
+//  All Right Reserved.
+///////////////////////////////////////////////////////////////////////////////
+//   ____  ____
+//  /   /\/   /
+// /___/  \  /     Vendor      : Xilinx
+// \   \   \/      Version     : 2019.1
+//  \   \          Description : Xilinx Unified Simulation Library Component
+//  /   /                        NOC_NCRB
+// /___/   /\      Filename    : NOC_NCRB.v
+// \   \  /  \
+//  \___\/\___\
+//
+///////////////////////////////////////////////////////////////////////////////
+//  Revision:
+//
+//  End Revision:
+///////////////////////////////////////////////////////////////////////////////
+
+`timescale 1 ps / 1 ps
+
+`celldefine
+
+module NOC_NCRB #(
+  parameter [31:0] REG_P0_0_VCA_TOKEN = 32'h10101010,
+  parameter [31:0] REG_P0_1_VCA_TOKEN = 32'h10101010,
+  parameter [20:0] REG_P0_R2W_EB_CTRL = 21'h07FC2C,
+  parameter [20:0] REG_P0_W2R_EB_CTRL = 21'h07FC2C,
+  parameter [31:0] REG_P1_0_VCA_TOKEN = 32'h10101010,
+  parameter [31:0] REG_P1_1_VCA_TOKEN = 32'h10101010,
+  parameter [20:0] REG_P1_R2W_EB_CTRL = 21'h07FC2C,
+  parameter [20:0] REG_P1_W2R_EB_CTRL = 21'h07FC2C,
+  parameter [0:0] REG_PIPE_MODE = 1'h0
+)(
+  output [7:0] IF_NOC_NPP_IN0_NOC_CREDIT_RETURN,
+  output IF_NOC_NPP_IN0_NOC_CREDIT_RETURN_EN,
+  output [7:0] IF_NOC_NPP_IN1_NOC_CREDIT_RETURN,
+  output IF_NOC_NPP_IN1_NOC_CREDIT_RETURN_EN,
+  output IF_NOC_NPP_OUT0_NOC_CREDIT_RDY,
+  output [181:0] IF_NOC_NPP_OUT0_NOC_FLIT,
+  output IF_NOC_NPP_OUT0_NOC_FLIT_EN,
+  output [7:0] IF_NOC_NPP_OUT0_NOC_VALID,
+  output IF_NOC_NPP_OUT0_NOC_VALID_EN,
+  output IF_NOC_NPP_OUT1_NOC_CREDIT_RDY,
+  output [181:0] IF_NOC_NPP_OUT1_NOC_FLIT,
+  output IF_NOC_NPP_OUT1_NOC_FLIT_EN,
+  output [7:0] IF_NOC_NPP_OUT1_NOC_VALID,
+  output IF_NOC_NPP_OUT1_NOC_VALID_EN,
+
+  input [1:0] CREDIT_RDY_NPS_O_IN,
+  input [1:0] CREDIT_RDY_O_IN,
+  input IF_NOC_NPP_IN0_NOC_CREDIT_RDY,
+  input [181:0] IF_NOC_NPP_IN0_NOC_FLIT,
+  input IF_NOC_NPP_IN0_NOC_FLIT_EN,
+  input [7:0] IF_NOC_NPP_IN0_NOC_VALID,
+  input IF_NOC_NPP_IN0_NOC_VALID_EN,
+  input IF_NOC_NPP_IN1_NOC_CREDIT_RDY,
+  input [181:0] IF_NOC_NPP_IN1_NOC_FLIT,
+  input IF_NOC_NPP_IN1_NOC_FLIT_EN,
+  input [7:0] IF_NOC_NPP_IN1_NOC_VALID,
+  input IF_NOC_NPP_IN1_NOC_VALID_EN,
+  input [7:0] IF_NOC_NPP_OUT0_NOC_CREDIT_RETURN,
+  input IF_NOC_NPP_OUT0_NOC_CREDIT_RETURN_EN,
+  input [7:0] IF_NOC_NPP_OUT1_NOC_CREDIT_RETURN,
+  input IF_NOC_NPP_OUT1_NOC_CREDIT_RETURN_EN
+);
+
+// define constants
+  localparam MODULE_NAME = "NOC_NCRB";
+  
+
+      BM_NOC_NCRB #(
+      .REG_P0_0_VCA_TOKEN (REG_P0_0_VCA_TOKEN),
+      .REG_P0_1_VCA_TOKEN (REG_P0_1_VCA_TOKEN),
+      .REG_P0_R2W_EB_CTRL (REG_P0_R2W_EB_CTRL),
+      .REG_P0_W2R_EB_CTRL (REG_P0_W2R_EB_CTRL),
+      .REG_P1_0_VCA_TOKEN (REG_P1_0_VCA_TOKEN),
+      .REG_P1_1_VCA_TOKEN (REG_P1_1_VCA_TOKEN),
+      .REG_P1_R2W_EB_CTRL (REG_P1_R2W_EB_CTRL),
+      .REG_P1_W2R_EB_CTRL (REG_P1_W2R_EB_CTRL),
+      .REG_PIPE_MODE (REG_PIPE_MODE)
+) BM_NOC_NCRB_INST (
+      .IF_NOC_NPP_IN0_NOC_CREDIT_RETURN (IF_NOC_NPP_IN0_NOC_CREDIT_RETURN),
+      .IF_NOC_NPP_IN0_NOC_CREDIT_RETURN_EN (IF_NOC_NPP_IN0_NOC_CREDIT_RETURN_EN),
+      .IF_NOC_NPP_IN1_NOC_CREDIT_RETURN (IF_NOC_NPP_IN1_NOC_CREDIT_RETURN),
+      .IF_NOC_NPP_IN1_NOC_CREDIT_RETURN_EN (IF_NOC_NPP_IN1_NOC_CREDIT_RETURN_EN),
+      .IF_NOC_NPP_OUT0_NOC_CREDIT_RDY (IF_NOC_NPP_OUT0_NOC_CREDIT_RDY),
+      .IF_NOC_NPP_OUT0_NOC_FLIT (IF_NOC_NPP_OUT0_NOC_FLIT),
+      .IF_NOC_NPP_OUT0_NOC_FLIT_EN (IF_NOC_NPP_OUT0_NOC_FLIT_EN),
+      .IF_NOC_NPP_OUT0_NOC_VALID (IF_NOC_NPP_OUT0_NOC_VALID),
+      .IF_NOC_NPP_OUT0_NOC_VALID_EN (IF_NOC_NPP_OUT0_NOC_VALID_EN),
+      .IF_NOC_NPP_OUT1_NOC_CREDIT_RDY (IF_NOC_NPP_OUT1_NOC_CREDIT_RDY),
+      .IF_NOC_NPP_OUT1_NOC_FLIT (IF_NOC_NPP_OUT1_NOC_FLIT),
+      .IF_NOC_NPP_OUT1_NOC_FLIT_EN (IF_NOC_NPP_OUT1_NOC_FLIT_EN),
+      .IF_NOC_NPP_OUT1_NOC_VALID (IF_NOC_NPP_OUT1_NOC_VALID),
+      .IF_NOC_NPP_OUT1_NOC_VALID_EN (IF_NOC_NPP_OUT1_NOC_VALID_EN),
+      .CREDIT_RDY_NPS_O_IN (CREDIT_RDY_NPS_O_IN),
+      .CREDIT_RDY_O_IN (CREDIT_RDY_O_IN),
+      .IF_NOC_NPP_IN0_NOC_CREDIT_RDY (IF_NOC_NPP_IN0_NOC_CREDIT_RDY),
+      .IF_NOC_NPP_IN0_NOC_FLIT (IF_NOC_NPP_IN0_NOC_FLIT),
+      .IF_NOC_NPP_IN0_NOC_FLIT_EN (IF_NOC_NPP_IN0_NOC_FLIT_EN),
+      .IF_NOC_NPP_IN0_NOC_VALID (IF_NOC_NPP_IN0_NOC_VALID),
+      .IF_NOC_NPP_IN0_NOC_VALID_EN (IF_NOC_NPP_IN0_NOC_VALID_EN),
+      .IF_NOC_NPP_IN1_NOC_CREDIT_RDY (IF_NOC_NPP_IN1_NOC_CREDIT_RDY),
+      .IF_NOC_NPP_IN1_NOC_FLIT (IF_NOC_NPP_IN1_NOC_FLIT),
+      .IF_NOC_NPP_IN1_NOC_FLIT_EN (IF_NOC_NPP_IN1_NOC_FLIT_EN),
+      .IF_NOC_NPP_IN1_NOC_VALID (IF_NOC_NPP_IN1_NOC_VALID),
+      .IF_NOC_NPP_IN1_NOC_VALID_EN (IF_NOC_NPP_IN1_NOC_VALID_EN),
+      .IF_NOC_NPP_OUT0_NOC_CREDIT_RETURN (IF_NOC_NPP_OUT0_NOC_CREDIT_RETURN),
+      .IF_NOC_NPP_OUT0_NOC_CREDIT_RETURN_EN (IF_NOC_NPP_OUT0_NOC_CREDIT_RETURN_EN),
+      .IF_NOC_NPP_OUT1_NOC_CREDIT_RETURN (IF_NOC_NPP_OUT1_NOC_CREDIT_RETURN),
+      .IF_NOC_NPP_OUT1_NOC_CREDIT_RETURN_EN (IF_NOC_NPP_OUT1_NOC_CREDIT_RETURN_EN)
+    );
+// begin behavioral model
+
+// end behavioral model
+
+endmodule
+
+`endcelldefine

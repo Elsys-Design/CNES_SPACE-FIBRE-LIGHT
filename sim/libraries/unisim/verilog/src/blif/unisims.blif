@@ -1,0 +1,139 @@
+
+# **************************************************************
+#   Copyright (c) 2010 Xilinx, Inc.  All rights reserved.
+#   File Name    : unisims.blif
+#   Library      : unisim
+#   Release      : 12.2
+# **************************************************************
+
+# These are cells that are white boxed for ABC
+
+# +++++++++++++++++++++++++++
+#      BUFFERS
+# +++++++++++++++++++++++++++
+
+.model BUFG
+.inputs I
+.outputs O
+.attrib white box comb keep
+.no_merge O
+.names I O
+1 1
+.end
+
+.model BUFGP
+.inputs I
+.outputs O
+.attrib white box comb keep
+.no_merge O
+.names I O
+1 1
+.end
+
+.model BUFH
+.inputs I
+.outputs O
+.attrib white box comb keep
+.no_merge O
+.names I O
+1 1
+.end
+
+.model IBUFG
+.inputs I
+.outputs O
+.attrib white box comb keep
+.no_merge O
+.names I O
+1 1
+.end
+
+.model IBUF
+.inputs  I
+.outputs  O
+.attrib white box comb keep
+.no_merge O
+.names I O
+1 1
+.end
+
+.model OBUF
+.inputs  I
+.outputs  O
+.attrib white box comb keep
+.no_merge O
+.names I O
+1 1
+.end
+
+
+# +++++++++++++++++++++++++++
+#      MUXES
+# +++++++++++++++++++++++++++
+
+.model MUXCY 
+.outputs O
+.inputs CI DI S
+.attrib white box comb keep
+.no_merge O
+.names CI DI S O
+1-1 1
+-10 1
+.end
+
+.model MUXF7 
+.outputs O
+.inputs I0 I1 S
+.attrib white box comb keep
+.no_merge O
+.names I0 I1 S O
+-11 1
+1-0 1
+.end
+
+.model MUXF8 
+.outputs O
+.inputs I0 I1 S
+.attrib white box comb keep
+.no_merge O
+.names I0 I1 S O
+-11 1
+1-0 1
+.end
+
+# +++++++++++++++++++++++++++
+#      XORCY
+# +++++++++++++++++++++++++++
+
+.model XORCY
+.inputs CI LI
+.outputs O
+.attrib white box comb keep
+.no_merge O
+.names CI LI O
+10 1
+01 1
+.end
+
+# +++++++++++++++++++++++++++
+#      INV
+# +++++++++++++++++++++++++++
+# .model INV
+# .inputs I
+# .outputs O
+# .attrib white box comb keep
+# .no_merge O
+# .names I O
+# 0 1
+# .end
+
+# +++++++++++++++++++++++++++
+#      FLOPS
+# +++++++++++++++++++++++++++
+# .model FDCE 
+# .inputs  C CE CLR D
+# .outputs Q
+# .attrib white box seq keep
+# .no_merge Q
+# .flop D=D Q=Q C=C E=CE R=CLR
+# .end

@@ -1,0 +1,629 @@
+#!/usr/bin/perl
+
+use warnings;
+use Getopt::Long;
+use File::Path;
+use Cwd;
+
+my $ver_log="compileHybridLibrary_ver.log";
+my $vhd_log="compileHybridLibrary_vhd.log";
+my $dest="";
+my $success=1;
+
+if (!(GetOptions(
+    'simulator=s'           => \$simulator,
+    'directory=s'           => \$target_dir,
+    'source_library_path=s' => \$source_dir,
+    'existing_clibs=s'      => \$existing_dir,
+    '32bit'                 => \$mode32,
+    'v'                     => \$verbose,
+    'help'                  => \$help
+    ))) {
+  print "bad options\n";
+  PrintUsage();
+}
+
+if ($help || !defined $simulator || !defined $target_dir || !defined $source_dir || !defined $existing_dir) {
+  print "help\n";
+  PrintUsage();
+}
+
+sub PrintUsage {
+  print " compile Xilinx hybrid library for linux\n";
+  print " creates an overlay on top of an existing Xilinx compiled library\n";
+  print " $0 [opts] \n";
+  print "   -simulator=<sim>           desired simulator <questa xsim vcs_mx ies riviera>\n";
+  print "   -directory=<dir>           complete path to output directory (default \".\" or cwd)\n";
+  print "                              example: /<path1>/<simulator>/<version>/<lin>/lib\n";
+  print "   -source_library_path=<dir> complete path to XILINX data directory.\n";
+  print "                              example: /<root>/data\n";
+  print "   -existing_clibs=<dir>      complete path to existing compiled library.\n";
+  print "                              example: /<path2>/<simulator>/<version>/<lin>/lib\n";
+  print "   [-32bit]                   32 bit (64 bit is default)\n";
+  print "   [-help]                    print this help\n";
+  print " \"directory\" and \"existing_clibs\" can point to the same area\n";
+  print " library mapping files location\n";
+  print "    /<directory>/hybrid\n";
+  print " output library locations\n";
+  print "    /<directory>/hybrid/unisims_ver\n";
+  print "    /<directory>/hybrid/unisim\n";
+  exit (-1);
+}
+
+my $sim_version = "";
+my $sim_path = "";
+my $result = "";
+my $errors = 0;
+my $warnings = 0;
+
+# determine installed version of desired simulator
+if ($simulator =~ /questa/) {
+  $result = `vsim -version`;
+  if ($result =~ /.*vsim (.*) Simulator.*/) {
+    $sim_version = $1;
+    print "Found Questa version $sim_version\n";
+    $result = `which vsim`;
+    $result =~ /(.*)\/vsim/;
+    $sim_path = $1;
+    print "Questa path $sim_path\n";
+  } else {
+    print "Questa simulator \"vsim\" not found in current environment\n";
+    print "Please set up questa environment and try again\n";
+    exit -1;
+  }
+} elsif ($simulator =~ /xsim/) {
+  $result = `xsim -version`;
+  if ($result =~ /.* Simulator (.*)/) {
+    $sim_version = $1;
+    print "Found XSIM version $sim_version\n";
+  } else {
+    print "XSIM simulator \"xsim\" not found in current environment\n";
+    print "Please set up Vivado/XSIM environment and try again\n";
+    exit -1;
+  }
+} elsif ($simulator =~ /vcs/) {
+  print "Looking for installed VCS version.\nThis may appear to hang if we have to wait for a license\n";
+  $simulator="vcs";
+  $result = `vcs -ID | grep Compiler`;
+  if ($result =~ /Compiler.* (.*)$/) {
+    $sim_version = $1;
+    print "Found VCS version $sim_version\n";
+  } else {
+    print "VCS simulator \"vcs\" not found in current environment\n";
+    print "Please set up Synopsys/VCS environment and try again\n";
+    exit -1;
+  }
+} elsif ($simulator =~ /ies/) {
+  $result = `ncsim -version`;
+  if ($result =~ /[. ]*ncsim[\s+]*(.*)/) {
+    $sim_version = $1;
+    print "Found ies version ($sim_version)\n";
+  } else {
+    print "IES simulator \"ncsim\" not found in current environment\n";
+    print "Please set up Cadence/IUS/IES environment and try again\n";
+    exit -1;
+  }
+} elsif ($simulator =~ /riviera/) {
+  $result = system("which asdb2vcd 2> /dev/null");
+  if ($result == 0) {
+    $result = `which asdb2vcd`;
+    if ($result =~ /.*\/([a-zA-Z0-9._-]*)\/bin\/.*/) {
+      $sim_version = $1;
+      print "Found Aldec/Riviera  version ($sim_version)\n";
+      $result =~ /(.*)\/asdb2vcd/;
+      $sim_path = $1;
+      print "Riviera path $sim_path\n";
+    } else {
+      print "Aldec/Riviera version not recognized in ($result)\n";
+    }
+  } else {
+    print "Aldec/Riviera simulator \"vsim\" not found in current environment\n";
+    print "Please set up Aldec/Riviera environment and try again\n";
+    exit -1;
+  }
+} else {
+  print " invalid simulator choice ($simulator) <questa xsim vcs_mx ies riviera>\n";
+  exit -1;
+}
+
+my @prim_exclude_list = ('BUFGCTRL', 'DCM_ADV', 'DCM_SP', 'DIFFINBUF', 'DSP48E1', 'FIFO18E1', 'FIFO36E1', 'IBUF', 'IBUFDS', 'IBUFDS_DIFF_OUT', 'IBUFDS_DPHY', 'IBUFDS_GTE2', 'ICAPE2', 'ICAPE3', 'IOBUF', 'IOBUFDS', 'IOBUFDS_DIFF_OUT', 'ISERDES', 'ISERDESE1', 'ISERDES_NODELAY', 'MMCME2_ADV', 'MMCME2_BASE', 'OSERDES', 'RAMB18E1', 'RAMB36E1', 'SIM_CONFIGE2', 'SIM_CONFIGE3');
+
+my @ret_exclude_list = ( 'BSCAN_VIRTEX6', 'CAPTURE_SPARTAN3', 'CAPTURE_SPARTAN3A', 'CAPTURE_VIRTEX4', 'CAPTURE_VIRTEX5', 'CAPTURE_VIRTEX6', 'DCM', 'DCM_BASE', 'DCM_PS', 'DSP48E', 'FIFO16', 'FIFO18', 'FIFO18_36', 'FIFO36', 'FIFO36_72', 'GTPA1_DUAL', 'GTXE1', 'IBUFDS_GTXE1', 'IBUFG', 'IBUFGDS', 'IBUFGDS_DIFF_OUT', 'IODELAY', 'IODELAYE1', 'MMCM_ADV', 'MMCM_BASE', 'PLL_ADV', 'PLL_BASE', 'RAMB16', 'RAMB16BWER', 'RAMB36SDP', 'RAMB8BWER', 'STARTUP_VIRTEX6', 'TEMAC_SINGLE');
+
+my %exclude = ();
+my $name = "";
+foreach $name (@prim_exclude_list) {
+ $exclude{$name} = 1;
+}
+$name = "";
+foreach $name (@ret_exclude_list) {
+ $exclude{$name} = 1;
+}
+
+
+if (! -d $source_dir ) {
+  print "XILINX data source directory does not exist\n";
+  print "$source_dir\n";
+  print "check location and try again\n";
+  exit -1;
+}
+
+if (! -d $existing_dir ) {
+  print "existing compiled library directory does not exist\n";
+  print "$existing_dir\n";
+  print "check location and try again or create with Vivado compile_simlib\n";
+  exit -1;
+}
+
+if (! -d $target_dir ) {
+  print "library location does not yet exist - creating directories\n";
+  print "$target_dir\n" if $verbose;
+  mkpath($target_dir);
+} else {
+  print " destination library location exists\n" if $verbose;
+}
+
+$dest = "$target_dir/hybrid";
+mkpath($dest);
+
+my $home=getcwd;
+
+my $verpath="${source_dir}/verilog/src";
+my $vhdpath="${source_dir}/vhdl/src/unisims";
+
+my $mode64 = 0;
+if (!$mode32) {
+  $mode32 = 0;
+  $mode64 = 1;
+}
+
+print "generate file lists\n" if $verbose;
+my @all_verilog = ();
+my $target_files = "";
+my $comp_ver = "";
+my $incomp_ver = "";
+my $incomp_vhd = "";
+@all_verilog = ();
+# get the list of all verilog files
+$target_files = `ls $verpath/unisims/*.v`;
+# change CR into space
+$target_files =~ s/\n/ /g;
+#split into array
+@all_verilog = split(" ",$target_files);
+my $ver_file = "";
+my $vhd_file = "";
+foreach $ver_file (@all_verilog) {
+  print "file = $ver_file\n" if $verbose;
+  # get stuff between path and .v
+  if ($ver_file =~ /.*\/(.*)\.v/) {
+    $vhd_file = "$vhdpath/primitive/$1.vhd";
+    if (! $exclude{$1}) {
+      $comp_ver .= "$ver_file ";
+    } else {
+      $incomp_ver .= "$ver_file ";
+      if (-e $vhd_file) {
+        $incomp_vhd .= "$vhd_file ";
+      } else {
+      print "skipping file not found vhd file = $vhd_file\n";
+      }
+    }
+  }
+}
+
+my $comp_ver_ret = "";
+my $incomp_ver_ret = "";
+my $incomp_vhd_ret = "";
+@all_verilog = ();
+# get the list of retarget verilog files
+$target_files = `ls $verpath/retarget/*.v`;
+# change CR into space
+$target_files =~ s/\n/ /g;
+#split into array
+@all_verilog = split(" ",$target_files);
+$ver_file = "";
+$vhd_file = "";
+foreach $ver_file (@all_verilog) {
+  print "file = $ver_file\n" if $verbose;
+  # get stuff between path and .v
+  if ($ver_file =~ /.*\/(.*)\.v/) {
+    $vhd_file = "$vhdpath/retarget/$1.vhd";
+    if (! $exclude{$1}) {
+      $comp_ver_ret .= "$ver_file ";
+    } else {
+      $incomp_ver_ret .= "$ver_file ";
+      if (-e $vhd_file) {
+        $incomp_vhd_ret .= "$vhd_file ";
+      }
+    }
+  }
+}
+
+chdir $dest;
+
+my $vlog_cmd="";
+my $vhdl_cmd="";
+
+if ($simulator =~ /questa/) {
+  $vlog_cmd="$sim_path/vlog -source -novopt ";
+  $vhdl_cmd="$sim_path/vcom -source -93 -novopt ";
+  if ( $mode64 ) {
+   $vlog_cmd="$sim_path/vlog -source -novopt -64 ";
+   $vhdl_cmd="$sim_path/vcom -source -93 -novopt -64 ";
+  }
+  rmtree ('work');
+  rmtree ('unisims_ver');
+  rmtree ('unisim');
+  if (-e "${existing_dir}/modelsim.ini") {
+    `cp -f ${existing_dir}/modelsim.ini .`;
+  } else {
+    print "error - can't find existing modelsim.ini in ${existing_dir}\n";
+   exit -1;
+  }
+  unlink($ver_log);
+  unlink($vhd_log);
+  `$sim_path/vlib $dest/unisims_ver`;
+  `$sim_path/vlib $dest/unisim`;
+  `$sim_path/vlib $dest/work`;
+  `$sim_path/vmap unisims_ver $dest/unisims_ver`;
+  `$sim_path/vmap unisim $dest/unisim`;
+  `$sim_path/vmap work $dest/work`;
+
+  print "Compiling hybrid unisims_ver\n";
+  my $output = `$vhdl_cmd -work unisim $vhdpath/unisim_VPKG.vhd $vhdpath/unisim_retarget_VCOMP.vhd | tee -a $vhd_log`;
+  print "$output\n" if $verbose;
+  $output = `$vlog_cmd -work unisims_ver $incomp_ver | tee -a $ver_log`;
+  print "$output\n" if $verbose;
+  $output = `$vlog_cmd -work unisims_ver $incomp_ver_ret | tee -a $ver_log`;
+  print "$output\n" if $verbose;
+  $output = `$vlog_cmd -work unisims_ver $comp_ver | tee -a $ver_log`;
+  print "$output\n" if $verbose;
+  $output = `$vlog_cmd -work unisims_ver $comp_ver_ret | tee -a $ver_log`;
+  print "$output\n" if $verbose;
+  $errors = `grep -c Error: $ver_log`;
+  $warnings = `grep -c Warning: $ver_log`;
+  $errors =~ s/\n//g;
+  $warnings =~ s/\n//g;
+  if ( $errors == 0 ) {
+    print "Success Errors: $errors Warnings: $warnings\n";
+  } else {
+    print "ERROR Errors: $errors Warnings: $warnings\n";
+    $success=0;
+  }
+  print "log = ${dest}/${ver_log}\n";
+  print "Compiling hybrid unisim\n";
+  $output = `$vhdl_cmd -work unisim $incomp_vhd | tee -a $vhd_log`;
+  print "$output\n" if $verbose;
+  $output = `$vhdl_cmd -work unisim $incomp_vhd_ret | tee -a $vhd_log`;
+  print "$output\n" if $verbose;
+  $errors = `grep -c Error: $vhd_log`;
+  $warnings = `grep -c Warning: $vhd_log`;
+  $errors =~ s/\n//g;
+  $warnings =~ s/\n//g;
+  if ( $errors == 0 ) {
+    print "Success Errors: $errors Warnings: $warnings\n";
+  } else {
+    print "ERROR Errors: $errors Warnings: $warnings\n";
+    $success=0;
+  }
+  print "log = ${dest}/${vhd_log}\n";
+  if ( $success == 0 ) {
+    print "$simulator ERROR - review log files\n";
+  } else {
+    print "$simulator DONE - use modelsim.ini at:\n${dest}/modelsim.ini\n";
+  }
+  rmtree ('work');
+} elsif ($simulator =~ /xsim/) {
+#  $vlog_cmd="xvlog --initfile xsim.ini ";
+#  $vhdl_cmd="xvhdl --initfile xsim.ini ";
+  $vlog_cmd="xvlog ";
+  $vhdl_cmd="xvhdl ";
+  if (-e "${existing_dir}/xsim.ini") {
+    `cp -f ${existing_dir}/xsim.ini .`;
+  } else {
+    print "error - can't find existing xsim.ini in ${existing_dir}\n";
+   exit -1;
+  }
+  rmtree ('work');
+  rmtree ('unisims_ver');
+  rmtree ('unisim');
+
+  open OUT, "> xsim.ini" || die "cannot open xsim.ini\n";
+
+  print OUT "unisims_ver=$dest/unisims_ver\n";
+  print OUT "unisim=$dest/unisim\n";
+
+  close (OUT);
+
+  unlink($ver_log);
+  unlink($vhd_log);
+  mkpath ('unisims_ver');
+  mkpath ('unisim');
+
+  print "Compiling hybrid unisims_ver\n";
+  my $output = `$vhdl_cmd -work unisim $vhdpath/unisim_VPKG.vhd $vhdpath/unisim_retarget_VCOMP.vhd | tee -a $vhd_log`;
+  print "$output\n" if $verbose;
+  $output = `$vlog_cmd -work unisims_ver $incomp_ver | tee -a $ver_log`;
+  print "$output\n" if $verbose;
+  $output = `$vlog_cmd -work unisims_ver $incomp_ver_ret | tee -a $ver_log`;
+  print "$output\n" if $verbose;
+  $output = `$vlog_cmd -work unisims_ver $comp_ver | tee -a $ver_log`;
+  print "$output\n" if $verbose;
+  $output = `$vlog_cmd -work unisims_ver $comp_ver_ret | tee -a $ver_log`;
+  print "$output\n" if $verbose;
+  $errors = `grep -c ERROR $ver_log`;
+  $warnings = `grep -c WARNING $ver_log`;
+  $errors =~ s/\n//g;
+  $warnings =~ s/\n//g;
+  if ( $errors == 0 ) {
+    print "Success Errors: $errors Warnings: $warnings\n";
+  } else {
+    print "ERROR Errors: $errors Warnings: $warnings\n";
+    $success=0;
+  }
+  print "log = ${dest}/${ver_log}\n";
+  print "Compiling hybrid unisim\n";
+  $output = `$vhdl_cmd -work unisim $incomp_vhd | tee -a $vhd_log`;
+  print "$output\n" if $verbose;
+  $output = `$vhdl_cmd -work unisim $incomp_vhd_ret | tee -a $vhd_log`;
+  print "$output\n" if $verbose;
+  $errors = `grep -c ERROR $vhd_log`;
+  $warnings = `grep -c WARNING $vhd_log`;
+  $errors =~ s/\n//g;
+  $warnings =~ s/\n//g;
+  if ( $errors == 0 ) {
+    print "Success Errors: $errors Warnings: $warnings\n";
+  } else {
+    print "ERROR Errors: $errors Warnings: $warnings\n";
+    $success=0;
+  }
+  print "log = ${dest}/${vhd_log}\n";
+  if ( $success == 0 ) {
+    print "$simulator ERROR - review log files\n";
+  } else {
+    print "$simulator DONE - use xsim.ini at:\n${dest}/xsim.ini\n";
+  }
+  rmtree ('work');
+  unlink("xvhdl.log");
+  unlink("xvlog.log");
+} elsif ($simulator =~ /vcs/) {
+  $vlog_cmd="vlogan -nc +v2k ";
+  $vhdl_cmd="vhdlan -nc ";
+  if ( $mode64 ) {
+   $vlog_cmd="vlogan -nc -full64 +v2k ";
+   $vhdl_cmd="vhdlan -nc -full64 ";
+  }
+  rmtree ('64');
+  rmtree ('AN.DB');
+  rmtree ('worklib');
+  rmtree ('unisims_ver');
+  rmtree ('unisim');
+  if (-e "${existing_dir}/synopsys_sim.setup") {
+    `cp -f ${existing_dir}/synopsys_sim.setup .`;
+  } else {
+    print "error - can't find existing synopsys_sim.setup in ${existing_dir}\n";
+   exit -1;
+  }
+  unlink($ver_log);
+  unlink($vhd_log);
+  mkpath ('unisims_ver');
+  mkpath ('unisim');
+  mkpath ('worklib');
+  
+  `sed -e 's?unisim : .*/unisim?unisim : $dest/unisim?' -i synopsys_sim.setup`;
+  `sed -e 's?unisims_ver : .*/unisims_ver?unisims_ver : $dest/unisims_ver?' -i synopsys_sim.setup`;
+  `sed -e '/^simprims_ver :/d' -i synopsys_sim.setup`;
+
+  print "Compiling hybrid unisims_ver\n";
+  my $output = `$vhdl_cmd -work unisim $vhdpath/unisim_VPKG.vhd $vhdpath/unisim_retarget_VCOMP.vhd | tee -a $vhd_log`;
+  print "$output\n" if $verbose;
+  $output = `$vlog_cmd -work unisims_ver $comp_ver | tee -a $ver_log`;
+  print "$output\n" if $verbose;
+  $output = `$vlog_cmd -work unisims_ver $comp_ver_ret | tee -a $ver_log`;
+  print "$output\n" if $verbose;
+  $output = `$vlog_cmd -work unisims_ver $incomp_ver | tee -a $ver_log`;
+  print "$output\n" if $verbose;
+  $output = `$vlog_cmd -work unisims_ver $incomp_ver_ret | tee -a $ver_log`;
+  print "$output\n" if $verbose;
+  $errors = `grep -c Error- $ver_log`;
+  $warnings = `grep -c Warning- $ver_log`;
+  $errors =~ s/\n//g;
+  $warnings =~ s/\n//g;
+  if ( $errors == 0 ) {
+    print "Success Errors: $errors Warnings: $warnings\n";
+  } else {
+    print "ERROR Errors: $errors Warnings: $warnings\n";
+    $success=0;
+  }
+  print "log = ${dest}/${ver_log}\n";
+  print "Compiling hybrid unisim\n";
+  $output = `$vlog_cmd -work unisim $comp_ver | tee -a $vhd_log`;
+  print "$output\n" if $verbose;
+  $output = `$vlog_cmd -work unisim $comp_ver_ret | tee -a $vhd_log`;
+  print "$output\n" if $verbose;
+  $output = `$vhdl_cmd -work unisim $incomp_vhd | tee -a $vhd_log`;
+  print "$output\n" if $verbose;
+  $output = `$vhdl_cmd -work unisim $incomp_vhd_ret | tee -a $vhd_log`;
+  print "$output\n" if $verbose;
+  $errors = `grep -c Error- $vhd_log`;
+  $warnings = `grep -c Warning- $vhd_log`;
+  $errors =~ s/\n//g;
+  $warnings =~ s/\n//g;
+  if ( $errors == 0 ) {
+    print "Success Errors: $errors Warnings: $warnings\n";
+  } else {
+    print "ERROR Errors: $errors Warnings: $warnings\n";
+    $success=0;
+  }
+  print "log = ${dest}/${vhd_log}\n";
+  if ( $success == 0 ) {
+    print "$simulator ERROR - review log files\n";
+  } else {
+    print "$simulator DONE - use synopsys_sim.setup at:\n${dest}/synopsys_sim.setup\n";
+  }
+  rmtree ('64');
+  rmtree ('AN.DB');
+  rmtree ('worklib');
+} elsif ($simulator =~ /ies/) {
+#  $vlog_cmd="ncvlog -MESSAGES -CDSLIB cds.lib -HDLVAR hdl.var -64bit ";
+#  $vhdl_cmd="ncvhdl -MESSAGES -v93 -RELAX -CDSLIB cds.lib -HDLVAR hdl.var -64bit ";
+   $vlog_cmd="ncvlog -MESSAGES ";
+   $vhdl_cmd="ncvhdl -MESSAGES -v93 -RELAX ";
+  if ( $mode64 ) {
+#   $vlog_cmd="ncvlog -MESSAGES -CDSLIB cds.lib -HDLVAR hdl.var ";
+#   $vhdl_cmd="ncvhdl -MESSAGES -v93 -RELAX -CDSLIB cds.lib -HDLVAR hdl.var  ";
+  $vlog_cmd="ncvlog -MESSAGES -64bit ";
+  $vhdl_cmd="ncvhdl -MESSAGES -v93 -RELAX -64bit ";
+  }
+  rmtree ('INCA_libs');
+  rmtree ('unisims_ver');
+  rmtree ('unisim');
+  if (-e "${existing_dir}/cds.lib") {
+    `cp -f ${existing_dir}/cds.lib .`;
+  } else {
+    print "error - can't find existing cds.lib in ${existing_dir}\n";
+   exit -1;
+  }
+  if (-e "${existing_dir}/hdl.var") {
+    `cp -f ${existing_dir}/hdl.var .`;
+  } else {
+    print "error - can't find existing hdl.var in ${existing_dir}\n";
+   exit -1;
+  }
+  unlink($ver_log);
+  unlink($vhd_log);
+  mkpath ('INCA_libs');
+  mkpath ('unisims_ver');
+  mkpath ('unisim');
+  $target_files =~ s/\n/ /g;
+  `sed -e 's: unisim .*/unisim: unisim $dest/unisim:' -i cds.lib`;
+  `sed -e 's: unisims_ver .*/unisims_ver: unisims_ver $dest/unisims_ver:' -i cds.lib`;
+  `sed -e '/ simprims_ver /d' -i cds.lib`;
+
+  print "Compiling hybrid unisims_ver\n";
+  my $output = `$vhdl_cmd -work unisim $vhdpath/unisim_VPKG.vhd $vhdpath/unisim_retarget_VCOMP.vhd | tee -a $vhd_log`;
+  print "$output\n" if $verbose;
+  $output = `$vlog_cmd -work unisims_ver $incomp_ver | tee -a $ver_log`;
+  print "$output\n" if $verbose;
+  $output = `$vlog_cmd -work unisims_ver $incomp_ver_ret | tee -a $ver_log`;
+  print "$output\n" if $verbose;
+  $output = `$vlog_cmd -work unisims_ver $comp_ver | tee -a $ver_log`;
+  print "$output\n" if $verbose;
+  $output = `$vlog_cmd -work unisims_ver $comp_ver_ret | tee -a $ver_log`;
+  $errors = `grep -c \*E $ver_log`;
+  $warnings = `grep -c \*W $ver_log`;
+  $errors =~ s/\n//g;
+  $warnings =~ s/\n//g;
+  if ( $errors == 0 ) {
+    print "Success Errors: $errors Warnings: $warnings\n";
+  } else {
+    print "ERROR Errors: $errors Warnings: $warnings\n";
+    $success=0;
+  }
+  print "log = ${dest}/${ver_log}\n";
+  print "Compiling hybrid unisim\n";
+  print "$output\n" if $verbose;
+  $output = `$vhdl_cmd -work unisim $incomp_vhd | tee -a $vhd_log`;
+  print "$output\n" if $verbose;
+  $output = `$vhdl_cmd -work unisim $incomp_vhd_ret | tee -a $vhd_log`;
+  print "$output\n" if $verbose;
+  $errors = `grep -c \*E $vhd_log`;
+  $warnings = `grep -c \*W $vhd_log`;
+  $errors =~ s/\n//g;
+  $warnings =~ s/\n//g;
+  if ( $errors == 0 ) {
+    print "Success Errors: $errors Warnings: $warnings\n";
+  } else {
+    print "ERROR Errors: $errors Warnings: $warnings\n";
+    $success=0;
+  }
+  print "log = ${dest}/${vhd_log}\n";
+  if ( $success == 0 ) {
+    print "$simulator ERROR - review log files\n";
+  } else {
+    print "$simulator DONE - use cds.lib and hdl.var at:\n${dest}/cds.lib\n${dest}/hdl.var\n";
+  }
+  rmtree ('INCA_libs');
+  unlink("ncvhdl.log");
+  unlink("ncvlog.log");
+} elsif ($simulator =~ /riviera/) {
+  $vlog_cmd="$sim_path/vlog -dbg ";
+  $vhdl_cmd="$sim_path/vcom -93 -dbg ";
+  rmtree ('work');
+  rmtree ('unisims_ver');
+  rmtree ('unisim');
+  if (-e "${existing_dir}/library.cfg") {
+    `cp -f ${existing_dir}/library.cfg .`;
+  } else {
+    print "error - can't find existing library.cfg in ${existing_dir}\n";
+   exit -1;
+  }
+  unlink($ver_log);
+  unlink($vhd_log);
+  `$sim_path/vlib $dest/unisims_ver`;
+  `$sim_path/vlib $dest/unisim`;
+  `$sim_path/vlib $dest/work`;
+  `$sim_path/vmap unisims_ver $dest/unisims_ver`;
+  `$sim_path/vmap unisim $dest/unisim`;
+  `$sim_path/vmap work $dest/work`;
+  my $output = `$vhdl_cmd -work unisim $vhdpath/unisim_VPKG.vhd $vhdpath/unisim_retarget_VCOMP.vhd | tee -a $vhd_log`;
+  print "$output\n" if $verbose;
+  print "Compiling hybrid unisims_ver\n";
+  $output = `$vlog_cmd -work unisims_ver $incomp_ver | tee -a $ver_log`;
+  print "$output\n" if $verbose;
+  $output = `$vlog_cmd -work unisims_ver $incomp_ver_ret | tee -a $ver_log`;
+  print "$output\n" if $verbose;
+  $output = `$vlog_cmd -work unisims_ver $comp_ver | tee -a $ver_log`;
+  print "$output\n" if $verbose;
+  $output = `$vlog_cmd -work unisims_ver $comp_ver_ret | tee -a $ver_log`;
+  print "$output\n" if $verbose;
+  $errors = `grep -c ERROR $ver_log`;
+  $warnings = `grep -c WARNING $ver_log`;
+  $errors =~ s/\n//g;
+  $warnings =~ s/\n//g;
+  if ( $errors == 0 ) {
+    print "Success Errors: $errors Warnings: $warnings\n";
+  } else {
+    print "ERROR Errors: $errors Warnings: $warnings\n";
+    $success=0;
+  }
+  print "log = ${dest}/${ver_log}\n";
+  print "Compiling hybrid unisim\n";
+  $output = `$vhdl_cmd -work unisim $incomp_vhd | tee -a $vhd_log`;
+  print "$output\n" if $verbose;
+  $output = `$vhdl_cmd -work unisim $incomp_vhd_ret | tee -a $vhd_log`;
+  print "$output\n" if $verbose;
+  $errors = `grep -c ERROR $vhd_log`;
+  $warnings = `grep -c WARNING $vhd_log`;
+  $errors =~ s/\n//g;
+  $warnings =~ s/\n//g;
+  if ( $errors == 0 ) {
+    print "Success Errors: $errors Warnings: $warnings\n";
+  } else {
+    print "ERROR Errors: $errors Warnings: $warnings\n";
+    $success=0;
+  }
+  print "log = ${dest}/${vhd_log}\n";
+  if ( $success == 0 ) {
+    print "$simulator ERROR - review log files\n";
+  } else {
+    print "$simulator DONE - use library.cfg at:\n${dest}/library.cfg\n";
+  }
+  rmtree ('work');
+}
+
+chdir $home;
+exit 0;
+
+
+#my $fast_gtx=1;
+#if ($fast_gtx) {
+#  print "replace GTXE2_CHANNEL with fast model\n";
+#  $output = `$vlog_cmd -work unisim $verpath/unifast/GTXE2_CHANNEL.v | tee -a $log`;
+#  print "$output\n" if $verbose;
+#}
+
+#echo "grep for warnings"
+#grep -i warning $log
+#echo "grep for errors"
+#grep -i error $log
+exit 0;
