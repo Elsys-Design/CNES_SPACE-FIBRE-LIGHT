@@ -8,7 +8,7 @@ This repository includes de Ip called Spacefibrelight. It was developped by Elsy
 - To be comptabible with any spacefibre IP even if spacefibrelight IP is not fully compliant with the standard
 - To be operational on Xilinx edge versal (tested on VEK280 evalboard ) and also on Nanoxplore NG-Ultra NG-Ultra300 devices.
 - To be opensource
-- To be addaptable (that is to say, with additionnal development this IP could be fully compliant to ECSS standard)
+- To be addaptable (that is to say, with additionnal development this IP could be fully compliant to ECSS standard) 
 
 # Getting started
 The simulation environnement is based on cocotb python framework running on Questa simulator. See [cocotb installation](IP_SPACE_FIBRE/02_dev/03_verification/README.md#cocotb) for additionnal information.
