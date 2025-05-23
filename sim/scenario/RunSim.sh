@@ -61,12 +61,6 @@ fi
 
 ###################################
 
-#create bench path
-export BENCHPATH=$current_dir/../benches
-
-#create model path
-export MODELPATH=$current_dir/../models/python_model
-
 # Store the parameter for test to be run
 export MYSIM=$1
 
@@ -79,6 +73,13 @@ else
 fi
 current_dir=$(realpath $current_dir)
 
+#create bench path
+export BENCHPATH=$current_dir/../benches
+
+#create model path
+export MODELPATH=$current_dir/../models/
+
+
 #Add models directories and bench directory to python path
 export PYTHONPATH=$current_dir:$PYTHONPATH
 export PYTHONPATH=$BENCHPATH/configuration_1_bench:$PYTHONPATH
@@ -88,7 +89,7 @@ export PYTHONPATH=$MODELPATH/python_model:$PYTHONPATH
 #add framework to pythonpath
 export PYTHONPATH=$FRAMEWORK_COCOTB_INSTALL_PATH:$PYTHONPATH
 #display python path environment for debug purpose
-#echo $PYTHONPATH
+echo $PYTHONPATH
 
 #handle all request
 if [ "$MYSIM" == "all" ]; then
