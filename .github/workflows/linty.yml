@@ -30,7 +30,7 @@ jobs:
           docker run \
             --rm \
             --user="$(id -u):$(id -g)" \
-            -e SONAR_HOST_URL=${{$SONAR_HOST_URL}}" \
+            -e SONAR_HOST_URL="${{$SONAR_HOST_URL}}" \
             -e SONAR_TOKEN="${{ secrets.LINTY_SCANNER_TOKEN }}" \
             -e GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}" \
             -e GITHUB_REPOSITORY_OWNER="$GITHUB_REPOSITORY_OWNER" \
