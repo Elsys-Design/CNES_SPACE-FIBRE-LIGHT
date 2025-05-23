@@ -243,6 +243,7 @@ entity spacefibre_light_top_ip is
    );
 end entity spacefibre_light_top_ip;
 
+
 architecture rtl of spacefibre_light_top_ip is
  constant G_VC_NUM                         : integer := 8 ;
  
