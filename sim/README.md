@@ -27,7 +27,7 @@ https://www.intel.com/content/www/us/en/software-kit/790078/questa-intel-fpgas-p
 The Questa binaries should be added to the environnement variable PATH before running the tests with command `export PATH=<Questa_install_path>/questa_fse/bin:$PATH`
 
 # Running a simulation
-- go into `IP_SPACE_FIBRE/02_dev/03_verification/05_scenario/` 
+- go into `sim/scenario/` 
 - configure your environnement for runningthe simulation. To do so you have to set at least 3 variables:
     - SPACEFIBRELIGHT_ROOT_PATH : the main absolute path location of your spacefibre cloned project (the one with .git folder)
     - FRAMEWORK_COCOTB_INSTALL_PATH : the absolute path location for your cocotb_framework cloned project (the one with .git folder)
@@ -68,7 +68,7 @@ The `Runme.sh' script as several configuration variables:
 
 - `EXTRA_VSIM_CMD` : you can set addition vsim command with this variable
 
-For convenience , you can create a file called `IP_SPACE_FIBRE/02_dev/03_verification/05_scenario/environnement`.
+For convenience , you can create a file called `sim/scenario/environnement`.
 This file will include all paramaters and will be sourced prior to launch simulation.
 Here is an example of the content of the file (this file won't be part of the repository as this configuration is custom for each developper):
 ```
@@ -88,5 +88,5 @@ export GUI=0
 export WAVES=0
 
 ##additionnal VSIM command  
-export EXTRA_VSIM_CMD="-do $SPACEFIBRELIGHT_ROOT_PATH/IP_SPACE_FIBRE/02_dev/03_verification/05_scenario/custom.do"
+export EXTRA_VSIM_CMD="-do $SPACEFIBRELIGHT_ROOT_PATH/sim/scenario/custom.do"
 ```

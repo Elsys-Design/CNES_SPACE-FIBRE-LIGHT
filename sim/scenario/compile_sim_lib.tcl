@@ -7,12 +7,12 @@ echo ""
 echo "Script execute in $rootpath"
 echo ""
 
-quietly set LIB_PATH_UNISIM_V    $rootpath/IP_SPACE_FIBRE/02_dev/01_design/05_libraries/unisim/verilog/src
-quietly set LIB_PATH_UNISIM_VHD  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/05_libraries/unisim/vhdl/src/unisims
-quietly set LIB_PATH_BUF         $rootpath/IP_SPACE_FIBRE/02_dev/01_design/01_cores/BufG_GT_bd
-quietly set LIB_PATH_GTY         $rootpath/IP_SPACE_FIBRE/02_dev/01_design/01_cores/extended_phy_layer
-quietly set LIB_PATH_XPM         $rootpath/IP_SPACE_FIBRE/02_dev/01_design/05_libraries/xpm
-quietly set LIB_PATH_SECUREIP    $rootpath/IP_SPACE_FIBRE/02_dev/01_design/05_libraries/secureip
+quietly set LIB_PATH_UNISIM_V    $rootpath/sim/libraries/unisim/verilog/src
+quietly set LIB_PATH_UNISIM_VHD  $rootpath/sim/libraries/unisim/vhdl/src/unisims
+quietly set LIB_PATH_BUF         $rootpath/sim/libraries/cores/BufG_GT_bd
+quietly set LIB_PATH_GTY         $rootpath/sim/libraries/cores/extended_phy_layer
+quietly set LIB_PATH_XPM         $rootpath/sim/libraries/xpm
+quietly set LIB_PATH_SECUREIP    $rootpath/sim/libraries/secureip
 
 
 if [file exists sim_build/unisim] {vdel -lib sim_build/unisim -all}
@@ -79,8 +79,8 @@ echo "############# End compile Unisim #############"
 echo "##############################################"
 echo "############# Start compile FIFO #############"
 echo "##############################################"
-vcom +acc -work commun  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/04_packages/pkg_tools.vhd
-vcom +acc -work commun  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/02_external_ip/fifo_dc/fifo_dc.vhd
+vcom +acc -work commun  $rootpath/src/pkg_tools.vhd
+vcom +acc -work commun  $rootpath/ip/fifo_dc/fifo_dc.vhd
 
 echo "############# End compile FIFO #############"
 
@@ -89,7 +89,7 @@ echo "#############################################"
 echo "########## Start compile Phy+Lane ###########"
 echo "#############################################"
 
-vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/04_packages/pkg_phy_plus_lane.vhd
+vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/src/pkg_phy_plus_lane.vhd
 
 echo "############# Start compile BUFG #############"
 vlog  +cover=sb +acc -work phy_plus_lane_lib  -L xpm -L unisim $LIB_PATH_BUF/ip/BufG_GT_bd_bufg_gt_0_0/BufG_GT_bd_bufg_gt_0_0_inst.v
@@ -121,14 +121,14 @@ vlog +cover=sb +acc -work phy_plus_lane_lib  $LIB_PATH_GTY/hdl/extended_phy_laye
 echo "############# End compile GTY #############"
 
 echo "######## Start compile Lane_layer #########"
-vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_phy_plus_lane/lane_ctrl_word_detect.vhd
-vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_phy_plus_lane/lane_ctrl_word_insert.vhd
-vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_phy_plus_lane/lane_init_fsm.vhd
-vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_phy_plus_lane/parallel_loopback.vhd
-vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_phy_plus_lane/rx_sync_fsm.vhd
-vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_phy_plus_lane/skip_insertion.vhd
-vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_phy_plus_lane/phy_plus_lane.vhd
-vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_phy_plus_lane/mib_phy_plus_lane.vhd
+vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/src/module_phy_plus_lane/lane_ctrl_word_detect.vhd
+vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/src/module_phy_plus_lane/lane_ctrl_word_insert.vhd
+vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/src/module_phy_plus_lane/lane_init_fsm.vhd
+vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/src/module_phy_plus_lane/parallel_loopback.vhd
+vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/src/module_phy_plus_lane/rx_sync_fsm.vhd
+vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/src/module_phy_plus_lane/skip_insertion.vhd
+vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/src/module_phy_plus_lane/phy_plus_lane.vhd
+vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/src/module_phy_plus_lane/mib_phy_plus_lane.vhd
 echo "######### End compile Lane_layer ##########"
 
 echo "########## End compile Phy+Lane ###########"
@@ -139,39 +139,39 @@ echo "################################################"
 echo "######## Start compile Data_Link_layer #########"
 echo "################################################"
 
-vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/04_packages/pkg_data_link.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/src/pkg_data_link.vhd
 
-vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/02_external_ip/fifo_dc_custom_to_axis/AXIS_MASTER.vhd
-vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/02_external_ip/fifo_dc_custom_to_axis/FIFO_DC_AXIS_M.vhd
-vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/02_external_ip/fifo_dc_axis_to_custom/AXIS_SLAVE.vhd
-vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/02_external_ip/fifo_dc_axis_to_custom/FIFO_DC_AXIS_S.vhd
-vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/data_crc_check.vhd
-vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/data_crc_compute.vhd
-vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/data_desencapsulation.vhd
-vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/data_desencapsulation_bc.vhd
-vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/data_encapsulation.vhd
-vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/data_err_management.vhd
-vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/data_in_bc_buf.vhd
-vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/data_in_buf.vhd
-vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/data_link_reset.vhd
-vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/data_mac.vhd
-vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/data_out_bc_buf.vhd
-vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/data_out_buf.vhd
-vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/data_seq_check.vhd
-vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/data_seq_compute.vhd
-vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/data_word_id_fsm.vhd
-vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/02_external_ip/fifo_dc/fifo_dc.vhd
-vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/02_external_ip/fifo_dc_drop_bad_frame/fifo_dc_drop_bad_frame.vhd
-vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/data_link.vhd
-vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_data_link/mib_data_link.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/ip/fifo_dc_custom_to_axis/AXIS_MASTER.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/ip/fifo_dc_custom_to_axis/FIFO_DC_AXIS_M.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/ip/fifo_dc_axis_to_custom/AXIS_SLAVE.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/ip/fifo_dc_axis_to_custom/FIFO_DC_AXIS_S.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/src/module_data_link/data_crc_check.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/src/module_data_link/data_crc_compute.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/src/module_data_link/data_desencapsulation.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/src/module_data_link/data_desencapsulation_bc.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/src/module_data_link/data_encapsulation.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/src/module_data_link/data_err_management.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/src/module_data_link/data_in_bc_buf.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/src/module_data_link/data_in_buf.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/src/module_data_link/data_link_reset.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/src/module_data_link/data_mac.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/src/module_data_link/data_out_bc_buf.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/src/module_data_link/data_out_buf.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/src/module_data_link/data_seq_check.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/src/module_data_link/data_seq_compute.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/src/module_data_link/data_word_id_fsm.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/ip/fifo_dc/fifo_dc.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/ip/fifo_dc_drop_bad_frame/fifo_dc_drop_bad_frame.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/src/module_data_link/data_link.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/src/module_data_link/mib_data_link.vhd
 
 echo "######## End compile Data_Link_layer #########"
 
 
 echo "####### Start compile Interlayer #######"
 
-vcom +cover=sb +acc -work interlayer_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/ip_spacefibre_light_top/demux_rx.vhd
-vcom +cover=sb +acc -work interlayer_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/ip_spacefibre_light_top/mux_tx.vhd
+vcom +cover=sb +acc -work interlayer_lib  $rootpath/src/ip_spacefibre_light_top/demux_rx.vhd
+vcom +cover=sb +acc -work interlayer_lib  $rootpath/src/ip_spacefibre_light_top/mux_tx.vhd
 
 echo "####### End compile Interlayer #######"
 

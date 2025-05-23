@@ -73,18 +73,23 @@ else
 fi
 current_dir=$(realpath $current_dir)
 
+#create bench path
+export BENCHPATH=$current_dir/../benches
+
+#create model path
+export MODELPATH=$current_dir/../models/
+
+
 #Add models directories and bench directory to python path
 export PYTHONPATH=$current_dir:$PYTHONPATH
-export PYTHONPATH=$current_dir/../02_benches/configuration_1_bench:$PYTHONPATH
-export PYTHONPATH=$current_dir/../02_benches/configuration_2_bench:$PYTHONPATH
-export PYTHONPATH=$current_dir/../02_benches/common:$PYTHONPATH
-export PYTHONPATH=$current_dir/../01_models/python_model:$PYTHONPATH
+export PYTHONPATH=$BENCHPATH/configuration_1_bench:$PYTHONPATH
+export PYTHONPATH=$BENCHPATH/configuration_2_bench:$PYTHONPATH
+export PYTHONPATH=$BENCHPATH/common:$PYTHONPATH
+export PYTHONPATH=$MODELPATH/python_model:$PYTHONPATH
 #add framework to pythonpath
-source $FRAMEWORK_COCOTB_INSTALL_PATH/cosim_env/bin/activate
 export PYTHONPATH=$FRAMEWORK_COCOTB_INSTALL_PATH:$PYTHONPATH
-export PYTHONPATH=$FRAMEWORK_COCOTB_INSTALL_PATH/23-9950-ED_INTERNE_DIGITAL-VERIFICATION-PYTHON/src:$PYTHONPATH
 #display python path environment for debug purpose
-#echo $PYTHONPATH
+echo $PYTHONPATH
 
 #handle all request
 if [ "$MYSIM" == "all" ]; then
