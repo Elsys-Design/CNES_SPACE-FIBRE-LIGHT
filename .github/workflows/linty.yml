@@ -1,8 +1,6 @@
 name: Linty
 on:
   push:
-    branches:
-      - test_sonarqube
 
 jobs:
   linty:
