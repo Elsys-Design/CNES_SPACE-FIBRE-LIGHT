@@ -27,53 +27,145 @@ entity spacefibre_light_top_ip is
 
 
       -- virtual channels spacefibre axistream
-      AXIS_ACLK_RX_DL        :  in  std_logic_vector(8 downto 0);
-      AXIS_ACLK_TX_DL        :  in  std_logic_vector(8 downto 0);
-      AXIS_ARSTN_RX_DL       :  in  std_logic_vector(8 downto 0);
-      AXIS_ARSTN_TX_DL       :  in  std_logic_vector(8 downto 0);
-      AXIS_TDATA_TX_DL_0     :  in  std_logic_vector(31 downto 0);
-      AXIS_TDATA_TX_DL_1     :  in  std_logic_vector(31 downto 0);
-      AXIS_TDATA_TX_DL_2     :  in  std_logic_vector(31 downto 0);
-      AXIS_TDATA_TX_DL_3     :  in  std_logic_vector(31 downto 0);
-      AXIS_TDATA_TX_DL_4     :  in  std_logic_vector(31 downto 0);
-      AXIS_TDATA_TX_DL_5     :  in  std_logic_vector(31 downto 0);
-      AXIS_TDATA_TX_DL_6     :  in  std_logic_vector(31 downto 0);
-      AXIS_TDATA_TX_DL_7     :  in  std_logic_vector(31 downto 0);
-      AXIS_TDATA_TX_DL_8     :  in  std_logic_vector(31 downto 0);
-      AXIS_TLAST_TX_DL       :  in  std_logic_vector(8 downto 0);
-      AXIS_TREADY_RX_DL      :  in  std_logic_vector(8 downto 0);
-      AXIS_TUSER_TX_DL_0     :  in  std_logic_vector(3 downto 0);
-      AXIS_TUSER_TX_DL_1     :  in  std_logic_vector(3 downto 0);
-      AXIS_TUSER_TX_DL_2     :  in  std_logic_vector(3 downto 0);
-      AXIS_TUSER_TX_DL_3     :  in  std_logic_vector(3 downto 0);
-      AXIS_TUSER_TX_DL_4     :  in  std_logic_vector(3 downto 0);
-      AXIS_TUSER_TX_DL_5     :  in  std_logic_vector(3 downto 0);
-      AXIS_TUSER_TX_DL_6     :  in  std_logic_vector(3 downto 0);
-      AXIS_TUSER_TX_DL_7     :  in  std_logic_vector(3 downto 0);
-      AXIS_TUSER_TX_DL_8     :  in  std_logic_vector(3 downto 0);
-      AXIS_TVALID_TX_DL      :  in  std_logic_vector(8 downto 0);
+      AXIS_VC0_RX_DL_ACLK        :  in  std_logic;
+      AXIS_VC1_RX_DL_ACLK        :  in  std_logic;
+      AXIS_VC2_RX_DL_ACLK        :  in  std_logic;
+      AXIS_VC3_RX_DL_ACLK        :  in  std_logic;
+      AXIS_VC4_RX_DL_ACLK        :  in  std_logic;
+      AXIS_VC5_RX_DL_ACLK        :  in  std_logic;
+      AXIS_VC6_RX_DL_ACLK        :  in  std_logic;
+      AXIS_VC7_RX_DL_ACLK        :  in  std_logic;
+      AXIS_VC8_RX_DL_ACLK        :  in  std_logic;
 
-      AXIS_TDATA_RX_DL_0    :  out  std_logic_vector(31 downto 0);
-      AXIS_TDATA_RX_DL_1    :  out  std_logic_vector(31 downto 0);
-      AXIS_TDATA_RX_DL_2    :  out  std_logic_vector(31 downto 0);
-      AXIS_TDATA_RX_DL_3    :  out  std_logic_vector(31 downto 0);
-      AXIS_TDATA_RX_DL_4    :  out  std_logic_vector(31 downto 0);
-      AXIS_TDATA_RX_DL_5    :  out  std_logic_vector(31 downto 0);
-      AXIS_TDATA_RX_DL_6    :  out  std_logic_vector(31 downto 0);
-      AXIS_TDATA_RX_DL_7    :  out  std_logic_vector(31 downto 0);
-      AXIS_TDATA_RX_DL_8    :  out  std_logic_vector(31 downto 0);
-      AXIS_TLAST_RX_DL       :  out  std_logic_vector(8 downto 0);
-      AXIS_TREADY_TX_DL      :  out  std_logic_vector(8 downto 0);
-      AXIS_TUSER_RX_DL_0    :  out  std_logic_vector(3 downto 0);
-      AXIS_TUSER_RX_DL_1    :  out  std_logic_vector(3 downto 0);
-      AXIS_TUSER_RX_DL_2    :  out  std_logic_vector(3 downto 0);
-      AXIS_TUSER_RX_DL_3    :  out  std_logic_vector(3 downto 0);
-      AXIS_TUSER_RX_DL_4    :  out  std_logic_vector(3 downto 0);
-      AXIS_TUSER_RX_DL_5    :  out  std_logic_vector(3 downto 0);
-      AXIS_TUSER_RX_DL_6    :  out  std_logic_vector(3 downto 0);
-      AXIS_TUSER_RX_DL_7    :  out  std_logic_vector(3 downto 0);
-      AXIS_TUSER_RX_DL_8    :  out  std_logic_vector(3 downto 0);
-      AXIS_TVALID_RX_DL      :  out  std_logic_vector(8 downto 0);
+      AXIS_VC0_TX_DL_ACLK    :  in  std_logic;
+      AXIS_VC1_TX_DL_ACLK    :  in  std_logic;
+      AXIS_VC2_TX_DL_ACLK    :  in  std_logic;
+      AXIS_VC3_TX_DL_ACLK    :  in  std_logic;
+      AXIS_VC4_TX_DL_ACLK    :  in  std_logic;
+      AXIS_VC5_TX_DL_ACLK    :  in  std_logic;
+      AXIS_VC6_TX_DL_ACLK    :  in  std_logic;
+      AXIS_VC7_TX_DL_ACLK    :  in  std_logic;
+      AXIS_VC8_TX_DL_ACLK    :  in  std_logic;
+
+      AXIS_VC0_RX_DL_ARSTN   :  in  std_logic;
+      AXIS_VC1_RX_DL_ARSTN   :  in  std_logic;
+      AXIS_VC2_RX_DL_ARSTN   :  in  std_logic;
+      AXIS_VC3_RX_DL_ARSTN   :  in  std_logic;
+      AXIS_VC4_RX_DL_ARSTN   :  in  std_logic;
+      AXIS_VC5_RX_DL_ARSTN   :  in  std_logic;
+      AXIS_VC6_RX_DL_ARSTN   :  in  std_logic;
+      AXIS_VC7_RX_DL_ARSTN   :  in  std_logic;
+      AXIS_VC8_RX_DL_ARSTN   :  in  std_logic;
+
+      AXIS_VC0_TX_DL_RSTN    :  in  std_logic;
+      AXIS_VC1_TX_DL_RSTN    :  in  std_logic;
+      AXIS_VC2_TX_DL_RSTN    :  in  std_logic;
+      AXIS_VC3_TX_DL_RSTN    :  in  std_logic;
+      AXIS_VC4_TX_DL_RSTN    :  in  std_logic;
+      AXIS_VC5_TX_DL_RSTN    :  in  std_logic;
+      AXIS_VC6_TX_DL_RSTN    :  in  std_logic;
+      AXIS_VC7_TX_DL_RSTN    :  in  std_logic;
+      AXIS_VC8_TX_DL_RSTN    :  in  std_logic;
+
+      AXIS_VC0_TX_DL_TDATA     :  in  std_logic_vector(31 downto 0);
+      AXIS_VC1_TX_DL_TDATA     :  in  std_logic_vector(31 downto 0);
+      AXIS_VC2_TX_DL_TDATA     :  in  std_logic_vector(31 downto 0);
+      AXIS_VC3_TX_DL_TDATA     :  in  std_logic_vector(31 downto 0);
+      AXIS_VC4_TX_DL_TDATA     :  in  std_logic_vector(31 downto 0);
+      AXIS_VC5_TX_DL_TDATA     :  in  std_logic_vector(31 downto 0);
+      AXIS_VC6_TX_DL_TDATA     :  in  std_logic_vector(31 downto 0);
+      AXIS_VC7_TX_DL_TDATA     :  in  std_logic_vector(31 downto 0);
+      AXIS_VC8_TX_DL_TDATA     :  in  std_logic_vector(31 downto 0);
+
+      AXIS_VC0_TX_DL_TLAST     :  in  std_logic;
+      AXIS_VC1_TX_DL_TLAST     :  in  std_logic;
+      AXIS_VC2_TX_DL_TLAST     :  in  std_logic;
+      AXIS_VC3_TX_DL_TLAST     :  in  std_logic;
+      AXIS_VC4_TX_DL_TLAST     :  in  std_logic;
+      AXIS_VC5_TX_DL_TLAST     :  in  std_logic;
+      AXIS_VC6_TX_DL_TLAST     :  in  std_logic;
+      AXIS_VC7_TX_DL_TLAST     :  in  std_logic;
+      AXIS_VC8_TX_DL_TLAST     :  in  std_logic;
+
+      AXIS_VC0_RX_DL_TREADY    :  in  std_logic;
+      AXIS_VC1_RX_DL_TREADY    :  in  std_logic;
+      AXIS_VC2_RX_DL_TREADY    :  in  std_logic;
+      AXIS_VC3_RX_DL_TREADY    :  in  std_logic;
+      AXIS_VC4_RX_DL_TREADY    :  in  std_logic;
+      AXIS_VC5_RX_DL_TREADY    :  in  std_logic;
+      AXIS_VC6_RX_DL_TREADY    :  in  std_logic;
+      AXIS_VC7_RX_DL_TREADY    :  in  std_logic;
+      AXIS_VC8_RX_DL_TREADY    :  in  std_logic;
+
+      AXIS_VC0_TX_DL_TUSER     :  in  std_logic_vector(3 downto 0);
+      AXIS_VC1_TX_DL_TUSER     :  in  std_logic_vector(3 downto 0);
+      AXIS_VC2_TX_DL_TUSER     :  in  std_logic_vector(3 downto 0);
+      AXIS_VC3_TX_DL_TUSER     :  in  std_logic_vector(3 downto 0);
+      AXIS_VC4_TX_DL_TUSER     :  in  std_logic_vector(3 downto 0);
+      AXIS_VC5_TX_DL_TUSER     :  in  std_logic_vector(3 downto 0);
+      AXIS_VC6_TX_DL_TUSER     :  in  std_logic_vector(3 downto 0);
+      AXIS_VC7_TX_DL_TUSER     :  in  std_logic_vector(3 downto 0);
+      AXIS_VC8_TX_DL_TUSER     :  in  std_logic_vector(3 downto 0);
+
+      AXIS_VC0_TX_DL_TVALID    :  in  std_logic;
+      AXIS_VC1_TX_DL_TVALID    :  in  std_logic;
+      AXIS_VC2_TX_DL_TVALID    :  in  std_logic;
+      AXIS_VC3_TX_DL_TVALID    :  in  std_logic;
+      AXIS_VC4_TX_DL_TVALID    :  in  std_logic;
+      AXIS_VC5_TX_DL_TVALID    :  in  std_logic;
+      AXIS_VC6_TX_DL_TVALID    :  in  std_logic;
+      AXIS_VC7_TX_DL_TVALID    :  in  std_logic;
+      AXIS_VC8_TX_DL_TVALID    :  in  std_logic;
+
+      AXIS_VC0_RX_DL_TDATA    :  out  std_logic_vector(31 downto 0);
+      AXIS_VC1_RX_DL_TDATA    :  out  std_logic_vector(31 downto 0);
+      AXIS_VC2_RX_DL_TDATA    :  out  std_logic_vector(31 downto 0);
+      AXIS_VC3_RX_DL_TDATA    :  out  std_logic_vector(31 downto 0);
+      AXIS_VC4_RX_DL_TDATA    :  out  std_logic_vector(31 downto 0);
+      AXIS_VC5_RX_DL_TDATA    :  out  std_logic_vector(31 downto 0);
+      AXIS_VC6_RX_DL_TDATA    :  out  std_logic_vector(31 downto 0);
+      AXIS_VC7_RX_DL_TDATA    :  out  std_logic_vector(31 downto 0);
+      AXIS_VC8_RX_DL_TDATA    :  out  std_logic_vector(31 downto 0);
+
+      AXIS_VC0_RX_DL_TLAST     :  out  std_logic;
+      AXIS_VC1_RX_DL_TLAST     :  out  std_logic;
+      AXIS_VC2_RX_DL_TLAST     :  out  std_logic;
+      AXIS_VC3_RX_DL_TLAST     :  out  std_logic;
+      AXIS_VC4_RX_DL_TLAST     :  out  std_logic;
+      AXIS_VC5_RX_DL_TLAST     :  out  std_logic;
+      AXIS_VC6_RX_DL_TLAST     :  out  std_logic;
+      AXIS_VC7_RX_DL_TLAST     :  out  std_logic;
+      AXIS_VC8_RX_DL_TLAST     :  out  std_logic;
+
+      AXIS_VC0_TX_DL_TREADY    :  out  std_logic;
+      AXIS_VC1_TX_DL_TREADY    :  out  std_logic;
+      AXIS_VC2_TX_DL_TREADY    :  out  std_logic;
+      AXIS_VC3_TX_DL_TREADY    :  out  std_logic;
+      AXIS_VC4_TX_DL_TREADY    :  out  std_logic;
+      AXIS_VC5_TX_DL_TREADY    :  out  std_logic;
+      AXIS_VC6_TX_DL_TREADY    :  out  std_logic;
+      AXIS_VC7_TX_DL_TREADY    :  out  std_logic;
+      AXIS_VC8_TX_DL_TREADY    :  out  std_logic;
+
+      AXIS_VC0_RX_DL_TUSER     :  out  std_logic_vector(3 downto 0);
+      AXIS_VC1_RX_DL_TUSER     :  out  std_logic_vector(3 downto 0);
+      AXIS_VC2_RX_DL_TUSER     :  out  std_logic_vector(3 downto 0);
+      AXIS_VC3_RX_DL_TUSER     :  out  std_logic_vector(3 downto 0);
+      AXIS_VC4_RX_DL_TUSER     :  out  std_logic_vector(3 downto 0);
+      AXIS_VC5_RX_DL_TUSER     :  out  std_logic_vector(3 downto 0);
+      AXIS_VC6_RX_DL_TUSER     :  out  std_logic_vector(3 downto 0);
+      AXIS_VC7_RX_DL_TUSER     :  out  std_logic_vector(3 downto 0);
+      AXIS_VC8_RX_DL_TUSER     :  out  std_logic_vector(3 downto 0);
+
+      AXIS_VC0_RX_DL_TVALID    :  out  std_logic;
+      AXIS_VC1_RX_DL_TVALID    :  out  std_logic;
+      AXIS_VC2_RX_DL_TVALID    :  out  std_logic;
+      AXIS_VC3_RX_DL_TVALID    :  out  std_logic;
+      AXIS_VC4_RX_DL_TVALID    :  out  std_logic;
+      AXIS_VC5_RX_DL_TVALID    :  out  std_logic;
+      AXIS_VC6_RX_DL_TVALID    :  out  std_logic;
+      AXIS_VC7_RX_DL_TVALID    :  out  std_logic;
+      AXIS_VC8_RX_DL_TVALID    :  out  std_logic;
 
       CURRENT_TIME_SLOT_NW             : in  std_logic_vector(7 downto 0);         --! Current time slot
 
@@ -289,31 +381,96 @@ spacefibre_light_top_inst: spacefibre_light_top
       RX_NEG                            => RX_NEG,                          
       RX_POS                            => RX_POS,                          
       -- Input Ports - Busses
-      AXIS_ACLK_RX_DL(8 downto 0)       => AXIS_ACLK_RX_DL(8 downto 0),     
-      AXIS_ACLK_TX_DL(8 downto 0)       => AXIS_ACLK_TX_DL(8 downto 0),     
-      AXIS_ARSTN_RX_DL(8 downto 0)      => AXIS_ARSTN_RX_DL(8 downto 0),    
-      AXIS_ARSTN_TX_DL(8 downto 0)      => AXIS_ARSTN_TX_DL(8 downto 0),    
-      AXIS_TDATA_TX_DL(0)(31 downto 0)  => AXIS_TDATA_TX_DL_0(31 downto 0),
-      AXIS_TDATA_TX_DL(1)(31 downto 0)  => AXIS_TDATA_TX_DL_1(31 downto 0),
-      AXIS_TDATA_TX_DL(2)(31 downto 0)  => AXIS_TDATA_TX_DL_2(31 downto 0),
-      AXIS_TDATA_TX_DL(3)(31 downto 0)  => AXIS_TDATA_TX_DL_3(31 downto 0),
-      AXIS_TDATA_TX_DL(4)(31 downto 0)  => AXIS_TDATA_TX_DL_4(31 downto 0),
-      AXIS_TDATA_TX_DL(5)(31 downto 0)  => AXIS_TDATA_TX_DL_5(31 downto 0),
-      AXIS_TDATA_TX_DL(6)(31 downto 0)  => AXIS_TDATA_TX_DL_6(31 downto 0),
-      AXIS_TDATA_TX_DL(7)(31 downto 0)  => AXIS_TDATA_TX_DL_7(31 downto 0),
-      AXIS_TDATA_TX_DL(8)(31 downto 0)  => AXIS_TDATA_TX_DL_8(31 downto 0),
-      AXIS_TLAST_TX_DL(8 downto 0)      => AXIS_TLAST_TX_DL(8 downto 0),    
-      AXIS_TREADY_RX_DL(8 downto 0)     => AXIS_TREADY_RX_DL(8 downto 0),   
-      AXIS_TUSER_TX_DL(0)(3 downto 0)   => AXIS_TUSER_TX_DL_0(3 downto 0), 
-      AXIS_TUSER_TX_DL(1)(3 downto 0)   => AXIS_TUSER_TX_DL_1(3 downto 0), 
-      AXIS_TUSER_TX_DL(2)(3 downto 0)   => AXIS_TUSER_TX_DL_2(3 downto 0), 
-      AXIS_TUSER_TX_DL(3)(3 downto 0)   => AXIS_TUSER_TX_DL_3(3 downto 0), 
-      AXIS_TUSER_TX_DL(4)(3 downto 0)   => AXIS_TUSER_TX_DL_4(3 downto 0), 
-      AXIS_TUSER_TX_DL(5)(3 downto 0)   => AXIS_TUSER_TX_DL_5(3 downto 0), 
-      AXIS_TUSER_TX_DL(6)(3 downto 0)   => AXIS_TUSER_TX_DL_6(3 downto 0), 
-      AXIS_TUSER_TX_DL(7)(3 downto 0)   => AXIS_TUSER_TX_DL_7(3 downto 0), 
-      AXIS_TUSER_TX_DL(8)(3 downto 0)   => AXIS_TUSER_TX_DL_8(3 downto 0), 
-      AXIS_TVALID_TX_DL(8 downto 0)     => AXIS_TVALID_TX_DL(8 downto 0),   
+      AXIS_ACLK_RX_DL(0)       => AXIS_VC0_RX_DL_ACLK,    
+      AXIS_ACLK_RX_DL(1)       => AXIS_VC1_RX_DL_ACLK,   
+      AXIS_ACLK_RX_DL(2)       => AXIS_VC2_RX_DL_ACLK,   
+      AXIS_ACLK_RX_DL(3)       => AXIS_VC3_RX_DL_ACLK,   
+      AXIS_ACLK_RX_DL(4)       => AXIS_VC4_RX_DL_ACLK,   
+      AXIS_ACLK_RX_DL(5)       => AXIS_VC5_RX_DL_ACLK,   
+      AXIS_ACLK_RX_DL(6)       => AXIS_VC6_RX_DL_ACLK,   
+      AXIS_ACLK_RX_DL(7)       => AXIS_VC7_RX_DL_ACLK,   
+      AXIS_ACLK_RX_DL(8)       => AXIS_VC8_RX_DL_ACLK,   
+
+      AXIS_ACLK_TX_DL(0)       =>       AXIS_VC0_TX_DL_ACLK,
+      AXIS_ACLK_TX_DL(1)       =>       AXIS_VC1_TX_DL_ACLK,
+      AXIS_ACLK_TX_DL(2)       =>       AXIS_VC2_TX_DL_ACLK,
+      AXIS_ACLK_TX_DL(3)       =>       AXIS_VC3_TX_DL_ACLK,
+      AXIS_ACLK_TX_DL(4)       =>       AXIS_VC4_TX_DL_ACLK,
+      AXIS_ACLK_TX_DL(5)       =>       AXIS_VC5_TX_DL_ACLK,
+      AXIS_ACLK_TX_DL(6)       =>       AXIS_VC6_TX_DL_ACLK,
+      AXIS_ACLK_TX_DL(7)       =>       AXIS_VC7_TX_DL_ACLK,
+      AXIS_ACLK_TX_DL(8)       =>       AXIS_VC8_TX_DL_ACLK,
+     
+      AXIS_ARSTN_RX_DL(0)      => AXIS_VC0_RX_DL_ARSTN, 
+      AXIS_ARSTN_RX_DL(1)      => AXIS_VC1_RX_DL_ARSTN, 
+      AXIS_ARSTN_RX_DL(2)      => AXIS_VC2_RX_DL_ARSTN, 
+      AXIS_ARSTN_RX_DL(3)      => AXIS_VC3_RX_DL_ARSTN, 
+      AXIS_ARSTN_RX_DL(4)      => AXIS_VC4_RX_DL_ARSTN, 
+      AXIS_ARSTN_RX_DL(5)      => AXIS_VC5_RX_DL_ARSTN, 
+      AXIS_ARSTN_RX_DL(5)      => AXIS_VC6_RX_DL_ARSTN, 
+      AXIS_ARSTN_RX_DL(7)      => AXIS_VC7_RX_DL_ARSTN, 
+      AXIS_ARSTN_RX_DL(8)      => AXIS_VC8_RX_DL_ARSTN, 
+
+      AXIS_ARSTN_TX_DL(0)      => AXIS_VC0_TX_DL_RSTN,   
+      AXIS_ARSTN_TX_DL(1)      => AXIS_VC1_TX_DL_RSTN,
+      AXIS_ARSTN_TX_DL(2)      => AXIS_VC2_TX_DL_RSTN,
+      AXIS_ARSTN_TX_DL(3)      => AXIS_VC3_TX_DL_RSTN,
+      AXIS_ARSTN_TX_DL(4)      => AXIS_VC4_TX_DL_RSTN,
+      AXIS_ARSTN_TX_DL(5)      => AXIS_VC5_TX_DL_RSTN,
+      AXIS_ARSTN_TX_DL(6)      => AXIS_VC6_TX_DL_RSTN,
+      AXIS_ARSTN_TX_DL(7)      => AXIS_VC7_TX_DL_RSTN,
+      AXIS_ARSTN_TX_DL(8)      => AXIS_VC8_TX_DL_RSTN,
+
+      AXIS_TDATA_TX_DL(0)(31 downto 0)  => AXIS_VC0_TX_DL_TDATA(31 downto 0),
+      AXIS_TDATA_TX_DL(1)(31 downto 0)  => AXIS_VC1_TX_DL_TDATA(31 downto 0),
+      AXIS_TDATA_TX_DL(2)(31 downto 0)  => AXIS_VC2_TX_DL_TDATA(31 downto 0),
+      AXIS_TDATA_TX_DL(3)(31 downto 0)  => AXIS_VC3_TX_DL_TDATA(31 downto 0),
+      AXIS_TDATA_TX_DL(4)(31 downto 0)  => AXIS_VC4_TX_DL_TDATA(31 downto 0),
+      AXIS_TDATA_TX_DL(5)(31 downto 0)  => AXIS_VC5_TX_DL_TDATA(31 downto 0),
+      AXIS_TDATA_TX_DL(6)(31 downto 0)  => AXIS_VC6_TX_DL_TDATA(31 downto 0),
+      AXIS_TDATA_TX_DL(7)(31 downto 0)  => AXIS_VC7_TX_DL_TDATA(31 downto 0),
+      AXIS_TDATA_TX_DL(8)(31 downto 0)  => AXIS_VC8_TX_DL_TDATA(31 downto 0),
+
+      AXIS_TLAST_TX_DL(0)      => AXIS_VC0_TX_DL_TLAST,  
+      AXIS_TLAST_TX_DL(1)      => AXIS_VC1_TX_DL_TLAST,  
+      AXIS_TLAST_TX_DL(2)      => AXIS_VC2_TX_DL_TLAST,  
+      AXIS_TLAST_TX_DL(3)      => AXIS_VC3_TX_DL_TLAST,  
+      AXIS_TLAST_TX_DL(4)      => AXIS_VC4_TX_DL_TLAST,  
+      AXIS_TLAST_TX_DL(5)      => AXIS_VC5_TX_DL_TLAST,  
+      AXIS_TLAST_TX_DL(6)      => AXIS_VC6_TX_DL_TLAST,  
+      AXIS_TLAST_TX_DL(7)      => AXIS_VC7_TX_DL_TLAST,  
+      AXIS_TLAST_TX_DL(8)      => AXIS_VC8_TX_DL_TLAST,  
+
+      AXIS_TREADY_RX_DL(0)     => AXIS_VC0_RX_DL_TREADY,
+      AXIS_TREADY_RX_DL(1)     => AXIS_VC1_RX_DL_TREADY, 
+      AXIS_TREADY_RX_DL(2)     => AXIS_VC2_RX_DL_TREADY, 
+      AXIS_TREADY_RX_DL(3)     => AXIS_VC3_RX_DL_TREADY, 
+      AXIS_TREADY_RX_DL(4)     => AXIS_VC4_RX_DL_TREADY, 
+      AXIS_TREADY_RX_DL(5)     => AXIS_VC5_RX_DL_TREADY, 
+      AXIS_TREADY_RX_DL(6)     => AXIS_VC6_RX_DL_TREADY, 
+      AXIS_TREADY_RX_DL(7)     => AXIS_VC7_RX_DL_TREADY,  
+      AXIS_TREADY_RX_DL(8)     => AXIS_VC8_RX_DL_TREADY,   
+
+      AXIS_TUSER_TX_DL(0)(3 downto 0)   => AXIS_VC0_TX_DL_TUSER(3 downto 0), 
+      AXIS_TUSER_TX_DL(1)(3 downto 0)   => AXIS_VC1_TX_DL_TUSER(3 downto 0), 
+      AXIS_TUSER_TX_DL(2)(3 downto 0)   => AXIS_VC2_TX_DL_TUSER(3 downto 0), 
+      AXIS_TUSER_TX_DL(3)(3 downto 0)   => AXIS_VC3_TX_DL_TUSER(3 downto 0), 
+      AXIS_TUSER_TX_DL(4)(3 downto 0)   => AXIS_VC4_TX_DL_TUSER(3 downto 0), 
+      AXIS_TUSER_TX_DL(5)(3 downto 0)   => AXIS_VC5_TX_DL_TUSER(3 downto 0), 
+      AXIS_TUSER_TX_DL(6)(3 downto 0)   => AXIS_VC6_TX_DL_TUSER(3 downto 0), 
+      AXIS_TUSER_TX_DL(7)(3 downto 0)   => AXIS_VC7_TX_DL_TUSER(3 downto 0), 
+      AXIS_TUSER_TX_DL(8)(3 downto 0)   => AXIS_VC8_TX_DL_TUSER(3 downto 0), 
+
+      AXIS_TVALID_TX_DL(0)     => AXIS_VC0_TX_DL_TVALID, 
+      AXIS_TVALID_TX_DL(1)     => AXIS_VC1_TX_DL_TVALID,
+      AXIS_TVALID_TX_DL(2)     => AXIS_VC2_TX_DL_TVALID,
+      AXIS_TVALID_TX_DL(3)     => AXIS_VC3_TX_DL_TVALID,
+      AXIS_TVALID_TX_DL(4)     => AXIS_VC4_TX_DL_TVALID,
+      AXIS_TVALID_TX_DL(5)     => AXIS_VC5_TX_DL_TVALID,
+      AXIS_TVALID_TX_DL(6)     => AXIS_VC6_TX_DL_TVALID,
+      AXIS_TVALID_TX_DL(7)     => AXIS_VC7_TX_DL_TVALID,
+      AXIS_TVALID_TX_DL(8)     => AXIS_VC8_TX_DL_TVALID,
+
       CAPABILITY_TX_INJ(7 downto 0)     => CAPABILITY_TX_INJ(7 downto 0),   
       CONTINUOUS_VC(7 downto 0)         => CONTINUOUS_VC(7 downto 0),       
       CURRENT_TIME_SLOT_NW(7 downto 0)  => CURRENT_TIME_SLOT_NW(7 downto 0),
@@ -348,28 +505,59 @@ spacefibre_light_top_inst: spacefibre_light_top
       -- Output Ports - Busses
       ACK_COUNTER_RX(2 downto 0)        => ACK_COUNTER_RX(2 downto 0),      
       ACK_COUNTER_TX(2 downto 0)        => ACK_COUNTER_TX(2 downto 0),      
-      ACK_SEQ_NUM(7 downto 0)           => ACK_SEQ_NUM(7 downto 0),         
-      AXIS_TDATA_RX_DL(0)(31 downto 0)  => AXIS_TDATA_RX_DL_0(31 downto 0),
-      AXIS_TDATA_RX_DL(1)(31 downto 0)  => AXIS_TDATA_RX_DL_1(31 downto 0),
-      AXIS_TDATA_RX_DL(2)(31 downto 0)  => AXIS_TDATA_RX_DL_2(31 downto 0),
-      AXIS_TDATA_RX_DL(3)(31 downto 0)  => AXIS_TDATA_RX_DL_3(31 downto 0),
-      AXIS_TDATA_RX_DL(4)(31 downto 0)  => AXIS_TDATA_RX_DL_4(31 downto 0),
-      AXIS_TDATA_RX_DL(5)(31 downto 0)  => AXIS_TDATA_RX_DL_5(31 downto 0),
-      AXIS_TDATA_RX_DL(6)(31 downto 0)  => AXIS_TDATA_RX_DL_6(31 downto 0),
-      AXIS_TDATA_RX_DL(7)(31 downto 0)  => AXIS_TDATA_RX_DL_7(31 downto 0),
-      AXIS_TDATA_RX_DL(8)(31 downto 0)  => AXIS_TDATA_RX_DL_8(31 downto 0),
-      AXIS_TLAST_RX_DL(8 downto 0)      => AXIS_TLAST_RX_DL(8 downto 0),    
-      AXIS_TREADY_TX_DL(8 downto 0)     => AXIS_TREADY_TX_DL(8 downto 0),   
-      AXIS_TUSER_RX_DL(0)(3 downto 0)   => AXIS_TUSER_RX_DL_0(3 downto 0), 
-      AXIS_TUSER_RX_DL(1)(3 downto 0)   => AXIS_TUSER_RX_DL_1(3 downto 0), 
-      AXIS_TUSER_RX_DL(2)(3 downto 0)   => AXIS_TUSER_RX_DL_2(3 downto 0), 
-      AXIS_TUSER_RX_DL(3)(3 downto 0)   => AXIS_TUSER_RX_DL_3(3 downto 0), 
-      AXIS_TUSER_RX_DL(4)(3 downto 0)   => AXIS_TUSER_RX_DL_4(3 downto 0), 
-      AXIS_TUSER_RX_DL(5)(3 downto 0)   => AXIS_TUSER_RX_DL_5(3 downto 0), 
-      AXIS_TUSER_RX_DL(6)(3 downto 0)   => AXIS_TUSER_RX_DL_6(3 downto 0), 
-      AXIS_TUSER_RX_DL(7)(3 downto 0)   => AXIS_TUSER_RX_DL_7(3 downto 0), 
-      AXIS_TUSER_RX_DL(8)(3 downto 0)   => AXIS_TUSER_RX_DL_8(3 downto 0), 
-      AXIS_TVALID_RX_DL(8 downto 0)     => AXIS_TVALID_RX_DL(8 downto 0),   
+      ACK_SEQ_NUM(7 downto 0)           => ACK_SEQ_NUM(7 downto 0),   
+
+      AXIS_TDATA_RX_DL(0)(31 downto 0)  => AXIS_VC0_RX_DL_TDATA(31 downto 0),
+      AXIS_TDATA_RX_DL(1)(31 downto 0)  => AXIS_VC1_RX_DL_TDATA(31 downto 0),
+      AXIS_TDATA_RX_DL(2)(31 downto 0)  => AXIS_VC2_RX_DL_TDATA(31 downto 0),
+      AXIS_TDATA_RX_DL(3)(31 downto 0)  => AXIS_VC3_RX_DL_TDATA(31 downto 0),
+      AXIS_TDATA_RX_DL(4)(31 downto 0)  => AXIS_VC4_RX_DL_TDATA(31 downto 0),
+      AXIS_TDATA_RX_DL(5)(31 downto 0)  => AXIS_VC5_RX_DL_TDATA(31 downto 0),
+      AXIS_TDATA_RX_DL(6)(31 downto 0)  => AXIS_VC6_RX_DL_TDATA(31 downto 0),
+      AXIS_TDATA_RX_DL(7)(31 downto 0)  => AXIS_VC7_RX_DL_TDATA(31 downto 0),
+      AXIS_TDATA_RX_DL(8)(31 downto 0)  => AXIS_VC8_RX_DL_TDATA(31 downto 0),
+
+      AXIS_TLAST_RX_DL(0)      => AXIS_VC0_RX_DL_TLAST,   
+      AXIS_TLAST_RX_DL(1)      => AXIS_VC1_RX_DL_TLAST,
+      AXIS_TLAST_RX_DL(2)      => AXIS_VC2_RX_DL_TLAST,
+      AXIS_TLAST_RX_DL(3)      => AXIS_VC3_RX_DL_TLAST,
+      AXIS_TLAST_RX_DL(4)      => AXIS_VC4_RX_DL_TLAST,
+      AXIS_TLAST_RX_DL(5)      => AXIS_VC5_RX_DL_TLAST,
+      AXIS_TLAST_RX_DL(6)      => AXIS_VC6_RX_DL_TLAST,
+      AXIS_TLAST_RX_DL(7)      => AXIS_VC7_RX_DL_TLAST,
+      AXIS_TLAST_RX_DL(8)      => AXIS_VC8_RX_DL_TLAST,
+
+      AXIS_TREADY_TX_DL(0)     => AXIS_VC0_TX_DL_TREADY,  
+      AXIS_TREADY_TX_DL(1)     => AXIS_VC1_TX_DL_TREADY,  
+      AXIS_TREADY_TX_DL(2)     => AXIS_VC2_TX_DL_TREADY,  
+      AXIS_TREADY_TX_DL(3)     => AXIS_VC3_TX_DL_TREADY,  
+      AXIS_TREADY_TX_DL(4)     => AXIS_VC4_TX_DL_TREADY,  
+      AXIS_TREADY_TX_DL(5)     => AXIS_VC5_TX_DL_TREADY,  
+      AXIS_TREADY_TX_DL(6)     => AXIS_VC6_TX_DL_TREADY,  
+      AXIS_TREADY_TX_DL(7)     => AXIS_VC7_TX_DL_TREADY,  
+      AXIS_TREADY_TX_DL(8)     => AXIS_VC8_TX_DL_TREADY,   
+
+      AXIS_TUSER_RX_DL(0)(3 downto 0)   => AXIS_VC0_RX_DL_TUSER(3 downto 0), 
+      AXIS_TUSER_RX_DL(1)(3 downto 0)   => AXIS_VC1_RX_DL_TUSER(3 downto 0), 
+      AXIS_TUSER_RX_DL(2)(3 downto 0)   => AXIS_VC2_RX_DL_TUSER(3 downto 0), 
+      AXIS_TUSER_RX_DL(3)(3 downto 0)   => AXIS_VC3_RX_DL_TUSER(3 downto 0), 
+      AXIS_TUSER_RX_DL(4)(3 downto 0)   => AXIS_VC4_RX_DL_TUSER(3 downto 0), 
+      AXIS_TUSER_RX_DL(5)(3 downto 0)   => AXIS_VC5_RX_DL_TUSER(3 downto 0), 
+      AXIS_TUSER_RX_DL(6)(3 downto 0)   => AXIS_VC6_RX_DL_TUSER(3 downto 0), 
+      AXIS_TUSER_RX_DL(7)(3 downto 0)   => AXIS_VC7_RX_DL_TUSER(3 downto 0), 
+      AXIS_TUSER_RX_DL(8)(3 downto 0)   => AXIS_VC8_RX_DL_TUSER(3 downto 0), 
+
+      AXIS_TVALID_RX_DL(0)     => AXIS_VC0_RX_DL_TVALID,  
+      AXIS_TVALID_RX_DL(1)     => AXIS_VC1_RX_DL_TVALID,
+      AXIS_TVALID_RX_DL(2)     => AXIS_VC2_RX_DL_TVALID,
+      AXIS_TVALID_RX_DL(3)     => AXIS_VC3_RX_DL_TVALID,
+      AXIS_TVALID_RX_DL(4)     => AXIS_VC4_RX_DL_TVALID,
+      AXIS_TVALID_RX_DL(5)     => AXIS_VC5_RX_DL_TVALID,
+      AXIS_TVALID_RX_DL(6)     => AXIS_VC6_RX_DL_TVALID,
+      AXIS_TVALID_RX_DL(7)     => AXIS_VC7_RX_DL_TVALID,
+      AXIS_TVALID_RX_DL(8)     => AXIS_VC8_RX_DL_TVALID,
+
+
       CREDIT_VC(7 downto 0)             => CREDIT_VC(7 downto 0),           
       CURRENT_TIME_SLOT(7 downto 0)     => CURRENT_TIME_SLOT(7 downto 0),   
       DATA_COUNTER_RX(6 downto 0)       => DATA_COUNTER_RX(6 downto 0),     
