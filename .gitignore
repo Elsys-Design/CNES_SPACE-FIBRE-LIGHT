@@ -64,3 +64,5 @@ sim/scenario/custom.do
 #vscode folder
 .vscode
 
+#vivado folder
+work

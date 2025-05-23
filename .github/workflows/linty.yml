@@ -1,8 +1,6 @@
 name: Linty
 on:
   push:
-    branches:
-      - test_sonarqube
 
 jobs:
   linty:
@@ -11,35 +9,43 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Git Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Cache
-        uses: actions/cache@v3.3.0
+        id: cache-sonar
+        uses: actions/cache@v4
         with:
           path: ~/.sonar/cache
           key: sonar
           restore-keys: sonar
 
+      - name: Create cache directory if cache is not restored
+        if: steps.cache-sonar.outputs.cache-hit != 'true'
+        run: mkdir $HOME/.sonar && mkdir $HOME/.sonar/cache
+
       - name: Run Linty
         run: |
           docker run \
             --rm \
-            -e SONAR_HOST_URL="${{ secrets.LINTY_CLOUD_URL }}" \
+            --user="$(id -u):$(id -g)" \
+            -e SONAR_HOST_URL="$SONAR_HOST_URL" \
             -e SONAR_TOKEN="${{ secrets.LINTY_SCANNER_TOKEN }}" \
             -e GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}" \
             -e GITHUB_REPOSITORY_OWNER="$GITHUB_REPOSITORY_OWNER" \
             -e GITHUB_REPOSITORY="$GITHUB_REPOSITORY" \
             -e TABBY_CAD_LICENSE="$TABBY_CAD_LICENSE" \
+            -v "$HOME/.sonar/cache:/opt/sonar-scanner/.sonar/cache" \
             -v "${PWD}:/usr/src" \
-            lintyservices/linty-scanner:latest 
+            lintyservices/linty-scanner:latest -X
         env:
           TABBY_CAD_LICENSE: ${{secrets.TABBY_CAD_LICENSE}}
 
       - name: Debug
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: debug
+          include-hidden-files: true
           path: .linty/
