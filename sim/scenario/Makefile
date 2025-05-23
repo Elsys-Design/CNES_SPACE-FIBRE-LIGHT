@@ -29,8 +29,8 @@ export RANDOM_SEED = 123456789
 
 #Add VHDL sources
 VHDL_SOURCES =  $(path_to_root_dir)/IP_SPACE_FIBRE/02_dev/03_verification/03_packages/pkg_model.vhd
-VHDL_SOURCES += $(path_to_root_dir)/IP_SPACE_FIBRE/02_dev/01_design/03_sources/ip_spacefibre_light_top/reset_gen.vhd
-VHDL_SOURCES += $(path_to_root_dir)/IP_SPACE_FIBRE/02_dev/01_design/03_sources/ip_spacefibre_light_top/spacefibre_light_top.vhd
+VHDL_SOURCES += $(path_to_root_dir)/src/ip_spacefibre_light_top/reset_gen.vhd
+VHDL_SOURCES += $(path_to_root_dir)/src/ip_spacefibre_light_top/spacefibre_light_top.vhd
 VHDL_SOURCES += $(path_to_root_dir)/IP_SPACE_FIBRE/02_dev/03_verification/01_models/lane/resync_double.vhd
 VHDL_SOURCES += $(path_to_root_dir)/IP_SPACE_FIBRE/02_dev/03_verification/01_models/data_link/data_link_analyzer/data_link_analyzer.vhd
 VHDL_SOURCES += $(path_to_root_dir)/IP_SPACE_FIBRE/02_dev/03_verification/01_models/data_link/data_link_configurator/data_link_configurator.vhd

@@ -79,7 +79,7 @@ echo "############# End compile Unisim #############"
 echo "##############################################"
 echo "############# Start compile FIFO #############"
 echo "##############################################"
-vcom +acc -work commun  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/04_packages/pkg_tools.vhd
+vcom +acc -work commun  $rootpath/src/pkg_tools.vhd
 vcom +acc -work commun  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/02_external_ip/fifo_dc/fifo_dc.vhd
 
 echo "############# End compile FIFO #############"
@@ -89,7 +89,7 @@ echo "#############################################"
 echo "########## Start compile Phy+Lane ###########"
 echo "#############################################"
 
-vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/04_packages/pkg_phy_plus_lane.vhd
+vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/src/pkg_phy_plus_lane.vhd
 
 echo "############# Start compile BUFG #############"
 vlog  +cover=sb +acc -work phy_plus_lane_lib  -L xpm -L unisim $LIB_PATH_BUF/ip/BufG_GT_bd_bufg_gt_0_0/BufG_GT_bd_bufg_gt_0_0_inst.v
@@ -121,14 +121,14 @@ vlog +cover=sb +acc -work phy_plus_lane_lib  $LIB_PATH_GTY/hdl/extended_phy_laye
 echo "############# End compile GTY #############"
 
 echo "######## Start compile Lane_layer #########"
-vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_phy_plus_lane/lane_ctrl_word_detect.vhd
-vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_phy_plus_lane/lane_ctrl_word_insert.vhd
-vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_phy_plus_lane/lane_init_fsm.vhd
-vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_phy_plus_lane/parallel_loopback.vhd
-vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_phy_plus_lane/rx_sync_fsm.vhd
-vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_phy_plus_lane/skip_insertion.vhd
-vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_phy_plus_lane/phy_plus_lane.vhd
-vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/module_phy_plus_lane/mib_phy_plus_lane.vhd
+vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/src/module_phy_plus_lane/lane_ctrl_word_detect.vhd
+vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/src/module_phy_plus_lane/lane_ctrl_word_insert.vhd
+vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/src/module_phy_plus_lane/lane_init_fsm.vhd
+vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/src/module_phy_plus_lane/parallel_loopback.vhd
+vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/src/module_phy_plus_lane/rx_sync_fsm.vhd
+vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/src/module_phy_plus_lane/skip_insertion.vhd
+vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/src/module_phy_plus_lane/phy_plus_lane.vhd
+vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/src/module_phy_plus_lane/mib_phy_plus_lane.vhd
 echo "######### End compile Lane_layer ##########"
 
 echo "########## End compile Phy+Lane ###########"
@@ -139,7 +139,7 @@ echo "################################################"
 echo "######## Start compile Data_Link_layer #########"
 echo "################################################"
 
-vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/04_packages/pkg_data_link.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/src/pkg_data_link.vhd
 
 vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/02_external_ip/fifo_dc_custom_to_axis/AXIS_MASTER.vhd
 vcom +cover=sb +acc -work data_link_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/02_external_ip/fifo_dc_custom_to_axis/FIFO_DC_AXIS_M.vhd
@@ -170,8 +170,8 @@ echo "######## End compile Data_Link_layer #########"
 
 echo "####### Start compile Interlayer #######"
 
-vcom +cover=sb +acc -work interlayer_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/ip_spacefibre_light_top/demux_rx.vhd
-vcom +cover=sb +acc -work interlayer_lib  $rootpath/IP_SPACE_FIBRE/02_dev/01_design/03_sources/ip_spacefibre_light_top/mux_tx.vhd
+vcom +cover=sb +acc -work interlayer_lib  $rootpath/src/ip_spacefibre_light_top/demux_rx.vhd
+vcom +cover=sb +acc -work interlayer_lib  $rootpath/src/ip_spacefibre_light_top/mux_tx.vhd
 
 echo "####### End compile Interlayer #######"
 
