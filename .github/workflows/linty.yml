@@ -1,5 +1,5 @@
 name: Linty
-
+on: [push]
 jobs:
   linty:
     name: Linty
