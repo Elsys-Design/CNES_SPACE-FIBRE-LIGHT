@@ -1,6 +1,4 @@
 name: Linty
-on:
-  push:
 
 jobs:
   linty:
