@@ -16,9 +16,10 @@ set proj_part xcve2802-vsvh1760-2mp-e-s
 # be careful many parameters for versal are presets by the xilinx board file
 set proj_boardpart xilinx.com:vek280:part0:1.2
 set proj_script_path $proj_rootpath/implementation/app/traffic_generator
+set proj_vivadowork $proj_rootpath/work/$proj_name
 ########################################################################
 
-create_project -force -name vek280_traffic_gene -dir $proj_rootpath/work/$proj_name
+create_project -force -name vek280_traffic_gene -dir $proj_vivadowork
 set_property part $proj_part [current_project]
 set_property target_language vhdl [current_project]
 set_property "default_lib" "work" [current_project]
@@ -62,8 +63,11 @@ set_property -name "board_part" -value $proj_boardpart -objects $obj
          set_property "used_in_implementation" [lindex $file 2] $file_obj
      }
 ## create  buf_gt
-source $proj_rootpath/ip/cores/BufG_GT_bd.tcl
+#source $proj_rootpath/ip/cores/BufG_GT_bd.tcl
+#make_wrapper -files [get_files $proj_vivadowork/vek280_traffic_gene/vek280_traffic_gene.srcs/sources_1/bd/BufG_GT_bd/BufG_GT_bd.bd] -top
 
+#import clock wizard 
+import_ip $proj_script_path/clk_wizard_0.xci
 
 # ---------------------------------------------------------------------
 # Block design
