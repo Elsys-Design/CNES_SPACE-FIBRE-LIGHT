@@ -61,6 +61,9 @@ set_property -name "board_part" -value $proj_boardpart -objects $obj
          set_property "used_in_synthesis"      [lindex $file 1] $file_obj
          set_property "used_in_implementation" [lindex $file 2] $file_obj
      }
+## create  buf_gt
+source $proj_rootpath/ip/cores/BufG_GT_bd.tcl
+
 
 # ---------------------------------------------------------------------
 # Block design
