@@ -66,3 +66,4 @@ sim/scenario/custom.do
 
 #vivado folder
 work
+**/.Xil/
