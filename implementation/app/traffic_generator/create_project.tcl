@@ -10,28 +10,46 @@ if { [info exists env(SPWF_ROOTPATH)] } {
 }
 #########################################################################
 #project parameters
+#########################################################################
+#main path of the spacefibrelight git projet
 set proj_rootpath $env(SPWF_ROOTPATH)
-set proj_name vek280_traffic_gene
+
+# name of the xilinx project to generate
+set proj_name traffic_generator
+
+#FPGA reference of the project
 set proj_part xcve2802-vsvh1760-2mp-e-s
-# be careful many parameters for versal are presets by the xilinx board file
+
+#add local baord proejct (to avoid missing installation or different version)
+# be careful many parameters for versal are preset by the xilinx board file
 set proj_boardpart xilinx.com:vek280:part0:1.2
-set proj_script_path $proj_rootpath/implementation/app/traffic_generator
+
+##############################################################################
+######These parameters are generated "automatically" do not edit if not needed
+##############################################################################
+#location  of the current test application
+set proj_script_path $proj_rootpath/implementation/app/$proj_name
+
+#vivado main project location
 set proj_vivadowork $proj_rootpath/work/$proj_name
+
+#custom IP repo for the application (thereis a symbolic link in it to reference spaefibrelight IP itself without copying sources)
+set proj_vivadoiprepo $proj_script_path/ip_repo
 ########################################################################
 
-create_project -force -name vek280_traffic_gene -dir $proj_vivadowork
+create_project -force -name $proj_name -dir $proj_vivadowork
 set_property part $proj_part [current_project]
 set_property target_language vhdl [current_project]
 set_property "default_lib" "work" [current_project]
 
 ###SET IP repository####
 #ip repo is set to main root path to get benefit from spacefibrelight xilinx IP folder
-set_property ip_repo_paths $proj_rootpath [current_project]
+set_property ip_repo_paths $proj_vivadoiprepo [current_project]
 update_ip_catalog 
 
 ####### configure board part #######
 #load  board package from cnes local repo
-set_param board.repoPaths [list "$proj_rootpath/implementation/board/vek280/xilinxboardstore_vek280_2025.1"]
+set_param board.repoPaths [list "$proj_script_path/implementation/board/vek280/xilinxboardstore_vek280_2025.1"]
 #verify presence of local board
 get_board_parts *vek280*
 set obj [current_project]
