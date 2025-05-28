@@ -47,15 +47,15 @@ entity spacefibre_light_top_ip is
       AXIS_VC7_TX_DL_ACLK    :  in  std_logic;
       AXIS_VC8_TX_DL_ACLK    :  in  std_logic;
 
-      AXIS_VC0_RX_DL_ARSTN   :  in  std_logic;
-      AXIS_VC1_RX_DL_ARSTN   :  in  std_logic;
-      AXIS_VC2_RX_DL_ARSTN   :  in  std_logic;
-      AXIS_VC3_RX_DL_ARSTN   :  in  std_logic;
-      AXIS_VC4_RX_DL_ARSTN   :  in  std_logic;
-      AXIS_VC5_RX_DL_ARSTN   :  in  std_logic;
-      AXIS_VC6_RX_DL_ARSTN   :  in  std_logic;
-      AXIS_VC7_RX_DL_ARSTN   :  in  std_logic;
-      AXIS_VC8_RX_DL_ARSTN   :  in  std_logic;
+      AXIS_VC0_RX_DL_RSTN   :  in  std_logic;
+      AXIS_VC1_RX_DL_RSTN   :  in  std_logic;
+      AXIS_VC2_RX_DL_RSTN   :  in  std_logic;
+      AXIS_VC3_RX_DL_RSTN   :  in  std_logic;
+      AXIS_VC4_RX_DL_RSTN   :  in  std_logic;
+      AXIS_VC5_RX_DL_RSTN   :  in  std_logic;
+      AXIS_VC6_RX_DL_RSTN   :  in  std_logic;
+      AXIS_VC7_RX_DL_RSTN   :  in  std_logic;
+      AXIS_VC8_RX_DL_RSTN   :  in  std_logic;
 
       AXIS_VC0_TX_DL_RSTN    :  in  std_logic;
       AXIS_VC1_TX_DL_RSTN    :  in  std_logic;
@@ -402,15 +402,15 @@ spacefibre_light_top_inst: spacefibre_light_top
       AXIS_ACLK_TX_DL(7)       =>       AXIS_VC7_TX_DL_ACLK,
       AXIS_ACLK_TX_DL(8)       =>       AXIS_VC8_TX_DL_ACLK,
      
-      AXIS_ARSTN_RX_DL(0)      => AXIS_VC0_RX_DL_ARSTN, 
-      AXIS_ARSTN_RX_DL(1)      => AXIS_VC1_RX_DL_ARSTN, 
-      AXIS_ARSTN_RX_DL(2)      => AXIS_VC2_RX_DL_ARSTN, 
-      AXIS_ARSTN_RX_DL(3)      => AXIS_VC3_RX_DL_ARSTN, 
-      AXIS_ARSTN_RX_DL(4)      => AXIS_VC4_RX_DL_ARSTN, 
-      AXIS_ARSTN_RX_DL(5)      => AXIS_VC5_RX_DL_ARSTN, 
-      AXIS_ARSTN_RX_DL(5)      => AXIS_VC6_RX_DL_ARSTN, 
-      AXIS_ARSTN_RX_DL(7)      => AXIS_VC7_RX_DL_ARSTN, 
-      AXIS_ARSTN_RX_DL(8)      => AXIS_VC8_RX_DL_ARSTN, 
+      AXIS_ARSTN_RX_DL(0)      => AXIS_VC0_RX_DL_RSTN, 
+      AXIS_ARSTN_RX_DL(1)      => AXIS_VC1_RX_DL_RSTN, 
+      AXIS_ARSTN_RX_DL(2)      => AXIS_VC2_RX_DL_RSTN, 
+      AXIS_ARSTN_RX_DL(3)      => AXIS_VC3_RX_DL_RSTN, 
+      AXIS_ARSTN_RX_DL(4)      => AXIS_VC4_RX_DL_RSTN, 
+      AXIS_ARSTN_RX_DL(5)      => AXIS_VC5_RX_DL_RSTN, 
+      AXIS_ARSTN_RX_DL(5)      => AXIS_VC6_RX_DL_RSTN, 
+      AXIS_ARSTN_RX_DL(7)      => AXIS_VC7_RX_DL_RSTN, 
+      AXIS_ARSTN_RX_DL(8)      => AXIS_VC8_RX_DL_RSTN, 
 
       AXIS_ARSTN_TX_DL(0)      => AXIS_VC0_TX_DL_RSTN,   
       AXIS_ARSTN_TX_DL(1)      => AXIS_VC1_TX_DL_RSTN,
