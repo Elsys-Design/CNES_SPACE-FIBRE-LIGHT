@@ -1869,7 +1869,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>f72a4771</spirit:value>
+            <spirit:value>58d8f18a</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -1888,7 +1888,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>f72a4771</spirit:value>
+            <spirit:value>58d8f18a</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -5177,11 +5177,6 @@
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/ip_spacefibre_light_top/demux_rx.vhd</spirit:name>
-        <spirit:fileType>vhdlSource</spirit:fileType>
-        <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
-      </spirit:file>
-      <spirit:file>
         <spirit:name>../src/ip/fifo_dc/fifo_dc.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
@@ -5255,6 +5250,7 @@
       <spirit:file>
         <spirit:name>../src/ip_spacefibre_light_top/spacefibre_light_top_ip.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
+        <spirit:userFileType>CHECKSUM_080c47ca</spirit:userFileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
     </spirit:fileSet>
@@ -5607,7 +5603,7 @@
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
-          <spirit:file>
+      <spirit:file>
         <spirit:name>../src/ip_spacefibre_light_top/spacefibre_light_top_ip.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
@@ -5653,13 +5649,13 @@
       <xilinx:xpmLibraries>
         <xilinx:xpmLibrary>XPM_CDC</xilinx:xpmLibrary>
       </xilinx:xpmLibraries>
-      <xilinx:coreRevision>4</xilinx:coreRevision>
-      <xilinx:coreCreationDateTime>2025-05-28T14:42:44Z</xilinx:coreCreationDateTime>
+      <xilinx:coreRevision>5</xilinx:coreRevision>
+      <xilinx:coreCreationDateTime>2025-05-28T14:58:42Z</xilinx:coreCreationDateTime>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2024.1</xilinx:xilinxVersion>
       <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="157d8cd3"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="b4f71db7"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="a0c77416"/>
       <xilinx:checksum xilinx:scope="ports" xilinx:value="d8b666ff"/>
       <xilinx:checksum xilinx:scope="parameters" xilinx:value="efda11c5"/>
     </xilinx:packagingInfo>
