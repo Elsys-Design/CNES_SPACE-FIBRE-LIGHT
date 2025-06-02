@@ -5071,7 +5071,7 @@
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>.../src/ip/fifo_dc_custom_to_axis/AXIS_MASTER.vhd</spirit:name>
+        <spirit:name>../src/ip/fifo_dc_custom_to_axis/AXIS_MASTER.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
@@ -5424,7 +5424,7 @@
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>.../src/ip/fifo_dc_custom_to_axis/AXIS_MASTER.vhd</spirit:name>
+        <spirit:name>../src/ip/fifo_dc_custom_to_axis/AXIS_MASTER.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
@@ -5525,11 +5525,6 @@
       </spirit:file>
       <spirit:file>
         <spirit:name>>../src/data_link_lib/data_word_id_fsm.vhd</spirit:name>
-        <spirit:fileType>vhdlSource</spirit:fileType>
-        <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>../src/ip_spacefibre_light_top/demux_rx.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
