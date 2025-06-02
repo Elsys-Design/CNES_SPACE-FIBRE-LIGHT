@@ -5091,7 +5091,7 @@
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>>../src/data_link_lib/data_link_lib/pkg_data_link.vhd</spirit:name>
+        <spirit:name>../src/data_link_lib/data_link_lib/pkg_data_link.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
         <spirit:logicalName>data_link_lib</spirit:logicalName>
@@ -5157,22 +5157,22 @@
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>>../src/data_link_lib/data_out_buf.vhd</spirit:name>
+        <spirit:name>../src/data_link_lib/data_out_buf.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>>../src/data_link_lib/data_seq_check.vhd</spirit:name>
+        <spirit:name>../src/data_link_lib/data_seq_check.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>>../src/data_link_lib/data_seq_compute.vhd</spirit:name>
+        <spirit:name>../src/data_link_lib/data_seq_compute.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>>../src/data_link_lib/data_word_id_fsm.vhd</spirit:name>
+        <spirit:name>../src/data_link_lib/data_word_id_fsm.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
@@ -5270,6 +5270,7 @@
         </xilinx:subCoreRef>
       </spirit:vendorExtensions>
     </spirit:fileSet>
+
     <spirit:fileSet>
       <spirit:name>xilinx_anylanguagebehavioralsimulation_view_fileset</spirit:name>
       <spirit:file>
@@ -5450,87 +5451,87 @@
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>>../src/data_link_lib/data_link_lib/pkg_data_link.vhd</spirit:name>
+        <spirit:name>../src/data_link_lib/data_link_lib/pkg_data_link.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>>../src/data_link_lib/data_crc_check.vhd</spirit:name>
+        <spirit:name>../src/data_link_lib/data_crc_check.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>>../src/data_link_lib/data_crc_compute.vhd</spirit:name>
+        <spirit:name>../src/data_link_lib/data_crc_compute.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>>../src/data_link_lib/data_desencapsulation.vhd</spirit:name>
+        <spirit:name>../src/data_link_lib/data_desencapsulation.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>>../src/data_link_lib/data_desencapsulation_bc.vhd</spirit:name>
+        <spirit:name>../src/data_link_lib/data_desencapsulation_bc.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>>../src/data_link_lib/data_encapsulation.vhd</spirit:name>
+        <spirit:name>../src/data_link_lib/data_encapsulation.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>>../src/data_link_lib/data_err_management.vhd</spirit:name>
+        <spirit:name>../src/data_link_lib/data_err_management.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>>../src/data_link_lib/data_in_bc_buf.vhd</spirit:name>
+        <spirit:name>../src/data_link_lib/data_in_bc_buf.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>>../src/data_link_lib/data_in_buf.vhd</spirit:name>
+        <spirit:name>../src/data_link_lib/data_in_buf.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>>../src/data_link_lib/data_link.vhd</spirit:name>
+        <spirit:name>../src/data_link_lib/data_link.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>>../src/data_link_lib/data_link_reset.vhd</spirit:name>
+        <spirit:name>../src/data_link_lib/data_link_reset.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>>../src/data_link_lib/data_mac.vhd</spirit:name>
+        <spirit:name>../src/data_link_lib/data_mac.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>>../src/data_link_lib/data_out_bc_buf.vhd</spirit:name>
+        <spirit:name>../src/data_link_lib/data_out_bc_buf.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>>../src/data_link_lib/data_out_buf.vhd</spirit:name>
+        <spirit:name>../src/data_link_lib/data_out_buf.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>>../src/data_link_lib/data_seq_check.vhd</spirit:name>
+        <spirit:name>../src/data_link_lib/data_seq_check.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>>../src/data_link_lib/data_seq_compute.vhd</spirit:name>
+        <spirit:name>../src/data_link_lib/data_seq_compute.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>>../src/data_link_lib/data_word_id_fsm.vhd</spirit:name>
+        <spirit:name>../src/data_link_lib/data_word_id_fsm.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
@@ -5615,6 +5616,7 @@
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
         <spirit:userFileType>CELL_NAME_spacefibre_light_top_inst/inst_phy_plus_lane/gtwiz_versal_0</spirit:userFileType>
       </spirit:file>
+    </spirit:fileSet>   
     <spirit:fileSet>
       <spirit:name>xilinx_anylanguagebehavioralsimulation_xilinx_com_ip_gtwiz_versal_1_0__ref_view_fileset</spirit:name>
       <spirit:vendorExtensions>
