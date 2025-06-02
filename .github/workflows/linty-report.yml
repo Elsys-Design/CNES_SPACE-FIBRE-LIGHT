@@ -1,0 +1,49 @@
+name: Deploy Linty HTML Report on GitHub Pages
+
+on:
+  push:
+    branches: [ push ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v4
+
+      - name: Run Linty scan
+        run: |
+          docker run \
+            --rm \
+            --user="$(id -u):$(id -g)" \
+            -e SONAR_HOST_URL=${{ vars.SONAR_HOST_URL }} \
+            -e SONAR_TOKEN="${{ secrets.SONAR_TOKEN }}" \
+            -e GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}" \
+            -e GITHUB_REPOSITORY_OWNER="$GITHUB_REPOSITORY_OWNER" \
+            -e GITHUB_REPOSITORY="$GITHUB_REPOSITORY" \
+            -e TABBY_CAD_LICENSE="$TABBY_CAD_LICENSE" \
+            -v "$HOME/.sonar/cache:/opt/sonar-scanner/.sonar/cache" \
+            -v "${PWD}:/usr/src" \
+            lintyservices/linty-scanner:latest
+        env:
+          TABBY_CAD_LICENSE: ${{secrets.TABBY_CAD_LICENSE}}
+
+      - name: Upload Website Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .linty/report/build/html
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
