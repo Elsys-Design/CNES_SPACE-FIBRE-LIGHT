@@ -1859,7 +1859,7 @@
         <spirit:displayName>Synthesis</spirit:displayName>
         <spirit:envIdentifier>:vivado.xilinx.com:synthesis</spirit:envIdentifier>
         <spirit:language>VHDL</spirit:language>
-        <spirit:modelName>spacefibre_light_top</spirit:modelName>
+        <spirit:modelName>spacefibre_light_top_ip</spirit:modelName>
         <spirit:fileSetRef>
           <spirit:localName>xilinx_anylanguagesynthesis_xilinx_com_ip_gtwiz_versal_1_0__ref_view_fileset</spirit:localName>
         </spirit:fileSetRef>
@@ -1869,7 +1869,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>58d8f18a</spirit:value>
+            <spirit:value>2b0bd253</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -1878,7 +1878,7 @@
         <spirit:displayName>Simulation</spirit:displayName>
         <spirit:envIdentifier>:vivado.xilinx.com:simulation</spirit:envIdentifier>
         <spirit:language>VHDL</spirit:language>
-        <spirit:modelName>spacefibre_light_top</spirit:modelName>
+        <spirit:modelName>spacefibre_light_top_ip</spirit:modelName>
         <spirit:fileSetRef>
           <spirit:localName>xilinx_anylanguagebehavioralsimulation_xilinx_com_ip_gtwiz_versal_1_0__ref_view_fileset</spirit:localName>
         </spirit:fileSetRef>
@@ -1888,7 +1888,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>58d8f18a</spirit:value>
+            <spirit:value>2b0bd253</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -5646,16 +5646,13 @@
       </xilinx:taxonomies>
       <xilinx:displayName>spacefibrelight_v0_1</xilinx:displayName>
       <xilinx:definitionSource>package_project</xilinx:definitionSource>
-      <xilinx:xpmLibraries>
-        <xilinx:xpmLibrary>XPM_CDC</xilinx:xpmLibrary>
-      </xilinx:xpmLibraries>
-      <xilinx:coreRevision>5</xilinx:coreRevision>
-      <xilinx:coreCreationDateTime>2025-05-28T14:58:42Z</xilinx:coreCreationDateTime>
+      <xilinx:coreRevision>6</xilinx:coreRevision>
+      <xilinx:coreCreationDateTime>2025-06-02T06:25:59Z</xilinx:coreCreationDateTime>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2024.1</xilinx:xilinxVersion>
       <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="157d8cd3"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="a0c77416"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="bcbe7a85"/>
       <xilinx:checksum xilinx:scope="ports" xilinx:value="d8b666ff"/>
       <xilinx:checksum xilinx:scope="parameters" xilinx:value="efda11c5"/>
     </xilinx:packagingInfo>
