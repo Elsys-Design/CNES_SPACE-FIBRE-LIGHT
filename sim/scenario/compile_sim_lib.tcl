@@ -80,7 +80,7 @@ echo "##############################################"
 echo "############# Start compile FIFO #############"
 echo "##############################################"
 vcom +acc -work commun  $rootpath/src/pkg_tools.vhd
-vcom +acc -work commun  $rootpath/ip/fifo_dc/fifo_dc.vhd
+vcom +acc -work commun  $rootpath/src/ip/fifo_dc/fifo_dc.vhd
 
 echo "############# End compile FIFO #############"
 
@@ -94,8 +94,6 @@ vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/src/pkg_phy_plus_lane.vhd
 echo "############# Start compile BUFG #############"
 vlog  +cover=sb +acc -work phy_plus_lane_lib  -L xpm -L unisim $LIB_PATH_BUF/ip/BufG_GT_bd_bufg_gt_0_0/BufG_GT_bd_bufg_gt_0_0_inst.v
 vlog  +cover=sb +acc -work phy_plus_lane_lib  -L xpm -L unisim $LIB_PATH_BUF/ip/BufG_GT_bd_bufg_gt_0_0/sim/BufG_GT_bd_bufg_gt_0_0.v
-vcom  +cover=sb +acc -work phy_plus_lane_lib  $LIB_PATH_BUF/sim/BufG_GT_bd.vhd
-vcom  +cover=sb +acc -work phy_plus_lane_lib  $LIB_PATH_BUF/hdl/BufG_GT_bd_wrapper.vhd
 echo "############# End compile BUFG #############"
 
 echo "############# Start compile GTY #############"
@@ -141,10 +139,10 @@ echo "################################################"
 
 vcom +cover=sb +acc -work data_link_lib  $rootpath/src/pkg_data_link.vhd
 
-vcom +cover=sb +acc -work data_link_lib  $rootpath/ip/fifo_dc_custom_to_axis/AXIS_MASTER.vhd
-vcom +cover=sb +acc -work data_link_lib  $rootpath/ip/fifo_dc_custom_to_axis/FIFO_DC_AXIS_M.vhd
-vcom +cover=sb +acc -work data_link_lib  $rootpath/ip/fifo_dc_axis_to_custom/AXIS_SLAVE.vhd
-vcom +cover=sb +acc -work data_link_lib  $rootpath/ip/fifo_dc_axis_to_custom/FIFO_DC_AXIS_S.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/src/ip/fifo_dc_custom_to_axis/AXIS_MASTER.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/src/ip/fifo_dc_custom_to_axis/FIFO_DC_AXIS_M.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/src/ip/fifo_dc_axis_to_custom/AXIS_SLAVE.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/src/ip/fifo_dc_axis_to_custom/FIFO_DC_AXIS_S.vhd
 vcom +cover=sb +acc -work data_link_lib  $rootpath/src/module_data_link/data_crc_check.vhd
 vcom +cover=sb +acc -work data_link_lib  $rootpath/src/module_data_link/data_crc_compute.vhd
 vcom +cover=sb +acc -work data_link_lib  $rootpath/src/module_data_link/data_desencapsulation.vhd
@@ -160,8 +158,8 @@ vcom +cover=sb +acc -work data_link_lib  $rootpath/src/module_data_link/data_out
 vcom +cover=sb +acc -work data_link_lib  $rootpath/src/module_data_link/data_seq_check.vhd
 vcom +cover=sb +acc -work data_link_lib  $rootpath/src/module_data_link/data_seq_compute.vhd
 vcom +cover=sb +acc -work data_link_lib  $rootpath/src/module_data_link/data_word_id_fsm.vhd
-vcom +cover=sb +acc -work data_link_lib  $rootpath/ip/fifo_dc/fifo_dc.vhd
-vcom +cover=sb +acc -work data_link_lib  $rootpath/ip/fifo_dc_drop_bad_frame/fifo_dc_drop_bad_frame.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/src/ip/fifo_dc/fifo_dc.vhd
+vcom +cover=sb +acc -work data_link_lib  $rootpath/src/ip/fifo_dc_drop_bad_frame/fifo_dc_drop_bad_frame.vhd
 vcom +cover=sb +acc -work data_link_lib  $rootpath/src/module_data_link/data_link.vhd
 vcom +cover=sb +acc -work data_link_lib  $rootpath/src/module_data_link/mib_data_link.vhd
 
