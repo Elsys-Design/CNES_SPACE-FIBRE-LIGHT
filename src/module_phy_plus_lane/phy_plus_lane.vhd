@@ -310,59 +310,7 @@ architecture rtl of phy_plus_lane is
          DATA_RDY_TO_DL                   : out std_logic                        -- Data valid flag to Data-link layer
       );
    end component;
- component extended_phy_layer_wrapper 
-   port (
-      INTF0_RX0_ch_rxbufstatus_0 : out STD_LOGIC_VECTOR ( 2 downto 0 );
-      INTF0_RX0_ch_rxbyteisaligned_0 : out STD_LOGIC_VECTOR ( 0 to 0 );
-      INTF0_RX0_ch_rxbyterealign_0 : out STD_LOGIC_VECTOR ( 0 to 0 );
-      INTF0_RX0_ch_rxcdrhold_0 : in STD_LOGIC_VECTOR ( 0 to 0 );
-      INTF0_RX0_ch_rxcdrovrden_0 : in STD_LOGIC_VECTOR ( 0 to 0 );
-      INTF0_RX0_ch_rxcomsasdet_0 : out STD_LOGIC_VECTOR ( 0 to 0 );
-      INTF0_RX0_ch_rxctrl0_0 : out STD_LOGIC_VECTOR ( 15 downto 0 );
-      INTF0_RX0_ch_rxctrl1_0 : out STD_LOGIC_VECTOR ( 15 downto 0 );
-      INTF0_RX0_ch_rxctrl2_0 : out STD_LOGIC_VECTOR ( 7 downto 0 );
-      INTF0_RX0_ch_rxctrl3_0 : out STD_LOGIC_VECTOR ( 7 downto 0 );
-      INTF0_RX0_ch_rxdata_0 : out STD_LOGIC_VECTOR ( 127 downto 0 );
-      INTF0_RX0_ch_rxdatavalid_0 : out STD_LOGIC_VECTOR ( 1 downto 0 );
-      INTF0_RX0_ch_rxpd_0 : in STD_LOGIC_VECTOR ( 1 downto 0 );
-      INTF0_RX0_ch_rxpolarity_0 : in STD_LOGIC_VECTOR ( 0 to 0 );
-      INTF0_RX0_ch_rxrate_0 : in STD_LOGIC_VECTOR ( 7 downto 0 );
-      INTF0_RX_clr_out_0 : out STD_LOGIC;
-      INTF0_RX_clrb_leaf_out_0 : out STD_LOGIC;
-      INTF0_TX0_ch_txbufstatus_0 : out STD_LOGIC_VECTOR ( 1 downto 0 );
-      INTF0_TX0_ch_txctrl0_0 : in STD_LOGIC_VECTOR ( 15 downto 0 );
-      INTF0_TX0_ch_txctrl1_0 : in STD_LOGIC_VECTOR ( 15 downto 0 );
-      INTF0_TX0_ch_txctrl2_0 : in STD_LOGIC_VECTOR ( 7 downto 0 );
-      INTF0_TX0_ch_txdata : in STD_LOGIC_VECTOR ( 127 downto 0 );
-      INTF0_TX0_ch_txpd_0 : in STD_LOGIC_VECTOR ( 1 downto 0 );
-      INTF0_TX0_ch_txrate_0 : in STD_LOGIC_VECTOR ( 7 downto 0 );
-      INTF0_TX_clr_out_0 : out STD_LOGIC;
-      INTF0_TX_clrb_leaf_out_0 : out STD_LOGIC;
-      INTF0_rst_all_in_0 : in STD_LOGIC;
-      INTF0_rst_rx_datapath_in_0 : in STD_LOGIC;
-      INTF0_rst_rx_done_out_0 : out STD_LOGIC;
-      INTF0_rst_rx_pll_and_datapath_in_0 : in STD_LOGIC;
-      INTF0_rst_tx_datapath_in_0 : in STD_LOGIC;
-      INTF0_rst_tx_done_out_0 : out STD_LOGIC;
-      INTF0_rst_tx_pll_and_datapath_in_0 : in STD_LOGIC;
-      QUAD0_GTREFCLK0_0 : in STD_LOGIC;
-      QUAD0_GT_DEBUG_0_gpi : in STD_LOGIC_VECTOR ( 31 downto 0 );
-      QUAD0_GT_DEBUG_0_gpo : out STD_LOGIC_VECTOR ( 31 downto 0 );
-      QUAD0_RX0_outclk_0 : out STD_LOGIC;
-      QUAD0_RX0_usrclk_0 : in STD_LOGIC;
-      QUAD0_TX0_outclk_0 : out STD_LOGIC;
-      QUAD0_TX0_usrclk_0 : in STD_LOGIC;
-      QUAD0_hsclk0_lcplllock_0 : out STD_LOGIC;
-      Quad0_CH0_DEBUG_0_ch_loopback : in STD_LOGIC_VECTOR ( 2 downto 0 );
-      Quad0_GT_Serial_0_grx_n : in STD_LOGIC_VECTOR ( 3 downto 0 );
-      Quad0_GT_Serial_0_grx_p : in STD_LOGIC_VECTOR ( 3 downto 0 );
-      Quad0_GT_Serial_0_gtx_n : out STD_LOGIC_VECTOR ( 3 downto 0 );
-      Quad0_GT_Serial_0_gtx_p : out STD_LOGIC_VECTOR ( 3 downto 0 );
-      gtpowergood_0 : out STD_LOGIC;
-      gtwiz_freerun_clk_0 : in STD_LOGIC
-    );
- end component;
-
+  
    ----------------------------------------------------------------------------------------------------------------------------------------
    -------------------------------------------------------- Internal signals declaration --------------------------------------------------
    ----------------------------------------------------------------------------------------------------------------------------------------
@@ -844,12 +792,12 @@ gtwiz_versal_0: component extended_phy_layer_gtwiz_versal_0_0
       INTF0_RX0_ch_gtrxreset(0) => '0',
       INTF0_RX0_ch_refdebugout(1 downto 0) => open,
       INTF0_RX0_ch_rx10gstat(7 downto 0) => open,
-      INTF0_RX0_ch_rxbufstatus(2 downto 0) => gtwiz_versal_0_INTF0_RX0_ch_rxbufstatus(2 downto 0),
-      INTF0_RX0_ch_rxbyteisaligned(0) => gtwiz_versal_0_INTF0_RX0_ch_rxbyteisaligned(0),
-      INTF0_RX0_ch_rxbyterealign(0) => gtwiz_versal_0_INTF0_RX0_ch_rxbyterealign(0),
-      INTF0_RX0_ch_rxcdrhold(0) => INTF0_RX0_ch_rxcdrhold_0_1(0),
+      INTF0_RX0_ch_rxbufstatus(2 downto 0) => open,
+      INTF0_RX0_ch_rxbyteisaligned(0) => open,
+      INTF0_RX0_ch_rxbyterealign(0) => INTF0_RX0_ch_rxbyterealign,
+      INTF0_RX0_ch_rxcdrhold(0) => INTF0_RX0_ch_rxcdrhold,
       INTF0_RX0_ch_rxcdrlock(0) => open,
-      INTF0_RX0_ch_rxcdrovrden(0) => INTF0_RX0_ch_rxcdrovrden_0_1(0),
+      INTF0_RX0_ch_rxcdrovrden(0) => INTF0_RX0_ch_rxcdrovrden,
       INTF0_RX0_ch_rxcdrphdone(0) => open,
       INTF0_RX0_ch_rxcdrreset(0) => '0',
       INTF0_RX0_ch_rxchanbond_busy(0) => open,
@@ -865,19 +813,19 @@ gtwiz_versal_0: component extended_phy_layer_gtwiz_versal_0_0
       INTF0_RX0_ch_rxclkcorcnt(1 downto 0) => open,
       INTF0_RX0_ch_rxcominitdet(0) => open,
       INTF0_RX0_ch_rxcommadet(0) => open,
-      INTF0_RX0_ch_rxcomsasdet(0) => gtwiz_versal_0_INTF0_RX0_ch_rxcomsasdet(0),
+      INTF0_RX0_ch_rxcomsasdet(0) => open,
       INTF0_RX0_ch_rxcomwakedet(0) => open,
-      INTF0_RX0_ch_rxctrl0(15 downto 0) => gtwiz_versal_0_INTF0_RX0_ch_rxctrl0(15 downto 0),
-      INTF0_RX0_ch_rxctrl1(15 downto 0) => gtwiz_versal_0_INTF0_RX0_ch_rxctrl1(15 downto 0),
-      INTF0_RX0_ch_rxctrl2(7 downto 0) => gtwiz_versal_0_INTF0_RX0_ch_rxctrl2(7 downto 0),
-      INTF0_RX0_ch_rxctrl3(7 downto 0) => gtwiz_versal_0_INTF0_RX0_ch_rxctrl3(7 downto 0),
+      INTF0_RX0_ch_rxctrl0(15 downto 0) => INTF0_RX0_ch_rxctrl0,
+      INTF0_RX0_ch_rxctrl1(15 downto 0) => INTF0_RX0_ch_rxctrl1,
+      INTF0_RX0_ch_rxctrl2(7 downto 0) => INTF0_RX0_ch_rxctrl2,
+      INTF0_RX0_ch_rxctrl3(7 downto 0) => INTF0_RX0_ch_rxctrl3,
       INTF0_RX0_ch_rxdapicodeovrden(0) => '0',
       INTF0_RX0_ch_rxdapicodereset(0) => '0',
       INTF0_RX0_ch_rxdapireset(0) => '0',
       INTF0_RX0_ch_rxdapiresetdone(0) => open,
       INTF0_RX0_ch_rxdapiresetmask(1 downto 0) => B"00",
-      INTF0_RX0_ch_rxdata(127 downto 0) => gtwiz_versal_0_INTF0_RX0_ch_rxdata(127 downto 0),
-      INTF0_RX0_ch_rxdatavalid(1 downto 0) => gtwiz_versal_0_INTF0_RX0_ch_rxdatavalid(1 downto 0),
+      INTF0_RX0_ch_rxdata(127 downto 0) => INTF0_RX0_ch_rxdata,
+      INTF0_RX0_ch_rxdatavalid(1 downto 0) => INTF0_RX0_ch_rxdatavalid,
       INTF0_RX0_ch_rxdebugpcsout(0) => open,
       INTF0_RX0_ch_rxdlyalignerr(0) => open,
       INTF0_RX0_ch_rxdlyalignprog(0) => open,
@@ -896,7 +844,7 @@ gtwiz_versal_0: component extended_phy_layer_gtwiz_versal_0_0
       INTF0_RX0_ch_rxoobreset(0) => '0',
       INTF0_RX0_ch_rxosintdone(0) => open,
       INTF0_RX0_ch_rxpcsresetmask(4 downto 0) => B"11111",
-      INTF0_RX0_ch_rxpd(1 downto 0) => INTF0_RX0_ch_rxpd_0_1(1 downto 0),
+      INTF0_RX0_ch_rxpd(1 downto 0) => INTF0_RX0_ch_rxpd,
       INTF0_RX0_ch_rxphaligndone(0) => open,
       INTF0_RX0_ch_rxphalignerr(0) => open,
       INTF0_RX0_ch_rxphalignreq(0) => '0',
@@ -910,7 +858,7 @@ gtwiz_versal_0: component extended_phy_layer_gtwiz_versal_0_0
       INTF0_RX0_ch_rxphshift180done(0) => open,
       INTF0_RX0_ch_rxpkdet(0) => open,
       INTF0_RX0_ch_rxpmaresetmask(6 downto 0) => B"1111111",
-      INTF0_RX0_ch_rxpolarity(0) => INTF0_RX0_ch_rxpolarity_0_1(0),
+      INTF0_RX0_ch_rxpolarity(0) => invert_rx_bits_from_lif,
       INTF0_RX0_ch_rxprbscntreset(0) => '0',
       INTF0_RX0_ch_rxprbserr(0) => open,
       INTF0_RX0_ch_rxprbslocked(0) => open,
@@ -920,7 +868,7 @@ gtwiz_versal_0: component extended_phy_layer_gtwiz_versal_0_0
       INTF0_RX0_ch_rxqpien(0) => '0',
       INTF0_RX0_ch_rxqpisenn(0) => open,
       INTF0_RX0_ch_rxqpisenp(0) => open,
-      INTF0_RX0_ch_rxrate(7 downto 0) => INTF0_RX0_ch_rxrate_0_1(7 downto 0),
+      INTF0_RX0_ch_rxrate(7 downto 0) => "00000000",
       INTF0_RX0_ch_rxresetdone(0) => open,
       INTF0_RX0_ch_rxresetmode(1 downto 0) => B"00",
       INTF0_RX0_ch_rxsimplexphystatus(0) => open,
@@ -933,24 +881,24 @@ gtwiz_versal_0: component extended_phy_layer_gtwiz_versal_0_0
       INTF0_RX0_ch_rxsyncdone(0) => open,
       INTF0_RX0_ch_rxtermination(0) => '0',
       INTF0_RX0_ch_rxvalid(0) => open,
-      INTF0_RX_clr_out => gtwiz_versal_0_INTF0_RX_clr_out,
-      INTF0_RX_clrb_leaf_out => gtwiz_versal_0_INTF0_RX_clrb_leaf_out,
+      INTF0_RX_clr_out => open,
+      INTF0_RX_clrb_leaf_out => open,
       INTF0_TX0_ch_gttxreset(0) => '0',
       INTF0_TX0_ch_tx10gstat(0) => open,
-      INTF0_TX0_ch_txbufstatus(1 downto 0) => gtwiz_versal_0_INTF0_TX0_ch_txbufstatus(1 downto 0),
+      INTF0_TX0_ch_txbufstatus(1 downto 0) => open,
       INTF0_TX0_ch_txcomfinish(0) => open,
       INTF0_TX0_ch_txcominit(0) => '0',
       INTF0_TX0_ch_txcomsas(0) => '0',
       INTF0_TX0_ch_txcomwake(0) => '0',
-      INTF0_TX0_ch_txctrl0(15 downto 0) => INTF0_TX0_ch_txctrl0_0_1(15 downto 0),
-      INTF0_TX0_ch_txctrl1(15 downto 0) => INTF0_TX0_ch_txctrl1_0_1(15 downto 0),
-      INTF0_TX0_ch_txctrl2(7 downto 0) => INTF0_TX0_ch_txctrl2_0_1(7 downto 0),
+      INTF0_TX0_ch_txctrl0(15 downto 0) => "0000000000000000",
+      INTF0_TX0_ch_txctrl1(15 downto 0) => "0000000000000000",
+      INTF0_TX0_ch_txctrl2(7 downto 0) => valid_k_charac_from_si,
       INTF0_TX0_ch_txdapicodeovrden(0) => '0',
       INTF0_TX0_ch_txdapicodereset(0) => '0',
       INTF0_TX0_ch_txdapireset(0) => '0',
       INTF0_TX0_ch_txdapiresetdone(0) => open,
       INTF0_TX0_ch_txdapiresetmask(1 downto 0) => B"00",
-      INTF0_TX0_ch_txdata(127 downto 0) => INTF0_TX0_ch_txdata_1(127 downto 0),
+      INTF0_TX0_ch_txdata(127 downto 0) => data_tx_from_si,
       INTF0_TX0_ch_txdccdone(0) => open,
       INTF0_TX0_ch_txdebugpcsout(0) => open,
       INTF0_TX0_ch_txdeemph(1 downto 0) => B"00",
@@ -970,7 +918,7 @@ gtwiz_versal_0: component extended_phy_layer_gtwiz_versal_0_0
       INTF0_TX0_ch_txoneszeros(0) => '0',
       INTF0_TX0_ch_txpausedelayalign(0) => '0',
       INTF0_TX0_ch_txpcsresetmask(0) => '1',
-      INTF0_TX0_ch_txpd(1 downto 0) => INTF0_TX0_ch_txpd_0_1(1 downto 0),
+      INTF0_TX0_ch_txpd(1 downto 0) => INTF0_TX0_ch_txpd,
       INTF0_TX0_ch_txphaligndone(0) => open,
       INTF0_TX0_ch_txphalignerr(0) => open,
       INTF0_TX0_ch_txphalignoutrsvd(0) => open,
@@ -1001,7 +949,7 @@ gtwiz_versal_0: component extended_phy_layer_gtwiz_versal_0_0
       INTF0_TX0_ch_txqpisenn(0) => open,
       INTF0_TX0_ch_txqpisenp(0) => open,
       INTF0_TX0_ch_txqpiweakpu(0) => '0',
-      INTF0_TX0_ch_txrate(7 downto 0) => INTF0_TX0_ch_txrate_0_1(7 downto 0),
+      INTF0_TX0_ch_txrate(7 downto 0) => "00000000",
       INTF0_TX0_ch_txresetdone(0) => open,
       INTF0_TX0_ch_txresetmode(1 downto 0) => B"00",
       INTF0_TX0_ch_txsequence(6 downto 0) => B"0000000",
@@ -1010,85 +958,31 @@ gtwiz_versal_0: component extended_phy_layer_gtwiz_versal_0_0
       INTF0_TX0_ch_txswingoutlow(0) => open,
       INTF0_TX0_ch_txsyncallin(0) => '0',
       INTF0_TX0_ch_txsyncdone(0) => open,
-      INTF0_TX_clr_out => gtwiz_versal_0_INTF0_TX_clr_out,
-      INTF0_TX_clrb_leaf_out => gtwiz_versal_0_INTF0_TX_clrb_leaf_out,
-      INTF0_rst_all_in => INTF0_rst_all_in_0_1,
-      INTF0_rst_rx_datapath_in => INTF0_rst_rx_datapath_in_0_1,
-      INTF0_rst_rx_done_out => gtwiz_versal_0_INTF0_rst_rx_done_out,
-      INTF0_rst_rx_pll_and_datapath_in => INTF0_rst_rx_pll_and_datapath_in_0_1,
-      INTF0_rst_tx_datapath_in => INTF0_rst_tx_datapath_in_0_1,
-      INTF0_rst_tx_done_out => gtwiz_versal_0_INTF0_rst_tx_done_out,
-      INTF0_rst_tx_pll_and_datapath_in => INTF0_rst_tx_pll_and_datapath_in_0_1,
-      QUAD0_GTREFCLK0 => QUAD0_GTREFCLK0_0_1,
-      QUAD0_RX0_outclk => gtwiz_versal_0_QUAD0_RX0_outclk,
-      QUAD0_RX0_usrclk => QUAD0_RX0_usrclk_0_1,
-      QUAD0_TX0_outclk => gtwiz_versal_0_QUAD0_TX0_outclk,
-      QUAD0_TX0_usrclk => QUAD0_TX0_usrclk_0_1,
-      QUAD0_ch0_loopback(2 downto 0) => Quad0_CH0_DEBUG_0_1_ch_loopback(2 downto 0),
-      QUAD0_gpi(31 downto 0) => QUAD0_GT_DEBUG_0_1_gpi(31 downto 0),
-      QUAD0_gpo(31 downto 0) => QUAD0_GT_DEBUG_0_1_gpo(31 downto 0),
-      QUAD0_hsclk0_lcplllock => gtwiz_versal_0_QUAD0_hsclk0_lcplllock,
-      QUAD0_rxn(3 downto 0) => gtwiz_versal_0_Quad0_GT_Serial_GRX_N(3 downto 0),
-      QUAD0_rxp(3 downto 0) => gtwiz_versal_0_Quad0_GT_Serial_GRX_P(3 downto 0),
-      QUAD0_txn(3 downto 0) => gtwiz_versal_0_Quad0_GT_Serial_GTX_N(3 downto 0),
-      QUAD0_txp(3 downto 0) => gtwiz_versal_0_Quad0_GT_Serial_GTX_P(3 downto 0),
-      gtpowergood => gtwiz_versal_0_gtpowergood,
-      gtwiz_freerun_clk => gtwiz_freerun_clk_0_1
+      INTF0_TX_clr_out => open,
+      INTF0_TX_clrb_leaf_out => open,
+      INTF0_rst_all_in => reset,
+      INTF0_rst_rx_datapath_in => '0',
+      INTF0_rst_rx_done_out => open,
+      INTF0_rst_rx_pll_and_datapath_in => '0',
+      INTF0_rst_tx_datapath_in => '0',
+      INTF0_rst_tx_done_out => INTF0_rst_tx_done_out_0,
+      INTF0_rst_tx_pll_and_datapath_in => '0',
+      QUAD0_GTREFCLK0 => CLK_GTY,
+      QUAD0_RX0_outclk => open,
+      QUAD0_RX0_usrclk => clk_tx,
+      QUAD0_TX0_outclk => QUAD0_TX0_outclk,
+      QUAD0_TX0_usrclk => clk_tx,
+      QUAD0_ch0_loopback(2 downto 0) => QUAD0_ch0_loopback,
+      QUAD0_gpi(31 downto 0) => x"00000000",
+      QUAD0_gpo(31 downto 0) => open,
+      QUAD0_hsclk0_lcplllock => QUAD0_hsclk0_lcplllock,
+      QUAD0_rxn(3 downto 0) => QUAD0_rxn,
+      QUAD0_rxp(3 downto 0) => QUAD0_rxp,
+      QUAD0_txn(3 downto 0) => QUAD0_txn,
+      QUAD0_txp(3 downto 0) => QUAD0_txp,
+      gtpowergood => open,
+      gtwiz_freerun_clk => CLK
     );
-
---   inst_extended_phy_layer_wrapper : extended_phy_layer_wrapper
---    port map(
---      INTF0_RX0_ch_rxbufstatus_0           => open,
---      INTF0_RX0_ch_rxbyteisaligned_0       => open,
---      INTF0_RX0_ch_rxbyterealign_0         => INTF0_RX0_ch_rxbyterealign,
---      INTF0_RX0_ch_rxcdrhold_0             => INTF0_RX0_ch_rxcdrhold,
---      INTF0_RX0_ch_rxcdrovrden_0           => INTF0_RX0_ch_rxcdrovrden,
---      INTF0_RX0_ch_rxcomsasdet_0           => open,
---      INTF0_RX0_ch_rxctrl0_0               => INTF0_RX0_ch_rxctrl0,
---      INTF0_RX0_ch_rxctrl1_0               => INTF0_RX0_ch_rxctrl1,
---      INTF0_RX0_ch_rxctrl2_0               => INTF0_RX0_ch_rxctrl2,
---      INTF0_RX0_ch_rxctrl3_0               => INTF0_RX0_ch_rxctrl3,
---      INTF0_RX0_ch_rxdata_0                => INTF0_RX0_ch_rxdata,
---      INTF0_RX0_ch_rxdatavalid_0           => INTF0_RX0_ch_rxdatavalid,
---      INTF0_RX0_ch_rxpd_0                  => INTF0_RX0_ch_rxpd,
---      INTF0_RX0_ch_rxpolarity_0(0)         => invert_rx_bits_from_lif,
---      INTF0_RX0_ch_rxrate_0                => "00000000",
---      INTF0_RX_clr_out_0                   => open,
---      INTF0_RX_clrb_leaf_out_0             => open,
---      INTF0_TX0_ch_txbufstatus_0           => open,
---      INTF0_TX0_ch_txctrl0_0               => "0000000000000000",
---      INTF0_TX0_ch_txctrl1_0               => "0000000000000000",
---      INTF0_TX0_ch_txctrl2_0               => valid_k_charac_from_si,
---      INTF0_TX0_ch_txdata                  => data_tx_from_si,
---      INTF0_TX0_ch_txpd_0                  => INTF0_TX0_ch_txpd,
---      INTF0_TX0_ch_txrate_0                => "00000000",
---      INTF0_TX_clr_out_0                   => open,
---      INTF0_TX_clrb_leaf_out_0             => open,
---      INTF0_rst_all_in_0                   => reset,
---      INTF0_rst_rx_datapath_in_0           => '0',
---      INTF0_rst_rx_done_out_0              => open,
---      INTF0_rst_rx_pll_and_datapath_in_0   => '0',
---      INTF0_rst_tx_datapath_in_0           => '0',
---      INTF0_rst_tx_done_out_0              => INTF0_rst_tx_done_out_0,
---      INTF0_rst_tx_pll_and_datapath_in_0   => '0',
---      QUAD0_GTREFCLK0_0                    => CLK_GTY,
---      QUAD0_GT_DEBUG_0_gpi                 => x"00000000",
---      QUAD0_GT_DEBUG_0_gpo                 => open,
---      QUAD0_RX0_outclk_0                   => open,
---      QUAD0_RX0_usrclk_0                   => clk_tx,--QUAD0_TX0_outclk,
---      QUAD0_TX0_outclk_0                   => QUAD0_TX0_outclk,
---      QUAD0_TX0_usrclk_0                   => clk_tx, --QUAD0_TX0_outclk,
---      QUAD0_hsclk0_lcplllock_0             => QUAD0_hsclk0_lcplllock,
---      Quad0_CH0_DEBUG_0_ch_loopback        => QUAD0_ch0_loopback,
---      Quad0_GT_Serial_0_grx_n              => QUAD0_rxn,
---      Quad0_GT_Serial_0_grx_p              => QUAD0_rxp,
---      Quad0_GT_Serial_0_gtx_n              => QUAD0_txn,
---      Quad0_GT_Serial_0_gtx_p              => QUAD0_txp,
---      gtpowergood_0                        => open,
---      gtwiz_freerun_clk_0                  => CLK
---    );
-
-
 
   -- Inputs/Outputs
 CLK_TX_OUT                 <= clk_tx;
