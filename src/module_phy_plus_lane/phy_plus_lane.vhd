@@ -94,17 +94,7 @@ architecture rtl of phy_plus_lane is
    ----------------------------------------------------------------------------------------------------------------------------------------
    -------------------------------------------------------- Modules Declaration -----------------------------------------------------------
    ----------------------------------------------------------------------------------------------------------------------------------------
-   component BufG_GT_bd_wrapper is
-      port (
-        gt_bufgtce_0                      : in  std_logic;
-        gt_bufgtcemask_0                  : in  std_logic;
-        gt_bufgtclr_0                     : in  std_logic;
-        gt_bufgtclrmask_0                 : in  std_logic;
-        gt_bufgtdiv_0                     : in  std_logic_vector ( 2 downto 0 );
-        outclk_0                          : in  std_logic;
-        usrclk_0                          : out std_logic
-      );
-   end component;
+
 
    component FIFO_DC is
       generic (
@@ -804,16 +794,21 @@ begin
    ------------------------------------------------------------------------------
    -- Instance of TX BufG_GT_wrapper module for TX clock
    ------------------------------------------------------------------------------
-      inst_bufg_gt_tx_clock : BufG_GT_bd_wrapper
-         port map(
-           gt_bufgtce_0                   => '1',
-           gt_bufgtcemask_0               => '0',
-           gt_bufgtclr_0                  => '0',
-           gt_bufgtclrmask_0              => '0',
-           gt_bufgtdiv_0                  => "000",
-           outclk_0                       => QUAD0_TX0_outclk,
-           usrclk_0                       => clk_tx
-         );
+
+      -- see https://docs.amd.com/r/en-US/am003-versal-clocking-resources/BUFG_GT-and-BUFG_GT_SYNC for buffer definition
+      BUFG_GT_inst : BUFG_GT
+      generic map (
+         SIM_DEVICE => "VERSAL_AI_EDGE"  
+      )
+      port map (
+         O => clk_tx,          -- user output clock 150MHz 
+         CE => '1',            -- 1-bit input: Buffer enable
+         CEMASK => '0',        -- 1-bit input: CE Mask
+         CLR => '0',           -- 1-bit input: Asynchronous clear
+         CLRMASK => '0',       -- 1-bit input: CLR Mask
+         DIV => "000",         -- 3-bit input: Dynamic divide Value
+         I => QUAD0_TX0_outclk -- input GTY clock 100 MHz
+      );
 
    reset <= not RST_N or LANE_RESET or lane_reset_dl_i;
 
