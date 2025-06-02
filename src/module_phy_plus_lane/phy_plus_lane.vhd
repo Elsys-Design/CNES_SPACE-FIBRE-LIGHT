@@ -94,7 +94,214 @@ architecture rtl of phy_plus_lane is
    ----------------------------------------------------------------------------------------------------------------------------------------
    -------------------------------------------------------- Modules Declaration -----------------------------------------------------------
    ----------------------------------------------------------------------------------------------------------------------------------------
-
+component extended_phy_layer_gtwiz_versal_0_0 is
+  port (
+    gtpowergood : out STD_LOGIC;
+    gtwiz_freerun_clk : in STD_LOGIC;
+    QUAD0_GTREFCLK0 : in STD_LOGIC;
+    QUAD0_TX0_outclk : out STD_LOGIC;
+    QUAD0_RX0_outclk : out STD_LOGIC;
+    QUAD0_rxp : in STD_LOGIC_VECTOR ( 3 downto 0 );
+    QUAD0_rxn : in STD_LOGIC_VECTOR ( 3 downto 0 );
+    QUAD0_txp : out STD_LOGIC_VECTOR ( 3 downto 0 );
+    QUAD0_txn : out STD_LOGIC_VECTOR ( 3 downto 0 );
+    QUAD0_gpi : in STD_LOGIC_VECTOR ( 31 downto 0 );
+    QUAD0_gpo : out STD_LOGIC_VECTOR ( 31 downto 0 );
+    QUAD0_TX0_usrclk : in STD_LOGIC;
+    QUAD0_RX0_usrclk : in STD_LOGIC;
+    INTF0_TX0_ch_txdata : in STD_LOGIC_VECTOR ( 127 downto 0 );
+    INTF0_TX0_ch_txbufstatus : out STD_LOGIC_VECTOR ( 1 downto 0 );
+    INTF0_TX0_ch_txdccdone : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_gttxreset : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txdebugpcsout : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txprogdivresetdone : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txresetdone : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txinhibit : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txlatclk : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txmaincursor : in STD_LOGIC_VECTOR ( 6 downto 0 );
+    INTF0_TX0_ch_txpcsresetmask : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txpd : in STD_LOGIC_VECTOR ( 1 downto 0 );
+    INTF0_TX0_ch_txpisopd : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txpmaresetmask : in STD_LOGIC_VECTOR ( 2 downto 0 );
+    INTF0_TX0_ch_txpolarity : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txpostcursor : in STD_LOGIC_VECTOR ( 4 downto 0 );
+    INTF0_TX0_ch_txprbsforceerr : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txprbssel : in STD_LOGIC_VECTOR ( 3 downto 0 );
+    INTF0_TX0_ch_txprecursor : in STD_LOGIC_VECTOR ( 4 downto 0 );
+    INTF0_TX0_ch_txprogdivreset : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txrate : in STD_LOGIC_VECTOR ( 7 downto 0 );
+    INTF0_TX0_ch_txresetmode : in STD_LOGIC_VECTOR ( 1 downto 0 );
+    INTF0_TX0_ch_txheader : in STD_LOGIC_VECTOR ( 5 downto 0 );
+    INTF0_TX0_ch_txsequence : in STD_LOGIC_VECTOR ( 6 downto 0 );
+    INTF0_TX0_ch_txphalignresetmask : in STD_LOGIC_VECTOR ( 1 downto 0 );
+    INTF0_TX0_ch_txcominit : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txcomsas : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txcomwake : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txdapicodeovrden : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txdapicodereset : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txdetectrx : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txphdlytstclk : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txdlyalignreq : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txelecidle : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txmldchaindone : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txmldchainreq : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txoneszeros : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txpausedelayalign : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txphalignreq : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txphdlypd : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txphdlyreset : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txphsetinitreq : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txphshift180 : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txpicodeovrden : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txpicodereset : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txpippmen : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txswing : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txsyncallin : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_tx10gstat : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txcomfinish : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txdlyalignerr : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txdlyalignprog : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txphaligndone : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txphalignerr : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txphalignoutrsvd : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txphdlyresetdone : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txphsetinitdone : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txphshift180done : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txsyncdone : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txctrl0 : in STD_LOGIC_VECTOR ( 15 downto 0 );
+    INTF0_TX0_ch_txctrl1 : in STD_LOGIC_VECTOR ( 15 downto 0 );
+    INTF0_TX0_ch_txctrl2 : in STD_LOGIC_VECTOR ( 7 downto 0 );
+    INTF0_TX0_ch_txdeemph : in STD_LOGIC_VECTOR ( 1 downto 0 );
+    INTF0_TX0_ch_txmargin : in STD_LOGIC_VECTOR ( 2 downto 0 );
+    INTF0_TX0_ch_txdiffctrl : in STD_LOGIC_VECTOR ( 4 downto 0 );
+    INTF0_TX0_ch_txpippmstepsize : in STD_LOGIC_VECTOR ( 4 downto 0 );
+    INTF0_TX0_ch_txdapiresetdone : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txqpisenn : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txqpisenp : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txswingouthigh : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txswingoutlow : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txdapireset : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txdapiresetmask : in STD_LOGIC_VECTOR ( 1 downto 0 );
+    INTF0_TX0_ch_txqpibiasen : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX0_ch_txqpiweakpu : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxbufstatus : out STD_LOGIC_VECTOR ( 2 downto 0 );
+    INTF0_RX0_ch_rxcdrlock : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxdebugpcsout : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxprbserr : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxprbslocked : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxcdrhold : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxcdrovrden : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxlatclk : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxpcsresetmask : in STD_LOGIC_VECTOR ( 4 downto 0 );
+    INTF0_RX0_ch_rxpd : in STD_LOGIC_VECTOR ( 1 downto 0 );
+    INTF0_RX0_ch_rxpmaresetmask : in STD_LOGIC_VECTOR ( 6 downto 0 );
+    INTF0_RX0_ch_rxpolarity : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxprbscntreset : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxrate : in STD_LOGIC_VECTOR ( 7 downto 0 );
+    INTF0_RX0_ch_rxresetmode : in STD_LOGIC_VECTOR ( 1 downto 0 );
+    INTF0_RX0_ch_rxdata : out STD_LOGIC_VECTOR ( 127 downto 0 );
+    INTF0_RX0_ch_rx10gstat : out STD_LOGIC_VECTOR ( 7 downto 0 );
+    INTF0_RX0_ch_rxdatavalid : out STD_LOGIC_VECTOR ( 1 downto 0 );
+    INTF0_RX0_ch_rxheader : out STD_LOGIC_VECTOR ( 5 downto 0 );
+    INTF0_RX0_ch_rxchanisaligned : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxchanrealign : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxchbondi : in STD_LOGIC_VECTOR ( 4 downto 0 );
+    INTF0_RX0_ch_rxchbondo : out STD_LOGIC_VECTOR ( 4 downto 0 );
+    INTF0_RX0_ch_rxclkcorcnt : out STD_LOGIC_VECTOR ( 1 downto 0 );
+    INTF0_RX0_ch_rxcominitdet : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxcommadet : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxbyteisaligned : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxbyterealign : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxcomsasdet : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxcomwakedet : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxctrl0 : out STD_LOGIC_VECTOR ( 15 downto 0 );
+    INTF0_RX0_ch_rxctrl1 : out STD_LOGIC_VECTOR ( 15 downto 0 );
+    INTF0_RX0_ch_rxctrl2 : out STD_LOGIC_VECTOR ( 7 downto 0 );
+    INTF0_RX0_ch_rxctrl3 : out STD_LOGIC_VECTOR ( 7 downto 0 );
+    INTF0_RX0_ch_rxdapicodeovrden : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxdapicodereset : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxdlyalignerr : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxdlyalignprog : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxdlyalignreq : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxelecidle : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxeqtraining : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxfinealigndone : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxgearboxslip : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxheadervalid : out STD_LOGIC_VECTOR ( 1 downto 0 );
+    INTF0_RX0_ch_rxlpmen : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxmldchaindone : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxmldchainreq : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxmlfinealignreq : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxoobreset : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxosintdone : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxphaligndone : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxphalignerr : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxphalignreq : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxphalignresetmask : in STD_LOGIC_VECTOR ( 1 downto 0 );
+    INTF0_RX0_ch_rxphdlypd : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxphdlyreset : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxphdlyresetdone : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxphsetinitreq : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxphshift180 : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxphshift180done : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxphsetinitdone : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxslide : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxsliderdy : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxstartofseq : out STD_LOGIC_VECTOR ( 1 downto 0 );
+    INTF0_RX0_ch_rxstatus : out STD_LOGIC_VECTOR ( 2 downto 0 );
+    INTF0_RX0_ch_rxsyncallin : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxsyncdone : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxtermination : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxvalid : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxchanbondseq : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxchanbond_busy : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxchanbond_en : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxchanbond_master : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxchanbond_slave : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxchanbond_level : in STD_LOGIC_VECTOR ( 2 downto 0 );
+    INTF0_RX0_ch_cdrbmcdrreq : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_cdrfreqos : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_cdrincpctrl : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_cdrstepdir : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_cdrstepsq : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_cdrstepsx : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_eyescanreset : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_eyescantrigger : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_eyescandataerror : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_refdebugout : out STD_LOGIC_VECTOR ( 1 downto 0 );
+    INTF0_RX0_ch_rxdapiresetdone : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxpkdet : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxqpisenn : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxqpisenp : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxsimplexphystatus : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxslipdone : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_dfehold : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_dfeovrd : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxdapireset : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxdapiresetmask : in STD_LOGIC_VECTOR ( 1 downto 0 );
+    INTF0_RX0_ch_rxqpien : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxcdrphdone : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_gtrxreset : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxprogdivresetdone : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxresetdone : out STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxcdrreset : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_RX0_ch_rxprbssel : in STD_LOGIC_VECTOR ( 3 downto 0 );
+    INTF0_RX0_ch_rxprogdivreset : in STD_LOGIC_VECTOR ( 0 to 0 );
+    INTF0_TX_clr_out : out STD_LOGIC;
+    INTF0_TX_clrb_leaf_out : out STD_LOGIC;
+    INTF0_RX_clr_out : out STD_LOGIC;
+    INTF0_RX_clrb_leaf_out : out STD_LOGIC;
+    INTF0_rst_all_in : in STD_LOGIC;
+    INTF0_rst_tx_pll_and_datapath_in : in STD_LOGIC;
+    INTF0_rst_tx_datapath_in : in STD_LOGIC;
+    INTF0_rst_tx_done_out : out STD_LOGIC;
+    INTF0_rst_rx_pll_and_datapath_in : in STD_LOGIC;
+    INTF0_rst_rx_datapath_in : in STD_LOGIC;
+    INTF0_rst_rx_done_out : out STD_LOGIC;
+    QUAD0_ch0_loopback : in STD_LOGIC_VECTOR ( 2 downto 0 );
+    QUAD0_hsclk0_lcplllock : out STD_LOGIC
+  );
+  end component extended_phy_layer_gtwiz_versal_0_0;
 
    component FIFO_DC is
       generic (
@@ -776,7 +983,7 @@ begin
    ------------------------------------------------------------------------------
    -- Instance of extended_phy_layer module
    ------------------------------------------------------------------------------
-gtwiz_versal_0: component extended_phy_layer_gtwiz_versal_0_0
+gtwiz_versal_0: extended_phy_layer_gtwiz_versal_0_0
      port map (
       INTF0_RX0_ch_cdrbmcdrreq(0) => '0',
       INTF0_RX0_ch_cdrfreqos(0) => '0',
@@ -786,35 +993,35 @@ gtwiz_versal_0: component extended_phy_layer_gtwiz_versal_0_0
       INTF0_RX0_ch_cdrstepsx(0) => '0',
       INTF0_RX0_ch_dfehold(0) => '0',
       INTF0_RX0_ch_dfeovrd(0) => '0',
-      INTF0_RX0_ch_eyescandataerror(0) => open,
+      INTF0_RX0_ch_eyescandataerror => open,
       INTF0_RX0_ch_eyescanreset(0) => '0',
       INTF0_RX0_ch_eyescantrigger(0) => '0',
       INTF0_RX0_ch_gtrxreset(0) => '0',
-      INTF0_RX0_ch_refdebugout(1 downto 0) => open,
-      INTF0_RX0_ch_rx10gstat(7 downto 0) => open,
-      INTF0_RX0_ch_rxbufstatus(2 downto 0) => open,
-      INTF0_RX0_ch_rxbyteisaligned(0) => open,
-      INTF0_RX0_ch_rxbyterealign(0) => INTF0_RX0_ch_rxbyterealign,
-      INTF0_RX0_ch_rxcdrhold(0) => INTF0_RX0_ch_rxcdrhold,
-      INTF0_RX0_ch_rxcdrlock(0) => open,
-      INTF0_RX0_ch_rxcdrovrden(0) => INTF0_RX0_ch_rxcdrovrden,
-      INTF0_RX0_ch_rxcdrphdone(0) => open,
+      INTF0_RX0_ch_refdebugout => open,
+      INTF0_RX0_ch_rx10gstat => open,
+      INTF0_RX0_ch_rxbufstatus => open,
+      INTF0_RX0_ch_rxbyteisaligned => open,
+      INTF0_RX0_ch_rxbyterealign(0) => INTF0_RX0_ch_rxbyterealign(0),
+      INTF0_RX0_ch_rxcdrhold(0) => INTF0_RX0_ch_rxcdrhold(0),
+      INTF0_RX0_ch_rxcdrlock => open,
+      INTF0_RX0_ch_rxcdrovrden(0) => INTF0_RX0_ch_rxcdrovrden(0),
+      INTF0_RX0_ch_rxcdrphdone => open,
       INTF0_RX0_ch_rxcdrreset(0) => '0',
-      INTF0_RX0_ch_rxchanbond_busy(0) => open,
+      INTF0_RX0_ch_rxchanbond_busy => open,
       INTF0_RX0_ch_rxchanbond_en(0) => '0',
       INTF0_RX0_ch_rxchanbond_level(2 downto 0) => B"000",
       INTF0_RX0_ch_rxchanbond_master(0) => '0',
       INTF0_RX0_ch_rxchanbond_slave(0) => '0',
-      INTF0_RX0_ch_rxchanbondseq(0) => open,
-      INTF0_RX0_ch_rxchanisaligned(0) => open,
-      INTF0_RX0_ch_rxchanrealign(0) => open,
+      INTF0_RX0_ch_rxchanbondseq => open,
+      INTF0_RX0_ch_rxchanisaligned => open,
+      INTF0_RX0_ch_rxchanrealign => open,
       INTF0_RX0_ch_rxchbondi(4 downto 0) => B"00000",
-      INTF0_RX0_ch_rxchbondo(4 downto 0) => open,
-      INTF0_RX0_ch_rxclkcorcnt(1 downto 0) => open,
-      INTF0_RX0_ch_rxcominitdet(0) => open,
-      INTF0_RX0_ch_rxcommadet(0) => open,
-      INTF0_RX0_ch_rxcomsasdet(0) => open,
-      INTF0_RX0_ch_rxcomwakedet(0) => open,
+      INTF0_RX0_ch_rxchbondo => open,
+      INTF0_RX0_ch_rxclkcorcnt => open,
+      INTF0_RX0_ch_rxcominitdet => open,
+      INTF0_RX0_ch_rxcommadet => open,
+      INTF0_RX0_ch_rxcomsasdet => open,
+      INTF0_RX0_ch_rxcomwakedet => open,
       INTF0_RX0_ch_rxctrl0(15 downto 0) => INTF0_RX0_ch_rxctrl0,
       INTF0_RX0_ch_rxctrl1(15 downto 0) => INTF0_RX0_ch_rxctrl1,
       INTF0_RX0_ch_rxctrl2(7 downto 0) => INTF0_RX0_ch_rxctrl2,
@@ -822,71 +1029,71 @@ gtwiz_versal_0: component extended_phy_layer_gtwiz_versal_0_0
       INTF0_RX0_ch_rxdapicodeovrden(0) => '0',
       INTF0_RX0_ch_rxdapicodereset(0) => '0',
       INTF0_RX0_ch_rxdapireset(0) => '0',
-      INTF0_RX0_ch_rxdapiresetdone(0) => open,
+      INTF0_RX0_ch_rxdapiresetdone => open,
       INTF0_RX0_ch_rxdapiresetmask(1 downto 0) => B"00",
       INTF0_RX0_ch_rxdata(127 downto 0) => INTF0_RX0_ch_rxdata,
       INTF0_RX0_ch_rxdatavalid(1 downto 0) => INTF0_RX0_ch_rxdatavalid,
-      INTF0_RX0_ch_rxdebugpcsout(0) => open,
-      INTF0_RX0_ch_rxdlyalignerr(0) => open,
-      INTF0_RX0_ch_rxdlyalignprog(0) => open,
+      INTF0_RX0_ch_rxdebugpcsout => open,
+      INTF0_RX0_ch_rxdlyalignerr => open,
+      INTF0_RX0_ch_rxdlyalignprog => open,
       INTF0_RX0_ch_rxdlyalignreq(0) => '0',
-      INTF0_RX0_ch_rxelecidle(0) => open,
+      INTF0_RX0_ch_rxelecidle => open,
       INTF0_RX0_ch_rxeqtraining(0) => '0',
-      INTF0_RX0_ch_rxfinealigndone(0) => open,
+      INTF0_RX0_ch_rxfinealigndone => open,
       INTF0_RX0_ch_rxgearboxslip(0) => '0',
-      INTF0_RX0_ch_rxheader(5 downto 0) => open,
-      INTF0_RX0_ch_rxheadervalid(1 downto 0) => open,
+      INTF0_RX0_ch_rxheader => open,
+      INTF0_RX0_ch_rxheadervalid => open,
       INTF0_RX0_ch_rxlatclk(0) => '0',
       INTF0_RX0_ch_rxlpmen(0) => '0',
       INTF0_RX0_ch_rxmldchaindone(0) => '0',
       INTF0_RX0_ch_rxmldchainreq(0) => '0',
       INTF0_RX0_ch_rxmlfinealignreq(0) => '0',
       INTF0_RX0_ch_rxoobreset(0) => '0',
-      INTF0_RX0_ch_rxosintdone(0) => open,
+      INTF0_RX0_ch_rxosintdone => open,
       INTF0_RX0_ch_rxpcsresetmask(4 downto 0) => B"11111",
       INTF0_RX0_ch_rxpd(1 downto 0) => INTF0_RX0_ch_rxpd,
-      INTF0_RX0_ch_rxphaligndone(0) => open,
-      INTF0_RX0_ch_rxphalignerr(0) => open,
+      INTF0_RX0_ch_rxphaligndone => open,
+      INTF0_RX0_ch_rxphalignerr => open,
       INTF0_RX0_ch_rxphalignreq(0) => '0',
       INTF0_RX0_ch_rxphalignresetmask(1 downto 0) => B"11",
       INTF0_RX0_ch_rxphdlypd(0) => '0',
       INTF0_RX0_ch_rxphdlyreset(0) => '0',
-      INTF0_RX0_ch_rxphdlyresetdone(0) => open,
-      INTF0_RX0_ch_rxphsetinitdone(0) => open,
+      INTF0_RX0_ch_rxphdlyresetdone => open,
+      INTF0_RX0_ch_rxphsetinitdone => open,
       INTF0_RX0_ch_rxphsetinitreq(0) => '0',
       INTF0_RX0_ch_rxphshift180(0) => '0',
-      INTF0_RX0_ch_rxphshift180done(0) => open,
-      INTF0_RX0_ch_rxpkdet(0) => open,
+      INTF0_RX0_ch_rxphshift180done => open,
+      INTF0_RX0_ch_rxpkdet => open,
       INTF0_RX0_ch_rxpmaresetmask(6 downto 0) => B"1111111",
       INTF0_RX0_ch_rxpolarity(0) => invert_rx_bits_from_lif,
       INTF0_RX0_ch_rxprbscntreset(0) => '0',
-      INTF0_RX0_ch_rxprbserr(0) => open,
-      INTF0_RX0_ch_rxprbslocked(0) => open,
+      INTF0_RX0_ch_rxprbserr => open,
+      INTF0_RX0_ch_rxprbslocked => open,
       INTF0_RX0_ch_rxprbssel(3 downto 0) => B"0000",
       INTF0_RX0_ch_rxprogdivreset(0) => '0',
-      INTF0_RX0_ch_rxprogdivresetdone(0) => open,
+      INTF0_RX0_ch_rxprogdivresetdone => open,
       INTF0_RX0_ch_rxqpien(0) => '0',
-      INTF0_RX0_ch_rxqpisenn(0) => open,
-      INTF0_RX0_ch_rxqpisenp(0) => open,
+      INTF0_RX0_ch_rxqpisenn => open,
+      INTF0_RX0_ch_rxqpisenp => open,
       INTF0_RX0_ch_rxrate(7 downto 0) => "00000000",
-      INTF0_RX0_ch_rxresetdone(0) => open,
+      INTF0_RX0_ch_rxresetdone => open,
       INTF0_RX0_ch_rxresetmode(1 downto 0) => B"00",
-      INTF0_RX0_ch_rxsimplexphystatus(0) => open,
+      INTF0_RX0_ch_rxsimplexphystatus => open,
       INTF0_RX0_ch_rxslide(0) => '0',
-      INTF0_RX0_ch_rxsliderdy(0) => open,
-      INTF0_RX0_ch_rxslipdone(0) => open,
-      INTF0_RX0_ch_rxstartofseq(1 downto 0) => open,
-      INTF0_RX0_ch_rxstatus(2 downto 0) => open,
+      INTF0_RX0_ch_rxsliderdy => open,
+      INTF0_RX0_ch_rxslipdone => open,
+      INTF0_RX0_ch_rxstartofseq => open,
+      INTF0_RX0_ch_rxstatus => open,
       INTF0_RX0_ch_rxsyncallin(0) => '0',
-      INTF0_RX0_ch_rxsyncdone(0) => open,
+      INTF0_RX0_ch_rxsyncdone => open,
       INTF0_RX0_ch_rxtermination(0) => '0',
-      INTF0_RX0_ch_rxvalid(0) => open,
+      INTF0_RX0_ch_rxvalid => open,
       INTF0_RX_clr_out => open,
       INTF0_RX_clrb_leaf_out => open,
       INTF0_TX0_ch_gttxreset(0) => '0',
-      INTF0_TX0_ch_tx10gstat(0) => open,
-      INTF0_TX0_ch_txbufstatus(1 downto 0) => open,
-      INTF0_TX0_ch_txcomfinish(0) => open,
+      INTF0_TX0_ch_tx10gstat => open,
+      INTF0_TX0_ch_txbufstatus => open,
+      INTF0_TX0_ch_txcomfinish => open,
       INTF0_TX0_ch_txcominit(0) => '0',
       INTF0_TX0_ch_txcomsas(0) => '0',
       INTF0_TX0_ch_txcomwake(0) => '0',
@@ -896,16 +1103,16 @@ gtwiz_versal_0: component extended_phy_layer_gtwiz_versal_0_0
       INTF0_TX0_ch_txdapicodeovrden(0) => '0',
       INTF0_TX0_ch_txdapicodereset(0) => '0',
       INTF0_TX0_ch_txdapireset(0) => '0',
-      INTF0_TX0_ch_txdapiresetdone(0) => open,
+      INTF0_TX0_ch_txdapiresetdone => open,
       INTF0_TX0_ch_txdapiresetmask(1 downto 0) => B"00",
       INTF0_TX0_ch_txdata(127 downto 0) => data_tx_from_si,
-      INTF0_TX0_ch_txdccdone(0) => open,
-      INTF0_TX0_ch_txdebugpcsout(0) => open,
+      INTF0_TX0_ch_txdccdone => open,
+      INTF0_TX0_ch_txdebugpcsout => open,
       INTF0_TX0_ch_txdeemph(1 downto 0) => B"00",
       INTF0_TX0_ch_txdetectrx(0) => '0',
       INTF0_TX0_ch_txdiffctrl(4 downto 0) => B"11001",
-      INTF0_TX0_ch_txdlyalignerr(0) => open,
-      INTF0_TX0_ch_txdlyalignprog(0) => open,
+      INTF0_TX0_ch_txdlyalignerr => open,
+      INTF0_TX0_ch_txdlyalignprog => open,
       INTF0_TX0_ch_txdlyalignreq(0) => '0',
       INTF0_TX0_ch_txelecidle(0) => '0',
       INTF0_TX0_ch_txheader(5 downto 0) => B"000000",
@@ -919,19 +1126,19 @@ gtwiz_versal_0: component extended_phy_layer_gtwiz_versal_0_0
       INTF0_TX0_ch_txpausedelayalign(0) => '0',
       INTF0_TX0_ch_txpcsresetmask(0) => '1',
       INTF0_TX0_ch_txpd(1 downto 0) => INTF0_TX0_ch_txpd,
-      INTF0_TX0_ch_txphaligndone(0) => open,
-      INTF0_TX0_ch_txphalignerr(0) => open,
-      INTF0_TX0_ch_txphalignoutrsvd(0) => open,
+      INTF0_TX0_ch_txphaligndone => open,
+      INTF0_TX0_ch_txphalignerr => open,
+      INTF0_TX0_ch_txphalignoutrsvd => open,
       INTF0_TX0_ch_txphalignreq(0) => '0',
       INTF0_TX0_ch_txphalignresetmask(1 downto 0) => B"11",
       INTF0_TX0_ch_txphdlypd(0) => '0',
       INTF0_TX0_ch_txphdlyreset(0) => '0',
-      INTF0_TX0_ch_txphdlyresetdone(0) => open,
+      INTF0_TX0_ch_txphdlyresetdone => open,
       INTF0_TX0_ch_txphdlytstclk(0) => '0',
-      INTF0_TX0_ch_txphsetinitdone(0) => open,
+      INTF0_TX0_ch_txphsetinitdone => open,
       INTF0_TX0_ch_txphsetinitreq(0) => '0',
       INTF0_TX0_ch_txphshift180(0) => '0',
-      INTF0_TX0_ch_txphshift180done(0) => open,
+      INTF0_TX0_ch_txphshift180done => open,
       INTF0_TX0_ch_txpicodeovrden(0) => '0',
       INTF0_TX0_ch_txpicodereset(0) => '0',
       INTF0_TX0_ch_txpippmen(0) => '0',
@@ -944,20 +1151,20 @@ gtwiz_versal_0: component extended_phy_layer_gtwiz_versal_0_0
       INTF0_TX0_ch_txprbssel(3 downto 0) => B"0000",
       INTF0_TX0_ch_txprecursor(4 downto 0) => B"00000",
       INTF0_TX0_ch_txprogdivreset(0) => '0',
-      INTF0_TX0_ch_txprogdivresetdone(0) => open,
+      INTF0_TX0_ch_txprogdivresetdone => open,
       INTF0_TX0_ch_txqpibiasen(0) => '0',
-      INTF0_TX0_ch_txqpisenn(0) => open,
-      INTF0_TX0_ch_txqpisenp(0) => open,
+      INTF0_TX0_ch_txqpisenn => open,
+      INTF0_TX0_ch_txqpisenp => open,
       INTF0_TX0_ch_txqpiweakpu(0) => '0',
       INTF0_TX0_ch_txrate(7 downto 0) => "00000000",
-      INTF0_TX0_ch_txresetdone(0) => open,
+      INTF0_TX0_ch_txresetdone => open,
       INTF0_TX0_ch_txresetmode(1 downto 0) => B"00",
       INTF0_TX0_ch_txsequence(6 downto 0) => B"0000000",
       INTF0_TX0_ch_txswing(0) => '0',
-      INTF0_TX0_ch_txswingouthigh(0) => open,
-      INTF0_TX0_ch_txswingoutlow(0) => open,
+      INTF0_TX0_ch_txswingouthigh => open,
+      INTF0_TX0_ch_txswingoutlow => open,
       INTF0_TX0_ch_txsyncallin(0) => '0',
-      INTF0_TX0_ch_txsyncdone(0) => open,
+      INTF0_TX0_ch_txsyncdone => open,
       INTF0_TX_clr_out => open,
       INTF0_TX_clrb_leaf_out => open,
       INTF0_rst_all_in => reset,
@@ -974,7 +1181,7 @@ gtwiz_versal_0: component extended_phy_layer_gtwiz_versal_0_0
       QUAD0_TX0_usrclk => clk_tx,
       QUAD0_ch0_loopback(2 downto 0) => QUAD0_ch0_loopback,
       QUAD0_gpi(31 downto 0) => x"00000000",
-      QUAD0_gpo(31 downto 0) => open,
+      QUAD0_gpo => open,
       QUAD0_hsclk0_lcplllock => QUAD0_hsclk0_lcplllock,
       QUAD0_rxn(3 downto 0) => QUAD0_rxn,
       QUAD0_rxp(3 downto 0) => QUAD0_rxp,
