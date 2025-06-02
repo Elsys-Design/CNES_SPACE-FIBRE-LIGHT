@@ -40,6 +40,11 @@ jobs:
         env:
           TABBY_CAD_LICENSE: ${{secrets.TABBY_CAD_LICENSE}}
 
+      - name: Upload Website Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .linty/report/build/html
+
       - name: Debug
         if: always()
         uses: actions/upload-artifact@v4
@@ -47,3 +52,19 @@ jobs:
           name: debug
           include-hidden-files: true
           path: .linty/
+      
+
+deploy:
+  environment:
+    name: github-pages
+    url: ${{ steps.deployment.outputs.page_url }}
+  permissions:
+    contents: read
+    pages: write
+    id-token: write
+  runs-on: ubuntu-latest
+  needs: build
+  steps:
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
