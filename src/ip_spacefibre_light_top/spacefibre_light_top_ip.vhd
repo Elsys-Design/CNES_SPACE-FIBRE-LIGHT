@@ -408,7 +408,7 @@ spacefibre_light_top_inst: spacefibre_light_top
       AXIS_ARSTN_RX_DL(3)      => AXIS_VC3_RX_DL_RSTN, 
       AXIS_ARSTN_RX_DL(4)      => AXIS_VC4_RX_DL_RSTN, 
       AXIS_ARSTN_RX_DL(5)      => AXIS_VC5_RX_DL_RSTN, 
-      AXIS_ARSTN_RX_DL(5)      => AXIS_VC6_RX_DL_RSTN, 
+      AXIS_ARSTN_RX_DL(6)      => AXIS_VC6_RX_DL_RSTN, 
       AXIS_ARSTN_RX_DL(7)      => AXIS_VC7_RX_DL_RSTN, 
       AXIS_ARSTN_RX_DL(8)      => AXIS_VC8_RX_DL_RSTN, 
 
