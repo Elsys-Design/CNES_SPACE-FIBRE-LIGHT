@@ -68,4 +68,4 @@ sim/scenario/custom.do
 work
 **/.Xil/
 #remove xilinx ip src copy
-xilinx_ip/src
+xilinx_ip/spacefibrelight_full_wrapper/src
