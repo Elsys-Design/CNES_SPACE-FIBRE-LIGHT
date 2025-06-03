@@ -34,7 +34,7 @@ set proj_script_path $proj_rootpath/implementation/app/$proj_name
 set proj_vivadowork $proj_rootpath/work/$proj_name
 
 #custom IP repo for the application (thereis a symbolic link in it to reference spaefibrelight IP itself without copying sources)
-set proj_vivadoiprepo $proj_script_path/ip_repo
+set proj_vivadoiprepo $proj_rootpath/xilinx_ip
 ########################################################################
 
 create_project -force -name $proj_name -dir $proj_vivadowork

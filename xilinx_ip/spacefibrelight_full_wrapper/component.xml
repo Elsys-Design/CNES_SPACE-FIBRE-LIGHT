@@ -4914,347 +4914,347 @@
     <spirit:fileSet>
       <spirit:name>xilinx_anylanguagesynthesis_view_fileset</spirit:name>
       <spirit:file>
-        <spirit:name>../src/pkg_data_link.vhd</spirit:name>
+        <spirit:name>../../src/pkg_data_link.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
         <spirit:logicalName>data_link_lib</spirit:logicalName>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_data_link/data_crc_check.vhd</spirit:name>
+        <spirit:name>../../src/module_data_link/data_crc_check.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_data_link/data_crc_compute.vhd</spirit:name>
+        <spirit:name>../../src/module_data_link/data_crc_compute.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_data_link/data_desencapsulation.vhd</spirit:name>
+        <spirit:name>../../src/module_data_link/data_desencapsulation.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_data_link/data_desencapsulation_bc.vhd</spirit:name>
+        <spirit:name>../../src/module_data_link/data_desencapsulation_bc.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_data_link/data_encapsulation.vhd</spirit:name>
+        <spirit:name>../../src/module_data_link/data_encapsulation.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_data_link/data_err_management.vhd</spirit:name>
+        <spirit:name>../../src/module_data_link/data_err_management.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_data_link/data_in_bc_buf.vhd</spirit:name>
+        <spirit:name>../../src/module_data_link/data_in_bc_buf.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_data_link/data_in_buf.vhd</spirit:name>
+        <spirit:name>../../src/module_data_link/data_in_buf.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_data_link/data_link.vhd</spirit:name>
+        <spirit:name>../../src/module_data_link/data_link.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_data_link/data_link_reset.vhd</spirit:name>
+        <spirit:name>../../src/module_data_link/data_link_reset.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_data_link/data_mac.vhd</spirit:name>
+        <spirit:name>../../src/module_data_link/data_mac.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_data_link/data_out_bc_buf.vhd</spirit:name>
+        <spirit:name>../../src/module_data_link/data_out_bc_buf.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_data_link/data_out_buf.vhd</spirit:name>
+        <spirit:name>../../src/module_data_link/data_out_buf.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_data_link/data_seq_check.vhd</spirit:name>
+        <spirit:name>../../src/module_data_link/data_seq_check.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_data_link/data_seq_compute.vhd</spirit:name>
+        <spirit:name>../../src/module_data_link/data_seq_compute.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_data_link/data_word_id_fsm.vhd</spirit:name>
+        <spirit:name>../../src/module_data_link/data_word_id_fsm.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/ip_spacefibre_light_top/demux_rx.vhd</spirit:name>
+        <spirit:name>../../src/ip_spacefibre_light_top/demux_rx.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/pkg_phy_plus_lane.vhd</spirit:name>
+        <spirit:name>../../src/pkg_phy_plus_lane.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
         <spirit:logicalName>phy_plus_lane_lib</spirit:logicalName>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_phy_plus_lane/lane_ctrl_word_detect.vhd</spirit:name>
+        <spirit:name>../../src/module_phy_plus_lane/lane_ctrl_word_detect.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_phy_plus_lane/lane_ctrl_word_insert.vhd</spirit:name>
+        <spirit:name>../../src/module_phy_plus_lane/lane_ctrl_word_insert.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_phy_plus_lane/lane_init_fsm.vhd</spirit:name>
+        <spirit:name>../../src/module_phy_plus_lane/lane_init_fsm.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_data_link/mib_data_link.vhd</spirit:name>
+        <spirit:name>../../src/module_data_link/mib_data_link.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_phy_plus_lane/mib_phy_plus_lane.vhd</spirit:name>
+        <spirit:name>../../src/module_phy_plus_lane/mib_phy_plus_lane.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/ip_spacefibre_light_top/mux_tx.vhd</spirit:name>
+        <spirit:name>../../src/ip_spacefibre_light_top/mux_tx.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_phy_plus_lane/parallel_loopback.vhd</spirit:name>
+        <spirit:name>../../src/module_phy_plus_lane/parallel_loopback.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_phy_plus_lane/phy_plus_lane.vhd</spirit:name>
+        <spirit:name>../../src/module_phy_plus_lane/phy_plus_lane.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/ip_spacefibre_light_top/reset_gen.vhd</spirit:name>
+        <spirit:name>../../src/ip_spacefibre_light_top/reset_gen.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_phy_plus_lane/rx_sync_fsm.vhd</spirit:name>
+        <spirit:name>../../src/module_phy_plus_lane/rx_sync_fsm.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_phy_plus_lane/skip_insertion.vhd</spirit:name>
+        <spirit:name>../../src/module_phy_plus_lane/skip_insertion.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/ip_spacefibre_light_top/spacefibre_light_top.vhd</spirit:name>
+        <spirit:name>../../src/ip_spacefibre_light_top/spacefibre_light_top.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/ip/fifo_dc_custom_to_axis/AXIS_MASTER.vhd</spirit:name>
+        <spirit:name>../../src/ip/fifo_dc_custom_to_axis/AXIS_MASTER.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/ip/fifo_dc_axis_to_custom/AXIS_SLAVE.vhd</spirit:name>
+        <spirit:name>../../src/ip/fifo_dc_axis_to_custom/AXIS_SLAVE.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/ip/fifo_dc_custom_to_axis/FIFO_DC_AXIS_M.vhd</spirit:name>
+        <spirit:name>../../src/ip/fifo_dc_custom_to_axis/FIFO_DC_AXIS_M.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/ip/fifo_dc_axis_to_custom/FIFO_DC_AXIS_S.vhd</spirit:name>
+        <spirit:name>../../src/ip/fifo_dc_axis_to_custom/FIFO_DC_AXIS_S.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/data_link_lib/data_link_lib/pkg_data_link.vhd</spirit:name>
+        <spirit:name>../../src/data_link_lib/data_link_lib/pkg_data_link.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
         <spirit:logicalName>data_link_lib</spirit:logicalName>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/data_link_lib/data_crc_check.vhd</spirit:name>
+        <spirit:name>../../src/data_link_lib/data_crc_check.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/data_link_lib/data_crc_compute.vhd</spirit:name>
+        <spirit:name>../../src/data_link_lib/data_crc_compute.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/data_link_lib/data_desencapsulation.vhd</spirit:name>
+        <spirit:name>../../src/data_link_lib/data_desencapsulation.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/data_link_lib/data_desencapsulation_bc.vhd</spirit:name>
+        <spirit:name>../../src/data_link_lib/data_desencapsulation_bc.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/data_link_lib/data_encapsulation.vhd</spirit:name>
+        <spirit:name>../../src/data_link_lib/data_encapsulation.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/data_link_lib/data_err_management.vhd</spirit:name>
+        <spirit:name>../../src/data_link_lib/data_err_management.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/data_link_lib/data_in_bc_buf.vhd</spirit:name>
+        <spirit:name>../../src/data_link_lib/data_in_bc_buf.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/data_link_lib/data_in_buf.vhd</spirit:name>
+        <spirit:name>../../src/data_link_lib/data_in_buf.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/data_link_lib/data_link.vhd</spirit:name>
+        <spirit:name>../../src/data_link_lib/data_link.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/data_link_lib/data_link_reset.vhd</spirit:name>
+        <spirit:name>../../src/data_link_lib/data_link_reset.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/data_link_lib/data_mac.vhd</spirit:name>
+        <spirit:name>../../src/data_link_lib/data_mac.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/data_link_lib/data_out_bc_buf.vhd</spirit:name>
+        <spirit:name>../../src/data_link_lib/data_out_bc_buf.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/data_link_lib/data_out_buf.vhd</spirit:name>
+        <spirit:name>../../src/data_link_lib/data_out_buf.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/data_link_lib/data_seq_check.vhd</spirit:name>
+        <spirit:name>../../src/data_link_lib/data_seq_check.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/data_link_lib/data_seq_compute.vhd</spirit:name>
+        <spirit:name>../../src/data_link_lib/data_seq_compute.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/data_link_lib/data_word_id_fsm.vhd</spirit:name>
+        <spirit:name>../../src/data_link_lib/data_word_id_fsm.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/ip/fifo_dc/fifo_dc.vhd</spirit:name>
+        <spirit:name>../../src/ip/fifo_dc/fifo_dc.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/ip/fifo_dc_drop_bad_frame/fifo_dc_drop_bad_frame.vhd</spirit:name>
+        <spirit:name>../../src/ip/fifo_dc_drop_bad_frame/fifo_dc_drop_bad_frame.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/phy_plus_lane_lib/pkg_phy_plus_lane.vhd</spirit:name>
+        <spirit:name>../../src/phy_plus_lane_lib/pkg_phy_plus_lane.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
         <spirit:logicalName>phy_plus_lane_lib</spirit:logicalName>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/lane_ctrl_word_detect.vhd</spirit:name>
+        <spirit:name>../../src/lane_ctrl_word_detect.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/lane_ctrl_word_insert.vhd</spirit:name>
+        <spirit:name>../../src/lane_ctrl_word_insert.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/lane_init_fsm.vhd</spirit:name>
+        <spirit:name>../../src/lane_init_fsm.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/mib_data_link.vhd</spirit:name>
+        <spirit:name>../../src/mib_data_link.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/mib_phy_plus_lane.vhd</spirit:name>
+        <spirit:name>../../src/mib_phy_plus_lane.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/mux_tx.vhd</spirit:name>
+        <spirit:name>../../src/mux_tx.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/parallel_loopback.vhd</spirit:name>
+        <spirit:name>../../src/parallel_loopback.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/phy_plus_lane.vhd</spirit:name>
+        <spirit:name>../../src/phy_plus_lane.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/reset_gen.vhd</spirit:name>
+        <spirit:name>../../src/reset_gen.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/rx_sync_fsm.vhd</spirit:name>
+        <spirit:name>../../src/rx_sync_fsm.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/skip_insertion.vhd</spirit:name>
+        <spirit:name>../../src/skip_insertion.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/extended_phy_layer_gtwiz_versal_0_0/extended_phy_layer_gtwiz_versal_0_0.xci</spirit:name>
+        <spirit:name>../../src/extended_phy_layer_gtwiz_versal_0_0/extended_phy_layer_gtwiz_versal_0_0.xci</spirit:name>
         <spirit:userFileType>xci</spirit:userFileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
         <spirit:userFileType>CELL_NAME_spacefibre_light_top_inst/inst_phy_plus_lane/gtwiz_versal_0</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/ip_spacefibre_light_top/spacefibre_light_top_ip.vhd</spirit:name>
+        <spirit:name>../../src/ip_spacefibre_light_top/spacefibre_light_top_ip.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>CHECKSUM_94ca0ee9</spirit:userFileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
@@ -5274,344 +5274,344 @@
     <spirit:fileSet>
       <spirit:name>xilinx_anylanguagebehavioralsimulation_view_fileset</spirit:name>
       <spirit:file>
-        <spirit:name>../src/pkg_data_link.vhd</spirit:name>
+        <spirit:name>../../src/pkg_data_link.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
         <spirit:logicalName>data_link_lib</spirit:logicalName>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_data_link/data_crc_check.vhd</spirit:name>
+        <spirit:name>../../src/module_data_link/data_crc_check.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_data_link/data_crc_compute.vhd</spirit:name>
+        <spirit:name>../../src/module_data_link/data_crc_compute.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_data_link/data_desencapsulation.vhd</spirit:name>
+        <spirit:name>../../src/module_data_link/data_desencapsulation.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_data_link/data_desencapsulation_bc.vhd</spirit:name>
+        <spirit:name>../../src/module_data_link/data_desencapsulation_bc.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_data_link/data_encapsulation.vhd</spirit:name>
+        <spirit:name>../../src/module_data_link/data_encapsulation.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_data_link/data_err_management.vhd</spirit:name>
+        <spirit:name>../../src/module_data_link/data_err_management.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_data_link/data_in_bc_buf.vhd</spirit:name>
+        <spirit:name>../../src/module_data_link/data_in_bc_buf.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_data_link/data_in_buf.vhd</spirit:name>
+        <spirit:name>../../src/module_data_link/data_in_buf.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_data_link/data_link.vhd</spirit:name>
+        <spirit:name>../../src/module_data_link/data_link.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_data_link/data_link_reset.vhd</spirit:name>
+        <spirit:name>../../src/module_data_link/data_link_reset.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_data_link/data_mac.vhd</spirit:name>
+        <spirit:name>../../src/module_data_link/data_mac.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_data_link/data_out_bc_buf.vhd</spirit:name>
+        <spirit:name>../../src/module_data_link/data_out_bc_buf.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_data_link/data_out_buf.vhd</spirit:name>
+        <spirit:name>../../src/module_data_link/data_out_buf.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_data_link/data_seq_check.vhd</spirit:name>
+        <spirit:name>../../src/module_data_link/data_seq_check.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_data_link/data_seq_compute.vhd</spirit:name>
+        <spirit:name>../../src/module_data_link/data_seq_compute.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_data_link/data_word_id_fsm.vhd</spirit:name>
+        <spirit:name>../../src/module_data_link/data_word_id_fsm.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/ip_spacefibre_light_top/demux_rx.vhd</spirit:name>
+        <spirit:name>../../src/ip_spacefibre_light_top/demux_rx.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/pkg_phy_plus_lane.vhd</spirit:name>
+        <spirit:name>../../src/pkg_phy_plus_lane.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
         <spirit:logicalName>phy_plus_lane_lib</spirit:logicalName>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_phy_plus_lane/lane_ctrl_word_detect.vhd</spirit:name>
+        <spirit:name>../../src/module_phy_plus_lane/lane_ctrl_word_detect.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_phy_plus_lane/lane_ctrl_word_insert.vhd</spirit:name>
+        <spirit:name>../../src/module_phy_plus_lane/lane_ctrl_word_insert.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_phy_plus_lane/lane_init_fsm.vhd</spirit:name>
+        <spirit:name>../../src/module_phy_plus_lane/lane_init_fsm.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_data_link/mib_data_link.vhd</spirit:name>
+        <spirit:name>../../src/module_data_link/mib_data_link.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_phy_plus_lane/mib_phy_plus_lane.vhd</spirit:name>
+        <spirit:name>../../src/module_phy_plus_lane/mib_phy_plus_lane.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/ip_spacefibre_light_top/mux_tx.vhd</spirit:name>
+        <spirit:name>../../src/ip_spacefibre_light_top/mux_tx.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_phy_plus_lane/parallel_loopback.vhd</spirit:name>
+        <spirit:name>../../src/module_phy_plus_lane/parallel_loopback.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_phy_plus_lane/phy_plus_lane.vhd</spirit:name>
+        <spirit:name>../../src/module_phy_plus_lane/phy_plus_lane.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/ip_spacefibre_light_top/reset_gen.vhd</spirit:name>
+        <spirit:name>../../src/ip_spacefibre_light_top/reset_gen.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_phy_plus_lane/rx_sync_fsm.vhd</spirit:name>
+        <spirit:name>../../src/module_phy_plus_lane/rx_sync_fsm.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/module_phy_plus_lane/skip_insertion.vhd</spirit:name>
+        <spirit:name>../../src/module_phy_plus_lane/skip_insertion.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/ip_spacefibre_light_top/spacefibre_light_top.vhd</spirit:name>
+        <spirit:name>../../src/ip_spacefibre_light_top/spacefibre_light_top.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/ip/fifo_dc_custom_to_axis/AXIS_MASTER.vhd</spirit:name>
+        <spirit:name>../../src/ip/fifo_dc_custom_to_axis/AXIS_MASTER.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/ip/fifo_dc_axis_to_custom/AXIS_SLAVE.vhd</spirit:name>
+        <spirit:name>../../src/ip/fifo_dc_axis_to_custom/AXIS_SLAVE.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/ip/fifo_dc_custom_to_axis/FIFO_DC_AXIS_M.vhd</spirit:name>
+        <spirit:name>../../src/ip/fifo_dc_custom_to_axis/FIFO_DC_AXIS_M.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/ip/fifo_dc_axis_to_custom/FIFO_DC_AXIS_S.vhd</spirit:name>
+        <spirit:name>../../src/ip/fifo_dc_axis_to_custom/FIFO_DC_AXIS_S.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/data_link_lib/data_link_lib/pkg_data_link.vhd</spirit:name>
+        <spirit:name>../../src/data_link_lib/data_link_lib/pkg_data_link.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/data_link_lib/data_crc_check.vhd</spirit:name>
+        <spirit:name>../../src/data_link_lib/data_crc_check.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/data_link_lib/data_crc_compute.vhd</spirit:name>
+        <spirit:name>../../src/data_link_lib/data_crc_compute.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/data_link_lib/data_desencapsulation.vhd</spirit:name>
+        <spirit:name>../../src/data_link_lib/data_desencapsulation.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/data_link_lib/data_desencapsulation_bc.vhd</spirit:name>
+        <spirit:name>../../src/data_link_lib/data_desencapsulation_bc.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/data_link_lib/data_encapsulation.vhd</spirit:name>
+        <spirit:name>../../src/data_link_lib/data_encapsulation.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/data_link_lib/data_err_management.vhd</spirit:name>
+        <spirit:name>../../src/data_link_lib/data_err_management.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/data_link_lib/data_in_bc_buf.vhd</spirit:name>
+        <spirit:name>../../src/data_link_lib/data_in_bc_buf.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/data_link_lib/data_in_buf.vhd</spirit:name>
+        <spirit:name>../../src/data_link_lib/data_in_buf.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/data_link_lib/data_link.vhd</spirit:name>
+        <spirit:name>../../src/data_link_lib/data_link.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/data_link_lib/data_link_reset.vhd</spirit:name>
+        <spirit:name>../../src/data_link_lib/data_link_reset.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/data_link_lib/data_mac.vhd</spirit:name>
+        <spirit:name>../../src/data_link_lib/data_mac.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/data_link_lib/data_out_bc_buf.vhd</spirit:name>
+        <spirit:name>../../src/data_link_lib/data_out_bc_buf.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/data_link_lib/data_out_buf.vhd</spirit:name>
+        <spirit:name>../../src/data_link_lib/data_out_buf.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/data_link_lib/data_seq_check.vhd</spirit:name>
+        <spirit:name>../../src/data_link_lib/data_seq_check.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/data_link_lib/data_seq_compute.vhd</spirit:name>
+        <spirit:name>../../src/data_link_lib/data_seq_compute.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/data_link_lib/data_word_id_fsm.vhd</spirit:name>
+        <spirit:name>../../src/data_link_lib/data_word_id_fsm.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/ip/fifo_dc/fifo_dc.vhd</spirit:name>
+        <spirit:name>../../src/ip/fifo_dc/fifo_dc.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/ip/fifo_dc_drop_bad_frame/fifo_dc_drop_bad_frame.vhd</spirit:name>
+        <spirit:name>../../src/ip/fifo_dc_drop_bad_frame/fifo_dc_drop_bad_frame.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/phy_plus_lane_lib/pkg_phy_plus_lane.vhd</spirit:name>
+        <spirit:name>../../src/phy_plus_lane_lib/pkg_phy_plus_lane.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/lane_ctrl_word_detect.vhd</spirit:name>
+        <spirit:name>../../src/lane_ctrl_word_detect.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/lane_ctrl_word_insert.vhd</spirit:name>
+        <spirit:name>../../src/lane_ctrl_word_insert.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/lane_init_fsm.vhd</spirit:name>
+        <spirit:name>../../src/lane_init_fsm.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/mib_data_link.vhd</spirit:name>
+        <spirit:name>../../src/mib_data_link.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/mib_phy_plus_lane.vhd</spirit:name>
+        <spirit:name>../../src/mib_phy_plus_lane.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/mux_tx.vhd</spirit:name>
+        <spirit:name>../../src/mux_tx.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/parallel_loopback.vhd</spirit:name>
+        <spirit:name>../../src/parallel_loopback.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/phy_plus_lane.vhd</spirit:name>
+        <spirit:name>../../src/phy_plus_lane.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/reset_gen.vhd</spirit:name>
+        <spirit:name>../../src/reset_gen.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/rx_sync_fsm.vhd</spirit:name>
+        <spirit:name>../../src/rx_sync_fsm.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/skip_insertion.vhd</spirit:name>
+        <spirit:name>../../src/skip_insertion.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/ip_spacefibre_light_top/spacefibre_light_top_ip.vhd</spirit:name>
+        <spirit:name>../../src/ip_spacefibre_light_top/spacefibre_light_top_ip.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>../src/extended_phy_layer_gtwiz_versal_0_0/extended_phy_layer_gtwiz_versal_0_0.xci</spirit:name>
+        <spirit:name>../../src/extended_phy_layer_gtwiz_versal_0_0/extended_phy_layer_gtwiz_versal_0_0.xci</spirit:name>
         <spirit:userFileType>xci</spirit:userFileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
         <spirit:userFileType>CELL_NAME_spacefibre_light_top_inst/inst_phy_plus_lane/gtwiz_versal_0</spirit:userFileType>

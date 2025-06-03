@@ -1,5 +1,0 @@
-Be careful, this folder is a link of the spacefibrlight (itself) project.
-It is a dirty hack to get benefit from IP repository inside the example design.
-It was done to cope with xilinx IP definition which use relative link to the sources.
-
-THIS WILL NOT WORK ON WINDOWS.
