@@ -1,7 +1,5 @@
 name: Linty
-on:
-  push:
-
+on: [push]
 jobs:
   linty:
     name: Linty
@@ -30,15 +28,15 @@ jobs:
           docker run \
             --rm \
             --user="$(id -u):$(id -g)" \
-            -e SONAR_HOST_URL="$SONAR_HOST_URL" \
-            -e SONAR_TOKEN="${{ secrets.LINTY_SCANNER_TOKEN }}" \
+            -e SONAR_HOST_URL=${{ vars.SONAR_HOST_URL }} \
+            -e SONAR_TOKEN="${{ secrets.SONAR_TOKEN }}" \
             -e GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}" \
             -e GITHUB_REPOSITORY_OWNER="$GITHUB_REPOSITORY_OWNER" \
             -e GITHUB_REPOSITORY="$GITHUB_REPOSITORY" \
             -e TABBY_CAD_LICENSE="$TABBY_CAD_LICENSE" \
             -v "$HOME/.sonar/cache:/opt/sonar-scanner/.sonar/cache" \
             -v "${PWD}:/usr/src" \
-            lintyservices/linty-scanner:latest -X
+            lintyservices/linty-scanner:latest
         env:
           TABBY_CAD_LICENSE: ${{secrets.TABBY_CAD_LICENSE}}
 

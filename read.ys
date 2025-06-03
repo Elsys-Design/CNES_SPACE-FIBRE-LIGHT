@@ -18,10 +18,10 @@ verific  -vhdl src/module_phy_plus_lane/mib_phy_plus_lane.vhd
 #datalink layer
 verific  -work data_link_lib -vhdl src/pkg_tools.vhd
 verific  -work data_link_lib -vhdl src/pkg_data_link.vhd
-verific  -vhdl ip/fifo_dc_custom_to_axis/AXIS_MASTER.vhd
-verific  -vhdl ip/fifo_dc_custom_to_axis/FIFO_DC_AXIS_M.vhd
-verific  -vhdl ip/fifo_dc_axis_to_custom/AXIS_SLAVE.vhd
-verific  -vhdl ip/fifo_dc_axis_to_custom/FIFO_DC_AXIS_S.vhd
+verific  -vhdl src/ip/fifo_dc_custom_to_axis/AXIS_MASTER.vhd
+verific  -vhdl src/ip/fifo_dc_custom_to_axis/FIFO_DC_AXIS_M.vhd
+verific  -vhdl src/ip/fifo_dc_axis_to_custom/AXIS_SLAVE.vhd
+verific  -vhdl src/ip/fifo_dc_axis_to_custom/FIFO_DC_AXIS_S.vhd
 verific  -vhdl src/module_data_link/data_crc_check.vhd
 verific  -vhdl src/module_data_link/data_crc_compute.vhd
 verific  -vhdl src/module_data_link/data_desencapsulation.vhd
@@ -37,8 +37,8 @@ verific  -vhdl src/module_data_link/data_out_buf.vhd
 verific  -vhdl src/module_data_link/data_seq_check.vhd
 verific  -vhdl src/module_data_link/data_seq_compute.vhd
 verific  -vhdl src/module_data_link/data_word_id_fsm.vhd
-verific  -vhdl ip/fifo_dc/fifo_dc.vhd
-verific  -vhdl ip/fifo_dc_drop_bad_frame/fifo_dc_drop_bad_frame.vhd
+verific  -vhdl src/ip/fifo_dc/fifo_dc.vhd
+verific  -vhdl src/ip/fifo_dc_drop_bad_frame/fifo_dc_drop_bad_frame.vhd
 verific  -vhdl src/module_data_link/data_link.vhd
 verific  -vhdl src/module_data_link/mib_data_link.vhd
 

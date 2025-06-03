@@ -66,3 +66,6 @@ sim/scenario/custom.do
 
 #vivado folder
 work
+**/.Xil/
+#remove xilinx ip src copy
+xilinx_ip/spacefibrelight_full_wrapper/src
