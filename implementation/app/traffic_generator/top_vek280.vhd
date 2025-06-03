@@ -28,23 +28,97 @@ entity top_vek280 is
     CLK_FPGA_N     : in std_logic;
     RESET          : in std_logic;
 
-    -- NOC IF
-    ddr4_dimm1_act_n : out STD_LOGIC_VECTOR ( 0 to 0 );
-    ddr4_dimm1_adr : out STD_LOGIC_VECTOR ( 16 downto 0 );
-    ddr4_dimm1_ba : out STD_LOGIC_VECTOR ( 1 downto 0 );
-    ddr4_dimm1_bg : out STD_LOGIC_VECTOR ( 1 downto 0 );
-    ddr4_dimm1_ck_c : out STD_LOGIC_VECTOR ( 0 to 0 );
-    ddr4_dimm1_ck_t : out STD_LOGIC_VECTOR ( 0 to 0 );
-    ddr4_dimm1_cke : out STD_LOGIC_VECTOR ( 0 to 0 );
-    ddr4_dimm1_cs_n : out STD_LOGIC_VECTOR ( 0 to 0 );
-    ddr4_dimm1_dm_n : inout STD_LOGIC_VECTOR ( 7 downto 0 );
-    ddr4_dimm1_dq : inout STD_LOGIC_VECTOR ( 63 downto 0 );
-    ddr4_dimm1_dqs_c : inout STD_LOGIC_VECTOR ( 7 downto 0 );
-    ddr4_dimm1_dqs_t : inout STD_LOGIC_VECTOR ( 7 downto 0 );
-    ddr4_dimm1_odt : out STD_LOGIC_VECTOR ( 0 to 0 );
-    ddr4_dimm1_reset_n : out STD_LOGIC_VECTOR ( 0 to 0 );
-    lpddr4_clk1_clk_n : in STD_LOGIC_VECTOR ( 0 to 0 );
-    lpddr4_clk1_clk_p : in STD_LOGIC_VECTOR ( 0 to 0 );
+    ch0_lpddr4_trip1_ca_a : out STD_LOGIC_VECTOR ( 5 downto 0 );
+    ch0_lpddr4_trip1_ck_c_a : out STD_LOGIC;
+    ch0_lpddr4_trip1_ck_t_a : out STD_LOGIC;
+    ch0_lpddr4_trip1_cke_a : out STD_LOGIC;
+    ch0_lpddr4_trip1_cs_a : out STD_LOGIC;
+    ch0_lpddr4_trip1_dmi_a : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch0_lpddr4_trip1_dmi_b : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch0_lpddr4_trip1_dq_a : inout STD_LOGIC_VECTOR ( 15 downto 0 );
+    ch0_lpddr4_trip1_dq_b : inout STD_LOGIC_VECTOR ( 15 downto 0 );
+    ch0_lpddr4_trip1_dqs_c_a : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch0_lpddr4_trip1_dqs_c_b : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch0_lpddr4_trip1_dqs_t_a : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch0_lpddr4_trip1_dqs_t_b : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch0_lpddr4_trip1_reset_n : out STD_LOGIC;
+    ch0_lpddr4_trip2_ca_a : out STD_LOGIC_VECTOR ( 5 downto 0 );
+    ch0_lpddr4_trip2_ck_c_a : out STD_LOGIC;
+    ch0_lpddr4_trip2_ck_t_a : out STD_LOGIC;
+    ch0_lpddr4_trip2_cke_a : out STD_LOGIC;
+    ch0_lpddr4_trip2_cs_a : out STD_LOGIC;
+    ch0_lpddr4_trip2_dmi_a : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch0_lpddr4_trip2_dmi_b : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch0_lpddr4_trip2_dq_a : inout STD_LOGIC_VECTOR ( 15 downto 0 );
+    ch0_lpddr4_trip2_dq_b : inout STD_LOGIC_VECTOR ( 15 downto 0 );
+    ch0_lpddr4_trip2_dqs_c_a : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch0_lpddr4_trip2_dqs_c_b : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch0_lpddr4_trip2_dqs_t_a : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch0_lpddr4_trip2_dqs_t_b : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch0_lpddr4_trip2_reset_n : out STD_LOGIC;
+    ch0_lpddr4_trip3_ca_a : out STD_LOGIC_VECTOR ( 5 downto 0 );
+    ch0_lpddr4_trip3_ck_c_a : out STD_LOGIC;
+    ch0_lpddr4_trip3_ck_t_a : out STD_LOGIC;
+    ch0_lpddr4_trip3_cke_a : out STD_LOGIC;
+    ch0_lpddr4_trip3_cs_a : out STD_LOGIC;
+    ch0_lpddr4_trip3_dmi_a : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch0_lpddr4_trip3_dmi_b : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch0_lpddr4_trip3_dq_a : inout STD_LOGIC_VECTOR ( 15 downto 0 );
+    ch0_lpddr4_trip3_dq_b : inout STD_LOGIC_VECTOR ( 15 downto 0 );
+    ch0_lpddr4_trip3_dqs_c_a : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch0_lpddr4_trip3_dqs_c_b : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch0_lpddr4_trip3_dqs_t_a : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch0_lpddr4_trip3_dqs_t_b : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch0_lpddr4_trip3_reset_n : out STD_LOGIC;
+    ch1_lpddr4_trip1_ca_a : out STD_LOGIC_VECTOR ( 5 downto 0 );
+    ch1_lpddr4_trip1_ck_c_a : out STD_LOGIC;
+    ch1_lpddr4_trip1_ck_t_a : out STD_LOGIC;
+    ch1_lpddr4_trip1_cke_a : out STD_LOGIC;
+    ch1_lpddr4_trip1_cs_a : out STD_LOGIC;
+    ch1_lpddr4_trip1_dmi_a : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch1_lpddr4_trip1_dmi_b : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch1_lpddr4_trip1_dq_a : inout STD_LOGIC_VECTOR ( 15 downto 0 );
+    ch1_lpddr4_trip1_dq_b : inout STD_LOGIC_VECTOR ( 15 downto 0 );
+    ch1_lpddr4_trip1_dqs_c_a : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch1_lpddr4_trip1_dqs_c_b : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch1_lpddr4_trip1_dqs_t_a : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch1_lpddr4_trip1_dqs_t_b : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch1_lpddr4_trip1_reset_n : out STD_LOGIC;
+    ch1_lpddr4_trip2_ca_a : out STD_LOGIC_VECTOR ( 5 downto 0 );
+    ch1_lpddr4_trip2_ck_c_a : out STD_LOGIC;
+    ch1_lpddr4_trip2_ck_t_a : out STD_LOGIC;
+    ch1_lpddr4_trip2_cke_a : out STD_LOGIC;
+    ch1_lpddr4_trip2_cs_a : out STD_LOGIC;
+    ch1_lpddr4_trip2_dmi_a : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch1_lpddr4_trip2_dmi_b : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch1_lpddr4_trip2_dq_a : inout STD_LOGIC_VECTOR ( 15 downto 0 );
+    ch1_lpddr4_trip2_dq_b : inout STD_LOGIC_VECTOR ( 15 downto 0 );
+    ch1_lpddr4_trip2_dqs_c_a : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch1_lpddr4_trip2_dqs_c_b : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch1_lpddr4_trip2_dqs_t_a : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch1_lpddr4_trip2_dqs_t_b : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch1_lpddr4_trip2_reset_n : out STD_LOGIC;
+    ch1_lpddr4_trip3_ca_a : out STD_LOGIC_VECTOR ( 5 downto 0 );
+    ch1_lpddr4_trip3_ck_c_a : out STD_LOGIC;
+    ch1_lpddr4_trip3_ck_t_a : out STD_LOGIC;
+    ch1_lpddr4_trip3_cke_a : out STD_LOGIC;
+    ch1_lpddr4_trip3_cs_a : out STD_LOGIC;
+    ch1_lpddr4_trip3_dmi_a : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch1_lpddr4_trip3_dmi_b : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch1_lpddr4_trip3_dq_a : inout STD_LOGIC_VECTOR ( 15 downto 0 );
+    ch1_lpddr4_trip3_dq_b : inout STD_LOGIC_VECTOR ( 15 downto 0 );
+    ch1_lpddr4_trip3_dqs_c_a : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch1_lpddr4_trip3_dqs_c_b : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch1_lpddr4_trip3_dqs_t_a : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch1_lpddr4_trip3_dqs_t_b : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch1_lpddr4_trip3_reset_n : out STD_LOGIC;
+    clk_l : out STD_LOGIC;
+    lpddr4_clk1_clk_n : in STD_LOGIC;
+    lpddr4_clk1_clk_p : in STD_LOGIC;
+    lpddr4_clk2_clk_n : in STD_LOGIC;
+    lpddr4_clk2_clk_p : in STD_LOGIC;
+    lpddr4_clk3_clk_n : in STD_LOGIC;
+    lpddr4_clk3_clk_p : in STD_LOGIC;
 
     -- Spacefibre port 
     QUAD0_GTREFCLK0_in_p     : in std_logic;
@@ -61,31 +135,105 @@ architecture rtl of top_vek280 is
 ---------------------------
 -- COMPONENT DECLARATION --
 ---------------------------
-  component design_1 is
+   component design_1 is
   port (
-    ddr4_dimm1_dq : inout STD_LOGIC_VECTOR ( 63 downto 0 );
-    ddr4_dimm1_dqs_t : inout STD_LOGIC_VECTOR ( 7 downto 0 );
-    ddr4_dimm1_dqs_c : inout STD_LOGIC_VECTOR ( 7 downto 0 );
-    ddr4_dimm1_adr : out STD_LOGIC_VECTOR ( 16 downto 0 );
-    ddr4_dimm1_ba : out STD_LOGIC_VECTOR ( 1 downto 0 );
-    ddr4_dimm1_bg : out STD_LOGIC_VECTOR ( 1 downto 0 );
-    ddr4_dimm1_act_n : out STD_LOGIC_VECTOR ( 0 to 0 );
-    ddr4_dimm1_reset_n : out STD_LOGIC_VECTOR ( 0 to 0 );
-    ddr4_dimm1_ck_t : out STD_LOGIC_VECTOR ( 0 to 0 );
-    ddr4_dimm1_ck_c : out STD_LOGIC_VECTOR ( 0 to 0 );
-    ddr4_dimm1_cke : out STD_LOGIC_VECTOR ( 0 to 0 );
-    ddr4_dimm1_cs_n : out STD_LOGIC_VECTOR ( 0 to 0 );
-    ddr4_dimm1_dm_n : inout STD_LOGIC_VECTOR ( 7 downto 0 );
-    ddr4_dimm1_odt : out STD_LOGIC_VECTOR ( 0 to 0 );
     clk_l : out STD_LOGIC;
     reset_n_fpga : out STD_LOGIC_VECTOR ( 0 to 0 );
-    lpddr4_clk1_clk_p : in STD_LOGIC_VECTOR ( 0 to 0 );
-    lpddr4_clk1_clk_n : in STD_LOGIC_VECTOR ( 0 to 0 );
     CLK_GTY_0 : in STD_LOGIC;
     RX_POS_0 : in STD_LOGIC;
     RX_NEG_0 : in STD_LOGIC;
     TX_POS_0 : out STD_LOGIC;
-    TX_NEG_0 : out STD_LOGIC
+    TX_NEG_0 : out STD_LOGIC;
+    ch0_lpddr4_trip1_dq_a : inout STD_LOGIC_VECTOR ( 15 downto 0 );
+    ch0_lpddr4_trip1_dq_b : inout STD_LOGIC_VECTOR ( 15 downto 0 );
+    ch0_lpddr4_trip1_dqs_t_a : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch0_lpddr4_trip1_dqs_t_b : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch0_lpddr4_trip1_dqs_c_a : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch0_lpddr4_trip1_dqs_c_b : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch0_lpddr4_trip1_ca_a : out STD_LOGIC_VECTOR ( 5 downto 0 );
+    ch0_lpddr4_trip1_cs_a : out STD_LOGIC;
+    ch0_lpddr4_trip1_ck_t_a : out STD_LOGIC;
+    ch0_lpddr4_trip1_ck_c_a : out STD_LOGIC;
+    ch0_lpddr4_trip1_cke_a : out STD_LOGIC;
+    ch0_lpddr4_trip1_dmi_a : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch0_lpddr4_trip1_dmi_b : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch0_lpddr4_trip1_reset_n : out STD_LOGIC;
+    ch1_lpddr4_trip1_dq_a : inout STD_LOGIC_VECTOR ( 15 downto 0 );
+    ch1_lpddr4_trip1_dq_b : inout STD_LOGIC_VECTOR ( 15 downto 0 );
+    ch1_lpddr4_trip1_dqs_t_a : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch1_lpddr4_trip1_dqs_t_b : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch1_lpddr4_trip1_dqs_c_a : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch1_lpddr4_trip1_dqs_c_b : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch1_lpddr4_trip1_ca_a : out STD_LOGIC_VECTOR ( 5 downto 0 );
+    ch1_lpddr4_trip1_cs_a : out STD_LOGIC;
+    ch1_lpddr4_trip1_ck_t_a : out STD_LOGIC;
+    ch1_lpddr4_trip1_ck_c_a : out STD_LOGIC;
+    ch1_lpddr4_trip1_cke_a : out STD_LOGIC;
+    ch1_lpddr4_trip1_dmi_a : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch1_lpddr4_trip1_dmi_b : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch1_lpddr4_trip1_reset_n : out STD_LOGIC;
+    lpddr4_clk1_clk_p : in STD_LOGIC;
+    lpddr4_clk1_clk_n : in STD_LOGIC;
+    ch0_lpddr4_trip2_dq_a : inout STD_LOGIC_VECTOR ( 15 downto 0 );
+    ch0_lpddr4_trip2_dq_b : inout STD_LOGIC_VECTOR ( 15 downto 0 );
+    ch0_lpddr4_trip2_dqs_t_a : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch0_lpddr4_trip2_dqs_t_b : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch0_lpddr4_trip2_dqs_c_a : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch0_lpddr4_trip2_dqs_c_b : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch0_lpddr4_trip2_ca_a : out STD_LOGIC_VECTOR ( 5 downto 0 );
+    ch0_lpddr4_trip2_cs_a : out STD_LOGIC;
+    ch0_lpddr4_trip2_ck_t_a : out STD_LOGIC;
+    ch0_lpddr4_trip2_ck_c_a : out STD_LOGIC;
+    ch0_lpddr4_trip2_cke_a : out STD_LOGIC;
+    ch0_lpddr4_trip2_dmi_a : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch0_lpddr4_trip2_dmi_b : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch0_lpddr4_trip2_reset_n : out STD_LOGIC;
+    ch1_lpddr4_trip2_dq_a : inout STD_LOGIC_VECTOR ( 15 downto 0 );
+    ch1_lpddr4_trip2_dq_b : inout STD_LOGIC_VECTOR ( 15 downto 0 );
+    ch1_lpddr4_trip2_dqs_t_a : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch1_lpddr4_trip2_dqs_t_b : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch1_lpddr4_trip2_dqs_c_a : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch1_lpddr4_trip2_dqs_c_b : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch1_lpddr4_trip2_ca_a : out STD_LOGIC_VECTOR ( 5 downto 0 );
+    ch1_lpddr4_trip2_cs_a : out STD_LOGIC;
+    ch1_lpddr4_trip2_ck_t_a : out STD_LOGIC;
+    ch1_lpddr4_trip2_ck_c_a : out STD_LOGIC;
+    ch1_lpddr4_trip2_cke_a : out STD_LOGIC;
+    ch1_lpddr4_trip2_dmi_a : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch1_lpddr4_trip2_dmi_b : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch1_lpddr4_trip2_reset_n : out STD_LOGIC;
+    lpddr4_clk2_clk_p : in STD_LOGIC;
+    lpddr4_clk2_clk_n : in STD_LOGIC;
+    ch0_lpddr4_trip3_dq_a : inout STD_LOGIC_VECTOR ( 15 downto 0 );
+    ch0_lpddr4_trip3_dq_b : inout STD_LOGIC_VECTOR ( 15 downto 0 );
+    ch0_lpddr4_trip3_dqs_t_a : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch0_lpddr4_trip3_dqs_t_b : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch0_lpddr4_trip3_dqs_c_a : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch0_lpddr4_trip3_dqs_c_b : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch0_lpddr4_trip3_ca_a : out STD_LOGIC_VECTOR ( 5 downto 0 );
+    ch0_lpddr4_trip3_cs_a : out STD_LOGIC;
+    ch0_lpddr4_trip3_ck_t_a : out STD_LOGIC;
+    ch0_lpddr4_trip3_ck_c_a : out STD_LOGIC;
+    ch0_lpddr4_trip3_cke_a : out STD_LOGIC;
+    ch0_lpddr4_trip3_dmi_a : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch0_lpddr4_trip3_dmi_b : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch0_lpddr4_trip3_reset_n : out STD_LOGIC;
+    ch1_lpddr4_trip3_dq_a : inout STD_LOGIC_VECTOR ( 15 downto 0 );
+    ch1_lpddr4_trip3_dq_b : inout STD_LOGIC_VECTOR ( 15 downto 0 );
+    ch1_lpddr4_trip3_dqs_t_a : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch1_lpddr4_trip3_dqs_t_b : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch1_lpddr4_trip3_dqs_c_a : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch1_lpddr4_trip3_dqs_c_b : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch1_lpddr4_trip3_ca_a : out STD_LOGIC_VECTOR ( 5 downto 0 );
+    ch1_lpddr4_trip3_cs_a : out STD_LOGIC;
+    ch1_lpddr4_trip3_ck_t_a : out STD_LOGIC;
+    ch1_lpddr4_trip3_ck_c_a : out STD_LOGIC;
+    ch1_lpddr4_trip3_cke_a : out STD_LOGIC;
+    ch1_lpddr4_trip3_dmi_a : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch1_lpddr4_trip3_dmi_b : inout STD_LOGIC_VECTOR ( 1 downto 0 );
+    ch1_lpddr4_trip3_reset_n : out STD_LOGIC;
+    lpddr4_clk3_clk_p : in STD_LOGIC;
+    lpddr4_clk3_clk_n : in STD_LOGIC
   );
   end component design_1;
 
@@ -163,24 +311,99 @@ design_1_i: component design_1
       RX_POS_0 => RX_POS,
       TX_NEG_0 => TX_NEG,
       TX_POS_0 => TX_POS,
-      clk_l => clk,
-      ddr4_dimm1_act_n(0) => ddr4_dimm1_act_n(0),
-      ddr4_dimm1_adr(16 downto 0) => ddr4_dimm1_adr(16 downto 0),
-      ddr4_dimm1_ba(1 downto 0) => ddr4_dimm1_ba(1 downto 0),
-      ddr4_dimm1_bg(1 downto 0) => ddr4_dimm1_bg(1 downto 0),
-      ddr4_dimm1_ck_c(0) => ddr4_dimm1_ck_c(0),
-      ddr4_dimm1_ck_t(0) => ddr4_dimm1_ck_t(0),
-      ddr4_dimm1_cke(0) => ddr4_dimm1_cke(0),
-      ddr4_dimm1_cs_n(0) => ddr4_dimm1_cs_n(0),
-      ddr4_dimm1_dm_n(7 downto 0) => ddr4_dimm1_dm_n(7 downto 0),
-      ddr4_dimm1_dq(63 downto 0) => ddr4_dimm1_dq(63 downto 0),
-      ddr4_dimm1_dqs_c(7 downto 0) => ddr4_dimm1_dqs_c(7 downto 0),
-      ddr4_dimm1_dqs_t(7 downto 0) => ddr4_dimm1_dqs_t(7 downto 0),
-      ddr4_dimm1_odt(0) => ddr4_dimm1_odt(0),
-      ddr4_dimm1_reset_n(0) => ddr4_dimm1_reset_n(0),
-      lpddr4_clk1_clk_n(0) => lpddr4_clk1_clk_n(0),
-      lpddr4_clk1_clk_p(0) => lpddr4_clk1_clk_p(0),
-      reset_n_fpga(0) => reset_n
+      clk_l => open, -- this is the fabric clock from cips
+      reset_n_fpga(0) => reset_n, -- this this the fabric reset
+
+      ch0_lpddr4_trip1_ca_a(5 downto 0) => ch0_lpddr4_trip1_ca_a(5 downto 0),
+      ch0_lpddr4_trip1_ck_c_a => ch0_lpddr4_trip1_ck_c_a,
+      ch0_lpddr4_trip1_ck_t_a => ch0_lpddr4_trip1_ck_t_a,
+      ch0_lpddr4_trip1_cke_a => ch0_lpddr4_trip1_cke_a,
+      ch0_lpddr4_trip1_cs_a => ch0_lpddr4_trip1_cs_a,
+      ch0_lpddr4_trip1_dmi_a(1 downto 0) => ch0_lpddr4_trip1_dmi_a(1 downto 0),
+      ch0_lpddr4_trip1_dmi_b(1 downto 0) => ch0_lpddr4_trip1_dmi_b(1 downto 0),
+      ch0_lpddr4_trip1_dq_a(15 downto 0) => ch0_lpddr4_trip1_dq_a(15 downto 0),
+      ch0_lpddr4_trip1_dq_b(15 downto 0) => ch0_lpddr4_trip1_dq_b(15 downto 0),
+      ch0_lpddr4_trip1_dqs_c_a(1 downto 0) => ch0_lpddr4_trip1_dqs_c_a(1 downto 0),
+      ch0_lpddr4_trip1_dqs_c_b(1 downto 0) => ch0_lpddr4_trip1_dqs_c_b(1 downto 0),
+      ch0_lpddr4_trip1_dqs_t_a(1 downto 0) => ch0_lpddr4_trip1_dqs_t_a(1 downto 0),
+      ch0_lpddr4_trip1_dqs_t_b(1 downto 0) => ch0_lpddr4_trip1_dqs_t_b(1 downto 0),
+      ch0_lpddr4_trip1_reset_n => ch0_lpddr4_trip1_reset_n,
+      ch0_lpddr4_trip2_ca_a(5 downto 0) => ch0_lpddr4_trip2_ca_a(5 downto 0),
+      ch0_lpddr4_trip2_ck_c_a => ch0_lpddr4_trip2_ck_c_a,
+      ch0_lpddr4_trip2_ck_t_a => ch0_lpddr4_trip2_ck_t_a,
+      ch0_lpddr4_trip2_cke_a => ch0_lpddr4_trip2_cke_a,
+      ch0_lpddr4_trip2_cs_a => ch0_lpddr4_trip2_cs_a,
+      ch0_lpddr4_trip2_dmi_a(1 downto 0) => ch0_lpddr4_trip2_dmi_a(1 downto 0),
+      ch0_lpddr4_trip2_dmi_b(1 downto 0) => ch0_lpddr4_trip2_dmi_b(1 downto 0),
+      ch0_lpddr4_trip2_dq_a(15 downto 0) => ch0_lpddr4_trip2_dq_a(15 downto 0),
+      ch0_lpddr4_trip2_dq_b(15 downto 0) => ch0_lpddr4_trip2_dq_b(15 downto 0),
+      ch0_lpddr4_trip2_dqs_c_a(1 downto 0) => ch0_lpddr4_trip2_dqs_c_a(1 downto 0),
+      ch0_lpddr4_trip2_dqs_c_b(1 downto 0) => ch0_lpddr4_trip2_dqs_c_b(1 downto 0),
+      ch0_lpddr4_trip2_dqs_t_a(1 downto 0) => ch0_lpddr4_trip2_dqs_t_a(1 downto 0),
+      ch0_lpddr4_trip2_dqs_t_b(1 downto 0) => ch0_lpddr4_trip2_dqs_t_b(1 downto 0),
+      ch0_lpddr4_trip2_reset_n => ch0_lpddr4_trip2_reset_n,
+      ch0_lpddr4_trip3_ca_a(5 downto 0) => ch0_lpddr4_trip3_ca_a(5 downto 0),
+      ch0_lpddr4_trip3_ck_c_a => ch0_lpddr4_trip3_ck_c_a,
+      ch0_lpddr4_trip3_ck_t_a => ch0_lpddr4_trip3_ck_t_a,
+      ch0_lpddr4_trip3_cke_a => ch0_lpddr4_trip3_cke_a,
+      ch0_lpddr4_trip3_cs_a => ch0_lpddr4_trip3_cs_a,
+      ch0_lpddr4_trip3_dmi_a(1 downto 0) => ch0_lpddr4_trip3_dmi_a(1 downto 0),
+      ch0_lpddr4_trip3_dmi_b(1 downto 0) => ch0_lpddr4_trip3_dmi_b(1 downto 0),
+      ch0_lpddr4_trip3_dq_a(15 downto 0) => ch0_lpddr4_trip3_dq_a(15 downto 0),
+      ch0_lpddr4_trip3_dq_b(15 downto 0) => ch0_lpddr4_trip3_dq_b(15 downto 0),
+      ch0_lpddr4_trip3_dqs_c_a(1 downto 0) => ch0_lpddr4_trip3_dqs_c_a(1 downto 0),
+      ch0_lpddr4_trip3_dqs_c_b(1 downto 0) => ch0_lpddr4_trip3_dqs_c_b(1 downto 0),
+      ch0_lpddr4_trip3_dqs_t_a(1 downto 0) => ch0_lpddr4_trip3_dqs_t_a(1 downto 0),
+      ch0_lpddr4_trip3_dqs_t_b(1 downto 0) => ch0_lpddr4_trip3_dqs_t_b(1 downto 0),
+      ch0_lpddr4_trip3_reset_n => ch0_lpddr4_trip3_reset_n,
+      ch1_lpddr4_trip1_ca_a(5 downto 0) => ch1_lpddr4_trip1_ca_a(5 downto 0),
+      ch1_lpddr4_trip1_ck_c_a => ch1_lpddr4_trip1_ck_c_a,
+      ch1_lpddr4_trip1_ck_t_a => ch1_lpddr4_trip1_ck_t_a,
+      ch1_lpddr4_trip1_cke_a => ch1_lpddr4_trip1_cke_a,
+      ch1_lpddr4_trip1_cs_a => ch1_lpddr4_trip1_cs_a,
+      ch1_lpddr4_trip1_dmi_a(1 downto 0) => ch1_lpddr4_trip1_dmi_a(1 downto 0),
+      ch1_lpddr4_trip1_dmi_b(1 downto 0) => ch1_lpddr4_trip1_dmi_b(1 downto 0),
+      ch1_lpddr4_trip1_dq_a(15 downto 0) => ch1_lpddr4_trip1_dq_a(15 downto 0),
+      ch1_lpddr4_trip1_dq_b(15 downto 0) => ch1_lpddr4_trip1_dq_b(15 downto 0),
+      ch1_lpddr4_trip1_dqs_c_a(1 downto 0) => ch1_lpddr4_trip1_dqs_c_a(1 downto 0),
+      ch1_lpddr4_trip1_dqs_c_b(1 downto 0) => ch1_lpddr4_trip1_dqs_c_b(1 downto 0),
+      ch1_lpddr4_trip1_dqs_t_a(1 downto 0) => ch1_lpddr4_trip1_dqs_t_a(1 downto 0),
+      ch1_lpddr4_trip1_dqs_t_b(1 downto 0) => ch1_lpddr4_trip1_dqs_t_b(1 downto 0),
+      ch1_lpddr4_trip1_reset_n => ch1_lpddr4_trip1_reset_n,
+      ch1_lpddr4_trip2_ca_a(5 downto 0) => ch1_lpddr4_trip2_ca_a(5 downto 0),
+      ch1_lpddr4_trip2_ck_c_a => ch1_lpddr4_trip2_ck_c_a,
+      ch1_lpddr4_trip2_ck_t_a => ch1_lpddr4_trip2_ck_t_a,
+      ch1_lpddr4_trip2_cke_a => ch1_lpddr4_trip2_cke_a,
+      ch1_lpddr4_trip2_cs_a => ch1_lpddr4_trip2_cs_a,
+      ch1_lpddr4_trip2_dmi_a(1 downto 0) => ch1_lpddr4_trip2_dmi_a(1 downto 0),
+      ch1_lpddr4_trip2_dmi_b(1 downto 0) => ch1_lpddr4_trip2_dmi_b(1 downto 0),
+      ch1_lpddr4_trip2_dq_a(15 downto 0) => ch1_lpddr4_trip2_dq_a(15 downto 0),
+      ch1_lpddr4_trip2_dq_b(15 downto 0) => ch1_lpddr4_trip2_dq_b(15 downto 0),
+      ch1_lpddr4_trip2_dqs_c_a(1 downto 0) => ch1_lpddr4_trip2_dqs_c_a(1 downto 0),
+      ch1_lpddr4_trip2_dqs_c_b(1 downto 0) => ch1_lpddr4_trip2_dqs_c_b(1 downto 0),
+      ch1_lpddr4_trip2_dqs_t_a(1 downto 0) => ch1_lpddr4_trip2_dqs_t_a(1 downto 0),
+      ch1_lpddr4_trip2_dqs_t_b(1 downto 0) => ch1_lpddr4_trip2_dqs_t_b(1 downto 0),
+      ch1_lpddr4_trip2_reset_n => ch1_lpddr4_trip2_reset_n,
+      ch1_lpddr4_trip3_ca_a(5 downto 0) => ch1_lpddr4_trip3_ca_a(5 downto 0),
+      ch1_lpddr4_trip3_ck_c_a => ch1_lpddr4_trip3_ck_c_a,
+      ch1_lpddr4_trip3_ck_t_a => ch1_lpddr4_trip3_ck_t_a,
+      ch1_lpddr4_trip3_cke_a => ch1_lpddr4_trip3_cke_a,
+      ch1_lpddr4_trip3_cs_a => ch1_lpddr4_trip3_cs_a,
+      ch1_lpddr4_trip3_dmi_a(1 downto 0) => ch1_lpddr4_trip3_dmi_a(1 downto 0),
+      ch1_lpddr4_trip3_dmi_b(1 downto 0) => ch1_lpddr4_trip3_dmi_b(1 downto 0),
+      ch1_lpddr4_trip3_dq_a(15 downto 0) => ch1_lpddr4_trip3_dq_a(15 downto 0),
+      ch1_lpddr4_trip3_dq_b(15 downto 0) => ch1_lpddr4_trip3_dq_b(15 downto 0),
+      ch1_lpddr4_trip3_dqs_c_a(1 downto 0) => ch1_lpddr4_trip3_dqs_c_a(1 downto 0),
+      ch1_lpddr4_trip3_dqs_c_b(1 downto 0) => ch1_lpddr4_trip3_dqs_c_b(1 downto 0),
+      ch1_lpddr4_trip3_dqs_t_a(1 downto 0) => ch1_lpddr4_trip3_dqs_t_a(1 downto 0),
+      ch1_lpddr4_trip3_dqs_t_b(1 downto 0) => ch1_lpddr4_trip3_dqs_t_b(1 downto 0),
+      ch1_lpddr4_trip3_reset_n => ch1_lpddr4_trip3_reset_n,
+      lpddr4_clk1_clk_n => lpddr4_clk1_clk_n,
+      lpddr4_clk1_clk_p => lpddr4_clk1_clk_p,
+      lpddr4_clk2_clk_n => lpddr4_clk2_clk_n,
+      lpddr4_clk2_clk_p => lpddr4_clk2_clk_p,
+      lpddr4_clk3_clk_n => lpddr4_clk3_clk_n,
+      lpddr4_clk3_clk_p => lpddr4_clk3_clk_p
     );
 
 end architecture rtl;
