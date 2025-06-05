@@ -1,0 +1,3 @@
+[submodule "sim/cocotb-framework"]
+	path = sim/cocotb-framework
+	url = https://github.com/Elsys-Design/DIGITAL-VERIFICATION-COCOTB.git
