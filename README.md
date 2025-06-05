@@ -581,7 +581,7 @@ Unit tests existed on the original code, but have not been updated.
 The unit tests must therefore be checked and corrected if necessary.
 
 ### 4.5 License
-This IP is copyright CNES and can be licensed to be use in external projects. 
+This IP is copyright CNES and is licensed under CERN open hardware license `CERN-OHL-W`.
 
 
 # Getting started
