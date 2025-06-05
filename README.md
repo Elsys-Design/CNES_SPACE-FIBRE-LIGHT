@@ -18,10 +18,10 @@ The SpaceFibre Light IP is compatible with the ECSS-E-ST-50-11C SpaceFibre stand
 This IP has been designed to be as technologically independent as possible. 
 
 That's why it contains only two dependent technology IPs:
-- HSSL IP from Xilinx
+- HSSL IP from Xilinx-AMD
 - BufGT for the clock outgoing from this HSSL IP
 
-This IP was developed on a Xilinx VEK 280 with vivado 2024.1
+This IP was developed on a Xilinx-AMD Versal VEK280 Evaluation Platform with FMC Connector (Versal AI Edge xcve2802-vsvh1760-2MP-e-S) with vivado 2024.1
 
 The figure shows the block diagram of the SpaceFibre Light IP.
 
@@ -37,18 +37,26 @@ The figure shows the block diagram of the SpaceFibre Light IP.
 
 ### 1.2 Features
 
-- Up to 8 AXI4-Stream 32b interface data input and outputs from Data Link layer
-- AXI4-Stream 32b interface broadcast input and output from Data Link layer
+- Up to 8 AXI4-Stream 32b interface data inputs and outputs from Data Link layer
+- AXI4-Stream 32b interface broadcast inputs and outputs from Data Link layer
 - Custom 32b interface data input and output from Lane layer, activatable
-- discrete signals interface for configuration
+- Discrete signals interface for configuration
 - Multiple discrete signals for external QoS computing
 - Multiple discrete signals for external error management
-- 6 Gbit/s output
-- Encapsulation and decapsulation of data according to SpaceFiber protocol
+- 6 Gbit/s data rate
+- Encapsulation and decapsulation of data according to SpaceFibre protocol
 - Link management
 - Virtual channels physical media access management
 - Lane management
 - 8b/10b encoding and decoding
+
+### 1.2 Unsupported features from the SpaceFibre standard
+
+- Network layer: 
+    - All the features
+- Data-Link layer: 
+    - QoS features
+    - Error management features
 
 ## 2 Specification
 ### 2.1 Clock domains
@@ -567,6 +575,10 @@ This error can be caused by a number of factors:
 - Software mismanagement
 - Errors in RTL generator and analyzer models
 - Error coming from the IP itself
+
+#### 4.4.3 Unitary RTL tests
+Unit tests existed on the original code, but have not been updated.
+The unit tests must therefore be checked and corrected if necessary.
 
 ### 4.5 License
 This IP is copyright CNES and can be licensed to be use in external projects. 
