@@ -26,11 +26,14 @@ https://www.intel.com/content/www/us/en/software-kit/790078/questa-intel-fpgas-p
 
 The Questa binaries should be added to the environnement variable PATH before running the tests with command `export PATH=<Questa_install_path>/questa_fse/bin:$PATH`
 
+## cocotb framework
+This framework include additionnal features for `cocotbext-axi` such as stimuli from files and logger. This project is hosted at `https://github.com/Elsys-Design/DIGITAL-VERIFICATION-COCOTB` it is included in the proejct as submodule at path `sim/cocotb-framework`.
+
 # Running a simulation
 - go into `sim/scenario/` 
 - configure your environnement for runningthe simulation. To do so you have to set at least 3 variables:
     - SPACEFIBRELIGHT_ROOT_PATH : the main absolute path location of your spacefibre cloned project (the one with .git folder)
-    - FRAMEWORK_COCOTB_INSTALL_PATH : the absolute path location for your cocotb_framework cloned project (the one with .git folder)
+    - FRAMEWORK_COCOTB_INSTALL_PATH : the absolute path location for your cocotb_framework 
     - GUI : set the variable to 1 to launch questa GUI or simply write 0 to directly run the simulaiton without GUI.
 
    To do so you can execute in a terminal (or add them to you .bashrc)
@@ -53,7 +56,7 @@ The Questa binaries should be added to the environnement variable PATH before ru
 - to execute every test available in every folders use command `RunSim.sh all`
 
 
-# Configuration
+cccc
 
 The `Runme.sh' script as several configuration variables:
 
@@ -74,10 +77,10 @@ Here is an example of the content of the file (this file won't be part of the re
 ```
 
 #set you absolute path to the root of the project spacefibrelight
-export SPACEFIBRELIGHT_ROOT_PATH=/home/user/document/24-9771-ED_CNES_IP-SPACE-FIBRE
+export SPACEFIBRELIGHT_ROOT_PATH=/home/user/my/handsome/project/spacefibrelight
 
 #set your framework location
-export FRAMEWORK_COCOTB_INSTALL_PATH=/home/user/document/24-9771-ed-cnes_test-cocotb-framework
+export FRAMEWORK_COCOTB_INSTALL_PATH=$SPACEFIBRELIGHT_ROOT_PATH/sim/cocotb-framework/src
 
 # Select 1 to have to gui loaded (you will have to click run all to start simualtion)
 # select 0 to have automatic
@@ -89,4 +92,11 @@ export WAVES=0
 
 ##additionnal VSIM command  
 export EXTRA_VSIM_CMD="-do $SPACEFIBRELIGHT_ROOT_PATH/sim/scenario/custom.do"
+
+#enable venv for pipx on ubuntu 24
+export VIRTUAL_ENV=/home/flo/.local/lib/python3.12/site-packages/cocotb
 ```
+## cocotb on ubuntu 24
+On new ubuntu, global python installation is no longer authorized. you could use `pipx` which create a virtual env.
+In order to make cocotb to work you should set : `VIRTUAL_ENV` with command
+`export VIRTUAL_ENV=/home/user/.local/lib/python3.12/site-packages/cocotb`
