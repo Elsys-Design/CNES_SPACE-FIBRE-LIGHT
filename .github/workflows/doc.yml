@@ -51,7 +51,7 @@ jobs:
           git config --global user.email "githubaction@cnes.fr"
           git config --global user.name "Automatic github CNES CI/CD"
           git add .
-          git commit -m "Update hmtl website"
+          git commit -m "Update html website"
           git push
         env:
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }} 
