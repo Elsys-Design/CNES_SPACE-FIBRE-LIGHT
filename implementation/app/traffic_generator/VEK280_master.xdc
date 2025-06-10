@@ -15,7 +15,7 @@
 ############################################################################
 ##                        Timings Constraints                             ##
 ############################################################################
-create_clock -period 10.000 [get_ports QUAD0_GTREFCLK0_in_p]
+create_clock -period 10.000 [get_ports SPF_GTCLK_p]
 
 set_false_path -from [get_clocks -of_objects [get_pins I_CLOCKING_WIZARD_0/inst/clock_primitive_inst/MMCME5_inst/CLKOUT0]] -to [get_clocks -of_objects [get_pins I_CLOCKING_WIZARD_0/inst/clock_primitive_inst/MMCME5_inst/CLKOUT0]]
 
@@ -31,5 +31,5 @@ set_property IOSTANDARD DIFF_SSTL15 [get_ports CLK_FPGA_P]
 set_property IOSTANDARD DIFF_SSTL15 [get_ports CLK_FPGA_N]
 set_property PACKAGE_PIN AV33 [get_ports RESET]
 set_property IOSTANDARD LVCMOS15 [get_ports RESET] 
-set_property PACKAGE_PIN H9 [get_ports SPF_GTCLK_p]#on VEK280 schematic signal RC21008A_GTCLK1_OUT8_P
+set_property PACKAGE_PIN K9 [get_ports SPF_GTCLK_p]#on VEK280 schematic signal RC21008A_GTCLK1_OUT8_P
 
