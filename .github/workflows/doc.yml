@@ -1,0 +1,64 @@
+name: Linty_Doc
+on: [push]
+jobs:
+  linty:
+    name: Linty
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Cache
+        id: cache-sonar
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: sonar
+          restore-keys: sonar
+
+      - name: Create cache directory if cache is not restored
+        if: steps.cache-sonar.outputs.cache-hit != 'true'
+        run: mkdir $HOME/.sonar && mkdir $HOME/.sonar/cache
+
+      - name: Run Linty
+        run: |
+          docker run \
+            --rm \
+            --user="$(id -u):$(id -g)" \
+            -e SONAR_HOST_URL=${{ vars.SONAR_HOST_URL }} \
+            -e SONAR_TOKEN="${{ secrets.SONAR_TOKEN }}" \
+            -e GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}" \
+            -e GITHUB_REPOSITORY_OWNER="$GITHUB_REPOSITORY_OWNER" \
+            -e GITHUB_REPOSITORY="$GITHUB_REPOSITORY" \
+            -e TABBY_CAD_LICENSE="$TABBY_CAD_LICENSE" \
+            -v "$HOME/.sonar/cache:/opt/sonar-scanner/.sonar/cache" \
+            -v "${PWD}:/usr/src" \
+            lintyservices/linty-scanner:latest
+        env:
+          TABBY_CAD_LICENSE: ${{secrets.TABBY_CAD_LICENSE}}
+
+      - name: update html website
+              run: |
+              git checkout gh-pages
+              git merge "$BRANCH_NAME"
+              rm -r ./docs/
+              cp -r .linty/report/build/html/ ./docs/
+              git config --global user.email "githubaction@cnes.fr"
+              git config --global user.name "Automatic github CNES CI/CD"
+              git add .
+              git commit -m "Update hmtl website"
+              git push
+        env:
+          BRANCH_NAME: ${{ github.head_ref || github.ref_name }} 
+
+
+      - name: Debug
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug
+          include-hidden-files: true
+          path: .linty/
