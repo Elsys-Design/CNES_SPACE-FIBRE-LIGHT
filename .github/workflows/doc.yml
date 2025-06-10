@@ -41,16 +41,18 @@ jobs:
           TABBY_CAD_LICENSE: ${{secrets.TABBY_CAD_LICENSE}}
 
       - name: update html website
-              run: |
-              git checkout gh-pages
-              git merge "$BRANCH_NAME"
-              rm -r ./docs/
-              cp -r .linty/report/build/html/ ./docs/
-              git config --global user.email "githubaction@cnes.fr"
-              git config --global user.name "Automatic github CNES CI/CD"
-              git add .
-              git commit -m "Update hmtl website"
-              git push
+        run: |
+          git checkout gh-pages
+          git merge "$BRANCH_NAME"
+          rm -rf ./docs/
+          mkdir docs
+          touch docs/.nojekyll
+          cp -r .linty/report/build/html/ ./docs/
+          git config --global user.email "githubaction@cnes.fr"
+          git config --global user.name "Automatic github CNES CI/CD"
+          git add .
+          git commit -m "Update hmtl website"
+          git push
         env:
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }} 
 
