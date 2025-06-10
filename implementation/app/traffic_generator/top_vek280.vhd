@@ -56,13 +56,12 @@ entity top_vek280 is
     ch1_lpddr4_trip1_dqs_t_a : inout STD_LOGIC_VECTOR ( 1 downto 0 );
     ch1_lpddr4_trip1_dqs_t_b : inout STD_LOGIC_VECTOR ( 1 downto 0 );
     ch1_lpddr4_trip1_reset_n : out STD_LOGIC;
-    clk_l : out STD_LOGIC;
     lpddr4_clk1_clk_n : in STD_LOGIC;
     lpddr4_clk1_clk_p : in STD_LOGIC;
 
     -- Spacefibre port 
-    QUAD0_GTREFCLK0_in_p     : in std_logic;
-    QUAD0_GTREFCLK0_in_n     : in std_logic;
+    SPF_GTCLK_p     : in std_logic;
+    SPF_GTCLK_n     : in std_logic;
 
     TX_POS         : out std_logic;                                        -- Positive LVDS serial data send
     TX_NEG         : out std_logic;                                        -- Negative LVDS serial data send
@@ -77,7 +76,7 @@ architecture rtl of top_vek280 is
 ---------------------------
   component design_1 is
   port (
- CLK_GTY_0 : in STD_LOGIC;
+    CLK_GTY_0 : in STD_LOGIC;
     RX_NEG_0 : in STD_LOGIC;
     RX_POS_0 : in STD_LOGIC;
     TX_NEG_0 : out STD_LOGIC;
@@ -134,7 +133,7 @@ signal reset_n        : std_logic;
 signal reset_stable   : std_logic;
 
 -- CLK GTY signals
-signal quad0_gtrefclk0           : std_logic;
+signal clk_gtref           : std_logic;
 
 
 --debouche counter
@@ -177,16 +176,16 @@ begin
      REFCLK_HROW_CK_SEL  => 0
     )
    port map (
-     O   => quad0_gtrefclk0, 
-     I   => QUAD0_GTREFCLK0_in_p, 
-     IB  => QUAD0_GTREFCLK0_in_n, 
+     O   => clk_gtref, 
+     I   => SPF_GTCLK_p, 
+     IB  => SPF_GTCLK_n, 
      CEB => '0'
      );
 
 -- block design
 design_1_i: component design_1
      port map (
-      CLK_GTY_0 => quad0_gtrefclk0,
+      CLK_GTY_0 => clk_gtref,
       RX_NEG_0 => RX_NEG,
       RX_POS_0 => RX_POS,
       TX_NEG_0 => TX_NEG,
