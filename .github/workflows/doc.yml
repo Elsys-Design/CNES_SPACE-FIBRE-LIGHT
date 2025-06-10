@@ -2,7 +2,7 @@ name: Linty_Doc
 on: [push]
 jobs:
   linty:
-    name: Linty
+    name: Doc
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
