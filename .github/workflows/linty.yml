@@ -37,7 +37,6 @@ jobs:
             -v "$HOME/.sonar/cache:/opt/sonar-scanner/.sonar/cache" \
             -v "${PWD}:/usr/src" \
             lintyservices/linty-scanner:beta
-            -Dsonar.hdl.report.urlPath="spacefibrelight"
         env:
           TABBY_CAD_LICENSE: ${{secrets.TABBY_CAD_LICENSE}}
 
