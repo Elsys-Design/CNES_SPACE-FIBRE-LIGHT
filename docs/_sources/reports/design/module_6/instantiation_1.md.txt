@@ -8,7 +8,7 @@
 
 | Name | Architecture | Description |
 | --- | --- | --- |
-| <linty-anchor href="//src/module_data_link/data_link.vhd#776">inst_mid_buf_bc</linty-anchor> | <linty-anchor href="//src/ip/fifo_dc_drop_bad_frame/fifo_dc_drop_bad_frame.vhd#74">RTL</linty-anchor> | |
+| <linty-anchor href="/src/module_data_link/data_link.vhd#776">inst_mid_buf_bc</linty-anchor> | <linty-anchor href="/src/ip/fifo_dc_drop_bad_frame/fifo_dc_drop_bad_frame.vhd#74">RTL</linty-anchor> | |
 
 
 ## Generics

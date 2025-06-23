@@ -8,7 +8,7 @@
 
 | Name | Architecture | Description |
 | --- | --- | --- |
-| <linty-anchor href="//src/module_data_link/data_link.vhd#1002">inst_data_link_reset</linty-anchor> | <linty-anchor href="//src/module_data_link/data_link_reset.vhd#57">rtl</linty-anchor> | |
+| <linty-anchor href="/src/module_data_link/data_link.vhd#1002">inst_data_link_reset</linty-anchor> | <linty-anchor href="/src/module_data_link/data_link_reset.vhd#57">rtl</linty-anchor> | |
 
 
 ## Generics

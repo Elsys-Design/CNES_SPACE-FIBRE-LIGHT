@@ -98,9 +98,9 @@ Count: 3
 
 | Name | Returned type | Description | Details |
 | --- | --- | --- | :---: |
-|<linty-anchor href="//src/pkg_data_link.vhd#107">calculate_crc_16</linty-anchor>|STD_LOGIC_VECTOR|Calcluates the crc 16 bits|[<img title="View Function Details" src="/_static/images/icon_details.png" style="max-height: 25px; width: auto;" alt="View Function Details">](package_2/function_1.md)|
-|<linty-anchor href="//src/pkg_data_link.vhd#108">calculate_crc_8</linty-anchor>|STD_LOGIC_VECTOR|Calcluates the crc 8 bits|[<img title="View Function Details" src="/_static/images/icon_details.png" style="max-height: 25px; width: auto;" alt="View Function Details">](package_2/function_2.md)|
-|<linty-anchor href="//src/pkg_data_link.vhd#109">calculate_idle</linty-anchor>|STD_LOGIC_VECTOR|Calcluates Idle data|[<img title="View Function Details" src="/_static/images/icon_details.png" style="max-height: 25px; width: auto;" alt="View Function Details">](package_2/function_3.md)|
+|<linty-anchor href="//src/pkg_data_link.vhd#107">calculate_crc_16</linty-anchor>|STD_LOGIC_VECTOR|Calcluates the crc 16 bits|[<img title="View Function Details" src="/spacefibrelight/_static/images/icon_details.png" style="max-height: 25px; width: auto;" alt="View Function Details">](package_2/function_1.md)|
+|<linty-anchor href="//src/pkg_data_link.vhd#108">calculate_crc_8</linty-anchor>|STD_LOGIC_VECTOR|Calcluates the crc 8 bits|[<img title="View Function Details" src="/spacefibrelight/_static/images/icon_details.png" style="max-height: 25px; width: auto;" alt="View Function Details">](package_2/function_2.md)|
+|<linty-anchor href="//src/pkg_data_link.vhd#109">calculate_idle</linty-anchor>|STD_LOGIC_VECTOR|Calcluates Idle data|[<img title="View Function Details" src="/spacefibrelight/_static/images/icon_details.png" style="max-height: 25px; width: auto;" alt="View Function Details">](package_2/function_3.md)|
 
 
 ## Procedures
