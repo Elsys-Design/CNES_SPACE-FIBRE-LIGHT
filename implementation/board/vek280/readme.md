@@ -35,15 +35,19 @@ The following procedure allows full update of the system controller:
 2. Upgrade QSPI for system controller (https://xilinx-wiki.atlassian.net/wiki/spaces/A/pages/2273738753/Versal+Evaluation+Board+-+System+Controller+-+Update+7#Image-Recovery)
     1. download the latest binary file for system controller (https://xilinx-wiki.atlassian.net/wiki/spaces/A/pages/2273738753/Versal+Evaluation+Board+-+System+Controller+-+Update+7#Firmware-Updates)
     2. upload it as recover image for `image 1 qspi` and `image b qspi` 
-    3. reboot the board
-       you should see petalinux boot.
-       login in using `petalinux user` and set a password
-    4. change it access rights to `/data/` folder using command `sudo chmod 777 /data`
-    5. change the ethernet configuration of your system controller using command `sudo system_config.sh`
+3. Upgrade petalinux (WIC file) stored in EMMC for system controller 
+    1. download the latest update (WIC file) for the petalinux distribution: https://www.xilinx.com/member/forms/download/xef.html?filename=system-controller-image-full-cmdline-eval-brd-sc-zynqmp.rootfs-20250524150035_update7.1.wic.xz  and unzip it
+    2. still in the recovery browser, select `Image Wic (EMMC)` and upload the `WIC` file 
+4.  Board address setup
+    1. reboot the board
+       you should see petalinux boot stating `petalinux 2024`
+       login in using `petalinux user` and set a password 
+    2. change it access rights to `/data/` folder using command `sudo chmod 777 /data`
+    3. change the ethernet configuration of your system controller using command `sudo system_config.sh`
        I do recommend using adress `192.168.0.111` and disabling DHCP if the system controller is not connected to internet.
-    6. reboot the board
-    7. ping the board address from you PC with command `ping 192.168.0.111`
-    8. connect with ssh to the board with you pc `ssh -l petalinux 192.168.0.111`
+    4. reboot the board
+    5. ping the board address from you PC with command `ping 192.168.0.111`
+    6. connect with ssh to the board with you pc `ssh -l petalinux 192.168.0.111`
 3. Set up RAUC (https://xilinx-wiki.atlassian.net/wiki/spaces/A/pages/2273738753/Versal+Evaluation+Board+-+System+Controller+-+Update+7#Upgrading-using-RAUC-CLI)
     1. download latest package RAUC : https://www.xilinx.com/member/forms/download/xef.html?filename=system-controller-rauc-bundle-eval-brd-sc-zynqmp-20250524150035_update7.1.raucb
     2. from a terminal copy the file to the system controller linux filesystem using SCP command : `scp system-controller-rauc-bundle-eval-brd-sc-zynqmp-20250524150035_update7.1.raucb petalinux@192.168.0.111:/data`
@@ -61,7 +65,7 @@ The following procedure allows full update of the system controller:
     3. log in you eval board from you pc with ssh `ssh -l petalinux 192.168.0.111`
     4. install board package with command (be patient it takes time):
     ```
-    cd /data/board_package
+    cd /data/board_packages
     sudo ./setup_board.sh 
     ```  
     4. Reboot
@@ -81,7 +85,7 @@ now you can configure the board using the `BEAM` interface. For this project we 
     4. Read again the clocks value and confirm the 100MHz frequency
 - Enable the `SFP loopback module`
     1. on the left side of `board settings` choose `GPIO Expander`
-    2. click `read all` 
+    2. click `Get all` 
        you'll see at the bottom that `Port 0(3) - SFP_TX_DISABLE (AL): 1`	
     3. select `Set GPIO Expander` 
     4. on `output field` write `0` and click set.
