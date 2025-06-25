@@ -7,7 +7,7 @@ edge ["fontname"="Courier"]
 rankdir="LR";
 remincross=true;
 n11 [ shape=octagon, label="RST_N", color="black", fontcolor="black", href="/src/ip_spacefibre_light_top/spacefibre_light_top.vhd#44" ];
-n12 [ shape=diamond, label="inst_phy_plus_lane.clk_tx", color="black", fontcolor="black", href="/src/module_phy_plus_lane/phy_plus_lane.vhd#614" ];
+n12 [ shape=diamond, label="inst_phy_plus_lane.clk_tx", color="black", fontcolor="black", href="/src/module_phy_plus_lane/phy_plus_lane.vhd#649" ];
 n13 [ shape=diamond, label="inst_phy_plus_lane.inst_fifo_rx_data.cmd_flush_req", colorscheme="dark28", color="1", fontcolor="1", href="/src/ip/fifo_dc/fifo_dc.vhd#111" ];
 n14 [ shape=diamond, label="inst_phy_plus_lane.inst_fifo_rx_data.ptr_rd_gray", colorscheme="dark28", color="2", fontcolor="2", href="/src/ip/fifo_dc/fifo_dc.vhd#103" ];
 n15 [ shape=diamond, label="inst_phy_plus_lane.inst_fifo_rx_data.ptr_rd_in_wr", colorscheme="dark28", color="1", fontcolor="1", href="/src/ip/fifo_dc/fifo_dc.vhd#106" ];
@@ -62,7 +62,7 @@ v20 [ label="1'0" ];
 v21 [ label="1'0" ];
 v22 [ label="3'000" ];
 v23 [ label="inst_phy_plus_lane.QUAD0_TX0_outclk" ];
-c45 [ shape=record, label="{{<p38> CE|<p39> CEMASK|<p40> CLR|<p41> CLRMASK|<p42> DIV|<p43> I}|inst_phy_plus_lane.BUFG_GT_inst\nBUFG_GT|{<p44> O}}", href="/src/module_phy_plus_lane/phy_plus_lane.vhd#954"  ];
+c45 [ shape=record, label="{{<p38> CE|<p39> CEMASK|<p40> CLR|<p41> CLRMASK|<p42> DIV|<p43> I}|inst_phy_plus_lane.BUFG_GT_inst\nBUFG_GT|{<p44> O}}", href="/src/module_phy_plus_lane/phy_plus_lane.vhd#989"  ];
 n1 [ shape=point ];
 c25:p24:e -> n1:w [colorscheme="dark28", color="2", fontcolor="2", label=""];
 n1:e -> c26:p22:w [colorscheme="dark28", color="2", fontcolor="2", label=""];

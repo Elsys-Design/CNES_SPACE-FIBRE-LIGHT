@@ -6,7 +6,7 @@ node ["fontname"="Courier"]
 edge ["fontname"="Courier"]
 rankdir="LR";
 remincross=true;
-n11 [ shape=diamond, label="inst_phy_plus_lane.clk_tx", color="black", fontcolor="black", href="/src/module_phy_plus_lane/phy_plus_lane.vhd#614" ];
+n11 [ shape=diamond, label="inst_phy_plus_lane.clk_tx", color="black", fontcolor="black", href="/src/module_phy_plus_lane/phy_plus_lane.vhd#649" ];
 n12 [ shape=diamond, label="inst_phy_plus_lane.inst_fifo_tx_data.cmd_flush_req", colorscheme="dark28", color="1", fontcolor="1", href="/src/ip/fifo_dc/fifo_dc.vhd#111" ];
 n13 [ shape=diamond, label="inst_phy_plus_lane.inst_fifo_tx_data.ptr_wr_gray", colorscheme="dark28", color="1", fontcolor="1", href="/src/ip/fifo_dc/fifo_dc.vhd#102" ];
 n14 [ shape=diamond, label="inst_phy_plus_lane.inst_fifo_tx_data.ptr_wr_in_rd", colorscheme="dark28", color="2", fontcolor="2", href="/src/ip/fifo_dc/fifo_dc.vhd#105" ];
@@ -67,7 +67,7 @@ v24 [ label="1'0" ];
 v25 [ label="1'0" ];
 v26 [ label="3'000" ];
 v27 [ label="inst_phy_plus_lane.QUAD0_TX0_outclk" ];
-c46 [ shape=record, label="{{<p39> CE|<p40> CEMASK|<p41> CLR|<p42> CLRMASK|<p43> DIV|<p44> I}|inst_phy_plus_lane.BUFG_GT_inst\nBUFG_GT|{<p45> O}}", href="/src/module_phy_plus_lane/phy_plus_lane.vhd#954"  ];
+c46 [ shape=record, label="{{<p39> CE|<p40> CEMASK|<p41> CLR|<p42> CLRMASK|<p43> DIV|<p44> I}|inst_phy_plus_lane.BUFG_GT_inst\nBUFG_GT|{<p45> O}}", href="/src/module_phy_plus_lane/phy_plus_lane.vhd#989"  ];
 n1 [ shape=point ];
 c26:p25:e -> n1:w [colorscheme="dark28", color="1", fontcolor="1", label=""];
 n1:e -> c27:p23:w [colorscheme="dark28", color="1", fontcolor="1", label=""];
