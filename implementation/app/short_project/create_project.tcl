@@ -15,7 +15,7 @@ if { [info exists env(SPWF_ROOTPATH)] } {
 set proj_rootpath $env(SPWF_ROOTPATH)
 
 # name of the xilinx project to generate
-set proj_name traffic_generator
+set proj_name short_project
 
 #FPGA reference of the project
 set proj_part xcve2802-vsvh1760-2mp-e-s
@@ -64,7 +64,9 @@ set_property -name "board_part" -value $proj_boardpart -objects $obj
 #TOP implementation/app/traffic_generator/top_vek280.vhd
     set src_files [list \
         "$proj_script_path/top_vek280.vhd"\
-
+        "$proj_rootpath/sim/models/data_link/data_link_configurator/data_link_configurator.vhd"\
+        "$proj_rootpath/sim/models/lane/resync_double.vhd"\
+        "$proj_rootpath/sim/benches/common/pkg_model.vhd"\
     ]
     add_files -norecurse  $src_files
     set_property top "top_vek280" [current_fileset]
@@ -84,6 +86,8 @@ set_property -name "board_part" -value $proj_boardpart -objects $obj
 #source $proj_rootpath/ip/cores/BufG_GT_bd.tcl
 #make_wrapper -files [get_files $proj_vivadowork/vek280_traffic_gene/vek280_traffic_gene.srcs/sources_1/bd/BufG_GT_bd/BufG_GT_bd.bd] -top
 
+#import clock wizard 
+import_ip $proj_script_path/clk_wizard_0.xci
 
 # ---------------------------------------------------------------------
 # Block design

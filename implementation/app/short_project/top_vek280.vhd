@@ -24,6 +24,8 @@ use UNISIM.vcomponents.all;
 entity top_vek280 is 
   port(
        -- System signals
+    CLK_FPGA_P     : in std_logic;
+    CLK_FPGA_N     : in std_logic;
     RESET          : in std_logic;
 
     ch0_lpddr4_trip1_ca_a : out STD_LOGIC_VECTOR ( 5 downto 0 );
@@ -110,10 +112,18 @@ architecture rtl of top_vek280 is
     clk_l : out STD_LOGIC;
     lpddr4_clk1_clk_n : in STD_LOGIC;
     lpddr4_clk1_clk_p : in STD_LOGIC;
-    reset_n_fpga : out STD_LOGIC_VECTOR ( 0 to 0 )
+    reset_n_fpga : out STD_LOGIC_VECTOR ( 0 to 0 );
+    reset_n : in STD_LOGIC
   );
   end component design_1;
 
+component clk_wizard_0 
+   port (
+      clk_out1  : out std_logic; 
+      clk_in1_n : in std_logic;     
+      clk_in1_p : in std_logic 
+      );     
+end component;
  
 ------------------------
 -- SIGNAL DECLARATION --
@@ -151,6 +161,13 @@ begin
       end if;
    end process;
 
+-- clock for FPGA
+   I_CLOCKING_WIZARD_0 : clk_wizard_0     
+      port map (      
+         clk_out1    => clk,     
+         clk_in1_p   => CLK_FPGA_P, 
+         clk_in1_n   => CLK_FPGA_N
+      );
 
 -- CLOCK for GTY
    IBUFDS_GTE5_I : IBUFDS_GTE5
@@ -170,6 +187,7 @@ begin
 design_1_i: component design_1
      port map (
       CLK_GTY_0 => clk_gtref,
+      RESET_n=>RESET,
       RX_NEG_0 => RX_NEG,
       RX_POS_0 => RX_POS,
       TX_NEG_0 => TX_NEG,
@@ -204,7 +222,7 @@ design_1_i: component design_1
       ch1_lpddr4_trip1_dqs_t_a(1 downto 0) => ch1_lpddr4_trip1_dqs_t_a(1 downto 0),
       ch1_lpddr4_trip1_dqs_t_b(1 downto 0) => ch1_lpddr4_trip1_dqs_t_b(1 downto 0),
       ch1_lpddr4_trip1_reset_n => ch1_lpddr4_trip1_reset_n,
-lpddr4_clk1_clk_n => lpddr4_clk1_clk_n,
+      lpddr4_clk1_clk_n => lpddr4_clk1_clk_n,
       lpddr4_clk1_clk_p => lpddr4_clk1_clk_p
     );
 
