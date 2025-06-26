@@ -17,7 +17,7 @@
 
 | Instance | Asynchronous | Synchronous | Active&nbsp;High | Active&nbsp;Low
 | --- | :---: | :---: | :---: | :---: |
-|TOP (<linty-anchor href="/src/ip_spacefibre_light_top/spacefibre_light_top.vhd#146">spacefibre_light_top</linty-anchor>) > <linty-anchor href="/src/ip_spacefibre_light_top/spacefibre_light_top.vhd#567">inst_data_link</linty-anchor> (<linty-anchor href="/src/module_data_link/data_link.vhd#31">data_link</linty-anchor>) > <linty-anchor href="/src/module_data_link/data_link.vhd#1041">gen_data_out_buff(4)\.inst_data_out_buff</linty-anchor> (<linty-anchor href="/src/module_data_link/data_out_buf.vhd#33">data_out_buff</linty-anchor>)|&#10004;|&#10007;|&#10004;|&#10007;|
+|TOP (<linty-anchor href="/src/ip_spacefibre_light_top/spacefibre_light_top.vhd#146">spacefibre_light_top</linty-anchor>) > <linty-anchor href="/src/ip_spacefibre_light_top/spacefibre_light_top.vhd#567">inst_data_link</linty-anchor> (<linty-anchor href="/src/module_data_link/data_link.vhd#31">data_link</linty-anchor>) > <linty-anchor href="/src/module_data_link/data_link.vhd#1041">gen_data_out_buff(6)\.inst_data_out_buff</linty-anchor> (<linty-anchor href="/src/module_data_link/data_out_buf.vhd#33">data_out_buff</linty-anchor>)|&#10004;|&#10007;|&#10004;|&#10007;|
 
 
 ## Flip-flops using this reset domain
