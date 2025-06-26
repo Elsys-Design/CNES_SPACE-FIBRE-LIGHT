@@ -24,8 +24,6 @@ use UNISIM.vcomponents.all;
 entity top_vek280 is 
   port(
        -- System signals
-    CLK_FPGA_P     : in std_logic;
-    CLK_FPGA_N     : in std_logic;
     RESET          : in std_logic;
 
     ch0_lpddr4_trip1_ca_a : out STD_LOGIC_VECTOR ( 5 downto 0 );
