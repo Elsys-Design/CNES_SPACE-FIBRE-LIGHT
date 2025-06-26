@@ -84,8 +84,6 @@ set_property -name "board_part" -value $proj_boardpart -objects $obj
 #source $proj_rootpath/ip/cores/BufG_GT_bd.tcl
 #make_wrapper -files [get_files $proj_vivadowork/vek280_traffic_gene/vek280_traffic_gene.srcs/sources_1/bd/BufG_GT_bd/BufG_GT_bd.bd] -top
 
-#import clock wizard 
-import_ip $proj_script_path/clk_wizard_0.xci
 
 # ---------------------------------------------------------------------
 # Block design

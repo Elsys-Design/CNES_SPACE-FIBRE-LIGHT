@@ -113,7 +113,6 @@ architecture rtl of top_vek280 is
     lpddr4_clk1_clk_n : in STD_LOGIC;
     lpddr4_clk1_clk_p : in STD_LOGIC;
     reset_n_fpga : out STD_LOGIC_VECTOR ( 0 to 0 );
-    clk : in STD_LOGIC;
     reset_n : in STD_LOGIC
   );
   end component design_1;
@@ -188,13 +187,12 @@ begin
 design_1_i: component design_1
      port map (
       CLK_GTY_0 => clk_gtref,
-      CLK=>clk,
       RESET_n=>RESET,
       RX_NEG_0 => RX_NEG,
       RX_POS_0 => RX_POS,
       TX_NEG_0 => TX_NEG,
       TX_POS_0 => TX_POS,
-      clk_l => open, -- this is the fabric clock from cips
+      clk_l => clk, -- this is the fabric clock from cips
       reset_n_fpga(0) => reset_n, -- this this the fabric reset
       ch0_lpddr4_trip1_ca_a(5 downto 0) => ch0_lpddr4_trip1_ca_a(5 downto 0),
       ch0_lpddr4_trip1_ck_c_a => ch0_lpddr4_trip1_ck_c_a,

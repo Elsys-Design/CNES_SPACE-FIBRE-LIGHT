@@ -249,7 +249,6 @@ proc create_root_design { parentCell } {
   set TX_POS_0 [ create_bd_port -dir O TX_POS_0 ]
   set TX_NEG_0 [ create_bd_port -dir O TX_NEG_0 ]
   set reset_n [ create_bd_port -dir I -type rst reset_n ]
-  set clk [ create_bd_port -dir I -type clk -freq_hz 200000000 clk ]
 
   # Create instance: versal_cips_0, and set properties
   set versal_cips_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:versal_cips:3.4 versal_cips_0 ]
@@ -277,6 +276,7 @@ proc create_root_design { parentCell } {
       PMC_CRP_LSBUS_REF_CTRL_FREQMHZ {100} \
       PMC_CRP_NOC_REF_CTRL_FREQMHZ {960} \
       PMC_CRP_PL0_REF_CTRL_FREQMHZ {100} \
+      PMC_CRP_PL2_REF_CTRL_FREQMHZ {150} \
       PMC_CRP_PL5_REF_CTRL_FREQMHZ {400} \
       PMC_GPIO0_MIO_PERIPHERAL {{ENABLE 1} {IO {PMC_MIO 0 .. 25}}} \
       PMC_GPIO1_MIO_PERIPHERAL {{ENABLE 1} {IO {PMC_MIO 26 .. 51}}} \
@@ -333,6 +333,7 @@ proc create_root_design { parentCell } {
       PS_USE_NOC_LPD_AXI0 {1} \
       PS_USE_PMCPL_CLK0 {1} \
       PS_USE_PMCPL_CLK1 {1} \
+      PS_USE_PMCPL_CLK2 {1} \
       PS_USE_PMCPL_IRO_CLK {1} \
       PS_USE_S_AXI_FPD {0} \
       PS_USE_S_AXI_LPD {0} \
@@ -545,7 +546,7 @@ proc create_root_design { parentCell } {
   connect_bd_net -net versal_cips_0_fpd_cci_noc_axi2_clk [get_bd_pins versal_cips_0/fpd_cci_noc_axi2_clk] [get_bd_pins axi_noc_0/aclk2]
   connect_bd_net -net versal_cips_0_fpd_cci_noc_axi3_clk [get_bd_pins versal_cips_0/fpd_cci_noc_axi3_clk] [get_bd_pins axi_noc_0/aclk3]
   connect_bd_net -net versal_cips_0_lpd_axi_noc_clk [get_bd_pins versal_cips_0/lpd_axi_noc_clk] [get_bd_pins axi_noc_0/aclk4]
-  connect_bd_net -net versal_cips_0_pl0_ref_clk [get_bd_ports clk] [get_bd_ports clk_l] [get_bd_pins spacefibrelight_0/CLK] [get_bd_pins spacefibrelight_0/AXIS_VC0_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC1_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC2_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC3_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC4_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC5_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC6_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC7_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC8_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC0_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC1_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC2_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC3_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC4_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC5_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC6_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC7_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC8_TX_DL_ACLK] [get_bd_pins axi_noc_0/aclk6] [get_bd_pins DATA_LINK_CONFIGURAT_0/CLK] [get_bd_pins smartconnect_0/aclk] [get_bd_pins DATA_LINK_CONFIGURAT_0/CLK_DL]
+  connect_bd_net -net versal_cips_0_pl0_ref_clk [get_bd_pins versal_cips_0/pl2_ref_clk] [get_bd_ports clk_l] [get_bd_pins spacefibrelight_0/CLK] [get_bd_pins spacefibrelight_0/AXIS_VC0_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC1_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC2_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC3_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC4_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC5_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC6_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC7_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC8_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC0_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC1_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC2_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC3_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC4_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC5_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC6_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC7_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC8_TX_DL_ACLK] [get_bd_pins axi_noc_0/aclk6] [get_bd_pins DATA_LINK_CONFIGURAT_0/CLK] [get_bd_pins smartconnect_0/aclk] [get_bd_pins DATA_LINK_CONFIGURAT_0/CLK_DL]
   connect_bd_net -net versal_cips_0_pmc_axi_noc_axi0_clk [get_bd_pins versal_cips_0/pmc_axi_noc_axi0_clk] [get_bd_pins axi_noc_0/aclk5]
   connect_bd_net -net xlconstant_gnd_dout [get_bd_pins xlconstant_gnd/dout] [get_bd_pins spacefibrelight_0/AXIS_VC0_TX_DL_TVALID] [get_bd_pins spacefibrelight_0/AXIS_VC1_TX_DL_TVALID] [get_bd_pins spacefibrelight_0/AXIS_VC2_TX_DL_TVALID] [get_bd_pins spacefibrelight_0/AXIS_VC3_TX_DL_TVALID] [get_bd_pins spacefibrelight_0/AXIS_VC4_TX_DL_TVALID] [get_bd_pins spacefibrelight_0/AXIS_VC5_TX_DL_TVALID] [get_bd_pins spacefibrelight_0/AXIS_VC6_TX_DL_TVALID] [get_bd_pins spacefibrelight_0/AXIS_VC7_TX_DL_TVALID] [get_bd_pins spacefibrelight_0/AXIS_VC8_TX_DL_TVALID]
   connect_bd_net -net xlconstant_vcc_dout [get_bd_pins xlconstant_vcc/dout] [get_bd_pins spacefibrelight_0/AXIS_VC0_RX_DL_TREADY] [get_bd_pins spacefibrelight_0/AXIS_VC1_RX_DL_TREADY] [get_bd_pins spacefibrelight_0/AXIS_VC2_RX_DL_TREADY] [get_bd_pins spacefibrelight_0/AXIS_VC3_RX_DL_TREADY] [get_bd_pins spacefibrelight_0/AXIS_VC4_RX_DL_TREADY] [get_bd_pins spacefibrelight_0/AXIS_VC5_RX_DL_TREADY] [get_bd_pins spacefibrelight_0/AXIS_VC6_RX_DL_TREADY] [get_bd_pins spacefibrelight_0/AXIS_VC7_RX_DL_TREADY] [get_bd_pins spacefibrelight_0/AXIS_VC8_RX_DL_TREADY]
