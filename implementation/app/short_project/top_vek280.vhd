@@ -117,13 +117,6 @@ architecture rtl of top_vek280 is
   );
   end component design_1;
 
-component clk_wizard_0 
-   port (
-      clk_out1  : out std_logic; 
-      clk_in1_n : in std_logic;     
-      clk_in1_p : in std_logic 
-      );     
-end component;
  
 ------------------------
 -- SIGNAL DECLARATION --
@@ -160,14 +153,6 @@ begin
          end if;
       end if;
    end process;
-
--- clock for FPGA
-   I_CLOCKING_WIZARD_0 : clk_wizard_0     
-      port map (      
-         clk_out1    => clk,     
-         clk_in1_p   => CLK_FPGA_P, 
-         clk_in1_n   => CLK_FPGA_N
-      );
 
 -- CLOCK for GTY
    IBUFDS_GTE5_I : IBUFDS_GTE5
