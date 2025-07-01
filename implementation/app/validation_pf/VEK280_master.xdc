@@ -26,8 +26,9 @@ set_property LOC GTYP_QUAD_X0Y4 [get_cells design_1_i/spacefibrelight_0/U0/space
 ############################################################################
 
 set_property PACKAGE_PIN AV33 [get_ports RESET]
-set_property IOSTANDARD LVCMOS15 [get_ports RESET] 
-set_property PACKAGE_PIN H9 [get_ports SPF_GTCLK_p]
+set_property IOSTANDARD LVCMOS15 [get_ports RESET]
 #on VEK280 schematic signal RC21008A_GTCLK1_OUT8_P
+set_property PACKAGE_PIN H9 [get_ports SPF_GTCLK_p]
 set_property PACKAGE_PIN H8 [get_ports SPF_GTCLK_n]
 #on VEK280 schematic signal RC21008A_GTCLK1_OUT8_n
+
