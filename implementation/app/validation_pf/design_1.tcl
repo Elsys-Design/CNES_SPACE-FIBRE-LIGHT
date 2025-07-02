@@ -140,9 +140,9 @@ if { $bCheckIPs == 1 } {
 xilinx.com:ip:versal_cips:3.4\
 CNES:user:spacefibrelight:0.1\
 xilinx.com:ip:axi_noc:1.1\
-xilinx.com:ip:proc_sys_reset:5.0\
 xilinx.com:ip:xlconstant:1.1\
 xilinx.com:ip:smartconnect:1.0\
+xilinx.com:ip:proc_sys_reset:5.0\
 "
 
    set list_ips_missing ""
@@ -1046,7 +1046,7 @@ proc create_root_design { parentCell } {
       PS_USE_FPD_CCI_NOC {1} \
       PS_USE_FPD_CCI_NOC0 {1} \
       PS_USE_M_AXI_FPD {0} \
-      PS_USE_M_AXI_LPD {0} \
+      PS_USE_M_AXI_LPD {1} \
       PS_USE_NOC_LPD_AXI0 {1} \
       PS_USE_PMCPL_CLK0 {1} \
       PS_USE_PMCPL_CLK1 {1} \
@@ -1081,16 +1081,11 @@ proc create_root_design { parentCell } {
     CONFIG.NUM_CLKS {7} \
     CONFIG.NUM_MC {1} \
     CONFIG.NUM_MCP {4} \
-    CONFIG.NUM_MI {1} \
+    CONFIG.NUM_MI {0} \
     CONFIG.NUM_SI {6} \
     CONFIG.sys_clk0_BOARD_INTERFACE {lpddr4_clk1} \
   ] $axi_noc_0
 
-
-  set_property -dict [ list \
-   CONFIG.APERTURES {{0x201_0000_0000 1G}} \
-   CONFIG.CATEGORY {pl} \
- ] [get_bd_intf_pins /axi_noc_0/M00_AXI]
 
   set_property -dict [ list \
    CONFIG.REGION {0} \
@@ -1123,9 +1118,9 @@ proc create_root_design { parentCell } {
 
   set_property -dict [ list \
    CONFIG.REGION {0} \
-   CONFIG.CONNECTIONS {M00_AXI {read_bw {500} write_bw {500} read_avg_burst {4} write_avg_burst {4}} MC_3 {read_bw {100} write_bw {100} read_avg_burst {4} write_avg_burst {4}}} \
+   CONFIG.CONNECTIONS {MC_3 {read_bw {100} write_bw {100} read_avg_burst {4} write_avg_burst {4}}} \
    CONFIG.DEST_IDS {M00_AXI:0x0} \
-   CONFIG.REMAPS {M00_AXI {{0xE000_0000 0x0201_0000_0000 256M}}} \
+   CONFIG.REMAPS {} \
    CONFIG.NOC_PARAMS {} \
    CONFIG.CATEGORY {ps_rpu} \
  ] [get_bd_intf_pins /axi_noc_0/S04_AXI]
@@ -1162,13 +1157,8 @@ proc create_root_design { parentCell } {
  ] [get_bd_pins /axi_noc_0/aclk5]
 
   set_property -dict [ list \
-   CONFIG.ASSOCIATED_BUSIF {M00_AXI} \
+   CONFIG.ASSOCIATED_BUSIF {} \
  ] [get_bd_pins /axi_noc_0/aclk6]
-
-  # Create instance: rst_versal_cips_0_149M, and set properties
-  set rst_versal_cips_0_149M [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 rst_versal_cips_0_149M ]
-  set_property CONFIG.C_EXT_RST_WIDTH {1} $rst_versal_cips_0_149M
-
 
   # Create instance: DATALINK_ANALYZER
   create_hier_cell_DATALINK_ANALYZER [current_bd_instance .] DATALINK_ANALYZER
@@ -1202,6 +1192,9 @@ proc create_root_design { parentCell } {
   ] $smartconnect_0
 
 
+  # Create instance: proc_sys_reset_0, and set properties
+  set proc_sys_reset_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 proc_sys_reset_0 ]
+
   # Create interface connections
   connect_bd_intf_net -intf_net DATA_LINK_GENERATOR_1_interface_axis [get_bd_intf_pins DATALINK_GENERATOR/interface_axis] [get_bd_intf_pins spacefibrelight_0/AXIS_VC1_TX_DL]
   connect_bd_intf_net -intf_net DATA_LINK_GENERATOR_2_interface_axis [get_bd_intf_pins DATALINK_GENERATOR/interface_axis1] [get_bd_intf_pins spacefibrelight_0/AXIS_VC2_TX_DL]
@@ -1217,7 +1210,6 @@ proc create_root_design { parentCell } {
   connect_bd_intf_net -intf_net S00_AXI_4 [get_bd_intf_pins LANE_ANALYZER/S00_AXI] [get_bd_intf_pins smartconnect_0/M04_AXI]
   connect_bd_intf_net -intf_net axi_noc_0_CH0_LPDDR4_0 [get_bd_intf_ports ch0_lpddr4_trip1] [get_bd_intf_pins axi_noc_0/CH0_LPDDR4_0]
   connect_bd_intf_net -intf_net axi_noc_0_CH1_LPDDR4_0 [get_bd_intf_ports ch1_lpddr4_trip1] [get_bd_intf_pins axi_noc_0/CH1_LPDDR4_0]
-  connect_bd_intf_net -intf_net axi_noc_0_M00_AXI [get_bd_intf_pins axi_noc_0/M00_AXI] [get_bd_intf_pins smartconnect_0/S00_AXI]
   connect_bd_intf_net -intf_net lpddr4_clk1_1 [get_bd_intf_ports lpddr4_clk1] [get_bd_intf_pins axi_noc_0/sys_clk0]
   connect_bd_intf_net -intf_net smartconnect_0_M00_AXI [get_bd_intf_pins smartconnect_0/M00_AXI] [get_bd_intf_pins DATALINK_GENERATOR/S00_AXI]
   connect_bd_intf_net -intf_net spacefibrelight_0_AXIS_VC0_RX_DL [get_bd_intf_pins spacefibrelight_0/AXIS_VC0_TX_DL] [get_bd_intf_pins spacefibrelight_0/AXIS_VC0_RX_DL]
@@ -1234,6 +1226,7 @@ proc create_root_design { parentCell } {
   connect_bd_intf_net -intf_net versal_cips_0_FPD_CCI_NOC_2 [get_bd_intf_pins versal_cips_0/FPD_CCI_NOC_2] [get_bd_intf_pins axi_noc_0/S02_AXI]
   connect_bd_intf_net -intf_net versal_cips_0_FPD_CCI_NOC_3 [get_bd_intf_pins versal_cips_0/FPD_CCI_NOC_3] [get_bd_intf_pins axi_noc_0/S03_AXI]
   connect_bd_intf_net -intf_net versal_cips_0_LPD_AXI_NOC_0 [get_bd_intf_pins versal_cips_0/LPD_AXI_NOC_0] [get_bd_intf_pins axi_noc_0/S04_AXI]
+  connect_bd_intf_net -intf_net versal_cips_0_M_AXI_LPD [get_bd_intf_pins versal_cips_0/M_AXI_LPD] [get_bd_intf_pins smartconnect_0/S00_AXI]
   connect_bd_intf_net -intf_net versal_cips_0_PMC_NOC_AXI_0 [get_bd_intf_pins versal_cips_0/PMC_NOC_AXI_0] [get_bd_intf_pins axi_noc_0/S05_AXI]
 
   # Create port connections
@@ -1262,8 +1255,7 @@ proc create_root_design { parentCell } {
   connect_bd_net -net LANE_GENERATOR_0_VALID_K_CHARAC_TX_PPL [get_bd_pins LANE_GENERATOR/VALID_K_CHARAC_TX_PPL] [get_bd_pins spacefibrelight_0/VALID_K_CHARAC_TX_INJ]
   connect_bd_net -net RX_NEG_0_1 [get_bd_ports RX_NEG_0] [get_bd_pins spacefibrelight_0/RX_NEG]
   connect_bd_net -net RX_POS_0_1 [get_bd_ports RX_POS_0] [get_bd_pins spacefibrelight_0/RX_POS]
-  connect_bd_net -net reset_n_1 [get_bd_ports reset_n] [get_bd_pins rst_versal_cips_0_149M/ext_reset_in]
-  connect_bd_net -net rst_versal_cips_0_149M_peripheral_reset [get_bd_pins rst_versal_cips_0_149M/interconnect_aresetn] [get_bd_ports reset_n_fpga] [get_bd_pins DATALINK_ANALYZER/RST_N] [get_bd_pins DATALINK_GENERATOR/RST_N] [get_bd_pins LANE_ANALYZER/aresetn] [get_bd_pins LANE_GENERATOR/reset_n] [get_bd_pins DATALINK_CONFIGURATOR/reset_n] [get_bd_pins smartconnect_0/aresetn]
+  connect_bd_net -net proc_sys_reset_0_interconnect_aresetn [get_bd_pins proc_sys_reset_0/interconnect_aresetn] [get_bd_pins smartconnect_0/aresetn] [get_bd_pins DATALINK_CONFIGURATOR/reset_n] [get_bd_pins LANE_GENERATOR/reset_n] [get_bd_pins LANE_ANALYZER/aresetn] [get_bd_pins DATALINK_GENERATOR/RST_N] [get_bd_pins DATALINK_ANALYZER/RST_N]
   connect_bd_net -net spacefibrelight_0_ACK_COUNTER_RX [get_bd_pins spacefibrelight_0/ACK_COUNTER_RX] [get_bd_pins DATALINK_CONFIGURATOR/ACK_COUNTER_RX]
   connect_bd_net -net spacefibrelight_0_ACK_COUNTER_TX [get_bd_pins spacefibrelight_0/ACK_COUNTER_TX] [get_bd_pins DATALINK_CONFIGURATOR/ACK_COUNTER_TX]
   connect_bd_net -net spacefibrelight_0_ACK_SEQ_NUM [get_bd_pins spacefibrelight_0/ACK_SEQ_NUM] [get_bd_pins DATALINK_CONFIGURATOR/ACK_SEQ_NUM]
@@ -1311,44 +1303,42 @@ proc create_root_design { parentCell } {
   connect_bd_net -net versal_cips_0_fpd_cci_noc_axi2_clk [get_bd_pins versal_cips_0/fpd_cci_noc_axi2_clk] [get_bd_pins axi_noc_0/aclk2]
   connect_bd_net -net versal_cips_0_fpd_cci_noc_axi3_clk [get_bd_pins versal_cips_0/fpd_cci_noc_axi3_clk] [get_bd_pins axi_noc_0/aclk3]
   connect_bd_net -net versal_cips_0_lpd_axi_noc_clk [get_bd_pins versal_cips_0/lpd_axi_noc_clk] [get_bd_pins axi_noc_0/aclk4]
-  connect_bd_net -net versal_cips_0_pl0_ref_clk [get_bd_pins versal_cips_0/pl2_ref_clk] [get_bd_ports clk_l] [get_bd_pins spacefibrelight_0/CLK] [get_bd_pins spacefibrelight_0/AXIS_VC0_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC1_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC2_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC3_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC4_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC5_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC6_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC7_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC8_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC0_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC1_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC2_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC3_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC4_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC5_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC6_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC7_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC8_TX_DL_ACLK] [get_bd_pins axi_noc_0/aclk6] [get_bd_pins rst_versal_cips_0_149M/slowest_sync_clk] [get_bd_pins DATALINK_ANALYZER/clk_l] [get_bd_pins DATALINK_GENERATOR/clk_l] [get_bd_pins DATALINK_CONFIGURATOR/clk_l] [get_bd_pins LANE_GENERATOR/clk_l] [get_bd_pins LANE_ANALYZER/clk_l] [get_bd_pins smartconnect_0/aclk]
+  connect_bd_net -net versal_cips_0_pl0_ref_clk [get_bd_pins versal_cips_0/pl2_ref_clk] [get_bd_ports clk_l] [get_bd_pins spacefibrelight_0/CLK] [get_bd_pins spacefibrelight_0/AXIS_VC0_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC1_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC2_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC3_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC4_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC5_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC6_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC7_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC8_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC0_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC1_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC2_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC3_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC4_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC5_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC6_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC7_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC8_TX_DL_ACLK] [get_bd_pins axi_noc_0/aclk6] [get_bd_pins DATALINK_ANALYZER/clk_l] [get_bd_pins DATALINK_GENERATOR/clk_l] [get_bd_pins DATALINK_CONFIGURATOR/clk_l] [get_bd_pins LANE_GENERATOR/clk_l] [get_bd_pins LANE_ANALYZER/clk_l] [get_bd_pins smartconnect_0/aclk] [get_bd_pins versal_cips_0/m_axi_lpd_aclk] [get_bd_pins proc_sys_reset_0/slowest_sync_clk]
   connect_bd_net -net versal_cips_0_pmc_axi_noc_axi0_clk [get_bd_pins versal_cips_0/pmc_axi_noc_axi0_clk] [get_bd_pins axi_noc_0/aclk5]
   connect_bd_net -net xlconstant_0_dout [get_bd_pins xlconstant_0/dout] [get_bd_pins spacefibrelight_0/CURRENT_TIME_SLOT_NW]
 
   # Create address segments
-  assign_bd_address -offset 0x00000000 -range 0x02000000 -target_address_space [get_bd_addr_spaces versal_cips_0/FPD_CCI_NOC_0] [get_bd_addr_segs axi_noc_0/S00_AXI/C3_DDR_LOW0] -force
-  assign_bd_address -offset 0x000800000000 -range 0x20000000 -target_address_space [get_bd_addr_spaces versal_cips_0/FPD_CCI_NOC_0] [get_bd_addr_segs axi_noc_0/S00_AXI/C3_DDR_LOW1] -force
-  assign_bd_address -offset 0x00000000 -range 0x02000000 -target_address_space [get_bd_addr_spaces versal_cips_0/FPD_CCI_NOC_1] [get_bd_addr_segs axi_noc_0/S01_AXI/C2_DDR_LOW0] -force
-  assign_bd_address -offset 0x000800000000 -range 0x20000000 -target_address_space [get_bd_addr_spaces versal_cips_0/FPD_CCI_NOC_1] [get_bd_addr_segs axi_noc_0/S01_AXI/C2_DDR_LOW1] -force
-  assign_bd_address -offset 0x00000000 -range 0x02000000 -target_address_space [get_bd_addr_spaces versal_cips_0/FPD_CCI_NOC_2] [get_bd_addr_segs axi_noc_0/S02_AXI/C0_DDR_LOW0] -force
-  assign_bd_address -offset 0x000800000000 -range 0x20000000 -target_address_space [get_bd_addr_spaces versal_cips_0/FPD_CCI_NOC_2] [get_bd_addr_segs axi_noc_0/S02_AXI/C0_DDR_LOW1] -force
-  assign_bd_address -offset 0x00000000 -range 0x02000000 -target_address_space [get_bd_addr_spaces versal_cips_0/FPD_CCI_NOC_3] [get_bd_addr_segs axi_noc_0/S03_AXI/C1_DDR_LOW0] -force
-  assign_bd_address -offset 0x000800000000 -range 0x20000000 -target_address_space [get_bd_addr_spaces versal_cips_0/FPD_CCI_NOC_3] [get_bd_addr_segs axi_noc_0/S03_AXI/C1_DDR_LOW1] -force
-  assign_bd_address -offset 0xE0000000 -range 0x00010000 -target_address_space [get_bd_addr_spaces versal_cips_0/LPD_AXI_NOC_0] [get_bd_addr_segs DATALINK_ANALYZER/DATA_LINK_ANALYZER_1/S_AXI/reg0] -force
-  assign_bd_address -offset 0xE0010000 -range 0x00010000 -target_address_space [get_bd_addr_spaces versal_cips_0/LPD_AXI_NOC_0] [get_bd_addr_segs DATALINK_ANALYZER/DATA_LINK_ANALYZER_2/S_AXI/reg0] -force
-  assign_bd_address -offset 0xE0020000 -range 0x00010000 -target_address_space [get_bd_addr_spaces versal_cips_0/LPD_AXI_NOC_0] [get_bd_addr_segs DATALINK_ANALYZER/DATA_LINK_ANALYZER_3/S_AXI/reg0] -force
-  assign_bd_address -offset 0xE0030000 -range 0x00010000 -target_address_space [get_bd_addr_spaces versal_cips_0/LPD_AXI_NOC_0] [get_bd_addr_segs DATALINK_ANALYZER/DATA_LINK_ANALYZER_4/S_AXI/reg0] -force
-  assign_bd_address -offset 0xE0040000 -range 0x00010000 -target_address_space [get_bd_addr_spaces versal_cips_0/LPD_AXI_NOC_0] [get_bd_addr_segs DATALINK_ANALYZER/DATA_LINK_ANALYZER_5/S_AXI/reg0] -force
-  assign_bd_address -offset 0xE0050000 -range 0x00010000 -target_address_space [get_bd_addr_spaces versal_cips_0/LPD_AXI_NOC_0] [get_bd_addr_segs DATALINK_ANALYZER/DATA_LINK_ANALYZER_6/S_AXI/reg0] -force
-  assign_bd_address -offset 0xE0060000 -range 0x00010000 -target_address_space [get_bd_addr_spaces versal_cips_0/LPD_AXI_NOC_0] [get_bd_addr_segs DATALINK_ANALYZER/DATA_LINK_ANALYZER_7/S_AXI/reg0] -force
-  assign_bd_address -offset 0xE0070000 -range 0x00010000 -target_address_space [get_bd_addr_spaces versal_cips_0/LPD_AXI_NOC_0] [get_bd_addr_segs DATALINK_ANALYZER/DATA_LINK_ANALYZER_8/S_AXI/reg0] -force
-  assign_bd_address -offset 0xE0080000 -range 0x00010000 -target_address_space [get_bd_addr_spaces versal_cips_0/LPD_AXI_NOC_0] [get_bd_addr_segs DATALINK_CONFIGURATOR/DATA_LINK_CONFIGURAT_0/S_AXI/reg0] -force
-  assign_bd_address -offset 0xE0090000 -range 0x00010000 -target_address_space [get_bd_addr_spaces versal_cips_0/LPD_AXI_NOC_0] [get_bd_addr_segs DATALINK_GENERATOR/DATA_LINK_GENERATOR_1/S_AXI/reg0] -force
-  assign_bd_address -offset 0xE00A0000 -range 0x00010000 -target_address_space [get_bd_addr_spaces versal_cips_0/LPD_AXI_NOC_0] [get_bd_addr_segs DATALINK_GENERATOR/DATA_LINK_GENERATOR_2/S_AXI/reg0] -force
-  assign_bd_address -offset 0xE00B0000 -range 0x00010000 -target_address_space [get_bd_addr_spaces versal_cips_0/LPD_AXI_NOC_0] [get_bd_addr_segs DATALINK_GENERATOR/DATA_LINK_GENERATOR_3/S_AXI/reg0] -force
-  assign_bd_address -offset 0xE00C0000 -range 0x00010000 -target_address_space [get_bd_addr_spaces versal_cips_0/LPD_AXI_NOC_0] [get_bd_addr_segs DATALINK_GENERATOR/DATA_LINK_GENERATOR_4/S_AXI/reg0] -force
-  assign_bd_address -offset 0xE00D0000 -range 0x00010000 -target_address_space [get_bd_addr_spaces versal_cips_0/LPD_AXI_NOC_0] [get_bd_addr_segs DATALINK_GENERATOR/DATA_LINK_GENERATOR_5/S_AXI/reg0] -force
-  assign_bd_address -offset 0xE00E0000 -range 0x00010000 -target_address_space [get_bd_addr_spaces versal_cips_0/LPD_AXI_NOC_0] [get_bd_addr_segs DATALINK_GENERATOR/DATA_LINK_GENERATOR_6/S_AXI/reg0] -force
-  assign_bd_address -offset 0xE00F0000 -range 0x00010000 -target_address_space [get_bd_addr_spaces versal_cips_0/LPD_AXI_NOC_0] [get_bd_addr_segs DATALINK_GENERATOR/DATA_LINK_GENERATOR_7/S_AXI/reg0] -force
-  assign_bd_address -offset 0xE0100000 -range 0x00010000 -target_address_space [get_bd_addr_spaces versal_cips_0/LPD_AXI_NOC_0] [get_bd_addr_segs DATALINK_GENERATOR/DATA_LINK_GENERATOR_8/S_AXI/reg0] -force
-  assign_bd_address -offset 0xE0110000 -range 0x00010000 -target_address_space [get_bd_addr_spaces versal_cips_0/LPD_AXI_NOC_0] [get_bd_addr_segs LANE_ANALYZER/LANE_ANALYZER_0/S_AXI/reg0] -force
-  assign_bd_address -offset 0xE0120000 -range 0x00010000 -target_address_space [get_bd_addr_spaces versal_cips_0/LPD_AXI_NOC_0] [get_bd_addr_segs LANE_GENERATOR/LANE_GENERATOR_0/S_AXI/reg0] -force
+  assign_bd_address -offset 0x00000000 -range 0x80000000 -target_address_space [get_bd_addr_spaces versal_cips_0/FPD_CCI_NOC_0] [get_bd_addr_segs axi_noc_0/S00_AXI/C3_DDR_LOW0] -force
+  assign_bd_address -offset 0x000800000000 -range 0x80000000 -target_address_space [get_bd_addr_spaces versal_cips_0/FPD_CCI_NOC_0] [get_bd_addr_segs axi_noc_0/S00_AXI/C3_DDR_LOW1] -force
+  assign_bd_address -offset 0x00000000 -range 0x80000000 -target_address_space [get_bd_addr_spaces versal_cips_0/FPD_CCI_NOC_1] [get_bd_addr_segs axi_noc_0/S01_AXI/C2_DDR_LOW0] -force
+  assign_bd_address -offset 0x000800000000 -range 0x80000000 -target_address_space [get_bd_addr_spaces versal_cips_0/FPD_CCI_NOC_1] [get_bd_addr_segs axi_noc_0/S01_AXI/C2_DDR_LOW1] -force
+  assign_bd_address -offset 0x00000000 -range 0x80000000 -target_address_space [get_bd_addr_spaces versal_cips_0/FPD_CCI_NOC_2] [get_bd_addr_segs axi_noc_0/S02_AXI/C0_DDR_LOW0] -force
+  assign_bd_address -offset 0x000800000000 -range 0x80000000 -target_address_space [get_bd_addr_spaces versal_cips_0/FPD_CCI_NOC_2] [get_bd_addr_segs axi_noc_0/S02_AXI/C0_DDR_LOW1] -force
+  assign_bd_address -offset 0x00000000 -range 0x80000000 -target_address_space [get_bd_addr_spaces versal_cips_0/FPD_CCI_NOC_3] [get_bd_addr_segs axi_noc_0/S03_AXI/C1_DDR_LOW0] -force
+  assign_bd_address -offset 0x000800000000 -range 0x80000000 -target_address_space [get_bd_addr_spaces versal_cips_0/FPD_CCI_NOC_3] [get_bd_addr_segs axi_noc_0/S03_AXI/C1_DDR_LOW1] -force
   assign_bd_address -offset 0x00000000 -range 0x80000000 -target_address_space [get_bd_addr_spaces versal_cips_0/LPD_AXI_NOC_0] [get_bd_addr_segs axi_noc_0/S04_AXI/C3_DDR_LOW0] -force
-  assign_bd_address -offset 0x00000000 -range 0x02000000 -target_address_space [get_bd_addr_spaces versal_cips_0/PMC_NOC_AXI_0] [get_bd_addr_segs axi_noc_0/S05_AXI/C2_DDR_LOW0] -force
-  assign_bd_address -offset 0x000800000000 -range 0x20000000 -target_address_space [get_bd_addr_spaces versal_cips_0/PMC_NOC_AXI_0] [get_bd_addr_segs axi_noc_0/S05_AXI/C2_DDR_LOW1] -force
-
-  # Exclude Address Segments
-  exclude_bd_addr_seg -offset 0x000800000000 -range 0x20000000 -target_address_space [get_bd_addr_spaces versal_cips_0/LPD_AXI_NOC_0] [get_bd_addr_segs axi_noc_0/S04_AXI/C3_DDR_LOW1]
+  assign_bd_address -offset 0x000800000000 -range 0x80000000 -target_address_space [get_bd_addr_spaces versal_cips_0/LPD_AXI_NOC_0] [get_bd_addr_segs axi_noc_0/S04_AXI/C3_DDR_LOW1] -force
+  assign_bd_address -offset 0x80000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_ANALYZER/DATA_LINK_ANALYZER_1/S_AXI/reg0] -force
+  assign_bd_address -offset 0x81000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_ANALYZER/DATA_LINK_ANALYZER_2/S_AXI/reg0] -force
+  assign_bd_address -offset 0x82000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_ANALYZER/DATA_LINK_ANALYZER_3/S_AXI/reg0] -force
+  assign_bd_address -offset 0x83000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_ANALYZER/DATA_LINK_ANALYZER_4/S_AXI/reg0] -force
+  assign_bd_address -offset 0x84000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_ANALYZER/DATA_LINK_ANALYZER_5/S_AXI/reg0] -force
+  assign_bd_address -offset 0x85000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_ANALYZER/DATA_LINK_ANALYZER_6/S_AXI/reg0] -force
+  assign_bd_address -offset 0x86000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_ANALYZER/DATA_LINK_ANALYZER_7/S_AXI/reg0] -force
+  assign_bd_address -offset 0x87000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_ANALYZER/DATA_LINK_ANALYZER_8/S_AXI/reg0] -force
+  assign_bd_address -offset 0x88000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_CONFIGURATOR/DATA_LINK_CONFIGURAT_0/S_AXI/reg0] -force
+  assign_bd_address -offset 0x89000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_GENERATOR/DATA_LINK_GENERATOR_1/S_AXI/reg0] -force
+  assign_bd_address -offset 0x8A000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_GENERATOR/DATA_LINK_GENERATOR_2/S_AXI/reg0] -force
+  assign_bd_address -offset 0x8B000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_GENERATOR/DATA_LINK_GENERATOR_3/S_AXI/reg0] -force
+  assign_bd_address -offset 0x8C000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_GENERATOR/DATA_LINK_GENERATOR_4/S_AXI/reg0] -force
+  assign_bd_address -offset 0x8D000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_GENERATOR/DATA_LINK_GENERATOR_5/S_AXI/reg0] -force
+  assign_bd_address -offset 0x8E000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_GENERATOR/DATA_LINK_GENERATOR_6/S_AXI/reg0] -force
+  assign_bd_address -offset 0x8F000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_GENERATOR/DATA_LINK_GENERATOR_7/S_AXI/reg0] -force
+  assign_bd_address -offset 0x90000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_GENERATOR/DATA_LINK_GENERATOR_8/S_AXI/reg0] -force
+  assign_bd_address -offset 0x91000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs LANE_ANALYZER/LANE_ANALYZER_0/S_AXI/reg0] -force
+  assign_bd_address -offset 0x92000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs LANE_GENERATOR/LANE_GENERATOR_0/S_AXI/reg0] -force
+  assign_bd_address -offset 0x00000000 -range 0x80000000 -target_address_space [get_bd_addr_spaces versal_cips_0/PMC_NOC_AXI_0] [get_bd_addr_segs axi_noc_0/S05_AXI/C2_DDR_LOW0] -force
+  assign_bd_address -offset 0x000800000000 -range 0x80000000 -target_address_space [get_bd_addr_spaces versal_cips_0/PMC_NOC_AXI_0] [get_bd_addr_segs axi_noc_0/S05_AXI/C2_DDR_LOW1] -force
 
 
   # Restore current instance
