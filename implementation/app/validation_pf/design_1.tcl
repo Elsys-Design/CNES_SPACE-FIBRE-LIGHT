@@ -46,7 +46,7 @@ if { [string first $scripts_vivado_version $current_vivado_version] == -1 } {
 
 # The design that will be created by this Tcl script contains the following 
 # module references:
-# DATA_LINK_ANALYZER, DATA_LINK_ANALYZER, DATA_LINK_ANALYZER, DATA_LINK_ANALYZER, DATA_LINK_ANALYZER, DATA_LINK_ANALYZER, DATA_LINK_ANALYZER, DATA_LINK_ANALYZER, DATA_LINK_GENERATOR, DATA_LINK_GENERATOR, DATA_LINK_GENERATOR, DATA_LINK_GENERATOR, DATA_LINK_GENERATOR, DATA_LINK_GENERATOR, DATA_LINK_GENERATOR, DATA_LINK_GENERATOR, DATA_LINK_CONFIGURATOR, LANE_GENERATOR, LANE_ANALYZER
+# DATA_LINK_ANALYZER, DATA_LINK_ANALYZER, DATA_LINK_ANALYZER, DATA_LINK_ANALYZER, DATA_LINK_ANALYZER, DATA_LINK_ANALYZER, DATA_LINK_ANALYZER, DATA_LINK_ANALYZER, DATA_LINK_ANALYZER, DATA_LINK_GENERATOR, DATA_LINK_GENERATOR, DATA_LINK_GENERATOR, DATA_LINK_GENERATOR, DATA_LINK_GENERATOR, DATA_LINK_GENERATOR, DATA_LINK_GENERATOR, DATA_LINK_GENERATOR, DATA_LINK_GENERATOR, DATA_LINK_CONFIGURATOR, LANE_GENERATOR, LANE_ANALYZER
 
 # Please add the sources of those modules before sourcing this Tcl script.
 
@@ -178,6 +178,8 @@ DATA_LINK_ANALYZER\
 DATA_LINK_ANALYZER\
 DATA_LINK_ANALYZER\
 DATA_LINK_ANALYZER\
+DATA_LINK_ANALYZER\
+DATA_LINK_GENERATOR\
 DATA_LINK_GENERATOR\
 DATA_LINK_GENERATOR\
 DATA_LINK_GENERATOR\
@@ -588,8 +590,6 @@ proc create_hier_cell_DATALINK_GENERATOR { parentCell nameHier } {
   current_bd_instance $hier_obj
 
   # Create interface pins
-  create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 interface_axis
-
   create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 interface_axis1
 
   create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 interface_axis2
@@ -604,7 +604,11 @@ proc create_hier_cell_DATALINK_GENERATOR { parentCell nameHier } {
 
   create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 interface_axis7
 
+  create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 interface_axis8
+
   create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 S00_AXI
+
+  create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 interface_axis0
 
 
   # Create pins
@@ -702,20 +706,32 @@ proc create_hier_cell_DATALINK_GENERATOR { parentCell nameHier } {
   # Create instance: smartconnect_0, and set properties
   set smartconnect_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:smartconnect:1.0 smartconnect_0 ]
   set_property -dict [list \
-    CONFIG.NUM_MI {8} \
+    CONFIG.NUM_MI {9} \
     CONFIG.NUM_SI {1} \
   ] $smartconnect_0
 
 
+  # Create instance: DATA_LINK_GENERATOR_0, and set properties
+  set block_name DATA_LINK_GENERATOR
+  set block_cell_name DATA_LINK_GENERATOR_0
+  if { [catch {set DATA_LINK_GENERATOR_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $DATA_LINK_GENERATOR_0 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+  
   # Create interface connections
-  connect_bd_intf_net -intf_net DATA_LINK_GENERATOR_1_interface_axis [get_bd_intf_pins interface_axis] [get_bd_intf_pins DATA_LINK_GENERATOR_1/interface_axis]
-  connect_bd_intf_net -intf_net DATA_LINK_GENERATOR_2_interface_axis [get_bd_intf_pins interface_axis1] [get_bd_intf_pins DATA_LINK_GENERATOR_2/interface_axis]
-  connect_bd_intf_net -intf_net DATA_LINK_GENERATOR_3_interface_axis [get_bd_intf_pins interface_axis2] [get_bd_intf_pins DATA_LINK_GENERATOR_3/interface_axis]
-  connect_bd_intf_net -intf_net DATA_LINK_GENERATOR_4_interface_axis [get_bd_intf_pins interface_axis3] [get_bd_intf_pins DATA_LINK_GENERATOR_4/interface_axis]
-  connect_bd_intf_net -intf_net DATA_LINK_GENERATOR_5_interface_axis [get_bd_intf_pins interface_axis4] [get_bd_intf_pins DATA_LINK_GENERATOR_5/interface_axis]
-  connect_bd_intf_net -intf_net DATA_LINK_GENERATOR_6_interface_axis [get_bd_intf_pins interface_axis5] [get_bd_intf_pins DATA_LINK_GENERATOR_6/interface_axis]
-  connect_bd_intf_net -intf_net DATA_LINK_GENERATOR_7_interface_axis [get_bd_intf_pins interface_axis6] [get_bd_intf_pins DATA_LINK_GENERATOR_7/interface_axis]
-  connect_bd_intf_net -intf_net DATA_LINK_GENERATOR_8_interface_axis [get_bd_intf_pins interface_axis7] [get_bd_intf_pins DATA_LINK_GENERATOR_8/interface_axis]
+  connect_bd_intf_net -intf_net Conn1 [get_bd_intf_pins DATA_LINK_GENERATOR_0/interface_axis] [get_bd_intf_pins interface_axis0]
+  connect_bd_intf_net -intf_net DATA_LINK_GENERATOR_1_interface_axis [get_bd_intf_pins interface_axis1] [get_bd_intf_pins DATA_LINK_GENERATOR_1/interface_axis]
+  connect_bd_intf_net -intf_net DATA_LINK_GENERATOR_2_interface_axis [get_bd_intf_pins interface_axis2] [get_bd_intf_pins DATA_LINK_GENERATOR_2/interface_axis]
+  connect_bd_intf_net -intf_net DATA_LINK_GENERATOR_3_interface_axis [get_bd_intf_pins interface_axis3] [get_bd_intf_pins DATA_LINK_GENERATOR_3/interface_axis]
+  connect_bd_intf_net -intf_net DATA_LINK_GENERATOR_4_interface_axis [get_bd_intf_pins interface_axis4] [get_bd_intf_pins DATA_LINK_GENERATOR_4/interface_axis]
+  connect_bd_intf_net -intf_net DATA_LINK_GENERATOR_5_interface_axis [get_bd_intf_pins interface_axis5] [get_bd_intf_pins DATA_LINK_GENERATOR_5/interface_axis]
+  connect_bd_intf_net -intf_net DATA_LINK_GENERATOR_6_interface_axis [get_bd_intf_pins interface_axis6] [get_bd_intf_pins DATA_LINK_GENERATOR_6/interface_axis]
+  connect_bd_intf_net -intf_net DATA_LINK_GENERATOR_7_interface_axis [get_bd_intf_pins interface_axis7] [get_bd_intf_pins DATA_LINK_GENERATOR_7/interface_axis]
+  connect_bd_intf_net -intf_net DATA_LINK_GENERATOR_8_interface_axis [get_bd_intf_pins interface_axis8] [get_bd_intf_pins DATA_LINK_GENERATOR_8/interface_axis]
   connect_bd_intf_net -intf_net axi_noc_0_M00_AXI [get_bd_intf_pins S00_AXI] [get_bd_intf_pins smartconnect_0/S00_AXI]
   connect_bd_intf_net -intf_net smartconnect_0_M00_AXI [get_bd_intf_pins DATA_LINK_GENERATOR_8/S_AXI] [get_bd_intf_pins smartconnect_0/M00_AXI]
   connect_bd_intf_net -intf_net smartconnect_0_M01_AXI [get_bd_intf_pins smartconnect_0/M01_AXI] [get_bd_intf_pins DATA_LINK_GENERATOR_6/S_AXI]
@@ -725,10 +741,11 @@ proc create_hier_cell_DATALINK_GENERATOR { parentCell nameHier } {
   connect_bd_intf_net -intf_net smartconnect_0_M05_AXI [get_bd_intf_pins smartconnect_0/M05_AXI] [get_bd_intf_pins DATA_LINK_GENERATOR_4/S_AXI]
   connect_bd_intf_net -intf_net smartconnect_0_M06_AXI [get_bd_intf_pins smartconnect_0/M06_AXI] [get_bd_intf_pins DATA_LINK_GENERATOR_5/S_AXI]
   connect_bd_intf_net -intf_net smartconnect_0_M07_AXI [get_bd_intf_pins smartconnect_0/M07_AXI] [get_bd_intf_pins DATA_LINK_GENERATOR_7/S_AXI]
+  connect_bd_intf_net -intf_net smartconnect_0_M08_AXI [get_bd_intf_pins DATA_LINK_GENERATOR_0/S_AXI] [get_bd_intf_pins smartconnect_0/M08_AXI]
 
   # Create port connections
-  connect_bd_net -net DATA_LINK_CONFIGURAT_0_RST_DUT_N [get_bd_pins RST_N] [get_bd_pins DATA_LINK_GENERATOR_7/RST_N] [get_bd_pins DATA_LINK_GENERATOR_8/RST_N] [get_bd_pins DATA_LINK_GENERATOR_6/RST_N] [get_bd_pins DATA_LINK_GENERATOR_5/RST_N] [get_bd_pins DATA_LINK_GENERATOR_4/RST_N] [get_bd_pins DATA_LINK_GENERATOR_3/RST_N] [get_bd_pins DATA_LINK_GENERATOR_2/RST_N] [get_bd_pins DATA_LINK_GENERATOR_1/RST_N] [get_bd_pins smartconnect_0/aresetn]
-  connect_bd_net -net versal_cips_0_pl0_ref_clk [get_bd_pins clk_l] [get_bd_pins smartconnect_0/aclk] [get_bd_pins DATA_LINK_GENERATOR_7/CLK] [get_bd_pins DATA_LINK_GENERATOR_8/CLK] [get_bd_pins DATA_LINK_GENERATOR_6/CLK] [get_bd_pins DATA_LINK_GENERATOR_5/CLK] [get_bd_pins DATA_LINK_GENERATOR_4/CLK] [get_bd_pins DATA_LINK_GENERATOR_3/CLK] [get_bd_pins DATA_LINK_GENERATOR_2/CLK] [get_bd_pins DATA_LINK_GENERATOR_1/CLK]
+  connect_bd_net -net DATA_LINK_CONFIGURAT_0_RST_DUT_N [get_bd_pins RST_N] [get_bd_pins DATA_LINK_GENERATOR_7/RST_N] [get_bd_pins DATA_LINK_GENERATOR_8/RST_N] [get_bd_pins DATA_LINK_GENERATOR_6/RST_N] [get_bd_pins DATA_LINK_GENERATOR_5/RST_N] [get_bd_pins DATA_LINK_GENERATOR_4/RST_N] [get_bd_pins DATA_LINK_GENERATOR_3/RST_N] [get_bd_pins DATA_LINK_GENERATOR_2/RST_N] [get_bd_pins DATA_LINK_GENERATOR_1/RST_N] [get_bd_pins smartconnect_0/aresetn] [get_bd_pins DATA_LINK_GENERATOR_0/RST_N]
+  connect_bd_net -net versal_cips_0_pl0_ref_clk [get_bd_pins clk_l] [get_bd_pins smartconnect_0/aclk] [get_bd_pins DATA_LINK_GENERATOR_7/CLK] [get_bd_pins DATA_LINK_GENERATOR_8/CLK] [get_bd_pins DATA_LINK_GENERATOR_6/CLK] [get_bd_pins DATA_LINK_GENERATOR_5/CLK] [get_bd_pins DATA_LINK_GENERATOR_4/CLK] [get_bd_pins DATA_LINK_GENERATOR_3/CLK] [get_bd_pins DATA_LINK_GENERATOR_2/CLK] [get_bd_pins DATA_LINK_GENERATOR_1/CLK] [get_bd_pins DATA_LINK_GENERATOR_0/CLK]
 
   # Restore current instance
   current_bd_instance $oldCurInst
@@ -769,16 +786,6 @@ proc create_hier_cell_DATALINK_ANALYZER { parentCell nameHier } {
   current_bd_instance $hier_obj
 
   # Create interface pins
-  create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 interface_axis
-
-  create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 interface_axis1
-
-  create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 interface_axis2
-
-  create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 interface_axis3
-
-  create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 S00_AXI
-
   create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 interface_axis4
 
   create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 interface_axis5
@@ -786,6 +793,18 @@ proc create_hier_cell_DATALINK_ANALYZER { parentCell nameHier } {
   create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 interface_axis6
 
   create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 interface_axis7
+
+  create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 S00_AXI
+
+  create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 interface_axis1
+
+  create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 interface_axis2
+
+  create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 interface_axis3
+
+  create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 interface_axis8
+
+  create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 interface_axis0
 
 
   # Create pins
@@ -839,7 +858,7 @@ proc create_hier_cell_DATALINK_ANALYZER { parentCell nameHier } {
   # Create instance: DATA_LINK_ANALYZER_smc, and set properties
   set DATA_LINK_ANALYZER_smc [ create_bd_cell -type ip -vlnv xilinx.com:ip:smartconnect:1.0 DATA_LINK_ANALYZER_smc ]
   set_property -dict [list \
-    CONFIG.NUM_MI {8} \
+    CONFIG.NUM_MI {9} \
     CONFIG.NUM_SI {1} \
   ] $DATA_LINK_ANALYZER_smc
 
@@ -888,7 +907,19 @@ proc create_hier_cell_DATALINK_ANALYZER { parentCell nameHier } {
      return 1
    }
   
+  # Create instance: DATA_LINK_ANALYZER_0, and set properties
+  set block_name DATA_LINK_ANALYZER
+  set block_cell_name DATA_LINK_ANALYZER_0
+  if { [catch {set DATA_LINK_ANALYZER_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $DATA_LINK_ANALYZER_0 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+  
   # Create interface connections
+  connect_bd_intf_net -intf_net Conn1 [get_bd_intf_pins DATA_LINK_ANALYZER_0/interface_axis] [get_bd_intf_pins interface_axis0]
   connect_bd_intf_net -intf_net DATA_LINK_ANALYZER_1_smc_M00_AXI [get_bd_intf_pins DATA_LINK_ANALYZER_1/S_AXI] [get_bd_intf_pins DATA_LINK_ANALYZER_smc/M00_AXI]
   connect_bd_intf_net -intf_net DATA_LINK_ANALYZER_1_smc_M01_AXI [get_bd_intf_pins DATA_LINK_ANALYZER_2/S_AXI] [get_bd_intf_pins DATA_LINK_ANALYZER_smc/M01_AXI]
   connect_bd_intf_net -intf_net DATA_LINK_ANALYZER_1_smc_M02_AXI [get_bd_intf_pins DATA_LINK_ANALYZER_3/S_AXI] [get_bd_intf_pins DATA_LINK_ANALYZER_smc/M02_AXI]
@@ -897,19 +928,20 @@ proc create_hier_cell_DATALINK_ANALYZER { parentCell nameHier } {
   connect_bd_intf_net -intf_net DATA_LINK_ANALYZER_1_smc_M05_AXI [get_bd_intf_pins DATA_LINK_ANALYZER_8/S_AXI] [get_bd_intf_pins DATA_LINK_ANALYZER_smc/M05_AXI]
   connect_bd_intf_net -intf_net DATA_LINK_ANALYZER_1_smc_M06_AXI [get_bd_intf_pins DATA_LINK_ANALYZER_6/S_AXI] [get_bd_intf_pins DATA_LINK_ANALYZER_smc/M06_AXI]
   connect_bd_intf_net -intf_net DATA_LINK_ANALYZER_smc_M07_AXI [get_bd_intf_pins DATA_LINK_ANALYZER_smc/M07_AXI] [get_bd_intf_pins DATA_LINK_ANALYZER_5/S_AXI]
+  connect_bd_intf_net -intf_net DATA_LINK_ANALYZER_smc_M08_AXI [get_bd_intf_pins DATA_LINK_ANALYZER_smc/M08_AXI] [get_bd_intf_pins DATA_LINK_ANALYZER_0/S_AXI]
   connect_bd_intf_net -intf_net axi_noc_0_M01_AXI [get_bd_intf_pins S00_AXI] [get_bd_intf_pins DATA_LINK_ANALYZER_smc/S00_AXI]
-  connect_bd_intf_net -intf_net spacefibrelight_0_AXIS_VC1_RX_DL [get_bd_intf_pins interface_axis4] [get_bd_intf_pins DATA_LINK_ANALYZER_1/interface_axis]
-  connect_bd_intf_net -intf_net spacefibrelight_0_AXIS_VC2_RX_DL [get_bd_intf_pins interface_axis5] [get_bd_intf_pins DATA_LINK_ANALYZER_2/interface_axis]
-  connect_bd_intf_net -intf_net spacefibrelight_0_AXIS_VC3_RX_DL [get_bd_intf_pins interface_axis6] [get_bd_intf_pins DATA_LINK_ANALYZER_3/interface_axis]
-  connect_bd_intf_net -intf_net spacefibrelight_0_AXIS_VC4_RX_DL [get_bd_intf_pins interface_axis] [get_bd_intf_pins DATA_LINK_ANALYZER_4/interface_axis]
-  connect_bd_intf_net -intf_net spacefibrelight_0_AXIS_VC5_RX_DL [get_bd_intf_pins interface_axis1] [get_bd_intf_pins DATA_LINK_ANALYZER_5/interface_axis]
-  connect_bd_intf_net -intf_net spacefibrelight_0_AXIS_VC6_RX_DL [get_bd_intf_pins interface_axis2] [get_bd_intf_pins DATA_LINK_ANALYZER_6/interface_axis]
-  connect_bd_intf_net -intf_net spacefibrelight_0_AXIS_VC7_RX_DL [get_bd_intf_pins interface_axis3] [get_bd_intf_pins DATA_LINK_ANALYZER_7/interface_axis]
-  connect_bd_intf_net -intf_net spacefibrelight_0_AXIS_VC8_RX_DL [get_bd_intf_pins interface_axis7] [get_bd_intf_pins DATA_LINK_ANALYZER_8/interface_axis]
+  connect_bd_intf_net -intf_net interface_axis6_1 [get_bd_intf_pins interface_axis6] [get_bd_intf_pins DATA_LINK_ANALYZER_6/interface_axis]
+  connect_bd_intf_net -intf_net spacefibrelight_0_AXIS_VC1_RX_DL [get_bd_intf_pins interface_axis1] [get_bd_intf_pins DATA_LINK_ANALYZER_1/interface_axis]
+  connect_bd_intf_net -intf_net spacefibrelight_0_AXIS_VC2_RX_DL [get_bd_intf_pins interface_axis2] [get_bd_intf_pins DATA_LINK_ANALYZER_2/interface_axis]
+  connect_bd_intf_net -intf_net spacefibrelight_0_AXIS_VC3_RX_DL [get_bd_intf_pins interface_axis3] [get_bd_intf_pins DATA_LINK_ANALYZER_3/interface_axis]
+  connect_bd_intf_net -intf_net spacefibrelight_0_AXIS_VC4_RX_DL [get_bd_intf_pins interface_axis4] [get_bd_intf_pins DATA_LINK_ANALYZER_4/interface_axis]
+  connect_bd_intf_net -intf_net spacefibrelight_0_AXIS_VC5_RX_DL [get_bd_intf_pins interface_axis5] [get_bd_intf_pins DATA_LINK_ANALYZER_5/interface_axis]
+  connect_bd_intf_net -intf_net spacefibrelight_0_AXIS_VC7_RX_DL [get_bd_intf_pins interface_axis7] [get_bd_intf_pins DATA_LINK_ANALYZER_7/interface_axis]
+  connect_bd_intf_net -intf_net spacefibrelight_0_AXIS_VC8_RX_DL [get_bd_intf_pins interface_axis8] [get_bd_intf_pins DATA_LINK_ANALYZER_8/interface_axis]
 
   # Create port connections
-  connect_bd_net -net DATA_LINK_CONFIGURAT_0_RST_DUT_N [get_bd_pins RST_N] [get_bd_pins DATA_LINK_ANALYZER_8/RST_N] [get_bd_pins DATA_LINK_ANALYZER_7/RST_N] [get_bd_pins DATA_LINK_ANALYZER_6/RST_N] [get_bd_pins DATA_LINK_ANALYZER_5/RST_N] [get_bd_pins DATA_LINK_ANALYZER_3/RST_N] [get_bd_pins DATA_LINK_ANALYZER_2/RST_N] [get_bd_pins DATA_LINK_ANALYZER_1/RST_N] [get_bd_pins DATA_LINK_ANALYZER_4/RST_N] [get_bd_pins DATA_LINK_ANALYZER_smc/aresetn]
-  connect_bd_net -net versal_cips_0_pl0_ref_clk [get_bd_pins clk_l] [get_bd_pins DATA_LINK_ANALYZER_8/CLK] [get_bd_pins DATA_LINK_ANALYZER_7/CLK] [get_bd_pins DATA_LINK_ANALYZER_6/CLK] [get_bd_pins DATA_LINK_ANALYZER_5/CLK] [get_bd_pins DATA_LINK_ANALYZER_3/CLK] [get_bd_pins DATA_LINK_ANALYZER_2/CLK] [get_bd_pins DATA_LINK_ANALYZER_1/CLK] [get_bd_pins DATA_LINK_ANALYZER_smc/aclk] [get_bd_pins DATA_LINK_ANALYZER_4/CLK]
+  connect_bd_net -net DATA_LINK_CONFIGURAT_0_RST_DUT_N [get_bd_pins RST_N] [get_bd_pins DATA_LINK_ANALYZER_8/RST_N] [get_bd_pins DATA_LINK_ANALYZER_7/RST_N] [get_bd_pins DATA_LINK_ANALYZER_6/RST_N] [get_bd_pins DATA_LINK_ANALYZER_5/RST_N] [get_bd_pins DATA_LINK_ANALYZER_3/RST_N] [get_bd_pins DATA_LINK_ANALYZER_2/RST_N] [get_bd_pins DATA_LINK_ANALYZER_1/RST_N] [get_bd_pins DATA_LINK_ANALYZER_4/RST_N] [get_bd_pins DATA_LINK_ANALYZER_smc/aresetn] [get_bd_pins DATA_LINK_ANALYZER_0/RST_N]
+  connect_bd_net -net versal_cips_0_pl0_ref_clk [get_bd_pins clk_l] [get_bd_pins DATA_LINK_ANALYZER_8/CLK] [get_bd_pins DATA_LINK_ANALYZER_7/CLK] [get_bd_pins DATA_LINK_ANALYZER_6/CLK] [get_bd_pins DATA_LINK_ANALYZER_5/CLK] [get_bd_pins DATA_LINK_ANALYZER_3/CLK] [get_bd_pins DATA_LINK_ANALYZER_2/CLK] [get_bd_pins DATA_LINK_ANALYZER_1/CLK] [get_bd_pins DATA_LINK_ANALYZER_smc/aclk] [get_bd_pins DATA_LINK_ANALYZER_4/CLK] [get_bd_pins DATA_LINK_ANALYZER_0/CLK]
 
   # Restore current instance
   current_bd_instance $oldCurInst
@@ -1215,14 +1247,15 @@ proc create_root_design { parentCell } {
   set scratchpad_bram [ create_bd_cell -type ip -vlnv xilinx.com:ip:emb_mem_gen:1.0 scratchpad_bram ]
 
   # Create interface connections
-  connect_bd_intf_net -intf_net DATA_LINK_GENERATOR_1_interface_axis [get_bd_intf_pins DATALINK_GENERATOR/interface_axis] [get_bd_intf_pins spacefibrelight_0/AXIS_VC1_TX_DL]
-  connect_bd_intf_net -intf_net DATA_LINK_GENERATOR_2_interface_axis [get_bd_intf_pins DATALINK_GENERATOR/interface_axis1] [get_bd_intf_pins spacefibrelight_0/AXIS_VC2_TX_DL]
-  connect_bd_intf_net -intf_net DATA_LINK_GENERATOR_3_interface_axis [get_bd_intf_pins DATALINK_GENERATOR/interface_axis2] [get_bd_intf_pins spacefibrelight_0/AXIS_VC3_TX_DL]
-  connect_bd_intf_net -intf_net DATA_LINK_GENERATOR_4_interface_axis [get_bd_intf_pins DATALINK_GENERATOR/interface_axis3] [get_bd_intf_pins spacefibrelight_0/AXIS_VC4_TX_DL]
-  connect_bd_intf_net -intf_net DATA_LINK_GENERATOR_5_interface_axis [get_bd_intf_pins DATALINK_GENERATOR/interface_axis4] [get_bd_intf_pins spacefibrelight_0/AXIS_VC5_TX_DL]
-  connect_bd_intf_net -intf_net DATA_LINK_GENERATOR_6_interface_axis [get_bd_intf_pins DATALINK_GENERATOR/interface_axis5] [get_bd_intf_pins spacefibrelight_0/AXIS_VC6_TX_DL]
-  connect_bd_intf_net -intf_net DATA_LINK_GENERATOR_7_interface_axis [get_bd_intf_pins DATALINK_GENERATOR/interface_axis6] [get_bd_intf_pins spacefibrelight_0/AXIS_VC7_TX_DL]
-  connect_bd_intf_net -intf_net DATA_LINK_GENERATOR_8_interface_axis [get_bd_intf_pins DATALINK_GENERATOR/interface_axis7] [get_bd_intf_pins spacefibrelight_0/AXIS_VC8_TX_DL]
+  connect_bd_intf_net -intf_net DATALINK_GENERATOR_interface_axis [get_bd_intf_pins spacefibrelight_0/AXIS_VC0_TX_DL] [get_bd_intf_pins DATALINK_GENERATOR/interface_axis0]
+  connect_bd_intf_net -intf_net DATA_LINK_GENERATOR_1_interface_axis [get_bd_intf_pins DATALINK_GENERATOR/interface_axis1] [get_bd_intf_pins spacefibrelight_0/AXIS_VC1_TX_DL]
+  connect_bd_intf_net -intf_net DATA_LINK_GENERATOR_2_interface_axis [get_bd_intf_pins DATALINK_GENERATOR/interface_axis2] [get_bd_intf_pins spacefibrelight_0/AXIS_VC2_TX_DL]
+  connect_bd_intf_net -intf_net DATA_LINK_GENERATOR_3_interface_axis [get_bd_intf_pins DATALINK_GENERATOR/interface_axis3] [get_bd_intf_pins spacefibrelight_0/AXIS_VC3_TX_DL]
+  connect_bd_intf_net -intf_net DATA_LINK_GENERATOR_4_interface_axis [get_bd_intf_pins DATALINK_GENERATOR/interface_axis4] [get_bd_intf_pins spacefibrelight_0/AXIS_VC4_TX_DL]
+  connect_bd_intf_net -intf_net DATA_LINK_GENERATOR_5_interface_axis [get_bd_intf_pins DATALINK_GENERATOR/interface_axis5] [get_bd_intf_pins spacefibrelight_0/AXIS_VC5_TX_DL]
+  connect_bd_intf_net -intf_net DATA_LINK_GENERATOR_6_interface_axis [get_bd_intf_pins DATALINK_GENERATOR/interface_axis6] [get_bd_intf_pins spacefibrelight_0/AXIS_VC6_TX_DL]
+  connect_bd_intf_net -intf_net DATA_LINK_GENERATOR_7_interface_axis [get_bd_intf_pins DATALINK_GENERATOR/interface_axis7] [get_bd_intf_pins spacefibrelight_0/AXIS_VC7_TX_DL]
+  connect_bd_intf_net -intf_net DATA_LINK_GENERATOR_8_interface_axis [get_bd_intf_pins DATALINK_GENERATOR/interface_axis8] [get_bd_intf_pins spacefibrelight_0/AXIS_VC8_TX_DL]
   connect_bd_intf_net -intf_net S00_AXI_1 [get_bd_intf_pins DATALINK_ANALYZER/S00_AXI] [get_bd_intf_pins smartconnect_0/M01_AXI]
   connect_bd_intf_net -intf_net S00_AXI_2 [get_bd_intf_pins DATALINK_CONFIGURATOR/S00_AXI] [get_bd_intf_pins smartconnect_0/M02_AXI]
   connect_bd_intf_net -intf_net S00_AXI_3 [get_bd_intf_pins LANE_GENERATOR/S00_AXI] [get_bd_intf_pins smartconnect_0/M03_AXI]
@@ -1233,15 +1266,15 @@ proc create_root_design { parentCell } {
   connect_bd_intf_net -intf_net lpddr4_clk1_1 [get_bd_intf_ports lpddr4_clk1] [get_bd_intf_pins axi_noc_0/sys_clk0]
   connect_bd_intf_net -intf_net smartconnect_0_M00_AXI [get_bd_intf_pins smartconnect_0/M00_AXI] [get_bd_intf_pins DATALINK_GENERATOR/S00_AXI]
   connect_bd_intf_net -intf_net smartconnect_0_M05_AXI [get_bd_intf_pins smartconnect_0/M05_AXI] [get_bd_intf_pins axi_bram_ctrl_0/S_AXI]
-  connect_bd_intf_net -intf_net spacefibrelight_0_AXIS_VC0_RX_DL [get_bd_intf_pins spacefibrelight_0/AXIS_VC0_TX_DL] [get_bd_intf_pins spacefibrelight_0/AXIS_VC0_RX_DL]
-  connect_bd_intf_net -intf_net spacefibrelight_0_AXIS_VC1_RX_DL [get_bd_intf_pins spacefibrelight_0/AXIS_VC1_RX_DL] [get_bd_intf_pins DATALINK_ANALYZER/interface_axis4]
-  connect_bd_intf_net -intf_net spacefibrelight_0_AXIS_VC2_RX_DL [get_bd_intf_pins spacefibrelight_0/AXIS_VC2_RX_DL] [get_bd_intf_pins DATALINK_ANALYZER/interface_axis5]
-  connect_bd_intf_net -intf_net spacefibrelight_0_AXIS_VC3_RX_DL [get_bd_intf_pins spacefibrelight_0/AXIS_VC3_RX_DL] [get_bd_intf_pins DATALINK_ANALYZER/interface_axis6]
-  connect_bd_intf_net -intf_net spacefibrelight_0_AXIS_VC4_RX_DL [get_bd_intf_pins spacefibrelight_0/AXIS_VC4_RX_DL] [get_bd_intf_pins DATALINK_ANALYZER/interface_axis]
-  connect_bd_intf_net -intf_net spacefibrelight_0_AXIS_VC5_RX_DL [get_bd_intf_pins spacefibrelight_0/AXIS_VC5_RX_DL] [get_bd_intf_pins DATALINK_ANALYZER/interface_axis1]
-  connect_bd_intf_net -intf_net spacefibrelight_0_AXIS_VC6_RX_DL [get_bd_intf_pins spacefibrelight_0/AXIS_VC6_RX_DL] [get_bd_intf_pins DATALINK_ANALYZER/interface_axis2]
-  connect_bd_intf_net -intf_net spacefibrelight_0_AXIS_VC7_RX_DL [get_bd_intf_pins spacefibrelight_0/AXIS_VC7_RX_DL] [get_bd_intf_pins DATALINK_ANALYZER/interface_axis3]
-  connect_bd_intf_net -intf_net spacefibrelight_0_AXIS_VC8_RX_DL [get_bd_intf_pins spacefibrelight_0/AXIS_VC8_RX_DL] [get_bd_intf_pins DATALINK_ANALYZER/interface_axis7]
+  connect_bd_intf_net -intf_net spacefibrelight_0_AXIS_VC0_RX_DL [get_bd_intf_pins spacefibrelight_0/AXIS_VC0_RX_DL] [get_bd_intf_pins DATALINK_ANALYZER/interface_axis0]
+  connect_bd_intf_net -intf_net spacefibrelight_0_AXIS_VC1_RX_DL [get_bd_intf_pins spacefibrelight_0/AXIS_VC1_RX_DL] [get_bd_intf_pins DATALINK_ANALYZER/interface_axis1]
+  connect_bd_intf_net -intf_net spacefibrelight_0_AXIS_VC2_RX_DL [get_bd_intf_pins spacefibrelight_0/AXIS_VC2_RX_DL] [get_bd_intf_pins DATALINK_ANALYZER/interface_axis2]
+  connect_bd_intf_net -intf_net spacefibrelight_0_AXIS_VC3_RX_DL [get_bd_intf_pins spacefibrelight_0/AXIS_VC3_RX_DL] [get_bd_intf_pins DATALINK_ANALYZER/interface_axis3]
+  connect_bd_intf_net -intf_net spacefibrelight_0_AXIS_VC4_RX_DL [get_bd_intf_pins spacefibrelight_0/AXIS_VC4_RX_DL] [get_bd_intf_pins DATALINK_ANALYZER/interface_axis4]
+  connect_bd_intf_net -intf_net spacefibrelight_0_AXIS_VC5_RX_DL [get_bd_intf_pins spacefibrelight_0/AXIS_VC5_RX_DL] [get_bd_intf_pins DATALINK_ANALYZER/interface_axis5]
+  connect_bd_intf_net -intf_net spacefibrelight_0_AXIS_VC6_RX_DL [get_bd_intf_pins spacefibrelight_0/AXIS_VC6_RX_DL] [get_bd_intf_pins DATALINK_ANALYZER/interface_axis6]
+  connect_bd_intf_net -intf_net spacefibrelight_0_AXIS_VC7_RX_DL [get_bd_intf_pins spacefibrelight_0/AXIS_VC7_RX_DL] [get_bd_intf_pins DATALINK_ANALYZER/interface_axis7]
+  connect_bd_intf_net -intf_net spacefibrelight_0_AXIS_VC8_RX_DL [get_bd_intf_pins spacefibrelight_0/AXIS_VC8_RX_DL] [get_bd_intf_pins DATALINK_ANALYZER/interface_axis8]
   connect_bd_intf_net -intf_net versal_cips_0_FPD_CCI_NOC_0 [get_bd_intf_pins versal_cips_0/FPD_CCI_NOC_0] [get_bd_intf_pins axi_noc_0/S00_AXI]
   connect_bd_intf_net -intf_net versal_cips_0_FPD_CCI_NOC_1 [get_bd_intf_pins versal_cips_0/FPD_CCI_NOC_1] [get_bd_intf_pins axi_noc_0/S01_AXI]
   connect_bd_intf_net -intf_net versal_cips_0_FPD_CCI_NOC_2 [get_bd_intf_pins versal_cips_0/FPD_CCI_NOC_2] [get_bd_intf_pins axi_noc_0/S02_AXI]
@@ -1339,26 +1372,28 @@ proc create_root_design { parentCell } {
   assign_bd_address -offset 0x00000000 -range 0x80000000 -target_address_space [get_bd_addr_spaces versal_cips_0/FPD_CCI_NOC_3] [get_bd_addr_segs axi_noc_0/S03_AXI/C1_DDR_LOW0] -force
   assign_bd_address -offset 0x000800000000 -range 0x80000000 -target_address_space [get_bd_addr_spaces versal_cips_0/FPD_CCI_NOC_3] [get_bd_addr_segs axi_noc_0/S03_AXI/C1_DDR_LOW1] -force
   assign_bd_address -offset 0x00000000 -range 0x80000000 -target_address_space [get_bd_addr_spaces versal_cips_0/LPD_AXI_NOC_0] [get_bd_addr_segs axi_noc_0/S04_AXI/C3_DDR_LOW0] -force
-  assign_bd_address -offset 0x80000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_ANALYZER/DATA_LINK_ANALYZER_1/S_AXI/reg0] -force
-  assign_bd_address -offset 0x81000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_ANALYZER/DATA_LINK_ANALYZER_2/S_AXI/reg0] -force
-  assign_bd_address -offset 0x82000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_ANALYZER/DATA_LINK_ANALYZER_3/S_AXI/reg0] -force
-  assign_bd_address -offset 0x83000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_ANALYZER/DATA_LINK_ANALYZER_4/S_AXI/reg0] -force
-  assign_bd_address -offset 0x84000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_ANALYZER/DATA_LINK_ANALYZER_5/S_AXI/reg0] -force
-  assign_bd_address -offset 0x85000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_ANALYZER/DATA_LINK_ANALYZER_6/S_AXI/reg0] -force
-  assign_bd_address -offset 0x86000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_ANALYZER/DATA_LINK_ANALYZER_7/S_AXI/reg0] -force
-  assign_bd_address -offset 0x87000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_ANALYZER/DATA_LINK_ANALYZER_8/S_AXI/reg0] -force
-  assign_bd_address -offset 0x88000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_CONFIGURATOR/DATA_LINK_CONFIGURAT_0/S_AXI/reg0] -force
-  assign_bd_address -offset 0x89000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_GENERATOR/DATA_LINK_GENERATOR_1/S_AXI/reg0] -force
-  assign_bd_address -offset 0x8A000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_GENERATOR/DATA_LINK_GENERATOR_2/S_AXI/reg0] -force
-  assign_bd_address -offset 0x8B000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_GENERATOR/DATA_LINK_GENERATOR_3/S_AXI/reg0] -force
-  assign_bd_address -offset 0x8C000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_GENERATOR/DATA_LINK_GENERATOR_4/S_AXI/reg0] -force
-  assign_bd_address -offset 0x8D000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_GENERATOR/DATA_LINK_GENERATOR_5/S_AXI/reg0] -force
-  assign_bd_address -offset 0x8E000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_GENERATOR/DATA_LINK_GENERATOR_6/S_AXI/reg0] -force
-  assign_bd_address -offset 0x8F000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_GENERATOR/DATA_LINK_GENERATOR_7/S_AXI/reg0] -force
-  assign_bd_address -offset 0x90000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_GENERATOR/DATA_LINK_GENERATOR_8/S_AXI/reg0] -force
-  assign_bd_address -offset 0x91000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs LANE_ANALYZER/LANE_ANALYZER_0/S_AXI/reg0] -force
-  assign_bd_address -offset 0x92000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs LANE_GENERATOR/LANE_GENERATOR_0/S_AXI/reg0] -force
-  assign_bd_address -offset 0x93000000 -range 0x00002000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs axi_bram_ctrl_0/S_AXI/Mem0] -force
+  assign_bd_address -offset 0x80000300 -range 0x00000100 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_ANALYZER/DATA_LINK_ANALYZER_0/S_AXI/reg0] -force
+  assign_bd_address -offset 0x80000400 -range 0x00000100 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_ANALYZER/DATA_LINK_ANALYZER_1/S_AXI/reg0] -force
+  assign_bd_address -offset 0x80000500 -range 0x00000100 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_ANALYZER/DATA_LINK_ANALYZER_2/S_AXI/reg0] -force
+  assign_bd_address -offset 0x80000600 -range 0x00000100 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_ANALYZER/DATA_LINK_ANALYZER_3/S_AXI/reg0] -force
+  assign_bd_address -offset 0x80000700 -range 0x00000100 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_ANALYZER/DATA_LINK_ANALYZER_4/S_AXI/reg0] -force
+  assign_bd_address -offset 0x80000800 -range 0x00000100 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_ANALYZER/DATA_LINK_ANALYZER_5/S_AXI/reg0] -force
+  assign_bd_address -offset 0x80000900 -range 0x00000100 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_ANALYZER/DATA_LINK_ANALYZER_6/S_AXI/reg0] -force
+  assign_bd_address -offset 0x80000A00 -range 0x00000100 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_ANALYZER/DATA_LINK_ANALYZER_7/S_AXI/reg0] -force
+  assign_bd_address -offset 0x80000B00 -range 0x00000100 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_ANALYZER/DATA_LINK_ANALYZER_8/S_AXI/reg0] -force
+  assign_bd_address -offset 0x80000000 -range 0x00000100 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_CONFIGURATOR/DATA_LINK_CONFIGURAT_0/S_AXI/reg0] -force
+  assign_bd_address -offset 0x80000C00 -range 0x00000100 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_GENERATOR/DATA_LINK_GENERATOR_0/S_AXI/reg0] -force
+  assign_bd_address -offset 0x80000D00 -range 0x00000100 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_GENERATOR/DATA_LINK_GENERATOR_1/S_AXI/reg0] -force
+  assign_bd_address -offset 0x80000E00 -range 0x00000100 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_GENERATOR/DATA_LINK_GENERATOR_2/S_AXI/reg0] -force
+  assign_bd_address -offset 0x80000F00 -range 0x00000100 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_GENERATOR/DATA_LINK_GENERATOR_3/S_AXI/reg0] -force
+  assign_bd_address -offset 0x80001000 -range 0x00000100 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_GENERATOR/DATA_LINK_GENERATOR_4/S_AXI/reg0] -force
+  assign_bd_address -offset 0x80001100 -range 0x00000100 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_GENERATOR/DATA_LINK_GENERATOR_5/S_AXI/reg0] -force
+  assign_bd_address -offset 0x80001200 -range 0x00000100 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_GENERATOR/DATA_LINK_GENERATOR_6/S_AXI/reg0] -force
+  assign_bd_address -offset 0x80001300 -range 0x00000100 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_GENERATOR/DATA_LINK_GENERATOR_7/S_AXI/reg0] -force
+  assign_bd_address -offset 0x80001400 -range 0x00000100 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_GENERATOR/DATA_LINK_GENERATOR_8/S_AXI/reg0] -force
+  assign_bd_address -offset 0x80000200 -range 0x00000100 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs LANE_ANALYZER/LANE_ANALYZER_0/S_AXI/reg0] -force
+  assign_bd_address -offset 0x80000100 -range 0x00000100 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs LANE_GENERATOR/LANE_GENERATOR_0/S_AXI/reg0] -force
+  assign_bd_address -offset 0x90000000 -range 0x00000100 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs axi_bram_ctrl_0/S_AXI/Mem0] -force
   assign_bd_address -offset 0x00000000 -range 0x80000000 -target_address_space [get_bd_addr_spaces versal_cips_0/PMC_NOC_AXI_0] [get_bd_addr_segs axi_noc_0/S05_AXI/C2_DDR_LOW0] -force
   assign_bd_address -offset 0x000800000000 -range 0x80000000 -target_address_space [get_bd_addr_spaces versal_cips_0/PMC_NOC_AXI_0] [get_bd_addr_segs axi_noc_0/S05_AXI/C2_DDR_LOW1] -force
 
