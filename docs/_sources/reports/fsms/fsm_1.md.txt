@@ -8,7 +8,7 @@
 
 |Name|Location|Graph|Reset State|States|Input Signals|Output Signals|
 |---|---|:---:|---|---|---:|---:|
-mst_exec_state|<linty-anchor href="/src/ip/fifo_dc_custom_to_axis/AXIS_MASTER.vhd#57">AXIS_MASTER.vhd#57</linty-anchor>|<a href="/spacefibrelight/graphs/fsm_states_1_graph.html"><img title="Open FSM Diagram" src="/spacefibrelight/_static/images/icon_graph.png" style="max-height: 25px; width: auto;" alt="Open FSM Diagram"></a>|IDLE| Count: 3<br>IDLE<br>SEND_STREAM<br>WAIT_READY|7|10||
+mst_exec_state|<linty-anchor href="/src/ip/fifo_dc_custom_to_axis/AXIS_MASTER.vhd#57">AXIS_MASTER.vhd#57</linty-anchor>|<a href="/graphs/fsm_states_1_graph.html"><img title="Open FSM Diagram" src="/_static/images/icon_graph.png" style="max-height: 25px; width: auto;" alt="Open FSM Diagram"></a>|IDLE| Count: 3<br>IDLE<br>SEND_STREAM<br>WAIT_READY|7|10||
 
 <br>
 

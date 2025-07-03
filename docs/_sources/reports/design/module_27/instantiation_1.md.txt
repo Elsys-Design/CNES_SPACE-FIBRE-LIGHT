@@ -8,7 +8,7 @@
 
 | Name | Architecture | Description |
 | --- | --- | --- |
-| <linty-anchor href="/src/module_phy_plus_lane/phy_plus_lane.vhd#667">inst_lane_init_fsm</linty-anchor> | <linty-anchor href="/src/module_phy_plus_lane/lane_init_fsm.vhd#79">rtl</linty-anchor> | Instance of lane_init_fsm module|
+| <linty-anchor href="/src/module_phy_plus_lane/phy_plus_lane.vhd#632">inst_lane_init_fsm</linty-anchor> | <linty-anchor href="/src/module_phy_plus_lane/lane_init_fsm.vhd#79">rtl</linty-anchor> | Instance of lane_init_fsm module|
 
 
 ## Generics

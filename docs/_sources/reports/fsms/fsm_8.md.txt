@@ -8,7 +8,7 @@
 
 |Name|Location|Graph|Reset State|States|Input Signals|Output Signals|
 |---|---|:---:|---|---|---:|---:|
-current_state|<linty-anchor href="/src/module_data_link/data_word_id_fsm.vhd#84">data_word_id_fsm.vhd#84</linty-anchor>|<a href="/spacefibrelight/graphs/fsm_states_8_graph.html"><img title="Open FSM Diagram" src="/spacefibrelight/_static/images/icon_graph.png" style="max-height: 25px; width: auto;" alt="Open FSM Diagram"></a>|RX_NOTHING_ST| Count: 5<br>RX_BROADCAST_AND_DATA_FRAME_ST<br>RX_BROADCAST_FRAME_ST<br>RX_DATA_FRAME_ST<br>RX_IDLE_FRAME_ST<br>RX_NOTHING_ST|13|23||
+current_state|<linty-anchor href="/src/module_data_link/data_word_id_fsm.vhd#84">data_word_id_fsm.vhd#84</linty-anchor>|<a href="/graphs/fsm_states_8_graph.html"><img title="Open FSM Diagram" src="/_static/images/icon_graph.png" style="max-height: 25px; width: auto;" alt="Open FSM Diagram"></a>|RX_NOTHING_ST| Count: 5<br>RX_BROADCAST_AND_DATA_FRAME_ST<br>RX_BROADCAST_FRAME_ST<br>RX_DATA_FRAME_ST<br>RX_IDLE_FRAME_ST<br>RX_NOTHING_ST|13|23||
 
 <br>
 

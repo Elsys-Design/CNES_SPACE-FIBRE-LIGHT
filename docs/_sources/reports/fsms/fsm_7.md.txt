@@ -8,7 +8,7 @@
 
 |Name|Location|Graph|Reset State|States|Input Signals|Output Signals|
 |---|---|:---:|---|---|---:|---:|
-current_state|<linty-anchor href="/src/module_data_link/data_out_buf.vhd#121">data_out_buf.vhd#121</linty-anchor>|<a href="/spacefibrelight/graphs/fsm_states_7_graph.html"><img title="Open FSM Diagram" src="/spacefibrelight/_static/images/icon_graph.png" style="max-height: 25px; width: auto;" alt="Open FSM Diagram"></a>|INIT_ST| Count: 5<br>ADD_EEP_ST<br>IDLE_ST<br>INIT_ST<br>WAIT_EIP_ST<br>WAIT_END_FLUSH_ST|9|5||
+current_state|<linty-anchor href="/src/module_data_link/data_out_buf.vhd#121">data_out_buf.vhd#121</linty-anchor>|<a href="/graphs/fsm_states_7_graph.html"><img title="Open FSM Diagram" src="/_static/images/icon_graph.png" style="max-height: 25px; width: auto;" alt="Open FSM Diagram"></a>|INIT_ST| Count: 5<br>ADD_EEP_ST<br>IDLE_ST<br>INIT_ST<br>WAIT_EIP_ST<br>WAIT_END_FLUSH_ST|9|5||
 
 <br>
 
