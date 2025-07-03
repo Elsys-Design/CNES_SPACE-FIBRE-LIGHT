@@ -567,7 +567,7 @@ struct dl_generator_status
 /******************************************************************************/
 /** DL_CONFIGURATOR ***********************************************************/
 /******************************************************************************/
-#define DL_CONFIGURATOR_ADDR 0xF0000000U
+#define DL_CONFIGURATOR_ADDR XPAR_DATALINK_CONFIGURATOR_DATA_LINK_CONFIGURAT_0_BASEADDR
 
 /** GLOBAL ********************************************************************/
 #define DL_CONFIGURATOR_GLOBAL_ADDR_OFFSET 0x0U
