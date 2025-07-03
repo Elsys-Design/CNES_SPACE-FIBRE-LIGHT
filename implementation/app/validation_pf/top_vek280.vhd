@@ -19,6 +19,7 @@ use ieee.numeric_std.all;
 
 Library UNISIM;
 use UNISIM.vcomponents.all;
+use ieee.std_logic_unsigned.all;
 
 ----------------------------------------------------------------------------
 entity top_vek280 is 
@@ -64,7 +65,11 @@ entity top_vek280 is
     TX_POS         : out std_logic;                                        -- Positive LVDS serial data send
     TX_NEG         : out std_logic;                                        -- Negative LVDS serial data send
     RX_POS         : in  std_logic;                                        -- Positive LVDS serial data received
-    RX_NEG         : in  std_logic                                         -- Negative LVDS serial data received
+    RX_NEG         : in  std_logic;                                         -- Negative LVDS serial data received
+  
+    --debug blinking led
+    Led0            :out std_logic
+  
   );
 end entity;
 
@@ -111,7 +116,7 @@ architecture rtl of top_vek280 is
     lpddr4_clk1_clk_n : in STD_LOGIC;
     lpddr4_clk1_clk_p : in STD_LOGIC;
     reset_n_fpga : out STD_LOGIC_VECTOR ( 0 to 0 );
-    reset_n : in STD_LOGIC
+    reset : in STD_LOGIC
   );
   end component design_1;
 
@@ -127,30 +132,12 @@ signal reset_stable   : std_logic;
 -- CLK GTY signals
 signal clk_gtref           : std_logic;
 
-
---debouche counter
-signal cmpt : unsigned(31 downto 0);
+--led display
+signal Count : std_logic_vector(31 downto 0) := (others => '0');
+signal Led_l : std_logic := '0';
+signal reset_n_from_fpga : std_logic;
 
 begin
-
-   -- System signal
-   reset_n <= not reset_stable ;
-
-    
--- reset button with debouce
-   process(CLK, RESET)
-   begin
-      if RESET = '0' then
-         reset_stable <= '0';
-         cmpt <= (others => '0');
-      elsif rising_edge(CLK) then
-         if cmpt =  x"00100000" then --2 ms for clk=50MHz
-               reset_stable <= '1';
-         else
-               cmpt <= cmpt + 1;
-         end if;
-      end if;
-   end process;
 
 -- CLOCK for GTY
    IBUFDS_GTE5_I : IBUFDS_GTE5
@@ -170,13 +157,13 @@ begin
 design_1_i: component design_1
      port map (
       CLK_GTY_0 => clk_gtref,
-      RESET_n=>RESET,
+      RESET=>RESET,
       RX_NEG_0 => RX_NEG,
       RX_POS_0 => RX_POS,
       TX_NEG_0 => TX_NEG,
       TX_POS_0 => TX_POS,
       clk_l => clk, -- this is the fabric clock from cips
-      reset_n_fpga(0) => reset_n, -- this this the fabric reset
+      reset_n_fpga(0) => reset_n_from_fpga, -- this this the fabric reset
       ch0_lpddr4_trip1_ca_a(5 downto 0) => ch0_lpddr4_trip1_ca_a(5 downto 0),
       ch0_lpddr4_trip1_ck_c_a => ch0_lpddr4_trip1_ck_c_a,
       ch0_lpddr4_trip1_ck_t_a => ch0_lpddr4_trip1_ck_t_a,
@@ -208,5 +195,26 @@ design_1_i: component design_1
       lpddr4_clk1_clk_n => lpddr4_clk1_clk_n,
       lpddr4_clk1_clk_p => lpddr4_clk1_clk_p
     );
+
+--
+process (clk,reset_n_from_fpga)
+begin
+    if reset_n_from_fpga='0' then
+            Count <= (others => '0');
+            Led_l <= '0';
+    elsif rising_edge(clk) then
+        if (Count < x"02FAF080") then       -- clk � 100Mh, on compte jusqu� 50M
+            Count <= Count + '1';
+            Led_l <= Led_l;
+        else
+            Count <= (others => '0');
+            Led_l <= not Led_l;
+        end if;
+    end if;
+end process;
+
+    
+    Led0 <= Led_l;
+
 
 end architecture rtl;

@@ -965,13 +965,16 @@ proc create_root_design { parentCell } {
   set RX_NEG_0 [ create_bd_port -dir I RX_NEG_0 ]
   set TX_POS_0 [ create_bd_port -dir O TX_POS_0 ]
   set TX_NEG_0 [ create_bd_port -dir O TX_NEG_0 ]
-  set reset_n [ create_bd_port -dir I -type rst reset_n ]
+  set reset [ create_bd_port -dir I -type rst reset ]
+  set_property -dict [ list \
+   CONFIG.POLARITY {ACTIVE_HIGH} \
+ ] $reset
 
   # Create instance: versal_cips_0, and set properties
   set versal_cips_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:versal_cips:3.4 versal_cips_0 ]
   set_property -dict [list \
     CONFIG.BOOT_MODE {Custom} \
-    CONFIG.CLOCK_MODE {REF CLK 33.33 MHz} \
+    CONFIG.CLOCK_MODE {Custom} \
     CONFIG.DDR_MEMORY_MODE {Enable} \
     CONFIG.DEBUG_MODE {JTAG} \
     CONFIG.DESIGN_MODE {1} \
@@ -980,7 +983,7 @@ proc create_root_design { parentCell } {
     CONFIG.PS_PL_CONNECTIVITY_MODE {Custom} \
     CONFIG.PS_PMC_CONFIG { \
       BOOT_MODE {Custom} \
-      CLOCK_MODE {REF CLK 33.33 MHz} \
+      CLOCK_MODE {Custom} \
       DDR_MEMORY_MODE {Connectivity to DDR via NOC} \
       DEBUG_MODE {JTAG} \
       DESIGN_MODE {1} \
@@ -992,7 +995,7 @@ proc create_root_design { parentCell } {
       PMC_CRP_HSM1_REF_CTRL_FREQMHZ {133.333} \
       PMC_CRP_LSBUS_REF_CTRL_FREQMHZ {100} \
       PMC_CRP_NOC_REF_CTRL_FREQMHZ {960} \
-      PMC_CRP_PL0_REF_CTRL_FREQMHZ {100} \
+      PMC_CRP_PL0_REF_CTRL_FREQMHZ {334} \
       PMC_CRP_PL2_REF_CTRL_FREQMHZ {150} \
       PMC_CRP_PL5_REF_CTRL_FREQMHZ {400} \
       PMC_GPIO0_MIO_PERIPHERAL {{ENABLE 1} {IO {PMC_MIO 0 .. 25}}} \
@@ -1033,6 +1036,7 @@ proc create_root_design { parentCell } {
       PS_I2CSYSMON_PERIPHERAL {{ENABLE 0} {IO {PMC_MIO 39 .. 40}}} \
       PS_MIO7 {{AUX_IO 0} {DIRECTION in} {DRIVE_STRENGTH 8mA} {OUTPUT_DATA default} {PULL disable} {SCHMITT 0} {SLEW slow} {USAGE Reserved}} \
       PS_MIO9 {{AUX_IO 0} {DIRECTION in} {DRIVE_STRENGTH 8mA} {OUTPUT_DATA default} {PULL disable} {SCHMITT 0} {SLEW slow} {USAGE Reserved}} \
+      PS_M_AXI_LPD_DATA_WIDTH {32} \
       PS_NUM_FABRIC_RESETS {1} \
       PS_PCIE_EP_RESET1_IO {PS_MIO 18} \
       PS_PCIE_EP_RESET2_IO {PS_MIO 19} \
@@ -1048,10 +1052,10 @@ proc create_root_design { parentCell } {
       PS_USE_M_AXI_FPD {0} \
       PS_USE_M_AXI_LPD {1} \
       PS_USE_NOC_LPD_AXI0 {1} \
-      PS_USE_PMCPL_CLK0 {1} \
-      PS_USE_PMCPL_CLK1 {1} \
+      PS_USE_PMCPL_CLK0 {0} \
+      PS_USE_PMCPL_CLK1 {0} \
       PS_USE_PMCPL_CLK2 {1} \
-      PS_USE_PMCPL_IRO_CLK {1} \
+      PS_USE_PMCPL_IRO_CLK {0} \
       PS_USE_S_AXI_FPD {0} \
       PS_USE_S_AXI_LPD {0} \
       SMON_ALARMS {Set_Alarms_On} \
@@ -1256,6 +1260,7 @@ proc create_root_design { parentCell } {
   connect_bd_net -net RX_NEG_0_1 [get_bd_ports RX_NEG_0] [get_bd_pins spacefibrelight_0/RX_NEG]
   connect_bd_net -net RX_POS_0_1 [get_bd_ports RX_POS_0] [get_bd_pins spacefibrelight_0/RX_POS]
   connect_bd_net -net proc_sys_reset_0_interconnect_aresetn [get_bd_pins proc_sys_reset_0/interconnect_aresetn] [get_bd_pins smartconnect_0/aresetn] [get_bd_pins DATALINK_CONFIGURATOR/reset_n] [get_bd_pins LANE_GENERATOR/reset_n] [get_bd_pins LANE_ANALYZER/aresetn] [get_bd_pins DATALINK_GENERATOR/RST_N] [get_bd_pins DATALINK_ANALYZER/RST_N]
+  connect_bd_net -net reset_n_1 [get_bd_ports reset] [get_bd_pins proc_sys_reset_0/ext_reset_in]
   connect_bd_net -net spacefibrelight_0_ACK_COUNTER_RX [get_bd_pins spacefibrelight_0/ACK_COUNTER_RX] [get_bd_pins DATALINK_CONFIGURATOR/ACK_COUNTER_RX]
   connect_bd_net -net spacefibrelight_0_ACK_COUNTER_TX [get_bd_pins spacefibrelight_0/ACK_COUNTER_TX] [get_bd_pins DATALINK_CONFIGURATOR/ACK_COUNTER_TX]
   connect_bd_net -net spacefibrelight_0_ACK_SEQ_NUM [get_bd_pins spacefibrelight_0/ACK_SEQ_NUM] [get_bd_pins DATALINK_CONFIGURATOR/ACK_SEQ_NUM]
@@ -1317,7 +1322,6 @@ proc create_root_design { parentCell } {
   assign_bd_address -offset 0x00000000 -range 0x80000000 -target_address_space [get_bd_addr_spaces versal_cips_0/FPD_CCI_NOC_3] [get_bd_addr_segs axi_noc_0/S03_AXI/C1_DDR_LOW0] -force
   assign_bd_address -offset 0x000800000000 -range 0x80000000 -target_address_space [get_bd_addr_spaces versal_cips_0/FPD_CCI_NOC_3] [get_bd_addr_segs axi_noc_0/S03_AXI/C1_DDR_LOW1] -force
   assign_bd_address -offset 0x00000000 -range 0x80000000 -target_address_space [get_bd_addr_spaces versal_cips_0/LPD_AXI_NOC_0] [get_bd_addr_segs axi_noc_0/S04_AXI/C3_DDR_LOW0] -force
-  assign_bd_address -offset 0x000800000000 -range 0x80000000 -target_address_space [get_bd_addr_spaces versal_cips_0/LPD_AXI_NOC_0] [get_bd_addr_segs axi_noc_0/S04_AXI/C3_DDR_LOW1] -force
   assign_bd_address -offset 0x80000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_ANALYZER/DATA_LINK_ANALYZER_1/S_AXI/reg0] -force
   assign_bd_address -offset 0x81000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_ANALYZER/DATA_LINK_ANALYZER_2/S_AXI/reg0] -force
   assign_bd_address -offset 0x82000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_ANALYZER/DATA_LINK_ANALYZER_3/S_AXI/reg0] -force
@@ -1339,6 +1343,9 @@ proc create_root_design { parentCell } {
   assign_bd_address -offset 0x92000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs LANE_GENERATOR/LANE_GENERATOR_0/S_AXI/reg0] -force
   assign_bd_address -offset 0x00000000 -range 0x80000000 -target_address_space [get_bd_addr_spaces versal_cips_0/PMC_NOC_AXI_0] [get_bd_addr_segs axi_noc_0/S05_AXI/C2_DDR_LOW0] -force
   assign_bd_address -offset 0x000800000000 -range 0x80000000 -target_address_space [get_bd_addr_spaces versal_cips_0/PMC_NOC_AXI_0] [get_bd_addr_segs axi_noc_0/S05_AXI/C2_DDR_LOW1] -force
+
+  # Exclude Address Segments
+  exclude_bd_addr_seg -offset 0x000800000000 -range 0x80000000 -target_address_space [get_bd_addr_spaces versal_cips_0/LPD_AXI_NOC_0] [get_bd_addr_segs axi_noc_0/S04_AXI/C3_DDR_LOW1]
 
 
   # Restore current instance
