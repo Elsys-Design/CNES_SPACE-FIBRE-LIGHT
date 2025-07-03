@@ -1,7 +1,9 @@
 #pragma once
 
-// Generated using https://github.com/nsensfel/bitmask-generator
+//add xilinx register definition
+#include <xparameters.h>
 
+// Generated using https://github.com/nsensfel/bitmask-generator
 #include <stdint.h>
 
 #define __TO_PTR(x) ((volatile uint32_t *)(x))
@@ -16,15 +18,15 @@
 /******************************************************************************/
 /** DL_ANALYZER ***************************************************************/
 /******************************************************************************/
-#define DL_ANALYZER_0_ADDR 0xF0000300U
-#define DL_ANALYZER_1_ADDR 0xF0000400U
-#define DL_ANALYZER_2_ADDR 0xF0000500U
-#define DL_ANALYZER_3_ADDR 0xF0000600U
-#define DL_ANALYZER_4_ADDR 0xF0000700U
-#define DL_ANALYZER_5_ADDR 0xF0000800U
-#define DL_ANALYZER_6_ADDR 0xF0000900U
-#define DL_ANALYZER_7_ADDR 0xF0000A00U
-#define DL_ANALYZER_8_ADDR 0xF0000B00U
+#define DL_ANALYZER_0_ADDR XPAR_DATALINK_ANALYZER_DATA_LINK_ANALYZER_0_BASEADDR
+#define DL_ANALYZER_1_ADDR XPAR_DATALINK_ANALYZER_DATA_LINK_ANALYZER_1_BASEADDR
+#define DL_ANALYZER_2_ADDR XPAR_DATALINK_ANALYZER_DATA_LINK_ANALYZER_2_BASEADDR
+#define DL_ANALYZER_3_ADDR XPAR_DATALINK_ANALYZER_DATA_LINK_ANALYZER_3_BASEADDR
+#define DL_ANALYZER_4_ADDR XPAR_DATALINK_ANALYZER_DATA_LINK_ANALYZER_4_BASEADDR
+#define DL_ANALYZER_5_ADDR XPAR_DATALINK_ANALYZER_DATA_LINK_ANALYZER_5_BASEADDR
+#define DL_ANALYZER_6_ADDR XPAR_DATALINK_ANALYZER_DATA_LINK_ANALYZER_6_BASEADDR
+#define DL_ANALYZER_7_ADDR XPAR_DATALINK_ANALYZER_DATA_LINK_ANALYZER_7_BASEADDR
+#define DL_ANALYZER_8_ADDR XPAR_DATALINK_ANALYZER_DATA_LINK_ANALYZER_8_BASEADDR
 
 #define DL_ANALYZER_X_ADDR(x) \
 	(DL_ANALYZER_0_ADDR + ((DL_ANALYZER_1_ADDR - DL_ANALYZER_0_ADDR) * (x)))
@@ -291,15 +293,15 @@ struct dl_analyzer_status
 /******************************************************************************/
 /** DL_GENERATOR **************************************************************/
 /******************************************************************************/
-#define DL_GENERATOR_0_ADDR 0xF0000C00U
-#define DL_GENERATOR_1_ADDR 0xF0000D00U
-#define DL_GENERATOR_2_ADDR 0xF0000E00U
-#define DL_GENERATOR_3_ADDR 0xF0000F00U
-#define DL_GENERATOR_4_ADDR 0xF0001000U
-#define DL_GENERATOR_5_ADDR 0xF0001100U
-#define DL_GENERATOR_6_ADDR 0xF0001200U
-#define DL_GENERATOR_7_ADDR 0xF0001300U
-#define DL_GENERATOR_8_ADDR 0xF0001400U
+#define DL_GENERATOR_0_ADDR XPAR_DATALINK_GENERATOR_DATA_LINK_GENERATOR_0_BASEADDR
+#define DL_GENERATOR_1_ADDR XPAR_DATALINK_GENERATOR_DATA_LINK_GENERATOR_1_BASEADDR
+#define DL_GENERATOR_2_ADDR XPAR_DATALINK_GENERATOR_DATA_LINK_GENERATOR_2_BASEADDR
+#define DL_GENERATOR_3_ADDR XPAR_DATALINK_GENERATOR_DATA_LINK_GENERATOR_3_BASEADDR
+#define DL_GENERATOR_4_ADDR XPAR_DATALINK_GENERATOR_DATA_LINK_GENERATOR_4_BASEADDR
+#define DL_GENERATOR_5_ADDR XPAR_DATALINK_GENERATOR_DATA_LINK_GENERATOR_5_BASEADDR
+#define DL_GENERATOR_6_ADDR XPAR_DATALINK_GENERATOR_DATA_LINK_GENERATOR_6_BASEADDR
+#define DL_GENERATOR_7_ADDR XPAR_DATALINK_GENERATOR_DATA_LINK_GENERATOR_7_BASEADDR
+#define DL_GENERATOR_8_ADDR XPAR_DATALINK_GENERATOR_DATA_LINK_GENERATOR_8_BASEADDR
 
 #define DL_GENERATOR_X_ADDR(x) \
 	(DL_GENERATOR_0_ADDR + ((DL_GENERATOR_1_ADDR - DL_GENERATOR_0_ADDR) * (x)))
@@ -1574,7 +1576,7 @@ struct dl_configurator_dl_qos_2
 /******************************************************************************/
 /** LANE_ANALYZER *************************************************************/
 /******************************************************************************/
-#define LANE_ANALYZER_ADDR 0xF0000200U
+#define LANE_ANALYZER_ADDR XPAR_LANE_ANALYZER_LANE_ANALYZER_0_BASEADDR
 
 /** CONFIGURATION *************************************************************/
 #define LANE_ANALYZER_CONFIGURATION_ADDR_OFFSET 0x0U
