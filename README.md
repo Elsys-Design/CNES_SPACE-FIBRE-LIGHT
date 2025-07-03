@@ -1,6 +1,6 @@
 # SpaceFibre Light IP Core
 [![Quality Gate Status](https://oss.linty-services.com/api/project_badges/measure?project=spacefibrelight&metric=alert_status&token=sqb_42d11a1bf99de1aeb716f27be17903eb41edbde4)](https://oss.linty-services.com/dashboard?id=spacefibrelight)
-[![Doc generation status](https://github.com/CNES/spacefibrelight/actions/workflows/doc.yml/badge.svg?branch=gh-pages)](https://cnes.github.io/spacefibrelight/)
+[![Doc generation status](https://github.com/CNES/spacefibrelight/actions/workflows/doc.yml/badge.svg?branch=develop)](https://cnes.github.io/spacefibrelight/)
 
 ## Readme First
 This repository includes de Ip called Spacefibrelight. It was developped by Elsys Deign under a CNES R&D program. The main objective of this IP is :
