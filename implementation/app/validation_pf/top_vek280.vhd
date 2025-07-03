@@ -126,14 +126,12 @@ architecture rtl of top_vek280 is
 ------------------------
 -- System signals
 signal clk            : std_logic;
-signal reset_n        : std_logic;
-signal reset_stable   : std_logic;
 
 -- CLK GTY signals
 signal clk_gtref           : std_logic;
 
 --led display
-signal Count : std_logic_vector(31 downto 0) := (others => '0');
+signal Count : integer:=0;
 signal Led_l : std_logic := '0';
 signal reset_n_from_fpga : std_logic;
 
@@ -200,14 +198,14 @@ design_1_i: component design_1
 process (clk,reset_n_from_fpga)
 begin
     if reset_n_from_fpga='0' then
-            Count <= (others => '0');
+            Count <= 0;
             Led_l <= '0';
     elsif rising_edge(clk) then
-        if (Count < x"02FAF080") then       -- clk � 100Mh, on compte jusqu� 50M
-            Count <= Count + '1';
+        if (Count < 75000000) then       -- clk � 150Mh, we need half clock to get 500ms led
+            Count <= Count + 1;
             Led_l <= Led_l;
         else
-            Count <= (others => '0');
+            Count <= 0;
             Led_l <= not Led_l;
         end if;
     end if;

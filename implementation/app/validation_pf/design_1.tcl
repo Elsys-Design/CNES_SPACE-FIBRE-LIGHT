@@ -143,6 +143,8 @@ xilinx.com:ip:axi_noc:1.1\
 xilinx.com:ip:xlconstant:1.1\
 xilinx.com:ip:smartconnect:1.0\
 xilinx.com:ip:proc_sys_reset:5.0\
+xilinx.com:ip:axi_bram_ctrl:4.1\
+xilinx.com:ip:emb_mem_gen:1.0\
 "
 
    set list_ips_missing ""
@@ -1036,8 +1038,8 @@ proc create_root_design { parentCell } {
       PS_I2CSYSMON_PERIPHERAL {{ENABLE 0} {IO {PMC_MIO 39 .. 40}}} \
       PS_MIO7 {{AUX_IO 0} {DIRECTION in} {DRIVE_STRENGTH 8mA} {OUTPUT_DATA default} {PULL disable} {SCHMITT 0} {SLEW slow} {USAGE Reserved}} \
       PS_MIO9 {{AUX_IO 0} {DIRECTION in} {DRIVE_STRENGTH 8mA} {OUTPUT_DATA default} {PULL disable} {SCHMITT 0} {SLEW slow} {USAGE Reserved}} \
-      PS_M_AXI_LPD_DATA_WIDTH {32} \
-      PS_NUM_FABRIC_RESETS {1} \
+      PS_M_AXI_LPD_DATA_WIDTH {128} \
+      PS_NUM_FABRIC_RESETS {0} \
       PS_PCIE_EP_RESET1_IO {PS_MIO 18} \
       PS_PCIE_EP_RESET2_IO {PS_MIO 19} \
       PS_PCIE_RESET {ENABLE 1} \
@@ -1191,13 +1193,26 @@ proc create_root_design { parentCell } {
   set smartconnect_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:smartconnect:1.0 smartconnect_0 ]
   set_property -dict [list \
     CONFIG.NUM_CLKS {1} \
-    CONFIG.NUM_MI {5} \
+    CONFIG.NUM_MI {6} \
     CONFIG.NUM_SI {1} \
   ] $smartconnect_0
 
 
   # Create instance: proc_sys_reset_0, and set properties
   set proc_sys_reset_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 proc_sys_reset_0 ]
+  set_property CONFIG.C_EXT_RST_WIDTH {1} $proc_sys_reset_0
+
+
+  # Create instance: axi_bram_ctrl_0, and set properties
+  set axi_bram_ctrl_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_bram_ctrl:4.1 axi_bram_ctrl_0 ]
+  set_property -dict [list \
+    CONFIG.PROTOCOL {AXI4LITE} \
+    CONFIG.SINGLE_PORT_BRAM {1} \
+  ] $axi_bram_ctrl_0
+
+
+  # Create instance: scratchpad_bram, and set properties
+  set scratchpad_bram [ create_bd_cell -type ip -vlnv xilinx.com:ip:emb_mem_gen:1.0 scratchpad_bram ]
 
   # Create interface connections
   connect_bd_intf_net -intf_net DATA_LINK_GENERATOR_1_interface_axis [get_bd_intf_pins DATALINK_GENERATOR/interface_axis] [get_bd_intf_pins spacefibrelight_0/AXIS_VC1_TX_DL]
@@ -1212,10 +1227,12 @@ proc create_root_design { parentCell } {
   connect_bd_intf_net -intf_net S00_AXI_2 [get_bd_intf_pins DATALINK_CONFIGURATOR/S00_AXI] [get_bd_intf_pins smartconnect_0/M02_AXI]
   connect_bd_intf_net -intf_net S00_AXI_3 [get_bd_intf_pins LANE_GENERATOR/S00_AXI] [get_bd_intf_pins smartconnect_0/M03_AXI]
   connect_bd_intf_net -intf_net S00_AXI_4 [get_bd_intf_pins LANE_ANALYZER/S00_AXI] [get_bd_intf_pins smartconnect_0/M04_AXI]
+  connect_bd_intf_net -intf_net axi_bram_ctrl_0_BRAM_PORTA [get_bd_intf_pins scratchpad_bram/BRAM_PORTA] [get_bd_intf_pins axi_bram_ctrl_0/BRAM_PORTA]
   connect_bd_intf_net -intf_net axi_noc_0_CH0_LPDDR4_0 [get_bd_intf_ports ch0_lpddr4_trip1] [get_bd_intf_pins axi_noc_0/CH0_LPDDR4_0]
   connect_bd_intf_net -intf_net axi_noc_0_CH1_LPDDR4_0 [get_bd_intf_ports ch1_lpddr4_trip1] [get_bd_intf_pins axi_noc_0/CH1_LPDDR4_0]
   connect_bd_intf_net -intf_net lpddr4_clk1_1 [get_bd_intf_ports lpddr4_clk1] [get_bd_intf_pins axi_noc_0/sys_clk0]
   connect_bd_intf_net -intf_net smartconnect_0_M00_AXI [get_bd_intf_pins smartconnect_0/M00_AXI] [get_bd_intf_pins DATALINK_GENERATOR/S00_AXI]
+  connect_bd_intf_net -intf_net smartconnect_0_M05_AXI [get_bd_intf_pins smartconnect_0/M05_AXI] [get_bd_intf_pins axi_bram_ctrl_0/S_AXI]
   connect_bd_intf_net -intf_net spacefibrelight_0_AXIS_VC0_RX_DL [get_bd_intf_pins spacefibrelight_0/AXIS_VC0_TX_DL] [get_bd_intf_pins spacefibrelight_0/AXIS_VC0_RX_DL]
   connect_bd_intf_net -intf_net spacefibrelight_0_AXIS_VC1_RX_DL [get_bd_intf_pins spacefibrelight_0/AXIS_VC1_RX_DL] [get_bd_intf_pins DATALINK_ANALYZER/interface_axis4]
   connect_bd_intf_net -intf_net spacefibrelight_0_AXIS_VC2_RX_DL [get_bd_intf_pins spacefibrelight_0/AXIS_VC2_RX_DL] [get_bd_intf_pins DATALINK_ANALYZER/interface_axis5]
@@ -1259,7 +1276,7 @@ proc create_root_design { parentCell } {
   connect_bd_net -net LANE_GENERATOR_0_VALID_K_CHARAC_TX_PPL [get_bd_pins LANE_GENERATOR/VALID_K_CHARAC_TX_PPL] [get_bd_pins spacefibrelight_0/VALID_K_CHARAC_TX_INJ]
   connect_bd_net -net RX_NEG_0_1 [get_bd_ports RX_NEG_0] [get_bd_pins spacefibrelight_0/RX_NEG]
   connect_bd_net -net RX_POS_0_1 [get_bd_ports RX_POS_0] [get_bd_pins spacefibrelight_0/RX_POS]
-  connect_bd_net -net proc_sys_reset_0_interconnect_aresetn [get_bd_pins proc_sys_reset_0/interconnect_aresetn] [get_bd_pins smartconnect_0/aresetn] [get_bd_pins DATALINK_CONFIGURATOR/reset_n] [get_bd_pins LANE_GENERATOR/reset_n] [get_bd_pins LANE_ANALYZER/aresetn] [get_bd_pins DATALINK_GENERATOR/RST_N] [get_bd_pins DATALINK_ANALYZER/RST_N]
+  connect_bd_net -net proc_sys_reset_0_interconnect_aresetn [get_bd_pins proc_sys_reset_0/interconnect_aresetn] [get_bd_pins smartconnect_0/aresetn] [get_bd_pins DATALINK_CONFIGURATOR/reset_n] [get_bd_pins LANE_GENERATOR/reset_n] [get_bd_pins LANE_ANALYZER/aresetn] [get_bd_pins DATALINK_GENERATOR/RST_N] [get_bd_pins DATALINK_ANALYZER/RST_N] [get_bd_ports reset_n_fpga] [get_bd_pins axi_bram_ctrl_0/s_axi_aresetn]
   connect_bd_net -net reset_n_1 [get_bd_ports reset] [get_bd_pins proc_sys_reset_0/ext_reset_in]
   connect_bd_net -net spacefibrelight_0_ACK_COUNTER_RX [get_bd_pins spacefibrelight_0/ACK_COUNTER_RX] [get_bd_pins DATALINK_CONFIGURATOR/ACK_COUNTER_RX]
   connect_bd_net -net spacefibrelight_0_ACK_COUNTER_TX [get_bd_pins spacefibrelight_0/ACK_COUNTER_TX] [get_bd_pins DATALINK_CONFIGURATOR/ACK_COUNTER_TX]
@@ -1308,7 +1325,7 @@ proc create_root_design { parentCell } {
   connect_bd_net -net versal_cips_0_fpd_cci_noc_axi2_clk [get_bd_pins versal_cips_0/fpd_cci_noc_axi2_clk] [get_bd_pins axi_noc_0/aclk2]
   connect_bd_net -net versal_cips_0_fpd_cci_noc_axi3_clk [get_bd_pins versal_cips_0/fpd_cci_noc_axi3_clk] [get_bd_pins axi_noc_0/aclk3]
   connect_bd_net -net versal_cips_0_lpd_axi_noc_clk [get_bd_pins versal_cips_0/lpd_axi_noc_clk] [get_bd_pins axi_noc_0/aclk4]
-  connect_bd_net -net versal_cips_0_pl0_ref_clk [get_bd_pins versal_cips_0/pl2_ref_clk] [get_bd_ports clk_l] [get_bd_pins spacefibrelight_0/CLK] [get_bd_pins spacefibrelight_0/AXIS_VC0_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC1_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC2_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC3_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC4_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC5_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC6_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC7_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC8_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC0_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC1_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC2_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC3_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC4_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC5_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC6_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC7_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC8_TX_DL_ACLK] [get_bd_pins axi_noc_0/aclk6] [get_bd_pins DATALINK_ANALYZER/clk_l] [get_bd_pins DATALINK_GENERATOR/clk_l] [get_bd_pins DATALINK_CONFIGURATOR/clk_l] [get_bd_pins LANE_GENERATOR/clk_l] [get_bd_pins LANE_ANALYZER/clk_l] [get_bd_pins smartconnect_0/aclk] [get_bd_pins versal_cips_0/m_axi_lpd_aclk] [get_bd_pins proc_sys_reset_0/slowest_sync_clk]
+  connect_bd_net -net versal_cips_0_pl0_ref_clk [get_bd_pins versal_cips_0/pl2_ref_clk] [get_bd_ports clk_l] [get_bd_pins spacefibrelight_0/CLK] [get_bd_pins spacefibrelight_0/AXIS_VC0_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC1_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC2_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC3_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC4_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC5_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC6_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC7_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC8_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC0_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC1_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC2_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC3_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC4_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC5_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC6_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC7_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC8_TX_DL_ACLK] [get_bd_pins axi_noc_0/aclk6] [get_bd_pins DATALINK_ANALYZER/clk_l] [get_bd_pins DATALINK_GENERATOR/clk_l] [get_bd_pins DATALINK_CONFIGURATOR/clk_l] [get_bd_pins LANE_GENERATOR/clk_l] [get_bd_pins LANE_ANALYZER/clk_l] [get_bd_pins smartconnect_0/aclk] [get_bd_pins versal_cips_0/m_axi_lpd_aclk] [get_bd_pins proc_sys_reset_0/slowest_sync_clk] [get_bd_pins axi_bram_ctrl_0/s_axi_aclk]
   connect_bd_net -net versal_cips_0_pmc_axi_noc_axi0_clk [get_bd_pins versal_cips_0/pmc_axi_noc_axi0_clk] [get_bd_pins axi_noc_0/aclk5]
   connect_bd_net -net xlconstant_0_dout [get_bd_pins xlconstant_0/dout] [get_bd_pins spacefibrelight_0/CURRENT_TIME_SLOT_NW]
 
@@ -1341,6 +1358,7 @@ proc create_root_design { parentCell } {
   assign_bd_address -offset 0x90000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs DATALINK_GENERATOR/DATA_LINK_GENERATOR_8/S_AXI/reg0] -force
   assign_bd_address -offset 0x91000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs LANE_ANALYZER/LANE_ANALYZER_0/S_AXI/reg0] -force
   assign_bd_address -offset 0x92000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs LANE_GENERATOR/LANE_GENERATOR_0/S_AXI/reg0] -force
+  assign_bd_address -offset 0x93000000 -range 0x00002000 -target_address_space [get_bd_addr_spaces versal_cips_0/M_AXI_LPD] [get_bd_addr_segs axi_bram_ctrl_0/S_AXI/Mem0] -force
   assign_bd_address -offset 0x00000000 -range 0x80000000 -target_address_space [get_bd_addr_spaces versal_cips_0/PMC_NOC_AXI_0] [get_bd_addr_segs axi_noc_0/S05_AXI/C2_DDR_LOW0] -force
   assign_bd_address -offset 0x000800000000 -range 0x80000000 -target_address_space [get_bd_addr_spaces versal_cips_0/PMC_NOC_AXI_0] [get_bd_addr_segs axi_noc_0/S05_AXI/C2_DDR_LOW1] -force
 
