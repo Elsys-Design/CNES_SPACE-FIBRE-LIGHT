@@ -8,7 +8,7 @@
 
 |Name|Location|Graph|Reset State|States|Input Signals|Output Signals|
 |---|---|:---:|---|---|---:|---:|
-current_state|<linty-anchor href="/src/module_phy_plus_lane/rx_sync_fsm.vhd#67">rx_sync_fsm.vhd#67</linty-anchor>|<a href="/graphs/fsm_states_10_graph.html"><img title="Open FSM Diagram" src="/_static/images/icon_graph.png" style="max-height: 25px; width: auto;" alt="Open FSM Diagram"></a>|LOST_SYNC_ST| Count: 3<br>CHECK_SYNC_ST<br>LOST_SYNC_ST<br>READY_ST|10|11||
+current_state|<linty-anchor href="/src/module_phy_plus_lane/rx_sync_fsm.vhd#67">rx_sync_fsm.vhd#67</linty-anchor>|<a href="/spacefibrelight/graphs/fsm_states_10_graph.html"><img title="Open FSM Diagram" src="/spacefibrelight/_static/images/icon_graph.png" style="max-height: 25px; width: auto;" alt="Open FSM Diagram"></a>|LOST_SYNC_ST| Count: 3<br>CHECK_SYNC_ST<br>LOST_SYNC_ST<br>READY_ST|10|11||
 
 <br>
 
