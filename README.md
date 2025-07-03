@@ -22,7 +22,7 @@ That's why it contains only two dependent technology IPs:
 - HSSL IP from Xilinx-AMD
 - BufGT for the clock outgoing from this HSSL IP
 
-This IP was developed on a Xilinx-AMD Versal VEK280 Evaluation Platform with FMC Connector (Versal AI Edge xcve2802-vsvh1760-2MP-e-S) with vivado 2024.1
+This IP was developed on a Xilinx-AMD Versal VEK280 Evaluation Platform with FMC Connector (Versal AI Edge xcve2802-vsvh1760-2MP-e-S) with vivado 2024.1.
 
 The figure shows the block diagram of the SpaceFibre Light IP.
 
