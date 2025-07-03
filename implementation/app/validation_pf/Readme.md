@@ -20,7 +20,7 @@ An FPGA reset is also implemented at `SW4`.
 
 # setup the software testbench
 
-1. export the project XSA : `File -> Export Hardware -> export  `
+1. export the project XSA : `File -> Export Hardware -> include Device Image  `
 2. open vitis classic
 3. create a new application project
 4. create a new platform for `R5 processor` based on the exported XSA
@@ -32,4 +32,3 @@ An FPGA reset is also implemented at `SW4`.
     1. in `ARM R5 GCC compiler-> Directories` add `sw/header` folder
 10. build your project and run it.
     in the terminal you should see the menu. Youcan select your test to be ran.
-    
