@@ -21,7 +21,7 @@
 #ignore custom config script
 **.customconfig
 #specific parameters for simulation (depend on each installation) 
-IP_SPACE_FIBRE/02_dev/03_verification/05_scenario/environnement
+sim/scenario/environnement
 
 #ignore log files
 **.debug
@@ -39,9 +39,9 @@ IP_SPACE_FIBRE/02_dev/03_verification/05_scenario/environnement
 **/test_fw_*.fw
 
 # ignore individual code coverage
-IP_SPACE_FIBRE/02_dev/03_verification/05_scenario/*/covhtmlreport*
-IP_SPACE_FIBRE/02_dev/03_verification/05_scenario/*/*_cov.txt
-IP_SPACE_FIBRE/02_dev/03_verification/05_scenario/*/*_cov.ucdb
+sim/scenario/*/covhtmlreport*
+sim/scenario/*/*_cov.txt
+sim/scenario/*/*_cov.ucdb
 
 # ignore cocotb generated files
 **/results.xml
@@ -49,14 +49,14 @@ IP_SPACE_FIBRE/02_dev/03_verification/05_scenario/*/*_cov.ucdb
 #find . -type f -size +5M
 #ignore file >5mo
 
-IP_SPACE_FIBRE/02_dev/01_design/05_libraries/unisim/verilog/src/unisims/CPM5.v
-IP_SPACE_FIBRE/02_dev/01_design/05_libraries/unisim/verilog/src/unisims/HNICX.v
-IP_SPACE_FIBRE/02_dev/01_design/05_libraries/unisim/verilog/src/unisim_retarget_comp.vp
-IP_SPACE_FIBRE/02_dev/01_design/05_libraries/secureip/gtyp_quad/gtyp_quad_002.svp
+sim/libraries/unisim/verilog/src/unisims/CPM5.v
+sim/libraries/unisim/verilog/src/unisims/HNICX.v
+sim/libraries/unisim/verilog/src/unisim_retarget_comp.vp
+sim/libraries/secureip/gtyp_quad/gtyp_quad_002.svp
 
 
 #specific custom script
-IP_SPACE_FIBRE/02_dev/03_verification/05_scenario/custom.do
+sim/scenario/custom.do
 
 #linty folder
 .linty
@@ -64,3 +64,11 @@ IP_SPACE_FIBRE/02_dev/03_verification/05_scenario/custom.do
 #vscode folder
 .vscode
 
+#vivado folder
+work
+**/.Xil/
+*.jou
+*.log
+#remove xilinx ip src copy
+xilinx_ip/spacefibrelight_full_wrapper/src
+**/vivado_pid*.str
