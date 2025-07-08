@@ -18,15 +18,15 @@
 /******************************************************************************/
 /** DL_ANALYZER ***************************************************************/
 /******************************************************************************/
-#define DL_ANALYZER_0_ADDR XPAR_DATALINK_ANALYZER_DATA_LINK_ANALYZER_0_BASEADDR
-#define DL_ANALYZER_1_ADDR XPAR_DATALINK_ANALYZER_DATA_LINK_ANALYZER_1_BASEADDR
-#define DL_ANALYZER_2_ADDR XPAR_DATALINK_ANALYZER_DATA_LINK_ANALYZER_2_BASEADDR
-#define DL_ANALYZER_3_ADDR XPAR_DATALINK_ANALYZER_DATA_LINK_ANALYZER_3_BASEADDR
-#define DL_ANALYZER_4_ADDR XPAR_DATALINK_ANALYZER_DATA_LINK_ANALYZER_4_BASEADDR
-#define DL_ANALYZER_5_ADDR XPAR_DATALINK_ANALYZER_DATA_LINK_ANALYZER_5_BASEADDR
-#define DL_ANALYZER_6_ADDR XPAR_DATALINK_ANALYZER_DATA_LINK_ANALYZER_6_BASEADDR
-#define DL_ANALYZER_7_ADDR XPAR_DATALINK_ANALYZER_DATA_LINK_ANALYZER_7_BASEADDR
-#define DL_ANALYZER_8_ADDR XPAR_DATALINK_ANALYZER_DATA_LINK_ANALYZER_8_BASEADDR
+#define DL_ANALYZER_0_ADDR XPAR_AXI_BRAM_CTRL_0_S_AXI_BASEADDR // this feature is not available in this design => mapping to bram to avoid compile error
+#define DL_ANALYZER_1_ADDR XPAR_AXI_BRAM_CTRL_0_S_AXI_BASEADDR // this feature is not available in this design => mapping to bram to avoid compile error
+#define DL_ANALYZER_2_ADDR XPAR_AXI_BRAM_CTRL_0_S_AXI_BASEADDR // this feature is not available in this design => mapping to bram to avoid compile error
+#define DL_ANALYZER_3_ADDR XPAR_AXI_BRAM_CTRL_0_S_AXI_BASEADDR // this feature is not available in this design => mapping to bram to avoid compile error
+#define DL_ANALYZER_4_ADDR XPAR_AXI_BRAM_CTRL_0_S_AXI_BASEADDR // this feature is not available in this design => mapping to bram to avoid compile error
+#define DL_ANALYZER_5_ADDR XPAR_AXI_BRAM_CTRL_0_S_AXI_BASEADDR // this feature is not available in this design => mapping to bram to avoid compile error
+#define DL_ANALYZER_6_ADDR XPAR_AXI_BRAM_CTRL_0_S_AXI_BASEADDR // this feature is not available in this design => mapping to bram to avoid compile error
+#define DL_ANALYZER_7_ADDR XPAR_AXI_BRAM_CTRL_0_S_AXI_BASEADDR // this feature is not available in this design => mapping to bram to avoid compile error
+#define DL_ANALYZER_8_ADDR XPAR_AXI_BRAM_CTRL_0_S_AXI_BASEADDR // this feature is not available in this design => mapping to bram to avoid compile error
 
 #define DL_ANALYZER_X_ADDR(x) \
 	(DL_ANALYZER_0_ADDR + ((DL_ANALYZER_1_ADDR - DL_ANALYZER_0_ADDR) * (x)))
@@ -293,15 +293,15 @@ struct dl_analyzer_status
 /******************************************************************************/
 /** DL_GENERATOR **************************************************************/
 /******************************************************************************/
-#define DL_GENERATOR_0_ADDR XPAR_DATALINK_GENERATOR_DATA_LINK_GENERATOR_0_BASEADDR
-#define DL_GENERATOR_1_ADDR XPAR_DATALINK_GENERATOR_DATA_LINK_GENERATOR_1_BASEADDR
-#define DL_GENERATOR_2_ADDR XPAR_DATALINK_GENERATOR_DATA_LINK_GENERATOR_2_BASEADDR
-#define DL_GENERATOR_3_ADDR XPAR_DATALINK_GENERATOR_DATA_LINK_GENERATOR_3_BASEADDR
-#define DL_GENERATOR_4_ADDR XPAR_DATALINK_GENERATOR_DATA_LINK_GENERATOR_4_BASEADDR
-#define DL_GENERATOR_5_ADDR XPAR_DATALINK_GENERATOR_DATA_LINK_GENERATOR_5_BASEADDR
-#define DL_GENERATOR_6_ADDR XPAR_DATALINK_GENERATOR_DATA_LINK_GENERATOR_6_BASEADDR
-#define DL_GENERATOR_7_ADDR XPAR_DATALINK_GENERATOR_DATA_LINK_GENERATOR_7_BASEADDR
-#define DL_GENERATOR_8_ADDR XPAR_DATALINK_GENERATOR_DATA_LINK_GENERATOR_8_BASEADDR
+#define DL_GENERATOR_0_ADDR XPAR_AXI_BRAM_CTRL_0_S_AXI_BASEADDR // this feature is not available in this design => mapping to bram to avoid compile error
+#define DL_GENERATOR_1_ADDR XPAR_AXI_BRAM_CTRL_0_S_AXI_BASEADDR // this feature is not available in this design => mapping to bram to avoid compile error
+#define DL_GENERATOR_2_ADDR XPAR_AXI_BRAM_CTRL_0_S_AXI_BASEADDR // this feature is not available in this design => mapping to bram to avoid compile error
+#define DL_GENERATOR_3_ADDR XPAR_AXI_BRAM_CTRL_0_S_AXI_BASEADDR // this feature is not available in this design => mapping to bram to avoid compile error
+#define DL_GENERATOR_4_ADDR XPAR_AXI_BRAM_CTRL_0_S_AXI_BASEADDR // this feature is not available in this design => mapping to bram to avoid compile error
+#define DL_GENERATOR_5_ADDR XPAR_AXI_BRAM_CTRL_0_S_AXI_BASEADDR // this feature is not available in this design => mapping to bram to avoid compile error
+#define DL_GENERATOR_6_ADDR XPAR_AXI_BRAM_CTRL_0_S_AXI_BASEADDR // this feature is not available in this design => mapping to bram to avoid compile error
+#define DL_GENERATOR_7_ADDR XPAR_AXI_BRAM_CTRL_0_S_AXI_BASEADDR // this feature is not available in this design => mapping to bram to avoid compile error
+#define DL_GENERATOR_8_ADDR XPAR_AXI_BRAM_CTRL_0_S_AXI_BASEADDR // this feature is not available in this design => mapping to bram to avoid compile error
 
 #define DL_GENERATOR_X_ADDR(x) \
 	(DL_GENERATOR_0_ADDR + ((DL_GENERATOR_1_ADDR - DL_GENERATOR_0_ADDR) * (x)))
