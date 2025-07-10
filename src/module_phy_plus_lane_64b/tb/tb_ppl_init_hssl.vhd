@@ -19,7 +19,7 @@
 --
 -- Creation date : 02/07/2025
 --
--- Description : This module manages the reset of the Spacefibre hssl ip
+-- Description : This is the testbench of the ppl_init_hssl module
 ----------------------------------------------------------------------------
 LIBRARY ieee ;
 USE ieee.std_logic_1164.all;
