@@ -38,7 +38,17 @@ library work;
 package pkg_simu is
     procedure log_info (msg: string);
     procedure log_error(msg: string; test_failed : inout boolean);
-    procedure check_equal(signal_name: string; expected, actual: std_logic_vector; test_failed : inout boolean);
+    procedure check_equal(
+      signal_name: string;
+      expected, actual: std_logic_vector;
+      test_failed : inout boolean
+      );
+    procedure check(
+     info        : in    string;
+     expected    : in    std_logic;
+     result      : in    std_logic;
+     test_failed : inout boolean
+  );
     procedure log_test_result(test_failed: boolean);
 
 end package pkg_simu;
@@ -66,6 +76,22 @@ package body pkg_simu is
       -- log_info(signal_name & " match OK: " & to_hstring(to_bitvector(actual)));
     end if;
   end procedure;
+    procedure check(
+     info        : in    string;
+     expected    : in    std_logic;
+     result      : in    std_logic;
+     test_failed : inout boolean
+  ) is
+     variable stdio : line;
+  begin
+     if (result /= expected) then
+         report "### NOT OK ### : " & info & " is false" severity error;
+         write(stdio, string'(" expected : ")); write(stdio, expected);
+         write(stdio, string'(" but had : ")); write(stdio, result);
+         report stdio.all severity error;
+         test_failed := true;
+     end if;
+  end procedure;
 
   procedure log_test_result(test_failed: boolean) is
     constant LF : character := character'val(10);
@@ -83,4 +109,5 @@ package body pkg_simu is
       report msg severity error;
     end if;
   end procedure;
+
 end package body pkg_simu;

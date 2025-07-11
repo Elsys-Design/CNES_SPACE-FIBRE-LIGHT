@@ -64,7 +64,7 @@ package pkg_phy_plus_lane_64b is
    -- Counters max value
    constant C_PRBS_COUNTER_64     : unsigned(31 downto 00) := x"0000003F";  -- 64 = 0 to 63 values Max value of PRBS counter for INIT1/2/3 control words
    constant C_X32_SIGNAL          : unsigned(04 downto 00) := "11111";      -- 32 = 0 to 31 values
-   constant C_5000_WORDS          : unsigned(12 downto 00) := "1" & x"387";      -- 5000 = 0 to 4999 values
+   constant C_5000_WORDS          : unsigned(12 downto 00) := to_unsigned(4998,13);      -- 5000 = 0 to 4999 values
    --constant C_5000_WORDS         : unsigned(12 downto 00) := "0" & x"00A";      -- 10 for test
    constant C_SYMB_X5             : unsigned(02 downto 00) := "100";          -- 5 = 0 to 4 values
    --FIFOs size
