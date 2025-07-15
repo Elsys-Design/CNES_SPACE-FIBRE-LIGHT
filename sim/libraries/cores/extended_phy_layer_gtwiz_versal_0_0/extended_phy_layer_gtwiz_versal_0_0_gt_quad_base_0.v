@@ -1368,8 +1368,6 @@ input wire ch0_txqpiweakpu;
 (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME TX0_OUTCLK, FREQ_HZ 156250000, IS_MASTER false, PARENT_ID undef, PHASE 0.0" *)
 (* X_INTERFACE_INFO = "xilinx.com:signal:gt_outclk:1.0 TX0_OUTCLK CLK" *)
 output wire ch0_txoutclk;
-(* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME TX0_USRCLK, FREQ_HZ 156250000, PARENT_ID undef, PHASE 0.0" *)
-(* X_INTERFACE_INFO = "xilinx.com:signal:gt_usrclk:1.0 TX0_USRCLK CLK" *)
 input wire ch0_txusrclk;
 (* X_INTERFACE_INFO = "xilinx.com:interface:gt_tx_interface:1.0 TX1_GT_IP_Interface ch_txdata" *)
 input wire [127 : 0] ch1_txdata;
@@ -1871,6 +1869,8 @@ input wire ch3_txqpiweakpu;
 (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME TX3_OUTCLK, FREQ_HZ 156250000, IS_MASTER false, PARENT_ID undef, PHASE 0.0" *)
 (* X_INTERFACE_INFO = "xilinx.com:signal:gt_outclk:1.0 TX3_OUTCLK CLK" *)
 output wire ch3_txoutclk;
+(* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME TX3_USRCLK, FREQ_HZ 156250000, PARENT_ID undef, PHASE 0.0" *)
+(* X_INTERFACE_INFO = "xilinx.com:signal:gt_usrclk:1.0 TX3_USRCLK CLK" *)
 input wire ch3_txusrclk;
 (* X_INTERFACE_INFO = "xilinx.com:interface:gt_rx_interface:1.0 RX0_GT_IP_Interface ch_rxdata" *)
 output wire [127 : 0] ch0_rxdata;
@@ -2082,8 +2082,6 @@ input wire ch0_rxqpien;
 (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME RX0_OUTCLK, FREQ_HZ 156250000, IS_MASTER false, PARENT_ID undef, PHASE 0.0" *)
 (* X_INTERFACE_INFO = "xilinx.com:signal:gt_outclk:1.0 RX0_OUTCLK CLK" *)
 output wire ch0_rxoutclk;
-(* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME RX0_USRCLK, FREQ_HZ 156250000, PARENT_ID undef, PHASE 0.0" *)
-(* X_INTERFACE_INFO = "xilinx.com:signal:gt_usrclk:1.0 RX0_USRCLK CLK" *)
 input wire ch0_rxusrclk;
 (* X_INTERFACE_INFO = "xilinx.com:interface:gt_rx_interface:1.0 RX1_GT_IP_Interface ch_rxdata" *)
 output wire [127 : 0] ch1_rxdata;
@@ -2717,6 +2715,8 @@ input wire ch3_rxqpien;
 (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME RX3_OUTCLK, FREQ_HZ 156250000, IS_MASTER false, PARENT_ID undef, PHASE 0.0" *)
 (* X_INTERFACE_INFO = "xilinx.com:signal:gt_outclk:1.0 RX3_OUTCLK CLK" *)
 output wire ch3_rxoutclk;
+(* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME RX3_USRCLK, FREQ_HZ 156250000, PARENT_ID undef, PHASE 0.0" *)
+(* X_INTERFACE_INFO = "xilinx.com:signal:gt_usrclk:1.0 RX3_USRCLK CLK" *)
 input wire ch3_rxusrclk;
 (* X_INTERFACE_INFO = "xilinx.com:interface:gt_bufgt:1.0 GT0_BUFGT ch_bufgtce" *)
 output wire ch0_bufgtce;
@@ -3106,18 +3106,18 @@ alse RX_CC_DISP_0_2 false RX_CC_MASK_0_3 false RX_CC_VAL_0_3 00000000 RX_CC_K_0_
     .IS_GTYE5(1'B0),
     .IS_GTYP(1'B1),
     .IS_KSB(1'B0),
-    .LANEUSAGE("PROT0 {group A rates 0 txrate PROT0.D1 tx 0 rxrate PROT0.D1 rx 0}"),
-    .REFCLK_SEL("HSCLK0_LCPLLGTREFCLK0 refclk_PROT0_R0_100_MHz_unique1"),
+    .LANEUSAGE("PROT0 {group A rates 0 txrate PROT0.D1 tx 3 rxrate PROT0.D1 rx 3}"),
+    .REFCLK_SEL("HSCLK1_LCPLLGTREFCLK0 refclk_PROT0_R0_100_MHz_unique1"),
     .GT_REFCLK_INFO("refclk_PROT0_R0_100_MHz_unique1"),
     .LANE_SATISFIED("1 {}"),
     .QUAD_PACK(""),
-    .QUAD_USAGE("TX_QUAD_CH {TXQuad_0_/extended_phy_layer_gtwiz_versal_0_0/extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0 {/extended_phy_layer_gtwiz_versal_0_0/extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0 PROT0.IP_CH0,undef,undef,undef MSTRCLK 1,0,0,0 IS_CURRENT_QUAD 1}} RX_QUAD_CH {RXQuad_0_/extended_phy_layer_gtwiz_versal_0_0/extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0 {/extended_phy_layer_gtwiz_versal_0_0/extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0 PROT0.IP_CH0,undef,undef,undef MSTRCL\
-K 1,0,0,0 IS_CURRENT_QUAD 1}}"),
-    .LANE_SEL_DICT("PROT0 {RX0 TX0} unconnected {RX1 RX2 RX3 TX1 TX2 TX3}"),
-    .MSTCLK_SRC_DICT("TX 1,0,0,0 RX 1,0,0,0"),
-    .PROT_DUAL_OCCUPIED("PROT0 DUAL0"),
+    .QUAD_USAGE("TX_QUAD_CH {TXQuad_0_/extended_phy_layer_gtwiz_versal_0_0/extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0 {/extended_phy_layer_gtwiz_versal_0_0/extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0 undef,undef,undef,PROT0.IP_CH0 MSTRCLK 0,0,0,1 IS_CURRENT_QUAD 1}} RX_QUAD_CH {RXQuad_0_/extended_phy_layer_gtwiz_versal_0_0/extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0 {/extended_phy_layer_gtwiz_versal_0_0/extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0 undef,undef,undef,PROT0.IP_CH0 MSTRCL\
+K 0,0,0,1 IS_CURRENT_QUAD 1}}"),
+    .LANE_SEL_DICT("unconnected {RX0 RX1 RX2 TX0 TX1 TX2} PROT0 {RX3 TX3}"),
+    .MSTCLK_SRC_DICT("TX 0,0,0,1 RX 0,0,0,1"),
+    .PROT_DUAL_OCCUPIED("PROT0 DUAL1"),
     .EGW_IS_QUAD("1"),
-    .QUAD_COMMON_SETTINGS("mode full bonded true LANEUSAGE {PROT0 {group A rates 0 txrate PROT0.D1 tx 0 rxrate PROT0.D1 rx 0}}"),
+    .QUAD_COMMON_SETTINGS("mode full bonded true LANEUSAGE {PROT0 {group A rates 0 txrate PROT0.D1 tx 3 rxrate PROT0.D1 rx 3}}"),
     .CHANNEL_BONDING_EN(""),
     .PROTO_IS_FABRIC_BRAMN_NEEDED(1'B0)
   ) inst (

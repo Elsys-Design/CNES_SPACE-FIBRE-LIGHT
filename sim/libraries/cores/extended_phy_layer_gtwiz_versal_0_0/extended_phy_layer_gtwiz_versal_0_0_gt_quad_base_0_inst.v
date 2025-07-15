@@ -78,14 +78,14 @@ module extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_inst # (
     parameter EGW_REFCLK_LIST        = "1_2_3",
     parameter PWR_TX_DEF_SETTINGS    = "{LR0_SETTING {tx_data_rate=10.3125,tx_pll_type=LCPLL,tx_user_data_width=32,tx_int_data_width=32,tx_data_encoding=RAW,tx_pam_sel=NRZ,}}",
     parameter PWR_RX_DEF_SETTINGS    = "{LR0_SETTING {rx_data_rate=10.3125,rx_pll_type=LCPLL,rx_user_data_width=32,rx_int_data_width=32,rx_data_encoding=RAW,rx_eq_mode=AUTO,rx_oob_en=false,rx_pam_sel=NRZ,}}",
-    parameter PWR_TX0_SETTINGS       = "{LR0_SETTING {tx_data_rate=6,tx_pll_type=LCPLL,tx_user_data_width=32,tx_int_data_width=40,tx_data_encoding=8B10B,tx_pam_sel=NRZ,}                }",
+    parameter PWR_TX0_SETTINGS       = "{}",
     parameter PWR_TX1_SETTINGS       = "{}",
     parameter PWR_TX2_SETTINGS       = "{}",
-    parameter PWR_TX3_SETTINGS       = "{}",
-    parameter PWR_RX0_SETTINGS       = "{LR0_SETTING {rx_data_rate=6,rx_pll_type=LCPLL,rx_user_data_width=32,rx_int_data_width=40,rx_data_encoding=8B10B,rx_eq_mode=AUTO,rx_oob_en=false,rx_pam_sel=NRZ,}                }",
+    parameter PWR_TX3_SETTINGS       = "{LR0_SETTING {tx_data_rate=6,tx_pll_type=LCPLL,tx_user_data_width=32,tx_int_data_width=40,tx_data_encoding=8B10B,tx_pam_sel=NRZ,}                }",
+    parameter PWR_RX0_SETTINGS       = "{}",
     parameter PWR_RX1_SETTINGS       = "{}",
     parameter PWR_RX2_SETTINGS       = "{}",
-    parameter PWR_RX3_SETTINGS       = "{}",
+    parameter PWR_RX3_SETTINGS       = "{LR0_SETTING {rx_data_rate=6,rx_pll_type=LCPLL,rx_user_data_width=32,rx_int_data_width=40,rx_data_encoding=8B10B,rx_eq_mode=AUTO,rx_oob_en=false,rx_pam_sel=NRZ,}                }",
     parameter ENABLE_APB3            = "true",
     parameter PROTO_IS_FABRIC_BRAMN_NEEDED = "false",
     parameter CHANNEL_BONDING_EN     = ""
@@ -1340,10 +1340,10 @@ assign txn = {ch3_gtytxn,ch2_gtytxn,ch1_gtytxn,ch0_gtytxn};
 assign txp = {ch3_gtytxp,ch2_gtytxp,ch1_gtytxp,ch0_gtytxp};
 assign  {ch3_gtyrxn,ch2_gtyrxn,ch1_gtyrxn,ch0_gtyrxn} = rxn;
 assign  {ch3_gtyrxp,ch2_gtyrxp,ch1_gtyrxp,ch0_gtyrxp} = rxp;
-assign {hsclk0_lcpllgtrefclk1,hsclk0_lcpllnorthrefclk0,hsclk0_lcpllnorthrefclk1,hsclk0_lcpllsouthrefclk0,hsclk0_lcpllsouthrefclk1,hsclk1_lcpllgtrefclk0,hsclk1_lcpllgtrefclk1,hsclk1_lcpllnorthrefclk0,hsclk1_lcpllnorthrefclk1,hsclk1_lcpllsouthrefclk0,hsclk1_lcpllsouthrefclk1,hsclk0_rpllgtrefclk0,hsclk0_rpllgtrefclk1,hsclk0_rpllnorthrefclk0,hsclk0_rpllnorthrefclk1,hsclk0_rpllsouthrefclk0,hsclk0_rpllsouthrefclk1,hsclk1_rpllgtrefclk0,hsclk1_rpllgtrefclk1,hsclk1_rpllnorthrefclk0,hsclk1_rpllnorthrefclk1,hsclk1_rpllsouthrefclk0,hsclk1_rpllsouthrefclk1} = 23'd0;
+assign {hsclk0_lcpllgtrefclk0,hsclk0_lcpllgtrefclk1,hsclk0_lcpllnorthrefclk0,hsclk0_lcpllnorthrefclk1,hsclk0_lcpllsouthrefclk0,hsclk0_lcpllsouthrefclk1,hsclk1_lcpllgtrefclk1,hsclk1_lcpllnorthrefclk0,hsclk1_lcpllnorthrefclk1,hsclk1_lcpllsouthrefclk0,hsclk1_lcpllsouthrefclk1,hsclk0_rpllgtrefclk0,hsclk0_rpllgtrefclk1,hsclk0_rpllnorthrefclk0,hsclk0_rpllnorthrefclk1,hsclk0_rpllsouthrefclk0,hsclk0_rpllsouthrefclk1,hsclk1_rpllgtrefclk0,hsclk1_rpllgtrefclk1,hsclk1_rpllnorthrefclk0,hsclk1_rpllnorthrefclk1,hsclk1_rpllsouthrefclk0,hsclk1_rpllsouthrefclk1} = 23'd0;
 wire refclk_PROT0_R0_100_MHz_unique1;
 assign {refclk_PROT0_R0_100_MHz_unique1} = {GT_REFCLK0};
-assign {hsclk0_lcpllgtrefclk0} = {refclk_PROT0_R0_100_MHz_unique1};
+assign {hsclk1_lcpllgtrefclk0} = {refclk_PROT0_R0_100_MHz_unique1};
 
 
 assign apb3_presetn_int = apb3presetn;
