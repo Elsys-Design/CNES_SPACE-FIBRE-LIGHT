@@ -659,6 +659,12 @@ signal capability_tx_i          : std_logic_vector(7 downto 0);
 signal lane_active_dl_i         : std_logic;
 signal fifo_in_ctrl_data_valid  : std_logic;
 signal fifo_out_ctrl_data_valid : std_logic;
+
+-- for low level debugging GTY with versal
+attribute MARK_DEBUG : string;
+attribute MARK_DEBUG of QUAD0_hsclk0_lcplllock : signal is "TRUE";--GTY PLL LOCK
+attribute MARK_DEBUG of INTF0_RX0_ch_rxdata: signal is "TRUE"; -- RX data
+attribute MARK_DEBUG of data_tx_from_si: signal is "TRUE"; -- TX data
 begin
 
    LANE_RESET_PPL_OUT <= lane_reset_dl_i or LANE_RESET;
