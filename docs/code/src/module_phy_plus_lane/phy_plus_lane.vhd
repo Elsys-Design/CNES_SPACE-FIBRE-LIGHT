@@ -102,7 +102,7 @@ architecture rtl of phy_plus_lane is
 --         not wanted for now as the IP is still in validation.
 --         It is worth noted that VHDL cannot dynamlically create port (or assign them)
 
-constant lane_number : integer :=3;
+constant lane_number : integer :=3; -- from 0 to 3
 
 component extended_phy_layer_gtwiz_versal_0_0 is
   port (
@@ -1277,8 +1277,8 @@ RX_POLARITY                <= invert_rx_bits_from_lif;
 FAR_END_CAPA               <= far_end_capa_i;
 lane_active_dl_i           <= enable_transm_data_from_lif;
 
-QUAD0_rxp(lane_number)               <= RX_POS;
-QUAD0_rxn(lane_number)               <= RX_NEG;
+QUAD0_rxp(lane_number)     <= RX_POS;
+QUAD0_rxn(lane_number)     <= RX_NEG;
 TX_POS                     <= QUAD0_txp(lane_number);
 TX_NEG                     <= QUAD0_txn(lane_number);
 
