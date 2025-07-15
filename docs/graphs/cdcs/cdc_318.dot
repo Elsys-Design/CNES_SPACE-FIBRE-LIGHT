@@ -27,7 +27,7 @@ v8 [ label="1'0" ];
 v9 [ label="1'0" ];
 v10 [ label="3'000" ];
 v11 [ label="inst_phy_plus_lane.QUAD0_TX0_outclk" ];
-c20 [ shape=record, label="{{<p13> CE|<p14> CEMASK|<p15> CLR|<p16> CLRMASK|<p17> DIV|<p18> I}|inst_phy_plus_lane.BUFG_GT_inst\nBUFG_GT|{<p19> O}}", href="/src/module_phy_plus_lane/phy_plus_lane.vhd#997"  ];
+c20 [ shape=record, label="{{<p13> CE|<p14> CEMASK|<p15> CLR|<p16> CLRMASK|<p17> DIV|<p18> I}|inst_phy_plus_lane.BUFG_GT_inst\nBUFG_GT|{<p19> O}}", href="/src/module_phy_plus_lane/phy_plus_lane.vhd#991"  ];
 c20:p19:e -> n1:w [color="black", fontcolor="black", label=""];
 n1:e -> c10:p6:w [color="black", fontcolor="black", label=""];
 n1:e -> c12:p6:w [color="black", fontcolor="black", label=""];
