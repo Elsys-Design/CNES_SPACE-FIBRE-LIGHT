@@ -377,11 +377,11 @@ parameter QUAD4_PROT7_SETTINGS = " "
        // GPIO
        input  [31:0]      QUAD0_gpi ,
        output [31:0]      QUAD0_gpo ,
+ 
+ 
+ 
        // Loopback
-       input  [2:0]       QUAD0_ch0_loopback ,
- 
- 
- 
+       input  [2:0]       QUAD0_ch3_loopback ,
  
  
        // HSCLK LCPLL lock
@@ -394,8 +394,8 @@ parameter QUAD4_PROT7_SETTINGS = " "
        output [3:0]       QUAD0_txn ,
 
 
-       output             QUAD0_TX0_outclk ,
-       output             QUAD0_RX0_outclk ,
+       output             QUAD0_TX3_outclk ,
+       output             QUAD0_RX3_outclk ,
        output             INTF0_TX_clr_out,
        output             INTF0_TX_clrb_leaf_out,
        output             INTF0_RX_clr_out,
@@ -410,8 +410,8 @@ parameter QUAD4_PROT7_SETTINGS = " "
        input              INTF0_rst_rx_datapath_in,
        output             INTF0_rst_rx_done_out,
 
-       input              QUAD0_TX0_usrclk,
-       input              QUAD0_RX0_usrclk,
+       input              QUAD0_TX3_usrclk,
+       input              QUAD0_RX3_usrclk,
 
        output             gtpowergood
 
@@ -505,12 +505,12 @@ assign INTF0_mst_rx_resetdone      = &INTF0_mst_rx_resetdone_int;
 
 
 
+wire QUAD0_TX0_usrclk = 1'b0;
+wire QUAD0_RX0_usrclk = 1'b0;
 wire QUAD0_TX1_usrclk = 1'b0;
 wire QUAD0_RX1_usrclk = 1'b0;
 wire QUAD0_TX2_usrclk = 1'b0;
 wire QUAD0_RX2_usrclk = 1'b0;
-wire QUAD0_TX3_usrclk = 1'b0;
-wire QUAD0_RX3_usrclk = 1'b0;
 
 extended_phy_layer_gtwiz_versal_0_0_intf_quad_map  # (
    .C_NO_OF_QUADS ( 1 ),
@@ -707,8 +707,6 @@ extended_phy_layer_gtwiz_versal_0_0_intf_quad_map  # (
        // Outclk interface
        .QUAD0_TX0_outclk                ( QUAD0_TX0_outclk),
        .QUAD0_RX0_outclk                ( QUAD0_RX0_outclk),
-       // Loopback
-       .QUAD0_ch0_loopback        ( QUAD0_ch0_loopback) ,
        // phyready en
        // Outclk interface
        .QUAD0_TX1_outclk                ( QUAD0_TX1_outclk),
@@ -721,6 +719,8 @@ extended_phy_layer_gtwiz_versal_0_0_intf_quad_map  # (
        // Outclk interface
        .QUAD0_TX3_outclk                ( QUAD0_TX3_outclk),
        .QUAD0_RX3_outclk                ( QUAD0_RX3_outclk),
+       // Loopback
+       .QUAD0_ch3_loopback        ( QUAD0_ch3_loopback) ,
        // phyready en
        // HSCLK LCPLL lock 
        .QUAD0_hsclk0_lcplllock              ( QUAD0_hsclk0_lcplllock),
