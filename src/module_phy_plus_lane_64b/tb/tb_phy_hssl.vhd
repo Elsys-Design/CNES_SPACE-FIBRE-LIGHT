@@ -159,7 +159,7 @@ architecture sim of tb_phy_hssl is
       VALID_K_CHARAC_PLWA           : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);  --! 4-bit valid K character flags from GTY IP
       INVALID_CHAR_PLWA             : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);  --! Invalid character flags from GTY IP
       DISPARITY_ERR_PLWA            : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);  --! Disparity error flags from GTY IP
-      RX_VALID_REALIGN_PLWA         : in  std_logic;                                            --! RX word realign from GTY IP
+      RX_WORD_IS_ALIGNED_PLWA         : in  std_logic;                                            --! RX word realign from GTY IP
       COMMA_DET_PLWA                : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);  --! Flag indicates that a comma is detected on the word receive
       -- PARAMETERS
       LANE_RESET                    : in  std_logic                                             --! Asserts or de-asserts LaneReset for the lane
@@ -217,7 +217,7 @@ signal INVALID_CHAR_HSSL            : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  
 signal DISPARITY_ERR_HSSL           : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);
 signal RX_WORD_IS_ALIGNED_HSSL      : std_logic;
 signal COMMA_DET_HSSL               : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
-signal RX_ALIGN_SYNC                : std_logic;
+signal RX_ALIGN_SYNC                : std_logic :='1';
 
 -- inst_ppl_init_hssl
 signal PLL_PMA_PWR_UP_PLIH          : std_logic;
@@ -238,11 +238,11 @@ signal DATA_TX_PSI                  : std_logic_vector(C_DATA_LENGTH-1 downto 0)
 signal VALID_K_CHARAC_PSI           : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
 
 -- inst_ppl_64_rx_sync_fsm
-signal LANE_RESET_DL                : std_logic;
+signal LANE_RESET_DL                : std_logic := '0';
 signal DATA_RX_PLRSF                : std_logic_vector(C_DATA_LENGTH-1 downto 0);
 signal VALID_K_CHARAC_PLRSF         : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
 signal DATA_RDY_PLRSF               : std_logic;
-signal LANE_RESET                   : std_logic;
+signal LANE_RESET                   : std_logic:= '0';
 
 -- inst_ppl_64_word_alignment
 signal DATA_RX_PLWA                 : std_logic_vector(C_DATA_LENGTH-1 downto 0);
@@ -252,7 +252,6 @@ signal INVALID_CHAR_PLWA            : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  
 signal DISPARITY_ERR_PLWA           : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);
 signal RX_WORD_IS_ALIGNED_PLWA      : std_logic;
 signal COMMA_DET_PLWA               : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
-signal RX_VALID_REALIGN_PLWA        : std_logic;
 
 signal ENABLE_TRANSM_DATA_PLIF      : std_logic                                          :='0';
 
@@ -316,13 +315,13 @@ begin
       TX0_CTRL_CHAR_IS_K_I        => VALID_K_CHARAC_PSI,
       RX0_BUSY_O                  => RX_BUSY_HSSL,
       RX0_CTRL_EL_BUFF_STAT_O     => OPEN,
-      RX0_CTRL_CHAR_IS_ALIGNED_O  => OPEN,
+      RX0_CTRL_CHAR_IS_ALIGNED_O  => RX_WORD_IS_ALIGNED_HSSL,
       RX0_CTRL_CHAR_IS_COMMA_O    => COMMA_DET_HSSL,
       RX0_CTRL_CHAR_IS_F_O        => OPEN,
       RX0_CTRL_CHAR_IS_K_O        => VALID_K_CHARAC_HSSL,
       RX0_CTRL_DISP_ERR_O         => DISPARITY_ERR_HSSL,
       RX0_CTRL_NOT_IN_TABLE_O     => INVALID_CHAR_HSSL,
-      RX0_CTRL_VALID_REALIGN_O    => RX_WORD_IS_ALIGNED_HSSL,
+      RX0_CTRL_VALID_REALIGN_O    => OPEN,
       RX0_DATA_O                  => DATA_RX_HSSL,
       RX0_OVS_BIT_SEL_I           => "00",
       RX0_EYE_RST_I               => '0',
@@ -371,19 +370,19 @@ begin
 
   inst_ppl_64_rx_sync_fsm : ppl_64_rx_sync_fsm
    port map(
-      RST_N                 => RST_N,
-      CLK                   => CLK_HSSL,
-      LANE_RESET_DL         => LANE_RESET_DL,
-      DATA_RX_PLRSF         => DATA_RX_PLRSF,
-      VALID_K_CHARAC_PLRSF  => VALID_K_CHARAC_PLRSF,
-      DATA_RDY_PLRSF        => DATA_RDY_PLRSF,
-      DATA_RX_PLWA          => DATA_RX_PLWA,
-      VALID_K_CHARAC_PLWA   => VALID_K_CHARAC_PLWA,
-      INVALID_CHAR_PLWA     => INVALID_CHAR_PLWA,
-      DISPARITY_ERR_PLWA    => DISPARITY_ERR_PLWA,
-      RX_VALID_REALIGN_PLWA => RX_VALID_REALIGN_PLWA,
-      COMMA_DET_PLWA        => COMMA_DET_PLWA,
-      LANE_RESET            => LANE_RESET
+      RST_N                   => RST_N,
+      CLK                     => CLK_HSSL,
+      LANE_RESET_DL           => LANE_RESET_DL,
+      DATA_RX_PLRSF           => DATA_RX_PLRSF,
+      VALID_K_CHARAC_PLRSF    => VALID_K_CHARAC_PLRSF,
+      DATA_RDY_PLRSF          => DATA_RDY_PLRSF,
+      DATA_RX_PLWA            => DATA_RX_PLWA,
+      VALID_K_CHARAC_PLWA     => VALID_K_CHARAC_PLWA,
+      INVALID_CHAR_PLWA       => INVALID_CHAR_PLWA,
+      DISPARITY_ERR_PLWA      => DISPARITY_ERR_PLWA,
+      RX_WORD_IS_ALIGNED_PLWA => RX_WORD_IS_ALIGNED_PLWA,
+      COMMA_DET_PLWA          => COMMA_DET_PLWA,
+      LANE_RESET              => LANE_RESET
     );
 
   inst_ppl_64_word_alignment : ppl_64_word_alignment
@@ -435,9 +434,19 @@ begin
     RST_N <= '0';
     wait for 20 ns;
     RST_N <= '1';
-    ------------------------------------------------------------
+    NEW_DATA_PLCWI       <= '1';
+    DATA_TX_PLCWI        <= C_INIT1_WORD & C_INIT1_WORD;
+    VALID_K_CHARAC_PLCWI <= x"11";
     --                     INIT PROCEDURE                     --
-    ------------------------------------------------------------
+    wait until HSSL_RESET_DONE_PLIH = '1';
+    wait until rising_edge(CLK_HSSL);
+    wait until rising_edge(CLK_HSSL);
+    ENABLE_TRANSM_DATA_PLIF <='1';
+    wait until rising_edge(CLK_HSSL);
+    for i in 0 to 10000 loop
+
+      wait until rising_edge(CLK_HSSL);
+    end loop;
 
 
     wait;
