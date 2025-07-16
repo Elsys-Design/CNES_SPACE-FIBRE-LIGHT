@@ -44,7 +44,7 @@ entity ppl_64_rx_sync_fsm is
       VALID_K_CHARAC_PLWA           : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);  --! 8-bit valid K character flags from GTY IP
       INVALID_CHAR_PLWA             : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);  --! Invalid character flags from GTY IP
       DISPARITY_ERR_PLWA            : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);  --! Disparity error flags from GTY IP
-      RX_VALID_REALIGN_PLWA         : in  std_logic;                                            --! RX word realign from GTY IP
+      RX_WORD_IS_ALIGNED_PLWA         : in  std_logic;                                            --! RX word realign from GTY IP
       COMMA_DET_PLWA                : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);  --! Flag indicates that a comma is detected on the word receive
       -- PARAMETERS
       LANE_RESET                       : in  std_logic                                             --! Asserts or de-asserts LaneReset for the lane
@@ -101,14 +101,14 @@ DATA_RDY_PLRSF       <= data_rdy_to_lcwd_i;
                                 else
                                   current_state  <= LOST_SYNC_ST;
                                 end if;
-        when CHECK_SYNC_ST  =>  if (LANE_RESET = '1' or LANE_RESET_DL = '1')  or RX_VALID_REALIGN_PLWA = '0' or err_word_x5 = '1' then
+        when CHECK_SYNC_ST  =>  if (LANE_RESET = '1' or LANE_RESET_DL = '1')  or RX_WORD_IS_ALIGNED_PLWA = '0' or err_word_x5 = '1' then
                                   current_state  <= LOST_SYNC_ST;
                                 elsif valid_symb = '1' then
                                   current_state  <= READY_ST;
                                 else
                                   current_state  <= CHECK_SYNC_ST;
                                 end if;
-        when READY_ST       =>  if (LANE_RESET = '1' or LANE_RESET_DL = '1') or RX_VALID_REALIGN_PLWA = '0' then
+        when READY_ST       =>  if (LANE_RESET = '1' or LANE_RESET_DL = '1') or RX_WORD_IS_ALIGNED_PLWA = '0' then
                                   current_state  <= LOST_SYNC_ST;
                                 elsif disp_invalid_err= '1' then
                                   current_state  <= CHECK_SYNC_ST;
@@ -147,7 +147,7 @@ DATA_RDY_PLRSF       <= data_rdy_to_lcwd_i;
         valid_k_charac_to_lcwd_i   <= VALID_K_CHARAC_PLWA;
         data_rdy_to_lcwd_i         <= '1';
         -- Alignment valid and error flag de-asserted
-        if err_word_x5 = '0' and RX_VALID_REALIGN_PLWA= '1' then
+        if err_word_x5 = '0' and RX_WORD_IS_ALIGNED_PLWA= '1' then
           ---------------------------------------------------------
           -- Invalid character or disparity error treatment      --
           ---------------------------------------------------------
@@ -191,7 +191,7 @@ DATA_RDY_PLRSF       <= data_rdy_to_lcwd_i;
         data_rx_to_lcwd_i          <= DATA_RX_PLWA;
         valid_k_charac_to_lcwd_i   <= VALID_K_CHARAC_PLWA;
         data_rdy_to_lcwd_i         <= '1';
-        if RX_VALID_REALIGN_PLWA= '1' then
+        if RX_WORD_IS_ALIGNED_PLWA= '1' then
           ---------------------------------------------------------
           -- Invalid character or disparity error treatment      --
           ---------------------------------------------------------

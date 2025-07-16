@@ -57,10 +57,9 @@ architecture rtl of ppl_64_word_alignment is
 -----                  Signal declaration           -----
 ---------------------------------------------------------
 
-  signal reg_data       : std_logic_vector(C_DATA_LENGTH-1 downto 0);
-  signal reg_k_char     : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
-  signal alignment_byte : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
-
+  signal reg_data                    : std_logic_vector(C_DATA_LENGTH-1 downto 0);
+  signal reg_k_char                  : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
+  signal alignment_byte              : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
 begin
 ---------------------------------------------------------
 -----                     Process                   -----
