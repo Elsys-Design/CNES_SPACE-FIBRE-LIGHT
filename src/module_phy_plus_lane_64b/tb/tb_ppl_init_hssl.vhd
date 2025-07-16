@@ -48,14 +48,14 @@ architecture sim of tb_ppl_init_hssl is
       PLL_PMA_PWR_UP_PLIH              : out std_logic;
       TX_DRIVER_PWRDWN_N_PLIH          : out std_logic;
       PLL_PMA_RST_N_PLIH               : out std_logic;
-      PLL_PMA_LOCK_ANALOG_PLSH         : in  std_logic;
-      TX0_RST_N_PLIH                   : out std_logic;
-      TX0_BUSY_PLSH                    : in  std_logic;
+      PLL_PMA_LOCK_ANALOG_HSSL         : in  std_logic;
+      TX_RST_N_PLIH                   : out std_logic;
+      TX_BUSY_HSSL                    : in  std_logic;
       RX_PMA_PWR_UP_PLIH               : out std_logic;
       RX_PMA_RST_N_PLIH                : out std_logic;
-      RX_PMA_LL_SLOW_LOCKED_PLSH       : in  std_logic;
+      RX_PMA_LL_SLOW_LOCKED_HSSL       : in  std_logic;
       RX_RST_N_PLIH                    : out std_logic;
-      RX_BUSY_PLSH                     : in  std_logic;
+      RX_BUSY_HSSL                     : in  std_logic;
       HSSL_RESET_DONE_PLIH             : out std_logic
     );
   end component;
@@ -66,14 +66,14 @@ architecture sim of tb_ppl_init_hssl is
   signal PLL_PMA_PWR_UP_PLIH        : std_logic;
   signal TX_DRIVER_PWRDWN_N_PLIH    : std_logic;
   signal PLL_PMA_RST_N_PLIH         : std_logic;
-  signal PLL_PMA_LOCK_ANALOG_PLSH   : std_logic := '0';
-  signal TX0_RST_N_PLIH             : std_logic;
-  signal TX0_BUSY_PLSH              : std_logic := '1';
+  signal PLL_PMA_LOCK_ANALOG_HSSL   : std_logic := '0';
+  signal TX_RST_N_PLIH             : std_logic;
+  signal TX_BUSY_HSSL              : std_logic := '1';
   signal RX_PMA_PWR_UP_PLIH         : std_logic;
   signal RX_PMA_RST_N_PLIH          : std_logic;
-  signal RX_PMA_LL_SLOW_LOCKED_PLSH : std_logic := '0';
+  signal RX_PMA_LL_SLOW_LOCKED_HSSL : std_logic := '0';
   signal RX_RST_N_PLIH              : std_logic;
-  signal RX_BUSY_PLSH               : std_logic := '1';
+  signal RX_BUSY_HSSL               : std_logic := '1';
   signal HSSL_RESET_DONE_PLIH       : std_logic;
 
   -- Clock generation
@@ -89,14 +89,14 @@ begin
       PLL_PMA_PWR_UP_PLIH        => PLL_PMA_PWR_UP_PLIH,
       TX_DRIVER_PWRDWN_N_PLIH    => TX_DRIVER_PWRDWN_N_PLIH,
       PLL_PMA_RST_N_PLIH         => PLL_PMA_RST_N_PLIH,
-      PLL_PMA_LOCK_ANALOG_PLSH   => PLL_PMA_LOCK_ANALOG_PLSH,
-      TX0_RST_N_PLIH             => TX0_RST_N_PLIH,
-      TX0_BUSY_PLSH              => TX0_BUSY_PLSH,
+      PLL_PMA_LOCK_ANALOG_HSSL   => PLL_PMA_LOCK_ANALOG_HSSL,
+      TX_RST_N_PLIH             => TX_RST_N_PLIH,
+      TX_BUSY_HSSL              => TX_BUSY_HSSL,
       RX_PMA_PWR_UP_PLIH         => RX_PMA_PWR_UP_PLIH,
       RX_PMA_RST_N_PLIH          => RX_PMA_RST_N_PLIH,
-      RX_PMA_LL_SLOW_LOCKED_PLSH => RX_PMA_LL_SLOW_LOCKED_PLSH,
+      RX_PMA_LL_SLOW_LOCKED_HSSL => RX_PMA_LL_SLOW_LOCKED_HSSL,
       RX_RST_N_PLIH              => RX_RST_N_PLIH,
-      RX_BUSY_PLSH               => RX_BUSY_PLSH,
+      RX_BUSY_HSSL               => RX_BUSY_HSSL,
       HSSL_RESET_DONE_PLIH       => HSSL_RESET_DONE_PLIH
     );
 
@@ -126,16 +126,16 @@ begin
     wait until (TX_DRIVER_PWRDWN_N_PLIH ='1');-- TX driver power up
     wait until (PLL_PMA_RST_N_PLIH ='1');-- PMA_PLL rst pulse
     wait until rising_edge(CLK);
-    PLL_PMA_LOCK_ANALOG_PLSH <='1';
+    PLL_PMA_LOCK_ANALOG_HSSL <='1';
 
     ------------------------------------------------------------
     --                     TX PCS reset                      --
     ------------------------------------------------------------
-    wait until (TX0_RST_N_PLIH ='1');-- TX PCS rst pulse
+    wait until (TX_RST_N_PLIH ='1');-- TX PCS rst pulse
 
     wait for 20 ns;
     wait until rising_edge(CLK);
-    TX0_BUSY_PLSH <= '0'; -- TX not busy
+    TX_BUSY_HSSL <= '0'; -- TX not busy
 
     ------------------------------------------------------------
     --                     RX PMA PLL reset                   --
@@ -146,7 +146,7 @@ begin
     if RX_PMA_RST_N_PLIH ='0' then
         wait until (RX_PMA_RST_N_PLIH ='1');-- RX PMA PLL rst pule
     end if;
-    RX_PMA_LL_SLOW_LOCKED_PLSH <= '1';
+    RX_PMA_LL_SLOW_LOCKED_HSSL <= '1';
 
     ------------------------------------------------------------
     --                      RX PCS reset                      --
@@ -155,7 +155,7 @@ begin
 
     wait for 20 ns;
     wait until rising_edge(CLK);
-    RX_BUSY_PLSH <= '0'; -- RX not busy
+    RX_BUSY_HSSL <= '0'; -- RX not busy
 
     ------------------------------------------------------------
     --                      IP HSSL Started                   --

@@ -36,16 +36,16 @@ entity ppl_64_rx_sync_fsm is
       -- FROM Data-link layer
       LANE_RESET_DL                    : in  std_logic;                                            --! Lane reset command from Data-Link Layer.
       -- TO lane_ctrl_word_detection
-      DATA_RX_TO_LCWD                  : out std_logic_vector(C_DATA_LENGTH-1  downto 0);          --! 32-bit data to lane_ctrl_word_detect
-      VALID_K_CHARAC_TO_LCWD           : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);  --! 4-bit valid K character flags to lane_ctrl_word_detect
-      DATA_RDY_TO_LCWD                 : out std_logic;                                            --! Data valid flag to lane_ctrl_word_detect
+      DATA_RX_PLRSF                 : out std_logic_vector(C_DATA_LENGTH-1  downto 0);          --! 64-bit data to lane_ctrl_word_detect
+      VALID_K_CHARAC_PLRSF          : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);  --! 8-bit valid K character flags to lane_ctrl_word_detect
+      DATA_RDY_PLRSF                : out std_logic;                                            --! Data valid flag to lane_ctrl_word_detect
       -- FROM MANUFACTURER IP
-      DATA_RX_FROM_IP                  : in  std_logic_vector(C_DATA_LENGTH-1  downto 0);          --! 32-bit data from GTY IP
-      VALID_K_CHARAC_FROM_IP           : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);  --! 4-bit valid K character flags from GTY IP
-      INVALID_CHAR_FROM_IP             : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);  --! Invalid character flags from GTY IP
-      DISPARITY_ERR_FROM_IP            : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);  --! Disparity error flags from GTY IP
-      RX_VALID_REALIGN_FROM_IP         : in  std_logic;                                            --! RX word realign from GTY IP
-      COMMA_DET_FROM_IP                : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);  --! Flag indicates that a comma is detected on the word receive
+      DATA_RX_PLWA                  : in  std_logic_vector(C_DATA_LENGTH-1  downto 0);          --! 64-bit data from GTY IP
+      VALID_K_CHARAC_PLWA           : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);  --! 8-bit valid K character flags from GTY IP
+      INVALID_CHAR_PLWA             : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);  --! Invalid character flags from GTY IP
+      DISPARITY_ERR_PLWA            : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);  --! Disparity error flags from GTY IP
+      RX_VALID_REALIGN_PLWA         : in  std_logic;                                            --! RX word realign from GTY IP
+      COMMA_DET_PLWA                : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);  --! Flag indicates that a comma is detected on the word receive
       -- PARAMETERS
       LANE_RESET                       : in  std_logic                                             --! Asserts or de-asserts LaneReset for the lane
    );
@@ -64,7 +64,7 @@ type rx_sync_fsm_type is (
 -----                  Signal declaration           -----
 ---------------------------------------------------------
 signal current_state                : rx_sync_fsm_type;                                      --! Current state of the Lane Initialisation FSM
-signal comma_det_from_ip_r          : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);   --! COMMA_DET_FROM_IP registered signal
+signal comma_det_PLWA_r             : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);   --! COMMA_DET_PLWA registered signal
 signal data_rx_to_lcwd_i            : std_logic_vector(C_DATA_LENGTH-1 downto 0);            --! 64-bit data send to lane_ctrl_word_detect
 signal valid_k_charac_to_lcwd_i     : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 00);   --! 8-bit valid K character flags to lane_ctrl_word_detect
 signal data_rdy_to_lcwd_i           : std_logic;                                             --! Data valid flag to lane_ctrl_word_detect
@@ -77,9 +77,9 @@ begin
 ---------------------------------------------------------
 -----                     Assignation               -----
 ---------------------------------------------------------
-DATA_RX_TO_LCWD         <= data_rx_to_lcwd_i;
-VALID_K_CHARAC_TO_LCWD  <= valid_k_charac_to_lcwd_i;
-DATA_RDY_TO_LCWD        <= data_rdy_to_lcwd_i;
+DATA_RX_PLRSF        <= data_rx_to_lcwd_i;
+VALID_K_CHARAC_PLRSF <= valid_k_charac_to_lcwd_i;
+DATA_RDY_PLRSF       <= data_rdy_to_lcwd_i;
 ---------------------------------------------------------
 -----                     Process                   -----
 ---------------------------------------------------------
@@ -92,23 +92,23 @@ DATA_RDY_TO_LCWD        <= data_rdy_to_lcwd_i;
   begin
     if RST_N = '0' then
       current_state              <= LOST_SYNC_ST;
-      comma_det_from_ip_r        <= (others => '0');
+      comma_det_PLWA_r        <= (others => '0');
     elsif rising_edge(CLK) then
-      comma_det_from_ip_r        <= COMMA_DET_FROM_IP;
+      comma_det_PLWA_r        <= COMMA_DET_PLWA;
       case current_state is
-        when LOST_SYNC_ST   =>  if COMMA_DET_FROM_IP /= std_logic_vector(to_unsigned(0, COMMA_DET_FROM_IP'length)) then  -- when a Comma sequence is detected
+        when LOST_SYNC_ST   =>  if COMMA_DET_PLWA /= std_logic_vector(to_unsigned(0, COMMA_DET_PLWA'length)) then  -- when a Comma sequence is detected
                                   current_state  <= CHECK_SYNC_ST;
                                 else
                                   current_state  <= LOST_SYNC_ST;
                                 end if;
-        when CHECK_SYNC_ST  =>  if (LANE_RESET = '1' or LANE_RESET_DL = '1')  or RX_VALID_REALIGN_FROM_IP = '0' or err_word_x5 = '1' then
+        when CHECK_SYNC_ST  =>  if (LANE_RESET = '1' or LANE_RESET_DL = '1')  or RX_VALID_REALIGN_PLWA = '0' or err_word_x5 = '1' then
                                   current_state  <= LOST_SYNC_ST;
                                 elsif valid_symb = '1' then
                                   current_state  <= READY_ST;
                                 else
                                   current_state  <= CHECK_SYNC_ST;
                                 end if;
-        when READY_ST       =>  if (LANE_RESET = '1' or LANE_RESET_DL = '1') or RX_VALID_REALIGN_FROM_IP = '0' then
+        when READY_ST       =>  if (LANE_RESET = '1' or LANE_RESET_DL = '1') or RX_VALID_REALIGN_PLWA = '0' then
                                   current_state  <= LOST_SYNC_ST;
                                 elsif disp_invalid_err= '1' then
                                   current_state  <= CHECK_SYNC_ST;
@@ -143,16 +143,16 @@ DATA_RDY_TO_LCWD        <= data_rdy_to_lcwd_i;
         data_rdy_to_lcwd_i         <= '1';
       elsif current_state = CHECK_SYNC_ST then
         disp_invalid_err           <= '0';
-        data_rx_to_lcwd_i          <= DATA_RX_FROM_IP;
-        valid_k_charac_to_lcwd_i   <= VALID_K_CHARAC_FROM_IP;
+        data_rx_to_lcwd_i          <= DATA_RX_PLWA;
+        valid_k_charac_to_lcwd_i   <= VALID_K_CHARAC_PLWA;
         data_rdy_to_lcwd_i         <= '1';
         -- Alignment valid and error flag de-asserted
-        if err_word_x5 = '0' and RX_VALID_REALIGN_FROM_IP= '1' then
+        if err_word_x5 = '0' and RX_VALID_REALIGN_PLWA= '1' then
           ---------------------------------------------------------
           -- Invalid character or disparity error treatment      --
           ---------------------------------------------------------
           -- Error in each word of the data bus
-          if (INVALID_CHAR_FROM_IP(C_BYTE_BY_WORD_LENGTH/2-1 downto 0) /= x"0" or DISPARITY_ERR_FROM_IP(C_BYTE_BY_WORD_LENGTH/2-1 downto 0) /= x"0") and (INVALID_CHAR_FROM_IP(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) /= x"0" or DISPARITY_ERR_FROM_IP(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) /= x"0")then
+          if (INVALID_CHAR_PLWA(C_BYTE_BY_WORD_LENGTH/2-1 downto 0) /= x"0" or DISPARITY_ERR_PLWA(C_BYTE_BY_WORD_LENGTH/2-1 downto 0) /= x"0") and (INVALID_CHAR_PLWA(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) /= x"0" or DISPARITY_ERR_PLWA(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) /= x"0")then
             data_rx_to_lcwd_i          <= C_RXERR_WORD & C_RXERR_WORD;
             valid_k_charac_to_lcwd_i   <= x"11";
             if err_word_cnt >= C_SYMB_X5 then
@@ -162,16 +162,16 @@ DATA_RDY_TO_LCWD        <= data_rdy_to_lcwd_i;
               err_word_x5   <= '0';
             end if;
           -- Error in the first word (only) of the data bus
-          elsif INVALID_CHAR_FROM_IP(C_BYTE_BY_WORD_LENGTH/2-1 downto 0) /= x"0" or DISPARITY_ERR_FROM_IP(C_BYTE_BY_WORD_LENGTH/2-1 downto 0) /= x"0" then
-            data_rx_to_lcwd_i          <= DATA_RX_FROM_IP(C_DATA_LENGTH-1 downto C_DATA_LENGTH/2) & C_RXERR_WORD;
-            valid_k_charac_to_lcwd_i   <= VALID_K_CHARAC_FROM_IP(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) & x"1";
+          elsif INVALID_CHAR_PLWA(C_BYTE_BY_WORD_LENGTH/2-1 downto 0) /= x"0" or DISPARITY_ERR_PLWA(C_BYTE_BY_WORD_LENGTH/2-1 downto 0) /= x"0" then
+            data_rx_to_lcwd_i          <= DATA_RX_PLWA(C_DATA_LENGTH-1 downto C_DATA_LENGTH/2) & C_RXERR_WORD;
+            valid_k_charac_to_lcwd_i   <= VALID_K_CHARAC_PLWA(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) & x"1";
             valid_symb                 <= '1';
             err_word_cnt               <= (others => '0');
             err_word_x5                <= '0';
           -- Error in the second word (only) of the data bus
-          elsif INVALID_CHAR_FROM_IP(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) /= x"0" or DISPARITY_ERR_FROM_IP(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) /= x"0" then
-            data_rx_to_lcwd_i          <= C_RXERR_WORD & DATA_RX_FROM_IP(C_DATA_LENGTH/2-1 downto 0);
-            valid_k_charac_to_lcwd_i   <= x"1" & VALID_K_CHARAC_FROM_IP(C_BYTE_BY_WORD_LENGTH/2-1 downto 0);
+          elsif INVALID_CHAR_PLWA(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) /= x"0" or DISPARITY_ERR_PLWA(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) /= x"0" then
+            data_rx_to_lcwd_i          <= C_RXERR_WORD & DATA_RX_PLWA(C_DATA_LENGTH/2-1 downto 0);
+            valid_k_charac_to_lcwd_i   <= x"1" & VALID_K_CHARAC_PLWA(C_BYTE_BY_WORD_LENGTH/2-1 downto 0);
             err_word_cnt               <= to_unsigned(1,err_word_cnt'length);
             err_word_x5                <= '0';
           -- No error
@@ -188,27 +188,27 @@ DATA_RDY_TO_LCWD        <= data_rdy_to_lcwd_i;
       elsif current_state = READY_ST then
         err_word_cnt               <= (others => '0');
         valid_symb                 <= '0';
-        data_rx_to_lcwd_i          <= DATA_RX_FROM_IP;
-        valid_k_charac_to_lcwd_i   <= VALID_K_CHARAC_FROM_IP;
+        data_rx_to_lcwd_i          <= DATA_RX_PLWA;
+        valid_k_charac_to_lcwd_i   <= VALID_K_CHARAC_PLWA;
         data_rdy_to_lcwd_i         <= '1';
-        if RX_VALID_REALIGN_FROM_IP= '1' then
+        if RX_VALID_REALIGN_PLWA= '1' then
           ---------------------------------------------------------
           -- Invalid character or disparity error treatment      --
           ---------------------------------------------------------
           -- Error in each word of the data bus
-          if (INVALID_CHAR_FROM_IP(C_BYTE_BY_WORD_LENGTH/2-1 downto 0) /= x"0" or DISPARITY_ERR_FROM_IP(C_BYTE_BY_WORD_LENGTH/2-1 downto 0) /= x"0") and (INVALID_CHAR_FROM_IP(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) /= x"0" or DISPARITY_ERR_FROM_IP(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) /= x"0")then
+          if (INVALID_CHAR_PLWA(C_BYTE_BY_WORD_LENGTH/2-1 downto 0) /= x"0" or DISPARITY_ERR_PLWA(C_BYTE_BY_WORD_LENGTH/2-1 downto 0) /= x"0") and (INVALID_CHAR_PLWA(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) /= x"0" or DISPARITY_ERR_PLWA(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) /= x"0")then
             data_rx_to_lcwd_i          <= C_RXERR_WORD & C_RXERR_WORD;
             valid_k_charac_to_lcwd_i   <= x"11";
             disp_invalid_err           <= '1';
           -- Error in the first word (only) of the data bus
-          elsif INVALID_CHAR_FROM_IP(C_BYTE_BY_WORD_LENGTH/2-1 downto 0) /= x"0" or DISPARITY_ERR_FROM_IP(C_BYTE_BY_WORD_LENGTH/2-1 downto 0) /= x"0" then
-            data_rx_to_lcwd_i          <= DATA_RX_FROM_IP(C_DATA_LENGTH-1 downto C_DATA_LENGTH/2) & C_RXERR_WORD;
-            valid_k_charac_to_lcwd_i   <= VALID_K_CHARAC_FROM_IP(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) & x"1";
+          elsif INVALID_CHAR_PLWA(C_BYTE_BY_WORD_LENGTH/2-1 downto 0) /= x"0" or DISPARITY_ERR_PLWA(C_BYTE_BY_WORD_LENGTH/2-1 downto 0) /= x"0" then
+            data_rx_to_lcwd_i          <= DATA_RX_PLWA(C_DATA_LENGTH-1 downto C_DATA_LENGTH/2) & C_RXERR_WORD;
+            valid_k_charac_to_lcwd_i   <= VALID_K_CHARAC_PLWA(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) & x"1";
             disp_invalid_err           <= '0';
           -- Error in the second word (only) of the data bus
-          elsif INVALID_CHAR_FROM_IP(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) /= x"0" or DISPARITY_ERR_FROM_IP(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) /= x"0" then
-            data_rx_to_lcwd_i          <= C_RXERR_WORD & DATA_RX_FROM_IP(C_DATA_LENGTH/2-1 downto 0);
-            valid_k_charac_to_lcwd_i   <= x"1" & VALID_K_CHARAC_FROM_IP(C_BYTE_BY_WORD_LENGTH/2-1 downto 0);
+          elsif INVALID_CHAR_PLWA(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) /= x"0" or DISPARITY_ERR_PLWA(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) /= x"0" then
+            data_rx_to_lcwd_i          <= C_RXERR_WORD & DATA_RX_PLWA(C_DATA_LENGTH/2-1 downto 0);
+            valid_k_charac_to_lcwd_i   <= x"1" & VALID_K_CHARAC_PLWA(C_BYTE_BY_WORD_LENGTH/2-1 downto 0);
             disp_invalid_err           <= '1';
           else
             -- No error

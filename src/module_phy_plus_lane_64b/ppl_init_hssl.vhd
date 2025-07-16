@@ -38,14 +38,14 @@ entity ppl_init_hssl is
       PLL_PMA_PWR_UP_PLIH              : out std_logic;
       TX_DRIVER_PWRDWN_N_PLIH          : out std_logic;
       PLL_PMA_RST_N_PLIH               : out std_logic;
-      PLL_PMA_LOCK_ANALOG_PLSH         : in  std_logic;
-      TX0_RST_N_PLIH                   : out std_logic;
-      TX0_BUSY_PLSH                    : in  std_logic;
+      PLL_PMA_LOCK_ANALOG_HSSL         : in  std_logic;
+      TX_RST_N_PLIH                   : out std_logic;
+      TX_BUSY_HSSL                    : in  std_logic;
       RX_PMA_PWR_UP_PLIH               : out std_logic;
       RX_PMA_RST_N_PLIH                : out std_logic;
-      RX_PMA_LL_SLOW_LOCKED_PLSH       : in  std_logic;
+      RX_PMA_LL_SLOW_LOCKED_HSSL       : in  std_logic;
       RX_RST_N_PLIH                    : out std_logic;
-      RX_BUSY_PLSH                     : in  std_logic;
+      RX_BUSY_HSSL                     : in  std_logic;
       -- Output
       HSSL_RESET_DONE_PLIH             : out std_logic
    );
@@ -115,7 +115,7 @@ begin
                                     PLL_PMA_RST_N_PLIH      <= '1'; -- PMA PLL rst pulse
                                     current_state_pll_pma <= PMA_PLL_LOCK_ST;
       when PMA_PLL_LOCK_ST =>
-                                    if PLL_PMA_LOCK_ANALOG_PLSH ='1' then -- PMA PLL is locked
+                                    if PLL_PMA_LOCK_ANALOG_HSSL ='1' then -- PMA PLL is locked
                                       pma_pll_seq_end <= '1';
                                     end if;
       when others =>
@@ -151,14 +151,14 @@ begin
                                     RX_PMA_RST_N_PLIH        <= '1';-- RX PMA PLL rst pulse
                                     current_state_rx_pll_pma <= RX_PMA_LOCK_ST;
       when RX_PMA_LOCK_ST =>
-                                    if RX_PMA_LL_SLOW_LOCKED_PLSH ='1' then -- RX PMA PLL is locked
+                                    if RX_PMA_LL_SLOW_LOCKED_HSSL ='1' then -- RX PMA PLL is locked
                                       current_state_rx_pll_pma <= RX_RST_PULSE_ST;
                                     end if;
       when RX_RST_PULSE_ST =>
                                     RX_RST_N_PLIH            <= '1'; -- RX PCS rst pulse
                                     current_state_rx_pll_pma <= RX_STARTED_ST;
       when RX_STARTED_ST =>
-                                    if RX_BUSY_PLSH ='0' then -- RX PCS rst is done
+                                    if RX_BUSY_HSSL ='0' then -- RX PCS rst is done
                                       rx_pll_pma_started <= '1';
                                     end if;
       when others =>
@@ -176,7 +176,7 @@ p_tx_pcs: process(CLK, RST_N)
 begin
   if RST_N ='0' then
     current_state_tx_pcs <= IDLE_ST;
-    TX0_RST_N_PLIH       <= '0';
+    TX_RST_N_PLIH       <= '0';
     tx_pcs_started       <= '0';
   elsif rising_edge(CLK)  then
     tx_pcs_started       <= '0';
@@ -186,10 +186,10 @@ begin
                               current_state_tx_pcs <= TX_PULSE_ST;
                             end if;
       when TX_PULSE_ST =>
-                            TX0_RST_N_PLIH       <= '1'; -- TX PCS rst pulse
+                            TX_RST_N_PLIH       <= '1'; -- TX PCS rst pulse
                             current_state_tx_pcs <= TX_STARTED_ST;
       when TX_STARTED_ST =>
-                            if RX_BUSY_PLSH = '0' then -- TX PCS rst is done
+                            if RX_BUSY_HSSL = '0' then -- TX PCS rst is done
                               tx_pcs_started <= '1';
                             end if;
       when others =>

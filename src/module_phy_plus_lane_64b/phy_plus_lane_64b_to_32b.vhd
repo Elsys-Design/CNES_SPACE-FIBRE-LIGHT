@@ -112,17 +112,17 @@ begin
       -- FROM Data-link layer
       LANE_RESET_DL                    => lane_reset_dl_i,
       -- TO lane_ctrl_word_detection
-      DATA_RX_TO_LCWD                  => data_rx_from_rsf,
-      VALID_K_CHARAC_TO_LCWD            => valid_k_charac_from_rsf,
-      DATA_RDY_TO_LCWD                 => data_rdy_from_rsf,
+      DATA_RX_PLRSF                 => data_rx_from_rsf,
+      VALID_K_CHARAC_PLRSF           => valid_k_charac_from_rsf,
+      DATA_RDY_PLRSF                => data_rdy_from_rsf,
       -- FROM MANUFACTURER IP
-      DATA_RX_FROM_IP                  => INTF0_RX0_ch_rxdata(31 downto 00),
-      VALID_K_CHARAC_FROM_IP            => INTF0_RX0_ch_rxctrl0(03 downto 00),
-      DATA_RDY_FROM_IP                 => INTF0_RX0_ch_rxdatavalid(0),
-      INVALID_CHAR_FROM_IP             => INTF0_RX0_ch_rxctrl3(03 downto 00),
-      DISPARITY_ERR_FROM_IP            => INTF0_RX0_ch_rxctrl1(03 downto 00),
-      RX_WORD_REALIGN_FROM_IP          => INTF0_RX0_ch_rxbyterealign(0),
-      COMMA_DET_FROM_IP                => INTF0_RX0_ch_rxctrl2(0),
+      DATA_RX_HSSL                  => INTF0_RX0_ch_rxdata(31 downto 00),
+      VALID_K_CHARAC_HSSL            => INTF0_RX0_ch_rxctrl0(03 downto 00),
+      DATA_RDY_HSSL                 => INTF0_RX0_ch_rxdatavalid(0),
+      INVALID_CHAR_HSSL             => INTF0_RX0_ch_rxctrl3(03 downto 00),
+      DISPARITY_ERR_HSSL            => INTF0_RX0_ch_rxctrl1(03 downto 00),
+      RX_WORD_REALIGN_HSSL          => INTF0_RX0_ch_rxbyterealign(0),
+      COMMA_DET_HSSL                => INTF0_RX0_ch_rxctrl2(0),
       -- PARAMETERS
       LANE_RESET                       => LANE_RESET
    );
@@ -233,7 +233,7 @@ port map (
     -- Clocks
     ckrefn                  => ckrefn,
     ckrefp                  => ckrefp,
-    clock_o                 => hssl_clk,
+    clock_o                 => CLK_HSSL,
     -- PMA PLL ports (do not touch)
     dyn_cfg_en_i            => '1',
     dyn_addr_i              => "0000",
@@ -249,8 +249,8 @@ port map (
     pll_lock                => open,
     -- TX ports
     tx0_busy_o              => tx_busy,
-    tx0_clk_ena_i           => tx_clk_ena,
-    tx0_clk_o               => tx_clk,
+    tx0_clk_ena_i           => TX_CLK_ENA,
+    tx0_clk_o               => TX_CLK_HSSL,
     tx0_data_i              => tx_data,
     tx0_ctrl_driver_pwrdwn_n_i => tx_driver_pwrdwn_n,
     tx0_rst_n_i             => tx_rst_n,
@@ -270,7 +270,7 @@ port map (
     rx0_eye_rst_i           => '0',
     rx0_pma_ll_fast_locked_o => open,
     rx0_pma_ll_slow_locked_o => rx_pma_ll_slow_locked,
-    rx0_pma_loss_of_signal_o => rx_pma_loss_of_signal,
+    rx0_pma_loss_of_signal_o => RX_PMA_LOSS_OF_SIGNAL_HSSL,
     rx0_pma_pll_lock_o      => open,
     rx0_pma_pll_lock_track_o => open,
     rx0_pma_rst_n_i         => rx_pma_rst_n,

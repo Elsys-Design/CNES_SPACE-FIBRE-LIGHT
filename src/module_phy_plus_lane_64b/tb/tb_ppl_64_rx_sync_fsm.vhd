@@ -42,16 +42,16 @@ architecture tb of tb_ppl_64_rx_sync_fsm is
       -- FROM Data-link layer
       LANE_RESET_DL                    : in  std_logic;                                            --! Lane reset command from Data-Link Layer.
       -- TO lane_ctrl_word_detection
-      DATA_RX_TO_LCWD                  : out std_logic_vector(C_DATA_LENGTH-1  downto 0);          --! 32-bit data to lane_ctrl_word_detect
-      VALID_K_CHARAC_TO_LCWD           : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);  --! 4-bit valid K character flags to lane_ctrl_word_detect
-      DATA_RDY_TO_LCWD                 : out std_logic;                                            --! Data valid flag to lane_ctrl_word_detect
+      DATA_RX_PLRSF                 : out std_logic_vector(C_DATA_LENGTH-1  downto 0);          --! 32-bit data to lane_ctrl_word_detect
+      VALID_K_CHARAC_PLRSF          : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);  --! 4-bit valid K character flags to lane_ctrl_word_detect
+      DATA_RDY_PLRSF                : out std_logic;                                            --! Data valid flag to lane_ctrl_word_detect
       -- FROM MANUFACTURER IP
-      DATA_RX_FROM_IP                  : in  std_logic_vector(C_DATA_LENGTH-1  downto 0);          --! 32-bit data from GTY IP
-      VALID_K_CHARAC_FROM_IP           : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);  --! 4-bit valid K character flags from GTY IP
-      INVALID_CHAR_FROM_IP             : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);  --! Invalid character flags from GTY IP
-      DISPARITY_ERR_FROM_IP            : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);  --! Disparity error flags from GTY IP
-      RX_VALID_REALIGN_FROM_IP         : in  std_logic;                                            --! RX word realign from GTY IP
-      COMMA_DET_FROM_IP                : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);  --! Flag indicates that a comma is detected on the word receive
+      DATA_RX_PLWA                  : in  std_logic_vector(C_DATA_LENGTH-1  downto 0);          --! 32-bit data from GTY IP
+      VALID_K_CHARAC_PLWA           : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);  --! 4-bit valid K character flags from GTY IP
+      INVALID_CHAR_PLWA             : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);  --! Invalid character flags from GTY IP
+      DISPARITY_ERR_PLWA            : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);  --! Disparity error flags from GTY IP
+      RX_VALID_REALIGN_PLWA         : in  std_logic;                                            --! RX word realign from GTY IP
+      COMMA_DET_PLWA                : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);  --! Flag indicates that a comma is detected on the word receive
       -- PARAMETERS
       LANE_RESET                       : in  std_logic                                             --! Asserts or de-asserts LaneReset for the lane
     );
@@ -68,16 +68,16 @@ signal CLK                              : std_logic := '0';
 -- FROM Data-link layer
 signal LANE_RESET_DL                    : std_logic := '0';
 -- TO lane_ctrl_word_detection
-signal DATA_RX_TO_LCWD                  : std_logic_vector(C_DATA_LENGTH-1 downto 0);
-signal VALID_K_CHARAC_TO_LCWD           : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);
-signal DATA_RDY_TO_LCWD                 : std_logic;
+signal DATA_RX_PLRSF                 : std_logic_vector(C_DATA_LENGTH-1 downto 0);
+signal VALID_K_CHARAC_PLRSF          : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);
+signal DATA_RDY_PLRSF                : std_logic;
 -- FROM MANUFACTURER IP
-signal DATA_RX_FROM_IP                  : std_logic_vector(C_DATA_LENGTH-1 downto 0)          := (others => '0');
-signal VALID_K_CHARAC_FROM_IP           : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0) := (others => '0');
-signal INVALID_CHAR_FROM_IP             : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0) := (others => '0');
-signal DISPARITY_ERR_FROM_IP            : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0) := (others => '0');
-signal RX_VALID_REALIGN_FROM_IP         : std_logic                                           := '1';
-signal COMMA_DET_FROM_IP                : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0) := (others => '0');
+signal DATA_RX_PLWA                  : std_logic_vector(C_DATA_LENGTH-1 downto 0)          := (others => '0');
+signal VALID_K_CHARAC_PLWA           : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0) := (others => '0');
+signal INVALID_CHAR_PLWA             : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0) := (others => '0');
+signal DISPARITY_ERR_PLWA            : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0) := (others => '0');
+signal RX_VALID_REALIGN_PLWA         : std_logic                                           := '1';
+signal COMMA_DET_PLWA                : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0) := (others => '0');
 -- PARAMETERS
 signal LANE_RESET                       : std_logic                                           := '0';
 
@@ -92,16 +92,16 @@ DUT : ppl_64_rx_sync_fsm
       -- FROM Data-link layer
       LANE_RESET_DL                    => LANE_RESET_DL,
       -- TO lane_ctrl_word_detection
-      DATA_RX_TO_LCWD                  => DATA_RX_TO_LCWD,
-      VALID_K_CHARAC_TO_LCWD           => VALID_K_CHARAC_TO_LCWD,
-      DATA_RDY_TO_LCWD                 => DATA_RDY_TO_LCWD,
+      DATA_RX_PLRSF                 => DATA_RX_TO_LCWD,
+      VALID_K_CHARAC_PLRSF          => VALID_K_CHARAC_TO_LCWD,
+      DATA_RDY_PLRSF                => DATA_RDY_TO_LCWD,
       -- FROM MANUFACTURER IP
-      DATA_RX_FROM_IP                  => DATA_RX_FROM_IP,
-      VALID_K_CHARAC_FROM_IP           => VALID_K_CHARAC_FROM_IP,
-      INVALID_CHAR_FROM_IP             => INVALID_CHAR_FROM_IP,
-      DISPARITY_ERR_FROM_IP            => DISPARITY_ERR_FROM_IP,
-      RX_VALID_REALIGN_FROM_IP         => RX_VALID_REALIGN_FROM_IP,
-      COMMA_DET_FROM_IP                => COMMA_DET_FROM_IP,
+      DATA_RX_PLWA                  => DATA_RX_PLWA,
+      VALID_K_CHARAC_PLWA           => VALID_K_CHARAC_PLWA,
+      INVALID_CHAR_PLWA             => INVALID_CHAR_PLWA,
+      DISPARITY_ERR_PLWA            => DISPARITY_ERR_PLWA,
+      RX_VALID_REALIGN_PLWA         => RX_VALID_REALIGN_PLWA,
+      COMMA_DET_PLWA                => COMMA_DET_PLWA,
       -- PARAMETERS
       LANE_RESET                       => LANE_RESET
       );
@@ -128,8 +128,8 @@ begin
    ------------------------------------------------------------
    --   Test 0: Transition LOST_SYNC_ST                        --
    ------------------------------------------------------------
-   DATA_RX_FROM_IP         <= x"2222222211223344";
-   VALID_K_CHARAC_FROM_IP  <= x"01";
+   DATA_RX_PLWA         <= x"2222222211223344";
+   VALID_K_CHARAC_PLWA  <= x"01";
    wait until rising_edge(CLK);
    check_equal("Test 0: DATA_RX_TO_LCWD_ERR"       , x"0000000000000000", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 0: VALID_K_CHARAC_TO_LCWD_ERR", x"11",               VALID_K_CHARAC_TO_LCWD, test_failed);
@@ -140,8 +140,8 @@ begin
    check_equal("Test 0: DATA_RX_TO_LCWD_ERR"       , x"0000000000000000", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 0: VALID_K_CHARAC_TO_LCWD_ERR", x"11",               VALID_K_CHARAC_TO_LCWD, test_failed);
    wait until rising_edge(CLK);
-   DATA_RX_FROM_IP         <= (others => '0');
-   VALID_K_CHARAC_FROM_IP  <= (others => '0');
+   DATA_RX_PLWA         <= (others => '0');
+   VALID_K_CHARAC_PLWA  <= (others => '0');
    -- Reset
    wait for 10 us;
    RST_N <= '0';
@@ -153,17 +153,17 @@ begin
    --   Test 1: Transition LOST_SYNC_ST to CHECK_SYNC_ST       --
    ------------------------------------------------------------
    wait until rising_edge(CLK);
-   COMMA_DET_FROM_IP <= "00000001";
+   COMMA_DET_PLWA <= "00000001";
    wait until rising_edge(CLK);
-   COMMA_DET_FROM_IP <= (others => '0');
-   DATA_RX_FROM_IP         <= x"2222222211223344";
-   VALID_K_CHARAC_FROM_IP  <= x"01";
+   COMMA_DET_PLWA <= (others => '0');
+   DATA_RX_PLWA         <= x"2222222211223344";
+   VALID_K_CHARAC_PLWA  <= x"01";
    wait until rising_edge(CLK);
    wait until rising_edge(CLK);
    check_equal("Test 1: DATA_RX_TO_LCWD_ERR"       , x"2222222211223344", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 1: VALID_K_CHARAC_TO_LCWD_ERR", x"01",               VALID_K_CHARAC_TO_LCWD, test_failed);
-   DATA_RX_FROM_IP         <= (others => '0');
-   VALID_K_CHARAC_FROM_IP  <= (others => '0');
+   DATA_RX_PLWA         <= (others => '0');
+   VALID_K_CHARAC_PLWA  <= (others => '0');
    -- Reset
    wait for 10 us;
    RST_N <= '0';
@@ -174,12 +174,12 @@ begin
    ------------------------------------------------------------
    --   Test 2: LANE_RESET CHECK_SYNC_ST to LOST_SYNC_ST     --
    ------------------------------------------------------------
-   DATA_RX_FROM_IP         <= x"2222222211223344";
-   VALID_K_CHARAC_FROM_IP  <= x"01";
+   DATA_RX_PLWA         <= x"2222222211223344";
+   VALID_K_CHARAC_PLWA  <= x"01";
    -- to CHECK_SYNC_ST
-   COMMA_DET_FROM_IP <= "00000001";
+   COMMA_DET_PLWA <= "00000001";
    wait until rising_edge(CLK);
-   COMMA_DET_FROM_IP <= (others => '0');
+   COMMA_DET_PLWA <= (others => '0');
    wait until rising_edge(CLK);
    --CHECK_SYNC_ST to LOST_SYNC_ST
    LANE_RESET  <= '1';
@@ -200,11 +200,11 @@ begin
    ------------------------------------------------------------
    --   Test 3: LANE_RESET READY_ST to LOST_SYNC_ST          --
    ------------------------------------------------------------
-   COMMA_DET_FROM_IP <= "00000001";
+   COMMA_DET_PLWA <= "00000001";
    wait until rising_edge(CLK);
-   COMMA_DET_FROM_IP <= (others => '0');
-   DATA_RX_FROM_IP         <= x"2222222211223344";
-   VALID_K_CHARAC_FROM_IP  <= x"01";
+   COMMA_DET_PLWA <= (others => '0');
+   DATA_RX_PLWA         <= x"2222222211223344";
+   VALID_K_CHARAC_PLWA  <= x"01";
    wait until rising_edge(CLK);
    wait until rising_edge(CLK);
    LANE_RESET  <= '1';
@@ -214,8 +214,8 @@ begin
    wait until rising_edge(CLK);
    check_equal("Test 3: DATA_RX_TO_LCWD_ERR"       , x"0000000000000000", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 3: VALID_K_CHARAC_TO_LCWD_ERR", x"11",               VALID_K_CHARAC_TO_LCWD, test_failed);
-   DATA_RX_FROM_IP         <= (others => '0');
-   VALID_K_CHARAC_FROM_IP  <= (others => '0');
+   DATA_RX_PLWA         <= (others => '0');
+   VALID_K_CHARAC_PLWA  <= (others => '0');
    wait for 10 us;
    -- Reset
    wait for 10 us;
@@ -227,11 +227,11 @@ begin
    ------------------------------------------------------------
    --   Test 4 : LANE_RESET_DL CHECK_SYNC_ST to LOST_SYNC_ST    --
    ------------------------------------------------------------
-   COMMA_DET_FROM_IP <= "00000001";
+   COMMA_DET_PLWA <= "00000001";
    wait until rising_edge(CLK);
-   COMMA_DET_FROM_IP <= (others => '0');
-   DATA_RX_FROM_IP         <= x"2222222211223344";
-   VALID_K_CHARAC_FROM_IP  <= x"01";
+   COMMA_DET_PLWA <= (others => '0');
+   DATA_RX_PLWA         <= x"2222222211223344";
+   VALID_K_CHARAC_PLWA  <= x"01";
    wait until rising_edge(CLK);
    LANE_RESET_DL  <= '1';
    wait until rising_edge(CLK);
@@ -240,8 +240,8 @@ begin
    wait until rising_edge(CLK);
    check_equal("Test 4: DATA_RX_TO_LCWD_ERR"       , x"0000000000000000", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 4: VALID_K_CHARAC_TO_LCWD_ERR", x"11",               VALID_K_CHARAC_TO_LCWD, test_failed);
-   DATA_RX_FROM_IP         <= (others => '0');
-   VALID_K_CHARAC_FROM_IP  <= (others => '0');
+   DATA_RX_PLWA         <= (others => '0');
+   VALID_K_CHARAC_PLWA  <= (others => '0');
    wait for 10 us;
    -- Reset
    wait for 10 us;
@@ -253,11 +253,11 @@ begin
    ------------------------------------------------------------
    --   Test 5 : LANE_RESET_DL READY_ST to LOST_SYNC_ST      --
    ------------------------------------------------------------
-   COMMA_DET_FROM_IP <= "00000001";
+   COMMA_DET_PLWA <= "00000001";
    wait until rising_edge(CLK);
-   COMMA_DET_FROM_IP <= (others => '0');
-   DATA_RX_FROM_IP         <= x"2222222211223344";
-   VALID_K_CHARAC_FROM_IP  <= x"01";
+   COMMA_DET_PLWA <= (others => '0');
+   DATA_RX_PLWA         <= x"2222222211223344";
+   VALID_K_CHARAC_PLWA  <= x"01";
    wait until rising_edge(CLK);
    wait until rising_edge(CLK);
    LANE_RESET_DL  <= '1';
@@ -267,8 +267,8 @@ begin
    wait until rising_edge(CLK);
    check_equal("Test 5: DATA_RX_TO_LCWD_ERR"       , x"0000000000000000", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 5: VALID_K_CHARAC_TO_LCWD_ERR", x"11",               VALID_K_CHARAC_TO_LCWD, test_failed);
-   DATA_RX_FROM_IP         <= (others => '0');
-   VALID_K_CHARAC_FROM_IP  <= (others => '0');
+   DATA_RX_PLWA         <= (others => '0');
+   VALID_K_CHARAC_PLWA  <= (others => '0');
    wait for 10 us;
    -- Reset
    wait for 10 us;
@@ -282,46 +282,46 @@ begin
    --         only the second is valid => READY_ST           --
    ------------------------------------------------------------
    -- LOST_SYNC_ST to CHECK_SYNC_ST
-   COMMA_DET_FROM_IP <= "00000001";
+   COMMA_DET_PLWA <= "00000001";
    wait until rising_edge(CLK);
-   COMMA_DET_FROM_IP <= (others => '0');
+   COMMA_DET_PLWA <= (others => '0');
    wait until rising_edge(CLK);
    wait for 10 us;
    wait until rising_edge(CLK);     -- 1st word with error gen
-   INVALID_CHAR_FROM_IP    <= x"01";
-   DATA_RX_FROM_IP         <= x"2222222211223344";
-   VALID_K_CHARAC_FROM_IP  <= x"01";
+   INVALID_CHAR_PLWA    <= x"01";
+   DATA_RX_PLWA         <= x"2222222211223344";
+   VALID_K_CHARAC_PLWA  <= x"01";
    wait until rising_edge(CLK);     -- 2nd word with errors gen
-   INVALID_CHAR_FROM_IP    <= (others => '0');
-   DISPARITY_ERR_FROM_IP   <= x"0F";
-   DATA_RX_FROM_IP         <= x"3333333355667788";
-   VALID_K_CHARAC_FROM_IP  <= x"02";
+   INVALID_CHAR_PLWA    <= (others => '0');
+   DISPARITY_ERR_PLWA   <= x"0F";
+   DATA_RX_PLWA         <= x"3333333355667788";
+   VALID_K_CHARAC_PLWA  <= x"02";
    wait until rising_edge(CLK);     -- 3rd word with errors gen and 1st word with error check
    check_equal("Test 6: DATA_RX_TO_LCWD_ERR_5_1"       , x"2222222200000000", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 6: VALID_K_CHARAC_TO_LCWD_ERR_5_1", x"01",               VALID_K_CHARAC_TO_LCWD, test_failed);
-   INVALID_CHAR_FROM_IP    <= x"0F";
-   DISPARITY_ERR_FROM_IP   <= (others => '0');
-   DATA_RX_FROM_IP         <= x"4444444499AABBCC";
-   VALID_K_CHARAC_FROM_IP  <= x"03";
+   INVALID_CHAR_PLWA    <= x"0F";
+   DISPARITY_ERR_PLWA   <= (others => '0');
+   DATA_RX_PLWA         <= x"4444444499AABBCC";
+   VALID_K_CHARAC_PLWA  <= x"03";
    wait until rising_edge(CLK);     -- 4nd word with errors gen and 2nd word with error check
    check_equal("Test 6: DATA_RX_TO_LCWD_ERR_5_2"       , x"3333333300000000", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 6: VALID_K_CHARAC_TO_LCWD_ERR_5_2", x"01",               VALID_K_CHARAC_TO_LCWD, test_failed);
-   INVALID_CHAR_FROM_IP    <= (others => '0');
-   DISPARITY_ERR_FROM_IP   <= x"0F";
-   DATA_RX_FROM_IP         <= x"55555555DDEEFF00";
-   VALID_K_CHARAC_FROM_IP  <= x"04";
+   INVALID_CHAR_PLWA    <= (others => '0');
+   DISPARITY_ERR_PLWA   <= x"0F";
+   DATA_RX_PLWA         <= x"55555555DDEEFF00";
+   VALID_K_CHARAC_PLWA  <= x"04";
    wait until rising_edge(CLK);     -- 5th word with errors gen and 3rd word with error check
    check_equal("Test 6: DATA_RX_TO_LCWD_ERR_5_3"       , x"4444444400000000", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 6: VALID_K_CHARAC_TO_LCWD_ERR_5_3", x"01",               VALID_K_CHARAC_TO_LCWD, test_failed);
-   INVALID_CHAR_FROM_IP    <= x"0F";
-   DISPARITY_ERR_FROM_IP   <= (others => '0');
-   DATA_RX_FROM_IP         <= x"6666666611223344";
-   VALID_K_CHARAC_FROM_IP  <= x"05";
+   INVALID_CHAR_PLWA    <= x"0F";
+   DISPARITY_ERR_PLWA   <= (others => '0');
+   DATA_RX_PLWA         <= x"6666666611223344";
+   VALID_K_CHARAC_PLWA  <= x"05";
    wait until rising_edge(CLK);-- 4th word with error check
    check_equal("Test 6: DATA_RX_TO_LCWD_ERR_5_4"       , x"5555555500000000", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 6: VALID_K_CHARAC_TO_LCWD_ERR_5_4", x"01",               VALID_K_CHARAC_TO_LCWD, test_failed);
-   INVALID_CHAR_FROM_IP  <= (others => '0');
-   DISPARITY_ERR_FROM_IP <= (others => '0');
+   INVALID_CHAR_PLWA  <= (others => '0');
+   DISPARITY_ERR_PLWA <= (others => '0');
    wait until rising_edge(CLK);-- 5th word with error check
    check_equal("Test 6: DATA_RX_TO_LCWD_ERR_5_5"       , x"6666666600000000", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 6: VALID_K_CHARAC_TO_LCWD_ERR_5_5", x"01",               VALID_K_CHARAC_TO_LCWD, test_failed);
@@ -339,46 +339,46 @@ begin
    --         only the first one is valid => CHECK_SYNC_ST   --
    ------------------------------------------------------------
    -- LOST_SYNC_ST to CHECK_SYNC_ST
-   COMMA_DET_FROM_IP <= "00000001";
+   COMMA_DET_PLWA <= "00000001";
    wait until rising_edge(CLK);
-   COMMA_DET_FROM_IP <= (others => '0');
+   COMMA_DET_PLWA <= (others => '0');
    wait until rising_edge(CLK);
    wait for 10 us;
    wait until rising_edge(CLK);     -- 1st word with error gen
-   INVALID_CHAR_FROM_IP    <= x"10";
-   DATA_RX_FROM_IP         <= x"2222222211223344";
-   VALID_K_CHARAC_FROM_IP  <= x"01";
+   INVALID_CHAR_PLWA    <= x"10";
+   DATA_RX_PLWA         <= x"2222222211223344";
+   VALID_K_CHARAC_PLWA  <= x"01";
    wait until rising_edge(CLK);     -- 2nd word with errors gen
-   INVALID_CHAR_FROM_IP    <= (others => '0');
-   DISPARITY_ERR_FROM_IP   <= x"F0";
-   DATA_RX_FROM_IP         <= x"3333333355667788";
-   VALID_K_CHARAC_FROM_IP  <= x"20";
+   INVALID_CHAR_PLWA    <= (others => '0');
+   DISPARITY_ERR_PLWA   <= x"F0";
+   DATA_RX_PLWA         <= x"3333333355667788";
+   VALID_K_CHARAC_PLWA  <= x"20";
    wait until rising_edge(CLK);     -- 3rd word with errors gen and 1st word with error check
    check_equal("Test 7: DATA_RX_TO_LCWD_ERR_5_1"       , x"0000000011223344", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 7: VALID_K_CHARAC_TO_LCWD_ERR_5_1", x"11",               VALID_K_CHARAC_TO_LCWD, test_failed);
-   INVALID_CHAR_FROM_IP    <= x"F0";
-   DISPARITY_ERR_FROM_IP   <= (others => '0');
-   DATA_RX_FROM_IP         <= x"4444444499AABBCC";
-   VALID_K_CHARAC_FROM_IP  <= x"30";
+   INVALID_CHAR_PLWA    <= x"F0";
+   DISPARITY_ERR_PLWA   <= (others => '0');
+   DATA_RX_PLWA         <= x"4444444499AABBCC";
+   VALID_K_CHARAC_PLWA  <= x"30";
    wait until rising_edge(CLK);     -- 4nd word with errors gen and 2nd word with error check
    check_equal("Test 7: DATA_RX_TO_LCWD_ERR_5_2"       , x"0000000055667788", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 7: VALID_K_CHARAC_TO_LCWD_ERR_5_2", x"10",               VALID_K_CHARAC_TO_LCWD, test_failed);
-   INVALID_CHAR_FROM_IP    <= (others => '0');
-   DISPARITY_ERR_FROM_IP   <= x"F0";
-   DATA_RX_FROM_IP         <= x"55555555DDEEFF00";
-   VALID_K_CHARAC_FROM_IP  <= x"40";
+   INVALID_CHAR_PLWA    <= (others => '0');
+   DISPARITY_ERR_PLWA   <= x"F0";
+   DATA_RX_PLWA         <= x"55555555DDEEFF00";
+   VALID_K_CHARAC_PLWA  <= x"40";
    wait until rising_edge(CLK);     -- 5th word with errors gen and 3rd word with error check
    check_equal("Test 7: DATA_RX_TO_LCWD_ERR_5_3"       , x"0000000099AABBCC", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 7: VALID_K_CHARAC_TO_LCWD_ERR_5_3", x"10",               VALID_K_CHARAC_TO_LCWD, test_failed);
-   INVALID_CHAR_FROM_IP    <= x"F0";
-   DISPARITY_ERR_FROM_IP   <= (others => '0');
-   DATA_RX_FROM_IP         <= x"6666666611223344";
-   VALID_K_CHARAC_FROM_IP  <= x"05";
+   INVALID_CHAR_PLWA    <= x"F0";
+   DISPARITY_ERR_PLWA   <= (others => '0');
+   DATA_RX_PLWA         <= x"6666666611223344";
+   VALID_K_CHARAC_PLWA  <= x"05";
    wait until rising_edge(CLK);-- 4th word with error check
    check_equal("Test 7: DATA_RX_TO_LCWD_ERR_5_4"       , x"00000000DDEEFF00", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 7: VALID_K_CHARAC_TO_LCWD_ERR_5_4", x"10",               VALID_K_CHARAC_TO_LCWD, test_failed);
-   INVALID_CHAR_FROM_IP  <= (others => '0');
-   DISPARITY_ERR_FROM_IP <= (others => '0');
+   INVALID_CHAR_PLWA  <= (others => '0');
+   DISPARITY_ERR_PLWA <= (others => '0');
    wait until rising_edge(CLK);-- 5th word with error check
    check_equal("Test 7: DATA_RX_TO_LCWD_ERR_5_5"       , x"0000000011223344", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 7: VALID_K_CHARAC_TO_LCWD_ERR_5_5", x"15",               VALID_K_CHARAC_TO_LCWD, test_failed);
@@ -396,27 +396,27 @@ begin
    --         => LOST_SYNC_ST                                --
    ------------------------------------------------------------
    -- LOST_SYNC_ST to CHECK_SYNC_ST
-   COMMA_DET_FROM_IP <= "00000001";
+   COMMA_DET_PLWA <= "00000001";
    wait until rising_edge(CLK);
-   COMMA_DET_FROM_IP <= (others => '0');
+   COMMA_DET_PLWA <= (others => '0');
    wait until rising_edge(CLK);
    wait for 10 us;
    wait until rising_edge(CLK);     -- 1st word with error gen
-   INVALID_CHAR_FROM_IP    <= x"11";
-   DATA_RX_FROM_IP         <= x"2222222211223344";
-   VALID_K_CHARAC_FROM_IP  <= x"00";
+   INVALID_CHAR_PLWA    <= x"11";
+   DATA_RX_PLWA         <= x"2222222211223344";
+   VALID_K_CHARAC_PLWA  <= x"00";
    wait until rising_edge(CLK);     -- 2nd word with errors gen
-   INVALID_CHAR_FROM_IP    <= x"01";
-   DISPARITY_ERR_FROM_IP   <= x"F0";
-   DATA_RX_FROM_IP         <= x"3333333355667788";
-   VALID_K_CHARAC_FROM_IP  <= x"00";
+   INVALID_CHAR_PLWA    <= x"01";
+   DISPARITY_ERR_PLWA   <= x"F0";
+   DATA_RX_PLWA         <= x"3333333355667788";
+   VALID_K_CHARAC_PLWA  <= x"00";
    wait until rising_edge(CLK);     -- 3rd word with errors gen and 1st word with error check
    check_equal("Test 8: DATA_RX_TO_LCWD_ERR_5_1"       , x"0000000000000000", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 8: VALID_K_CHARAC_TO_LCWD_ERR_5_1", x"11",               VALID_K_CHARAC_TO_LCWD, test_failed);
-   INVALID_CHAR_FROM_IP    <= x"FF";
-   DISPARITY_ERR_FROM_IP   <= (others => '0');
-   DATA_RX_FROM_IP         <= x"4444444499AABBCC";
-   VALID_K_CHARAC_FROM_IP  <= x"00";
+   INVALID_CHAR_PLWA    <= x"FF";
+   DISPARITY_ERR_PLWA   <= (others => '0');
+   DATA_RX_PLWA         <= x"4444444499AABBCC";
+   VALID_K_CHARAC_PLWA  <= x"00";
    wait until rising_edge(CLK);     -- 4nd word with errors gen and 2nd word with error check
    check_equal("Test 8: DATA_RX_TO_LCWD_ERR_5_2"       , x"0000000000000000", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 8: VALID_K_CHARAC_TO_LCWD_ERR_5_2", x"11",               VALID_K_CHARAC_TO_LCWD, test_failed);
@@ -426,8 +426,8 @@ begin
    wait until rising_edge(CLK);-- 4th word with error check
    check_equal("Test 8: DATA_RX_TO_LCWD_ERR_5_4"       , x"0000000000000000", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 8: VALID_K_CHARAC_TO_LCWD_ERR_5_4", x"11",               VALID_K_CHARAC_TO_LCWD, test_failed);
-   INVALID_CHAR_FROM_IP  <= (others => '0');
-   DISPARITY_ERR_FROM_IP <= (others => '0');
+   INVALID_CHAR_PLWA  <= (others => '0');
+   DISPARITY_ERR_PLWA <= (others => '0');
    wait until rising_edge(CLK);-- 5th word with error check
    check_equal("Test 8: DATA_RX_TO_LCWD_ERR_5_5"       , x"0000000000000000", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 8: VALID_K_CHARAC_TO_LCWD_ERR_5_5", x"11",               VALID_K_CHARAC_TO_LCWD, test_failed);
@@ -445,46 +445,46 @@ begin
    --         only the second is valid => READY_ST           --
    ------------------------------------------------------------
       -- LOST_SYNC_ST to CHECK_SYNC_ST
-   COMMA_DET_FROM_IP <= "00000001";
+   COMMA_DET_PLWA <= "00000001";
    wait until rising_edge(CLK);
-   COMMA_DET_FROM_IP <= (others => '0');
+   COMMA_DET_PLWA <= (others => '0');
    wait until rising_edge(CLK);
    wait for 9 us;
    wait until rising_edge(CLK);     -- 1st word with error gen
-   INVALID_CHAR_FROM_IP    <= x"01";
-   DATA_RX_FROM_IP         <= x"2222222211223344";
-   VALID_K_CHARAC_FROM_IP  <= x"01";
+   INVALID_CHAR_PLWA    <= x"01";
+   DATA_RX_PLWA         <= x"2222222211223344";
+   VALID_K_CHARAC_PLWA  <= x"01";
    wait until rising_edge(CLK);     -- 2nd word with errors gen
-   INVALID_CHAR_FROM_IP    <= (others => '0');
-   DISPARITY_ERR_FROM_IP   <= x"0F";
-   DATA_RX_FROM_IP         <= x"3333333355667788";
-   VALID_K_CHARAC_FROM_IP  <= x"02";
+   INVALID_CHAR_PLWA    <= (others => '0');
+   DISPARITY_ERR_PLWA   <= x"0F";
+   DATA_RX_PLWA         <= x"3333333355667788";
+   VALID_K_CHARAC_PLWA  <= x"02";
    wait until rising_edge(CLK);     -- 3rd word with errors gen and 1st word with error check
    check_equal("Test 9: DATA_RX_TO_LCWD_ERR_5_1"       , x"2222222200000000", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 9: VALID_K_CHARAC_TO_LCWD_ERR_5_1", x"01",               VALID_K_CHARAC_TO_LCWD, test_failed);
-   INVALID_CHAR_FROM_IP    <= x"0F";
-   DISPARITY_ERR_FROM_IP   <= (others => '0');
-   DATA_RX_FROM_IP         <= x"4444444499AABBCC";
-   VALID_K_CHARAC_FROM_IP  <= x"03";
+   INVALID_CHAR_PLWA    <= x"0F";
+   DISPARITY_ERR_PLWA   <= (others => '0');
+   DATA_RX_PLWA         <= x"4444444499AABBCC";
+   VALID_K_CHARAC_PLWA  <= x"03";
    wait until rising_edge(CLK);     -- 4nd word with errors gen and 2nd word with error check
    check_equal("Test 9: DATA_RX_TO_LCWD_ERR_5_2"       , x"3333333300000000", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 9: VALID_K_CHARAC_TO_LCWD_ERR_5_2", x"01",               VALID_K_CHARAC_TO_LCWD, test_failed);
-   INVALID_CHAR_FROM_IP    <= (others => '0');
-   DISPARITY_ERR_FROM_IP   <= x"0F";
-   DATA_RX_FROM_IP         <= x"55555555DDEEFF00";
-   VALID_K_CHARAC_FROM_IP  <= x"04";
+   INVALID_CHAR_PLWA    <= (others => '0');
+   DISPARITY_ERR_PLWA   <= x"0F";
+   DATA_RX_PLWA         <= x"55555555DDEEFF00";
+   VALID_K_CHARAC_PLWA  <= x"04";
    wait until rising_edge(CLK);     -- 5th word with errors gen and 3rd word with error check
    check_equal("Test 9: DATA_RX_TO_LCWD_ERR_5_3"       , x"4444444400000000", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 9: VALID_K_CHARAC_TO_LCWD_ERR_5_3", x"01",               VALID_K_CHARAC_TO_LCWD, test_failed);
-   INVALID_CHAR_FROM_IP    <= x"0F";
-   DISPARITY_ERR_FROM_IP   <= (others => '0');
-   DATA_RX_FROM_IP         <= x"6666666611223344";
-   VALID_K_CHARAC_FROM_IP  <= x"05";
+   INVALID_CHAR_PLWA    <= x"0F";
+   DISPARITY_ERR_PLWA   <= (others => '0');
+   DATA_RX_PLWA         <= x"6666666611223344";
+   VALID_K_CHARAC_PLWA  <= x"05";
    wait until rising_edge(CLK);-- 4th word with error check
    check_equal("Test 9: DATA_RX_TO_LCWD_ERR_5_4"       , x"5555555500000000", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 9: VALID_K_CHARAC_TO_LCWD_ERR_5_4", x"01",               VALID_K_CHARAC_TO_LCWD, test_failed);
-   INVALID_CHAR_FROM_IP  <= (others => '0');
-   DISPARITY_ERR_FROM_IP <= (others => '0');
+   INVALID_CHAR_PLWA  <= (others => '0');
+   DISPARITY_ERR_PLWA <= (others => '0');
    wait until rising_edge(CLK);-- 5th word with error check
    check_equal("Test 9: DATA_RX_TO_LCWD_ERR_5_5"       , x"6666666600000000", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 9: VALID_K_CHARAC_TO_LCWD_ERR_5_5", x"01",               VALID_K_CHARAC_TO_LCWD, test_failed);
@@ -502,46 +502,46 @@ begin
    --         only the first one is valid => CHECK_SYNC_ST   --
    ------------------------------------------------------------
       -- LOST_SYNC_ST to CHECK_SYNC_ST
-   COMMA_DET_FROM_IP <= "00000001";
+   COMMA_DET_PLWA <= "00000001";
    wait until rising_edge(CLK);
-   COMMA_DET_FROM_IP <= (others => '0');
+   COMMA_DET_PLWA <= (others => '0');
    wait until rising_edge(CLK);
    wait for 10 us;
    wait until rising_edge(CLK);     -- 1st word with error gen
-   INVALID_CHAR_FROM_IP    <= x"10";
-   DATA_RX_FROM_IP         <= x"2222222211223344";
-   VALID_K_CHARAC_FROM_IP  <= x"01";
+   INVALID_CHAR_PLWA    <= x"10";
+   DATA_RX_PLWA         <= x"2222222211223344";
+   VALID_K_CHARAC_PLWA  <= x"01";
    wait until rising_edge(CLK);     -- 2nd word with errors gen
-   INVALID_CHAR_FROM_IP    <= (others => '0');
-   DISPARITY_ERR_FROM_IP   <= x"F0";
-   DATA_RX_FROM_IP         <= x"3333333355667788";
-   VALID_K_CHARAC_FROM_IP  <= x"20";
+   INVALID_CHAR_PLWA    <= (others => '0');
+   DISPARITY_ERR_PLWA   <= x"F0";
+   DATA_RX_PLWA         <= x"3333333355667788";
+   VALID_K_CHARAC_PLWA  <= x"20";
    wait until rising_edge(CLK);     -- 3rd word with errors gen and 1st word with error check
    check_equal("Test 10: DATA_RX_TO_LCWD_ERR_5_1"       , x"0000000011223344", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 10: VALID_K_CHARAC_TO_LCWD_ERR_5_1", x"11",               VALID_K_CHARAC_TO_LCWD, test_failed);
-   INVALID_CHAR_FROM_IP    <= x"F0";
-   DISPARITY_ERR_FROM_IP   <= (others => '0');
-   DATA_RX_FROM_IP         <= x"4444444499AABBCC";
-   VALID_K_CHARAC_FROM_IP  <= x"30";
+   INVALID_CHAR_PLWA    <= x"F0";
+   DISPARITY_ERR_PLWA   <= (others => '0');
+   DATA_RX_PLWA         <= x"4444444499AABBCC";
+   VALID_K_CHARAC_PLWA  <= x"30";
    wait until rising_edge(CLK);     -- 4nd word with errors gen and 2nd word with error check
    check_equal("Test 10: DATA_RX_TO_LCWD_ERR_5_2"       , x"0000000055667788", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 10: VALID_K_CHARAC_TO_LCWD_ERR_5_2", x"10",               VALID_K_CHARAC_TO_LCWD, test_failed);
-   INVALID_CHAR_FROM_IP    <= (others => '0');
-   DISPARITY_ERR_FROM_IP   <= x"F0";
-   DATA_RX_FROM_IP         <= x"55555555DDEEFF00";
-   VALID_K_CHARAC_FROM_IP  <= x"40";
+   INVALID_CHAR_PLWA    <= (others => '0');
+   DISPARITY_ERR_PLWA   <= x"F0";
+   DATA_RX_PLWA         <= x"55555555DDEEFF00";
+   VALID_K_CHARAC_PLWA  <= x"40";
    wait until rising_edge(CLK);     -- 5th word with errors gen and 3rd word with error check
    check_equal("Test 10: DATA_RX_TO_LCWD_ERR_5_3"       , x"0000000099AABBCC", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 10: VALID_K_CHARAC_TO_LCWD_ERR_5_3", x"10",               VALID_K_CHARAC_TO_LCWD, test_failed);
-   INVALID_CHAR_FROM_IP    <= x"F0";
-   DISPARITY_ERR_FROM_IP   <= (others => '0');
-   DATA_RX_FROM_IP         <= x"6666666611223344";
-   VALID_K_CHARAC_FROM_IP  <= x"05";
+   INVALID_CHAR_PLWA    <= x"F0";
+   DISPARITY_ERR_PLWA   <= (others => '0');
+   DATA_RX_PLWA         <= x"6666666611223344";
+   VALID_K_CHARAC_PLWA  <= x"05";
    wait until rising_edge(CLK);-- 4th word with error check
    check_equal("Test 10: DATA_RX_TO_LCWD_ERR_5_4"       , x"00000000DDEEFF00", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 10: VALID_K_CHARAC_TO_LCWD_ERR_5_4", x"10",               VALID_K_CHARAC_TO_LCWD, test_failed);
-   INVALID_CHAR_FROM_IP  <= (others => '0');
-   DISPARITY_ERR_FROM_IP <= (others => '0');
+   INVALID_CHAR_PLWA  <= (others => '0');
+   DISPARITY_ERR_PLWA <= (others => '0');
    wait until rising_edge(CLK);-- 5th word with error check
    check_equal("Test 10: DATA_RX_TO_LCWD_ERR_5_5"       , x"0000000011223344", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 10: VALID_K_CHARAC_TO_LCWD_ERR_5_5", x"15",               VALID_K_CHARAC_TO_LCWD, test_failed);
@@ -559,27 +559,27 @@ begin
    --         => LOST_SYNC_ST                                --
    ------------------------------------------------------------
       -- LOST_SYNC_ST to CHECK_SYNC_ST
-   COMMA_DET_FROM_IP <= "00000001";
+   COMMA_DET_PLWA <= "00000001";
    wait until rising_edge(CLK);
-   COMMA_DET_FROM_IP <= (others => '0');
+   COMMA_DET_PLWA <= (others => '0');
    wait until rising_edge(CLK);
    wait for 10 us;
    wait until rising_edge(CLK);     -- 1st word with error gen
-   INVALID_CHAR_FROM_IP    <= x"11";
-   DATA_RX_FROM_IP         <= x"2222222211223344";
-   VALID_K_CHARAC_FROM_IP  <= x"00";
+   INVALID_CHAR_PLWA    <= x"11";
+   DATA_RX_PLWA         <= x"2222222211223344";
+   VALID_K_CHARAC_PLWA  <= x"00";
    wait until rising_edge(CLK);     -- 2nd word with errors gen
-   INVALID_CHAR_FROM_IP    <= x"01";
-   DISPARITY_ERR_FROM_IP   <= x"F0";
-   DATA_RX_FROM_IP         <= x"3333333355667788";
-   VALID_K_CHARAC_FROM_IP  <= x"00";
+   INVALID_CHAR_PLWA    <= x"01";
+   DISPARITY_ERR_PLWA   <= x"F0";
+   DATA_RX_PLWA         <= x"3333333355667788";
+   VALID_K_CHARAC_PLWA  <= x"00";
    wait until rising_edge(CLK);     -- 3rd word with errors gen and 1st word with error check
    check_equal("Test 11: DATA_RX_TO_LCWD_ERR_5_1"       , x"0000000000000000", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 11: VALID_K_CHARAC_TO_LCWD_ERR_5_1", x"11",               VALID_K_CHARAC_TO_LCWD, test_failed);
-   INVALID_CHAR_FROM_IP    <= x"FF";
-   DISPARITY_ERR_FROM_IP   <= (others => '0');
-   DATA_RX_FROM_IP         <= x"4444444499AABBCC";
-   VALID_K_CHARAC_FROM_IP  <= x"00";
+   INVALID_CHAR_PLWA    <= x"FF";
+   DISPARITY_ERR_PLWA   <= (others => '0');
+   DATA_RX_PLWA         <= x"4444444499AABBCC";
+   VALID_K_CHARAC_PLWA  <= x"00";
    wait until rising_edge(CLK);     -- 4nd word with errors gen and 2nd word with error check
    check_equal("Test 11: DATA_RX_TO_LCWD_ERR_5_2"       , x"0000000000000000", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 11: VALID_K_CHARAC_TO_LCWD_ERR_5_2", x"11",               VALID_K_CHARAC_TO_LCWD, test_failed);
@@ -589,8 +589,8 @@ begin
    wait until rising_edge(CLK);-- 4th word with error check
    check_equal("Test 11: DATA_RX_TO_LCWD_ERR_5_4"       , x"0000000000000000", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 11: VALID_K_CHARAC_TO_LCWD_ERR_5_4", x"11",               VALID_K_CHARAC_TO_LCWD, test_failed);
-   INVALID_CHAR_FROM_IP  <= (others => '0');
-   DISPARITY_ERR_FROM_IP <= (others => '0');
+   INVALID_CHAR_PLWA  <= (others => '0');
+   DISPARITY_ERR_PLWA <= (others => '0');
    wait until rising_edge(CLK);-- 5th word with error check
    check_equal("Test 11: DATA_RX_TO_LCWD_ERR_5_5"       , x"0000000000000000", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 11: VALID_K_CHARAC_TO_LCWD_ERR_5_5", x"11",               VALID_K_CHARAC_TO_LCWD, test_failed);
@@ -607,16 +607,16 @@ begin
    --   Test 12 : Realign CHECK_SYNC_ST to LOST_SYNC_ST      --
    ------------------------------------------------------------
    -- LOST_SYNC_ST to CHECK_SYNC_ST
-   COMMA_DET_FROM_IP <= "00000001";
+   COMMA_DET_PLWA <= "00000001";
    wait until rising_edge(CLK);
-   COMMA_DET_FROM_IP <= (others => '0');
+   COMMA_DET_PLWA <= (others => '0');
    check_equal("Test 12: DATA_RX_TO_LCWD_ERR_12_1"       , x"0000000000000000", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 12: VALID_K_CHARAC_TO_LCWD_ERR_12_1", x"11",               VALID_K_CHARAC_TO_LCWD, test_failed);
-   DATA_RX_FROM_IP         <= x"2222222211223344";
-   VALID_K_CHARAC_FROM_IP  <= x"01";
+   DATA_RX_PLWA         <= x"2222222211223344";
+   VALID_K_CHARAC_PLWA  <= x"01";
    wait until rising_edge(CLK);
       -- CHECK_SYNC_ST to LOST_SYNC_ST
-   RX_VALID_REALIGN_FROM_IP <= '0';
+   RX_VALID_REALIGN_PLWA <= '0';
    wait until rising_edge(CLK);
    check_equal("Test 12: DATA_RX_TO_LCWD_ERR_12_2"       , x"2222222211223344", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 12: VALID_K_CHARAC_TO_LCWD_ERR_12_2", x"01",               VALID_K_CHARAC_TO_LCWD, test_failed);
@@ -624,7 +624,7 @@ begin
    check_equal("Test 12: DATA_RX_TO_LCWD_ERR_12_3"       , x"0000000000000000", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 12: VALID_K_CHARAC_TO_LCWD_ERR_12_3", x"11",               VALID_K_CHARAC_TO_LCWD, test_failed);
    -- Reset
-   RX_VALID_REALIGN_FROM_IP <= '1';
+   RX_VALID_REALIGN_PLWA <= '1';
    wait for 10 us;
    RST_N <= '0';
    wait for 10 us;
@@ -635,23 +635,23 @@ begin
    --   Test 13 : Realign READY_ST to LOST_SYNC_ST           --
    ------------------------------------------------------------
     -- LOST_SYNC_ST to CHECK_SYNC_ST
-   COMMA_DET_FROM_IP <= "00000001";
+   COMMA_DET_PLWA <= "00000001";
    wait until rising_edge(CLK);
-   COMMA_DET_FROM_IP <= (others => '0');
+   COMMA_DET_PLWA <= (others => '0');
    check_equal("Test 13: DATA_RX_TO_LCWD_ERR_13_1"       , x"0000000000000000", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 13: VALID_K_CHARAC_TO_LCWD_ERR_13_1", x"11",               VALID_K_CHARAC_TO_LCWD, test_failed);
-   DATA_RX_FROM_IP         <= x"2222222211223344";
-   VALID_K_CHARAC_FROM_IP  <= x"01";
+   DATA_RX_PLWA         <= x"2222222211223344";
+   VALID_K_CHARAC_PLWA  <= x"01";
    wait until rising_edge(CLK);
    wait until rising_edge(CLK);
    -- CHECK_SYNC_ST to READY_ST
    check_equal("Test 13: DATA_RX_TO_LCWD_ERR_13_2"       , x"2222222211223344", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 13: VALID_K_CHARAC_TO_LCWD_ERR_13_2", x"01",               VALID_K_CHARAC_TO_LCWD, test_failed);
-   DATA_RX_FROM_IP         <= x"1111111111223344";
-   VALID_K_CHARAC_FROM_IP  <= x"01";
+   DATA_RX_PLWA         <= x"1111111111223344";
+   VALID_K_CHARAC_PLWA  <= x"01";
    wait until rising_edge(CLK);
    -- READY_ST to LOST_SYNC_ST
-   RX_VALID_REALIGN_FROM_IP <= '0';
+   RX_VALID_REALIGN_PLWA <= '0';
    check_equal("Test 13: DATA_RX_TO_LCWD_ERR_13_3"       , x"2222222211223344", DATA_RX_TO_LCWD,        test_failed);
    check_equal("Test 13: VALID_K_CHARAC_TO_LCWD_ERR_13_3", x"01",               VALID_K_CHARAC_TO_LCWD, test_failed);
    wait until rising_edge(CLK);
