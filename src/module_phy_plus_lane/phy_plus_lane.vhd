@@ -453,7 +453,7 @@ component extended_phy_layer_gtwiz_versal_0_0 is
          WAIT_SKIP_DATA                   : in  std_logic;                       -- Wait for data to be skip
          --TO lane_ctrl_word_detection
          DATA_TX_TO_LCWD                  : out std_logic_vector(31 downto 00);  -- 32-bit Data
-         VALID_K_CARAC_TO_LCWD            : out std_logic_vector(03 downto 00);  -- 4-bit Valid K character
+         VALID_K_CHARAC_TO_LCWD            : out std_logic_vector(03 downto 00);  -- 4-bit Valid K character
          DATA_RDY_TO_LCWD                 : out std_logic;                       -- Data ready flag
          -- Parameter
          PARALLEL_LOOPBACK_EN             : in  std_logic                        -- Enable or disable the parallel loopback for the lane
@@ -469,11 +469,11 @@ component extended_phy_layer_gtwiz_versal_0_0 is
          LANE_RESET_DL                    : in  std_logic;                       -- Lane reset command from Data-Link Layer.
          -- TO lane_ctrl_word_detection
          DATA_RX_TO_LCWD                  : out std_logic_vector(31 downto 00);  -- 32-bit data to lane_ctrl_word_detect
-         VALID_K_CARAC_TO_LCWD            : out std_logic_vector(03 downto 00);  -- 4-bit valid K character flags to lane_ctrl_word_detect
+         VALID_K_CHARAC_TO_LCWD            : out std_logic_vector(03 downto 00);  -- 4-bit valid K character flags to lane_ctrl_word_detect
          DATA_RDY_TO_LCWD                 : out std_logic;                       -- Data valid flag to lane_ctrl_word_detect
          -- FROM MANUFACTURER IP
          DATA_RX_FROM_IP                  : in  std_logic_vector(31 downto 00);  -- 32-bit data from GTY IP
-         VALID_K_CARAC_FROM_IP            : in  std_logic_vector(03 downto 00);  -- 4-bit valid K character flags from GTY IP
+         VALID_K_CHARAC_FROM_IP            : in  std_logic_vector(03 downto 00);  -- 4-bit valid K character flags from GTY IP
          DATA_RDY_FROM_IP                 : in  std_logic;                       -- Data valid flag from GTY IP
          INVALID_CHAR_FROM_IP             : in  std_logic_vector(03 downto 00);  -- Invalid character flags from GTY IP
          DISPARITY_ERR_FROM_IP            : in  std_logic_vector(03 downto 00);  -- Disparity error flags from GTY IP
@@ -810,7 +810,7 @@ begin
       WAIT_SKIP_DATA                   => wait_send_data_from_si,
       --TO lane_ctrl_word_detection
       DATA_TX_TO_LCWD                  => data_tx_from_plb,
-      VALID_K_CARAC_TO_LCWD            => valid_k_charac_from_plb,
+      VALID_K_CHARAC_TO_LCWD            => valid_k_charac_from_plb,
       DATA_RDY_TO_LCWD                 => data_rdy_from_plb,
       -- Parameter
       PARALLEL_LOOPBACK_EN             => PARALLEL_LOOPBACK_EN
@@ -829,11 +829,11 @@ begin
       LANE_RESET_DL                    => lane_reset_dl_i,
       -- TO lane_ctrl_word_detection
       DATA_RX_TO_LCWD                  => data_rx_from_rsf,
-      VALID_K_CARAC_TO_LCWD            => valid_k_charac_from_rsf,
+      VALID_K_CHARAC_TO_LCWD            => valid_k_charac_from_rsf,
       DATA_RDY_TO_LCWD                 => data_rdy_from_rsf,
       -- FROM MANUFACTURER IP
       DATA_RX_FROM_IP                  => INTF0_RX0_ch_rxdata(31 downto 00),
-      VALID_K_CARAC_FROM_IP            => INTF0_RX0_ch_rxctrl0(03 downto 00),
+      VALID_K_CHARAC_FROM_IP            => INTF0_RX0_ch_rxctrl0(03 downto 00),
       DATA_RDY_FROM_IP                 => INTF0_RX0_ch_rxdatavalid(0),
       INVALID_CHAR_FROM_IP             => INTF0_RX0_ch_rxctrl3(03 downto 00),
       DISPARITY_ERR_FROM_IP            => INTF0_RX0_ch_rxctrl1(03 downto 00),

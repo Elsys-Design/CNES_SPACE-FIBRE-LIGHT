@@ -113,11 +113,11 @@ begin
       LANE_RESET_DL                    => lane_reset_dl_i,
       -- TO lane_ctrl_word_detection
       DATA_RX_TO_LCWD                  => data_rx_from_rsf,
-      VALID_K_CARAC_TO_LCWD            => valid_k_charac_from_rsf,
+      VALID_K_CHARAC_TO_LCWD            => valid_k_charac_from_rsf,
       DATA_RDY_TO_LCWD                 => data_rdy_from_rsf,
       -- FROM MANUFACTURER IP
       DATA_RX_FROM_IP                  => INTF0_RX0_ch_rxdata(31 downto 00),
-      VALID_K_CARAC_FROM_IP            => INTF0_RX0_ch_rxctrl0(03 downto 00),
+      VALID_K_CHARAC_FROM_IP            => INTF0_RX0_ch_rxctrl0(03 downto 00),
       DATA_RDY_FROM_IP                 => INTF0_RX0_ch_rxdatavalid(0),
       INVALID_CHAR_FROM_IP             => INTF0_RX0_ch_rxctrl3(03 downto 00),
       DISPARITY_ERR_FROM_IP            => INTF0_RX0_ch_rxctrl1(03 downto 00),
