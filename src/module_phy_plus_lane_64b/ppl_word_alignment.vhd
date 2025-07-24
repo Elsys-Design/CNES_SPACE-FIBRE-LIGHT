@@ -39,9 +39,9 @@ entity ppl_64_word_alignment is
       VALID_K_CHARAC_PLWA     : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! 8-bit valid K character flags to lane_ctrl_word_detect
       DATA_RDY_PLWA           : out std_logic;                                          --! Data valid flag to lane_ctrl_word_detect
       INVALID_CHAR_PLWA       : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! Invalid character flags from PLWA
-      DISPARITY_ERR_PLWA      : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! Disparity error flags from PLWA 
-      RX_WORD_IS_ALIGNED_PLWA : out std_logic;                                          --! RX word is aligned from PLWA 
-      COMMA_DET_PLWA          : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! Flag indicates that a comma is detected on the word receive from PLWA 
+      DISPARITY_ERR_PLWA      : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! Disparity error flags from PLWA
+      RX_WORD_IS_ALIGNED_PLWA : out std_logic;                                          --! RX word is aligned from PLWA
+      COMMA_DET_PLWA          : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! Flag indicates that a comma is detected on the word receive from PLWA
       -- HSSL IP interface
       DATA_RX_HSSL            : in  std_logic_vector(C_DATA_LENGTH-1 downto 0);         --! 64-bit data from HSSL IP
       VALID_K_CHARAC_HSSL     : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! 8-bit valid K character flags from HSSL IP
@@ -162,5 +162,5 @@ begin
       COMMA_DET_PLWA          <= COMMA_DET_HSSL;
     end if;
   end process p_sync;
-  
+
 end architecture rtl;

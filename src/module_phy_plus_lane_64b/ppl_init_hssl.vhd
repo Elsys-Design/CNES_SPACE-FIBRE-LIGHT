@@ -27,7 +27,6 @@ library ieee;
   use ieee.numeric_std.all;
 
 library phy_plus_lane_64_lib;
-  use phy_plus_lane_64_lib.all;
   use phy_plus_lane_64_lib.pkg_phy_plus_lane_64b.all;
 
 entity ppl_init_hssl is
@@ -39,8 +38,8 @@ entity ppl_init_hssl is
       TX_DRIVER_PWRDWN_N_PLIH          : out std_logic;
       PLL_PMA_RST_N_PLIH               : out std_logic;
       PLL_PMA_LOCK_ANALOG_HSSL         : in  std_logic;
-      TX_RST_N_PLIH                   : out std_logic;
-      TX_BUSY_HSSL                    : in  std_logic;
+      TX_RST_N_PLIH                    : out std_logic;
+      TX_BUSY_HSSL                     : in  std_logic;
       RX_PMA_PWR_UP_PLIH               : out std_logic;
       RX_PMA_RST_N_PLIH                : out std_logic;
       RX_PMA_LL_SLOW_LOCKED_HSSL       : in  std_logic;

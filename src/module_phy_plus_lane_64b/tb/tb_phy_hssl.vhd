@@ -135,12 +135,12 @@ architecture sim of tb_phy_hssl is
       NEW_DATA_PLCWI          : in  std_logic;                                          --! New data Flag
       DATA_TX_PLCWI           : in  std_logic_vector(C_DATA_LENGTH-1 downto 0);         --! Data 64-bit receive from DATA_LINK layer
       VALID_K_CHARAC_PLCWI    : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! Flags indicates which byte is a K character from DATA-LINK layer
-      WAIT_SEND_DATA_PSI      : out std_logic;                                          --! Flag to indicates that the lane_ctrl_word_insert send a SKIP control word
+      WAIT_SEND_DATA_PLSI      : out std_logic;                                          --! Flag to indicates that the lane_ctrl_word_insert send a SKIP control word
       -- HSSL Interface
       DATA_TX_PSI             : out std_logic_vector(C_DATA_LENGTH-1 downto 0);         --! Data 64-bit send to manufacturer IP
       VALID_K_CHARAC_PSI      : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! Flags indicates which byte is a K character
       -- ppl_64_lane_init_fsm
-      ENABLE_TRANSM_DATA_PLIF : in  std_logic                                           --! Flag to enable to send data
+      ENABLE_TRANSM_DATA_PLIF_PLIF : in  std_logic                                           --! Flag to enable to send data
    );
   end component;
 
@@ -175,9 +175,9 @@ architecture sim of tb_phy_hssl is
     VALID_K_CHARAC_PLWA     : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! 8-bit valid K character flags to lane_ctrl_word_detect
     DATA_RDY_PLWA           : out std_logic;                                          --! Data valid flag to lane_ctrl_word_detect
     INVALID_CHAR_PLWA       : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! Invalid character flags from PLWA
-    DISPARITY_ERR_PLWA      : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! Disparity error flags from PLWA 
-    RX_WORD_IS_ALIGNED_PLWA : out std_logic;                                          --! RX word is aligned from PLWA 
-    COMMA_DET_PLWA          : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! Flag indicates that a comma is detected on the word receive from PLWA 
+    DISPARITY_ERR_PLWA      : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! Disparity error flags from PLWA
+    RX_WORD_IS_ALIGNED_PLWA : out std_logic;                                          --! RX word is aligned from PLWA
+    COMMA_DET_PLWA          : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! Flag indicates that a comma is detected on the word receive from PLWA
     -- HSSL IP interface
     DATA_RX_HSSL            : in  std_logic_vector(C_DATA_LENGTH-1 downto 0);         --! 64-bit data from HSSL IP
     VALID_K_CHARAC_HSSL     : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! 8-bit valid K character flags from HSSL IP
@@ -195,7 +195,7 @@ end component;
 signal RST_N                        : std_logic;
 signal CLK_SYS                      : std_logic;
 
--- inst_SpaceFibre_64b 
+-- inst_SpaceFibre_64b
 -- TX
 signal HSSL_CLOCK_I                 : std_logic_vector(3 downto 0):= (others =>'0');
 signal LANE_TX0N                    : std_logic;
@@ -233,7 +233,7 @@ signal HSSL_RESET_DONE_PLIH         : std_logic;
 signal NEW_DATA_PLCWI               : std_logic                                          := '0';
 signal DATA_TX_PLCWI                : std_logic_vector(C_DATA_LENGTH-1 downto 0)         := (others => '0');
 signal VALID_K_CHARAC_PLCWI         : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0) := (others => '0');
-signal WAIT_SEND_DATA_PSI           : std_logic;
+signal WAIT_SEND_DATA_PLSI           : std_logic;
 signal DATA_TX_PSI                  : std_logic_vector(C_DATA_LENGTH-1 downto 0);
 signal VALID_K_CHARAC_PSI           : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
 
@@ -253,7 +253,7 @@ signal DISPARITY_ERR_PLWA           : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  
 signal RX_WORD_IS_ALIGNED_PLWA      : std_logic;
 signal COMMA_DET_PLWA               : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
 
-signal ENABLE_TRANSM_DATA_PLIF      : std_logic                                          :='0';
+signal ENABLE_TRANSM_DATA_PLIF_PLIF      : std_logic                                          :='0';
 
   -- Clock generation
   constant CLK_SYS_PERIOD     : time := 12.8 ns;
@@ -261,7 +261,7 @@ signal ENABLE_TRANSM_DATA_PLIF      : std_logic                                 
 
 begin
   ---------------------------------------------------------
-  -----                  Assignment              -----
+  -----                  Assignment                   -----
   ---------------------------------------------------------
   LANE_RX0N       <= LANE_TX0N;
   LANE_RX0P       <= LANE_TX0P ;
@@ -362,10 +362,10 @@ begin
       NEW_DATA_PLCWI          => NEW_DATA_PLCWI,
       DATA_TX_PLCWI           => DATA_TX_PLCWI,
       VALID_K_CHARAC_PLCWI    => VALID_K_CHARAC_PLCWI,
-      WAIT_SEND_DATA_PSI      => WAIT_SEND_DATA_PSI,
+      WAIT_SEND_DATA_PLSI      => WAIT_SEND_DATA_PLSI,
       DATA_TX_PSI             => DATA_TX_PSI,
       VALID_K_CHARAC_PSI      => VALID_K_CHARAC_PSI,
-      ENABLE_TRANSM_DATA_PLIF => ENABLE_TRANSM_DATA_PLIF
+      ENABLE_TRANSM_DATA_PLIF_PLIF => ENABLE_TRANSM_DATA_PLIF_PLIF
     );
 
   inst_ppl_64_rx_sync_fsm : ppl_64_rx_sync_fsm
@@ -398,7 +398,7 @@ begin
       COMMA_DET_PLWA          => COMMA_DET_PLWA,
       DATA_RX_HSSL            => DATA_RX_HSSL,
       VALID_K_CHARAC_HSSL     => VALID_K_CHARAC_HSSL,
-      INVALID_CHAR_HSSL       => INVALID_CHAR_HSSL, 
+      INVALID_CHAR_HSSL       => INVALID_CHAR_HSSL,
       DISPARITY_ERR_HSSL      => DISPARITY_ERR_HSSL,
       RX_WORD_IS_ALIGNED_HSSL => RX_WORD_IS_ALIGNED_HSSL,
       COMMA_DET_HSSL          => COMMA_DET_HSSL
@@ -425,7 +425,7 @@ begin
       wait for CLK_SYS_PERIOD / 2;
     end loop;
   end process;
- 
+
   -- Stimulus process
   stim_proc: process
     variable test_failed : boolean := false;
@@ -441,7 +441,7 @@ begin
     wait until HSSL_RESET_DONE_PLIH = '1';
     wait until rising_edge(CLK_HSSL);
     wait until rising_edge(CLK_HSSL);
-    ENABLE_TRANSM_DATA_PLIF <='1';
+    ENABLE_TRANSM_DATA_PLIF_PLIF <='1';
     wait until rising_edge(CLK_HSSL);
     for i in 0 to 10000 loop
 

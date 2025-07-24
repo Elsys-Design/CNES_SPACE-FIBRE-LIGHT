@@ -77,7 +77,7 @@ entity phy_plus_lane_64b_to_32b is
       AUTOSTART                        : in  std_logic;                       --! Asserts or de-asserts AutoStart for the lane
       LANE_RESET                       : in  std_logic;                       --! Asserts or de-asserts LaneReset for the lane
       PARALLEL_LOOPBACK_EN             : in  std_logic;                       --! Enables or disables the parallel loopback for the lane
-      STANDBY_REASON                   : in  std_logic_vector(07 downto 00);  --! In case of error, pauses communication
+      STANDBY_REASON_MIB                   : in  std_logic_vector(07 downto 00);  --! In case of error, pauses communication
       NEAR_END_SERIAL_LB_EN            : in  std_logic;                       --! Enables or disables the near-end serial loopback for the lane
       FAR_END_SERIAL_LB_EN             : in  std_logic;                       --! Enables or disables the far-end serial loopback for the lane
 
@@ -296,7 +296,7 @@ RX_ERROR_OVF               <= rx_error_ovf_from_lif;
 LOSS_SIGNAL                <= no_signal_from_lcwd;
 RX_POLARITY                <= invert_rx_bits_from_lif;
 FAR_END_CAPA               <= far_end_capa_i;
-lane_active_dl_i           <= enable_transm_data_from_lif;
+lane_active_dl_i           <= ENABLE_TRANSM_DATA_PLIF_from_lif;
 
 QUAD0_rxp(0)               <= RX_POS;
 QUAD0_rxn(0)               <= RX_NEG;
