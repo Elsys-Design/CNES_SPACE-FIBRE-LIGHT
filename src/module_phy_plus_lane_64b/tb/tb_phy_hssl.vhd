@@ -108,22 +108,25 @@ architecture sim of tb_phy_hssl is
     );
   end component;
 
-  component ppl_init_hssl
+  component ppl_64_init_hssl
     port (
-      RST_N                      : in  std_logic;
-      CLK                        : in  std_logic;
-      PLL_PMA_PWR_UP_PLIH        : out std_logic;
-      TX_DRIVER_PWRDWN_N_PLIH    : out std_logic;
-      PLL_PMA_RST_N_PLIH         : out std_logic;
-      PLL_PMA_LOCK_ANALOG_HSSL   : in  std_logic;
-      TX_RST_N_PLIH              : out std_logic;
-      TX_BUSY_HSSL               : in  std_logic;
-      RX_PMA_PWR_UP_PLIH         : out std_logic;
-      RX_PMA_RST_N_PLIH          : out std_logic;
-      RX_PMA_LL_SLOW_LOCKED_HSSL : in  std_logic;
-      RX_RST_N_PLIH              : out std_logic;
-      RX_BUSY_HSSL               : in  std_logic;
-      HSSL_RESET_DONE_PLIH       : out std_logic
+      RST_N                            : in  std_logic;
+      CLK                              : in  std_logic;
+      RECEIVER_DISABLED_PLIF           : in std_logic;
+      CDR_PLIF                         : in std_logic;
+      TRANSMITTER_DISABLED_PLIF        : in std_logic;
+      PLL_PMA_PWR_UP_PLIH              : out std_logic;
+      TX_DRIVER_PWRDWN_N_PLIH          : out std_logic;
+      PLL_PMA_RST_N_PLIH               : out std_logic;
+      PLL_PMA_LOCK_ANALOG_HSSL         : in  std_logic;
+      TX_RST_N_PLIH                    : out std_logic;
+      TX_BUSY_HSSL                     : in  std_logic;
+      RX_PMA_PWR_UP_PLIH               : out std_logic;
+      RX_PMA_RST_N_PLIH                : out std_logic;
+      RX_PMA_LL_SLOW_LOCKED_HSSL       : in  std_logic;
+      RX_RST_N_PLIH                    : out std_logic;
+      RX_BUSY_HSSL                     : in  std_logic;
+      HSSL_RESET_DONE_PLIH             : out std_logic
     );
   end component;
 
@@ -140,7 +143,7 @@ architecture sim of tb_phy_hssl is
       DATA_TX_PSI             : out std_logic_vector(C_DATA_LENGTH-1 downto 0);         --! Data 64-bit send to manufacturer IP
       VALID_K_CHARAC_PSI      : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! Flags indicates which byte is a K character
       -- ppl_64_lane_init_fsm
-      ENABLE_TRANSM_DATA_PLIF_PLIF : in  std_logic                                           --! Flag to enable to send data
+      ENABLE_TRANSM_DATA_PLIF : in  std_logic                                           --! Flag to enable to send data
    );
   end component;
 
@@ -219,7 +222,10 @@ signal RX_WORD_IS_ALIGNED_HSSL      : std_logic;
 signal COMMA_DET_HSSL               : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
 signal RX_ALIGN_SYNC                : std_logic :='1';
 
--- inst_ppl_init_hssl
+-- inst_ppl_64_init_hssl
+signal RECEIVER_DISABLED_PLIF       : std_logic := '1';
+signal CDR_PLIF                     : std_logic := '0';
+signal TRANSMITTER_DISABLED_PLIF    : std_logic := '1';
 signal PLL_PMA_PWR_UP_PLIH          : std_logic;
 signal TX_DRIVER_PWRDWN_N_PLIH      : std_logic;
 signal PLL_PMA_RST_N_PLIH           : std_logic;
@@ -253,7 +259,7 @@ signal DISPARITY_ERR_PLWA           : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  
 signal RX_WORD_IS_ALIGNED_PLWA      : std_logic;
 signal COMMA_DET_PLWA               : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
 
-signal ENABLE_TRANSM_DATA_PLIF_PLIF      : std_logic                                          :='0';
+signal ENABLE_TRANSM_DATA_PLIF      : std_logic                                          :='0';
 
   -- Clock generation
   constant CLK_SYS_PERIOD     : time := 12.8 ns;
@@ -338,10 +344,13 @@ begin
       RX0_ALIGN_SYNC_I            => RX_ALIGN_SYNC,
       RX0_EL_BUFF_RST_I           => '0'
     );
-  inst_ppl_init_hssl: ppl_init_hssl
+  inst_ppl_64_init_hssl: ppl_64_init_hssl
     port map (
       RST_N                      => RST_N,
       CLK                        => CLK_SYS,
+      RECEIVER_DISABLED_PLIF     => RECEIVER_DISABLED_PLIF,
+      CDR_PLIF                   => CDR_PLIF,
+      TRANSMITTER_DISABLED_PLIF  => TRANSMITTER_DISABLED_PLIF,
       PLL_PMA_PWR_UP_PLIH        => PLL_PMA_PWR_UP_PLIH,
       TX_DRIVER_PWRDWN_N_PLIH    => TX_DRIVER_PWRDWN_N_PLIH,
       PLL_PMA_RST_N_PLIH         => PLL_PMA_RST_N_PLIH,
@@ -365,7 +374,7 @@ begin
       WAIT_SEND_DATA_PLSI      => WAIT_SEND_DATA_PLSI,
       DATA_TX_PSI             => DATA_TX_PSI,
       VALID_K_CHARAC_PSI      => VALID_K_CHARAC_PSI,
-      ENABLE_TRANSM_DATA_PLIF_PLIF => ENABLE_TRANSM_DATA_PLIF_PLIF
+      ENABLE_TRANSM_DATA_PLIF => ENABLE_TRANSM_DATA_PLIF
     );
 
   inst_ppl_64_rx_sync_fsm : ppl_64_rx_sync_fsm
@@ -441,7 +450,7 @@ begin
     wait until HSSL_RESET_DONE_PLIH = '1';
     wait until rising_edge(CLK_HSSL);
     wait until rising_edge(CLK_HSSL);
-    ENABLE_TRANSM_DATA_PLIF_PLIF <='1';
+    ENABLE_TRANSM_DATA_PLIF <='1';
     wait until rising_edge(CLK_HSSL);
     for i in 0 to 10000 loop
 

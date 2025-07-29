@@ -42,7 +42,7 @@ entity ppl_64_skip_insertion is
       DATA_TX_PSI             : out std_logic_vector(C_DATA_LENGTH-1 downto 0);         --! Data 64-bit send to manufacturer IP
       VALID_K_CHARAC_PSI      : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! Flags indicates which byte is a K character
       -- ppl_64_lane_init_fsm
-      ENABLE_TRANSM_DATA_PLIF_PLIF : in  std_logic                                           --! Flag to enable to send data
+      ENABLE_TRANSM_DATA_PLIF : in  std_logic                                           --! Flag to enable to send data
    );
 end ppl_64_skip_insertion;
 
@@ -104,7 +104,7 @@ begin
                           VALID_K_CHARAC_PSI <= VALID_K_CHARAC_PLCWI;
                           WAIT_SEND_DATA_PLSI <= '0';
                           state_cnt          <= (others => '0');
-                          if ENABLE_TRANSM_DATA_PLIF_PLIF = '1' then -- When the lane_init_fsm is in ACTIVE_ST
+                          if ENABLE_TRANSM_DATA_PLIF = '1' then -- When the lane_init_fsm is in ACTIVE_ST
                              state           <= TX_DATA_1_ST;
                           end if;
 
@@ -112,7 +112,7 @@ begin
                           VALID_K_CHARAC_PSI <= k_char_2 & k_char_1;
                           DATA_TX_PSI        <= data_2 & data_1;
                           state_cnt          <= state_cnt + 2;
-                          if ENABLE_TRANSM_DATA_PLIF_PLIF = '0' then -- When the lane_init_fsm is in ACTIVE_ST
+                          if ENABLE_TRANSM_DATA_PLIF = '0' then -- When the lane_init_fsm is in ACTIVE_ST
                              state    <= TX_INIT_ST;
                           elsif state_cnt >= C_5000_WORDS then
                             state_cnt <= (others => '0');
@@ -129,7 +129,7 @@ begin
                           VALID_K_CHARAC_PSI    <= k_char_1 & k_char_0;
                           DATA_TX_PSI           <= data_1 & data_0;
                           state_cnt             <= state_cnt + 2;
-                          if ENABLE_TRANSM_DATA_PLIF_PLIF = '0' then -- When the lane_init_fsm is in ACTIVE_ST
+                          if ENABLE_TRANSM_DATA_PLIF = '0' then -- When the lane_init_fsm is in ACTIVE_ST
                              state              <= TX_INIT_ST;
                           elsif state_cnt >= C_5000_WORDS-1 then
                             state_cnt           <= (others => '0');

@@ -19,7 +19,7 @@
 --
 -- Creation date : 02/07/2025
 --
--- Description : This is the testbench of the ppl_init_hssl module
+-- Description : This is the testbench of the ppl_64_init_hssl module
 ----------------------------------------------------------------------------
 LIBRARY ieee ;
 USE ieee.std_logic_1164.all;
@@ -35,22 +35,25 @@ library phy_plus_lane_64_lib;
 library work;
 use work.pkg_simu.all;
 
-entity tb_ppl_init_hssl is
+entity tb_ppl_64_init_hssl is
 end entity;
 
-architecture sim of tb_ppl_init_hssl is
+architecture sim of tb_ppl_64_init_hssl is
 
   -- Component under test
-  component ppl_init_hssl
+  component ppl_64_init_hssl
     port (
       RST_N                            : in  std_logic;
       CLK                              : in  std_logic;
+      RECEIVER_DISABLED_PLIF           : in std_logic;
+      CDR_PLIF                         : in std_logic;
+      TRANSMITTER_DISABLED_PLIF        : in std_logic;
       PLL_PMA_PWR_UP_PLIH              : out std_logic;
       TX_DRIVER_PWRDWN_N_PLIH          : out std_logic;
       PLL_PMA_RST_N_PLIH               : out std_logic;
       PLL_PMA_LOCK_ANALOG_HSSL         : in  std_logic;
-      TX_RST_N_PLIH                   : out std_logic;
-      TX_BUSY_HSSL                    : in  std_logic;
+      TX_RST_N_PLIH                    : out std_logic;
+      TX_BUSY_HSSL                     : in  std_logic;
       RX_PMA_PWR_UP_PLIH               : out std_logic;
       RX_PMA_RST_N_PLIH                : out std_logic;
       RX_PMA_LL_SLOW_LOCKED_HSSL       : in  std_logic;
@@ -63,12 +66,15 @@ architecture sim of tb_ppl_init_hssl is
   -- Signals to connect to DUT
   signal RST_N                      : std_logic := '0';
   signal CLK                        : std_logic := '0';
+  signal RECEIVER_DISABLED_PLIF     : std_logic := '1';
+  signal CDR_PLIF                   : std_logic := '0';
+  signal TRANSMITTER_DISABLED_PLIF  : std_logic := '1';
   signal PLL_PMA_PWR_UP_PLIH        : std_logic;
   signal TX_DRIVER_PWRDWN_N_PLIH    : std_logic;
   signal PLL_PMA_RST_N_PLIH         : std_logic;
   signal PLL_PMA_LOCK_ANALOG_HSSL   : std_logic := '0';
-  signal TX_RST_N_PLIH             : std_logic;
-  signal TX_BUSY_HSSL              : std_logic := '1';
+  signal TX_RST_N_PLIH              : std_logic;
+  signal TX_BUSY_HSSL               : std_logic := '1';
   signal RX_PMA_PWR_UP_PLIH         : std_logic;
   signal RX_PMA_RST_N_PLIH          : std_logic;
   signal RX_PMA_LL_SLOW_LOCKED_HSSL : std_logic := '0';
@@ -82,10 +88,13 @@ architecture sim of tb_ppl_init_hssl is
 begin
 
   -- Instantiate DUT
-  uut: ppl_init_hssl
+  uut: ppl_64_init_hssl
     port map (
       RST_N                      => RST_N,
       CLK                        => CLK,
+      RECEIVER_DISABLED_PLIF     => RECEIVER_DISABLED_PLIF,
+      CDR_PLIF                   => CDR_PLIF,
+      TRANSMITTER_DISABLED_PLIF  => TRANSMITTER_DISABLED_PLIF,
       PLL_PMA_PWR_UP_PLIH        => PLL_PMA_PWR_UP_PLIH,
       TX_DRIVER_PWRDWN_N_PLIH    => TX_DRIVER_PWRDWN_N_PLIH,
       PLL_PMA_RST_N_PLIH         => PLL_PMA_RST_N_PLIH,

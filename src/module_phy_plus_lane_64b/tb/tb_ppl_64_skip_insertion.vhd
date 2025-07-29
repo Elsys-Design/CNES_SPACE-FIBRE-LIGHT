@@ -19,7 +19,7 @@
 --
 -- Creation date : 02/07/2025
 --
--- Description : This is the testbench of the ppl_init_hssl module
+-- Description : This is the testbench of the ppl_64_skip_insertion module
 ----------------------------------------------------------------------------
 LIBRARY ieee ;
 USE ieee.std_logic_1164.all;
@@ -55,7 +55,7 @@ architecture sim of tb_ppl_64_skip_insertion is
       DATA_TX_PSI             : out std_logic_vector(C_DATA_LENGTH-1 downto 0);         --! Data 64-bit send to manufacturer IP
       VALID_K_CHARAC_PSI      : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! Flags indicates which byte is a K character
       -- ppl_64_lane_init_fsm
-      ENABLE_TRANSM_DATA_PLIF_PLIF : in  std_logic                                           --! Flag to enable to send data
+      ENABLE_TRANSM_DATA_PLIF : in  std_logic                                           --! Flag to enable to send data
    );
   end component;
 
@@ -74,7 +74,7 @@ architecture sim of tb_ppl_64_skip_insertion is
   signal DATA_TX_PSI             : std_logic_vector(C_DATA_LENGTH-1 downto 0);
   signal VALID_K_CHARAC_PSI      : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
 
-  signal ENABLE_TRANSM_DATA_PLIF_PLIF : std_logic:='0';
+  signal ENABLE_TRANSM_DATA_PLIF : std_logic:='0';
   -- simulation signals
   signal data_2      : std_logic_vector(C_DATA_LENGTH/2-1 downto 0)        := (others => '0');
   signal data_1      : std_logic_vector(C_DATA_LENGTH/2-1 downto 0)        := (others => '0');
@@ -117,7 +117,7 @@ begin
       DATA_TX_PSI             => DATA_TX_PSI,
       VALID_K_CHARAC_PSI      => VALID_K_CHARAC_PSI,
       -- ppl_64_lane_init_fsm
-      ENABLE_TRANSM_DATA_PLIF_PLIF => ENABLE_TRANSM_DATA_PLIF_PLIF
+      ENABLE_TRANSM_DATA_PLIF => ENABLE_TRANSM_DATA_PLIF
     );
   ---------------------------------------------------------
   -----                     Process                   -----
@@ -175,7 +175,7 @@ begin
     ------------------------------------------------------------
     --                     TX_DATA_1_ST                       --
     ------------------------------------------------------------
-    ENABLE_TRANSM_DATA_PLIF_PLIF <= '1';
+    ENABLE_TRANSM_DATA_PLIF <= '1';
     -- 1st data & k_char generation
     data_1               <= std_logic_vector(to_unsigned(3,C_DATA_LENGTH/2));
     data_2               <= std_logic_vector(to_unsigned(5,C_DATA_LENGTH/2));

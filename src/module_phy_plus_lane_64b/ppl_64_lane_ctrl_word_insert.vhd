@@ -46,12 +46,12 @@ entity ppl_64_lane_ctrl_word_insert is
       DATA_TX_PLCWI                        : out std_logic_vector(C_DATA_LENGTH-1 downto 0);         --! Data 64-bit send to manufacturer IP
       VALID_K_CHARAC_PLCWI                 : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! Flags indicates which byte is a K character
       -- ppl_64_lane_init_fsm (PLIF) interface
-      SEND_INIT1_CTRL_WORD_PLIF           : in  std_logic;                                          --! Flag to send INIT1 control word following by 64 pseudo-random data words
-      SEND_INIT2_CTRL_WORD_PLIF           : in  std_logic;                                          --! Flag to send INIT2 control word following by 64 pseudo-random data words
-      SEND_INIT3_CTRL_WORD_PLIF           : in  std_logic;                                          --! Flag to send INIT3 control word following by 64 pseudo-random data words
-      ENABLE_TRANSM_DATA_PLIF             : in  std_logic;                                          --! Flag to enable to send data
-      SEND_32_STANDBY_CTRL_WORDS_PLIF     : in  std_logic;                                          --! Flag to send STANDBY control word x32
-      SEND_32_LOSS_SIGNAL_CTRL_WORDS_PLIF : in  std_logic;                                          --! Flag to send LOSS_SIGNAL control word x32
+      SEND_INIT1_CTRL_WORD_PLIF           : in  std_logic;                                           --! Flag to send INIT1 control word following by 64 pseudo-random data words
+      SEND_INIT2_CTRL_WORD_PLIF           : in  std_logic;                                           --! Flag to send INIT2 control word following by 64 pseudo-random data words
+      SEND_INIT3_CTRL_WORD_PLIF           : in  std_logic;                                           --! Flag to send INIT3 control word following by 64 pseudo-random data words
+      ENABLE_TRANSM_DATA_PLIF             : in  std_logic;                                           --! Flag to enable to send data
+      SEND_32_STANDBY_CTRL_WORDS_PLIF     : in  std_logic;                                           --! Flag to send STANDBY control word x32
+      SEND_32_LOSS_SIGNAL_CTRL_WORDS_PLIF : in  std_logic;                                           --! Flag to send LOSS_SIGNAL control word x32
       STANDBY_SIGNAL_X32_PLCWI             : out std_logic;                                          --! Flag STANDBY control word has been send x32
       LOST_SIGNAL_X32_PLCWI                : out std_logic;                                          --! Flag LOST_SIGNAL control word has been send x32
       -- MIB interface
