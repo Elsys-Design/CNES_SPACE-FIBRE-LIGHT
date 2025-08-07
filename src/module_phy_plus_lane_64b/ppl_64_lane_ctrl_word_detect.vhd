@@ -51,11 +51,11 @@ entity ppl_64_lane_ctrl_word_detect is
     ENABLE_TRANSM_DATA_PLIF          : in  std_logic_vector(1 downto 0);                       --! Flag to enable the transmision of data
     -- ppl_64_parallel_looback (PLPL) interface
     DATA_RX_PLPL                     : in  std_logic_vector(C_DATA_LENGTH-1 downto 0);         --! 64-bit data from ppl_64_parallel_looback
-    VALID_K_CARAC_PLPL               : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! 8-bit valid K character flags from ppl_64_parallel_looback
+    VALID_K_CHARAC_PLPL               : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! 8-bit valid K character flags from ppl_64_parallel_looback
     DATA_RDY_PLPL                    : in  std_logic;                                          --! Data valid flag from ppl_64_parallel_looback
     -- DATA-LINK interface
     DATA_RX_PLCWD                    : out std_logic_vector(C_DATA_LENGTH-1 downto 0);          --! 64-bit data to Data-link layer
-    VALID_K_CARAC_PLCWD              : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);  --! 8-bit valid K character flags to Data-link layer
+    VALID_K_CHARAC_PLCWD              : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);  --! 8-bit valid K character flags to Data-link layer
     DATA_RDY_PLCWD                   : out std_logic_vector(1 downto 0)                         --! Data valid flag to Data-link layer
   );
 end ppl_64_lane_ctrl_word_detect;
@@ -105,7 +105,7 @@ begin
 ---------------------------------------------------------
 -- Outputs
 DATA_RX_PLCWD              <= data_rx_dl_sw           & data_rx_dl_fw;
-VALID_K_CARAC_PLCWD        <= valid_k_charac_dl_sw    & valid_k_charac_dl_fw;
+VALID_K_CHARAC_PLCWD        <= valid_k_charac_dl_sw    & valid_k_charac_dl_fw;
 DATA_RDY_PLCWD             <= data_rdy_dl_sw          & data_rdy_dl_fw;
 RX_NEW_WORD_PLCWD          <= rx_new_word_sw          & rx_new_word_fw;
 DETECTED_INIT1_PLCWD       <= detected_init1_sw       & detected_init1_fw;
@@ -161,33 +161,33 @@ CAPABILITY_PLCWD           <= capability_sw           & capability_fw;
       -- Control word identification
       if DATA_RDY_PLPL = '1' then
         -- INIT 1
-        if DATA_RX_PLPL(C_DATA_LENGTH/2-1 downto 0) = C_INIT1_WORD and VALID_K_CARAC_PLPL(C_BYTE_BY_WORD_LENGTH/2-1 downto 0) = x"1" then
+        if DATA_RX_PLPL(C_DATA_LENGTH/2-1 downto 0) = C_INIT1_WORD and VALID_K_CHARAC_PLPL(C_BYTE_BY_WORD_LENGTH/2-1 downto 0) = x"1" then
           detected_init1_fw   <= '1';
           rx_new_word_fw      <= '1';
         -- INIT 2
-        elsif DATA_RX_PLPL(C_DATA_LENGTH/2-1 downto 0) = C_INIT2_WORD and VALID_K_CARAC_PLPL(C_BYTE_BY_WORD_LENGTH/2-1 downto 0) = x"1" then
+        elsif DATA_RX_PLPL(C_DATA_LENGTH/2-1 downto 0) = C_INIT2_WORD and VALID_K_CHARAC_PLPL(C_BYTE_BY_WORD_LENGTH/2-1 downto 0) = x"1" then
           detected_init2_fw   <= '1';
           rx_new_word_fw      <= '1';
         -- INIT 3
-        elsif DATA_RX_PLPL(23 downto 0) = C_INIT3_WORD and VALID_K_CARAC_PLPL(C_BYTE_BY_WORD_LENGTH/2-1 downto 0) = x"1" then
+        elsif DATA_RX_PLPL(23 downto 0) = C_INIT3_WORD and VALID_K_CHARAC_PLPL(C_BYTE_BY_WORD_LENGTH/2-1 downto 0) = x"1" then
           detected_init3_fw   <= '1';
           rx_new_word_fw      <= '1';
           capability_fw       <= DATA_RX_PLPL(31 downto 24);
         -- iINIT 1
-        elsif DATA_RX_PLPL(C_DATA_LENGTH/2-1 downto 0) = C_I_INIT1_WORD and VALID_K_CARAC_PLPL(C_BYTE_BY_WORD_LENGTH/2-1 downto 0) = x"1" then
+        elsif DATA_RX_PLPL(C_DATA_LENGTH/2-1 downto 0) = C_I_INIT1_WORD and VALID_K_CHARAC_PLPL(C_BYTE_BY_WORD_LENGTH/2-1 downto 0) = x"1" then
           detected_inv_init1_fw <= '1';
           rx_new_word_fw        <= '1';
         -- iINIT 2
-        elsif DATA_RX_PLPL(C_DATA_LENGTH/2-1 downto 0) = C_I_INIT2_WORD and VALID_K_CARAC_PLPL(C_BYTE_BY_WORD_LENGTH/2-1 downto 0) = x"1" then
+        elsif DATA_RX_PLPL(C_DATA_LENGTH/2-1 downto 0) = C_I_INIT2_WORD and VALID_K_CHARAC_PLPL(C_BYTE_BY_WORD_LENGTH/2-1 downto 0) = x"1" then
           detected_inv_init2_fw <= '1';
           rx_new_word_fw        <= '1';
         -- LOST SIGNAL
-        elsif DATA_RX_PLPL(23 downto 0) = C_LOST_SIG_WORD and VALID_K_CARAC_PLPL(C_BYTE_BY_WORD_LENGTH/2-1 downto 0) = x"1" then
+        elsif DATA_RX_PLPL(23 downto 0) = C_LOST_SIG_WORD and VALID_K_CHARAC_PLPL(C_BYTE_BY_WORD_LENGTH/2-1 downto 0) = x"1" then
           detected_loss_signal_fw <= '1';
           comma_k287_rxed_fw      <= '1';
           rx_new_word_fw          <= '1';
         -- STANDBY
-        elsif DATA_RX_PLPL(23 downto 0) = C_STANDBY_WORD and VALID_K_CARAC_PLPL(C_BYTE_BY_WORD_LENGTH/2-1 downto 0) = x"1" then
+        elsif DATA_RX_PLPL(23 downto 0) = C_STANDBY_WORD and VALID_K_CHARAC_PLPL(C_BYTE_BY_WORD_LENGTH/2-1 downto 0) = x"1" then
           detected_standby_fw    <= '1';
           comma_k287_rxed_fw     <= '1';
           rx_new_word_fw         <= '1';
@@ -197,21 +197,21 @@ CAPABILITY_PLCWD           <= capability_sw           & capability_fw;
           valid_k_charac_dl_fw <= x"1";
           data_rdy_dl_fw       <= '1';
         -- Transmit DATA
-        elsif enable_transm_data_rr(0) = '1' and not((DATA_RX_PLPL(C_DATA_LENGTH/2-1 downto 0) = C_IDLE_WORD or DATA_RX_PLPL(C_DATA_LENGTH/2-1 downto 0) = C_SKIP_WORD) and VALID_K_CARAC_PLPL(C_BYTE_BY_WORD_LENGTH/2-1 downto 0) = x"1") then
+        elsif enable_transm_data_rr(0) = '1' and not((DATA_RX_PLPL(C_DATA_LENGTH/2-1 downto 0) = C_IDLE_WORD or DATA_RX_PLPL(C_DATA_LENGTH/2-1 downto 0) = C_SKIP_WORD) and VALID_K_CHARAC_PLPL(C_BYTE_BY_WORD_LENGTH/2-1 downto 0) = x"1") then
           data_rx_dl_fw        <= DATA_RX_PLPL(C_DATA_LENGTH/2-1 downto 0);
-          valid_k_charac_dl_fw <= VALID_K_CARAC_PLPL(C_BYTE_BY_WORD_LENGTH/2-1 downto 0);
+          valid_k_charac_dl_fw <= VALID_K_CHARAC_PLPL(C_BYTE_BY_WORD_LENGTH/2-1 downto 0);
           data_rdy_dl_fw       <= DATA_RDY_PLPL;
           rx_new_word_fw       <= '1';
-          if DATA_RX_PLPL(C_DATA_LENGTH/2-1 downto 0) = C_RXERR_WORD and VALID_K_CARAC_PLPL(C_BYTE_BY_WORD_LENGTH/2-1 downto 0) = x"1" then
+          if DATA_RX_PLPL(C_DATA_LENGTH/2-1 downto 0) = C_RXERR_WORD and VALID_K_CHARAC_PLPL(C_BYTE_BY_WORD_LENGTH/2-1 downto 0) = x"1" then
             detected_rxerr_word_fw <= '1';
           end if;
         -- SKIP or IDLE
-        elsif (DATA_RX_PLPL(C_DATA_LENGTH/2-1 downto 0) = C_IDLE_WORD or DATA_RX_PLPL(C_DATA_LENGTH/2-1 downto 0) = C_SKIP_WORD) and VALID_K_CARAC_PLPL(C_BYTE_BY_WORD_LENGTH/2-1 downto 0) = x"1" then
+        elsif (DATA_RX_PLPL(C_DATA_LENGTH/2-1 downto 0) = C_IDLE_WORD or DATA_RX_PLPL(C_DATA_LENGTH/2-1 downto 0) = C_SKIP_WORD) and VALID_K_CHARAC_PLPL(C_BYTE_BY_WORD_LENGTH/2-1 downto 0) = x"1" then
           comma_k287_rxed_fw   <= '1';
           rx_new_word_fw       <= '1';
         else
           rx_new_word_fw       <= '1';
-          if DATA_RX_PLPL(C_DATA_LENGTH/2-1 downto 0) = C_RXERR_WORD and VALID_K_CARAC_PLPL(C_BYTE_BY_WORD_LENGTH/2-1 downto 0) = x"1" then
+          if DATA_RX_PLPL(C_DATA_LENGTH/2-1 downto 0) = C_RXERR_WORD and VALID_K_CHARAC_PLPL(C_BYTE_BY_WORD_LENGTH/2-1 downto 0) = x"1" then
             detected_rxerr_word_fw <= '1';
           end if;
         end if;
@@ -258,33 +258,33 @@ CAPABILITY_PLCWD           <= capability_sw           & capability_fw;
       -- Control word identification
       if DATA_RDY_PLPL = '1' then
         -- INIT 1
-        if DATA_RX_PLPL(C_DATA_LENGTH-1 downto C_DATA_LENGTH/2) = C_INIT1_WORD and VALID_K_CARAC_PLPL(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) = x"1" then
+        if DATA_RX_PLPL(C_DATA_LENGTH-1 downto C_DATA_LENGTH/2) = C_INIT1_WORD and VALID_K_CHARAC_PLPL(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) = x"1" then
           detected_init1_sw   <= '1';
           rx_new_word_sw      <= '1';
         -- INIT 2
-        elsif DATA_RX_PLPL(C_DATA_LENGTH-1 downto C_DATA_LENGTH/2) = C_INIT2_WORD and VALID_K_CARAC_PLPL(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) = x"1" then
+        elsif DATA_RX_PLPL(C_DATA_LENGTH-1 downto C_DATA_LENGTH/2) = C_INIT2_WORD and VALID_K_CHARAC_PLPL(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) = x"1" then
           detected_init2_sw   <= '1';
           rx_new_word_sw      <= '1';
         -- INIT 3
-        elsif DATA_RX_PLPL(C_DATA_LENGTH/2+23 downto C_DATA_LENGTH/2) = C_INIT3_WORD and VALID_K_CARAC_PLPL(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) = x"1" then
+        elsif DATA_RX_PLPL(C_DATA_LENGTH/2+23 downto C_DATA_LENGTH/2) = C_INIT3_WORD and VALID_K_CHARAC_PLPL(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) = x"1" then
           detected_init3_sw   <= '1';
           rx_new_word_sw      <= '1';
           capability_sw       <= DATA_RX_PLPL(63 downto 56);
         -- iINIT 1
-        elsif DATA_RX_PLPL(C_DATA_LENGTH-1 downto C_DATA_LENGTH/2) = C_I_INIT1_WORD and VALID_K_CARAC_PLPL(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) = x"1" then
+        elsif DATA_RX_PLPL(C_DATA_LENGTH-1 downto C_DATA_LENGTH/2) = C_I_INIT1_WORD and VALID_K_CHARAC_PLPL(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) = x"1" then
           detected_inv_init1_sw <= '1';
           rx_new_word_sw        <= '1';
         -- iINIT 2
-        elsif DATA_RX_PLPL(C_DATA_LENGTH-1 downto C_DATA_LENGTH/2) = C_I_INIT2_WORD and VALID_K_CARAC_PLPL(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) = x"1" then
+        elsif DATA_RX_PLPL(C_DATA_LENGTH-1 downto C_DATA_LENGTH/2) = C_I_INIT2_WORD and VALID_K_CHARAC_PLPL(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) = x"1" then
           detected_inv_init2_sw <= '1';
           rx_new_word_sw        <= '1';
         -- LOST SIGNAL
-        elsif DATA_RX_PLPL(C_DATA_LENGTH/2+23 downto C_DATA_LENGTH/2) = C_LOST_SIG_WORD and VALID_K_CARAC_PLPL(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) = x"1" then
+        elsif DATA_RX_PLPL(C_DATA_LENGTH/2+23 downto C_DATA_LENGTH/2) = C_LOST_SIG_WORD and VALID_K_CHARAC_PLPL(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) = x"1" then
           detected_loss_signal_sw <= '1';
           comma_k287_rxed_sw      <= '1';
           rx_new_word_sw          <= '1';
         -- STANDBY
-        elsif DATA_RX_PLPL(C_DATA_LENGTH/2+23 downto C_DATA_LENGTH/2) = C_STANDBY_WORD and VALID_K_CARAC_PLPL(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) = x"1" then
+        elsif DATA_RX_PLPL(C_DATA_LENGTH/2+23 downto C_DATA_LENGTH/2) = C_STANDBY_WORD and VALID_K_CHARAC_PLPL(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) = x"1" then
           detected_standby_sw  <= '1';
           comma_k287_rxed_sw   <= '1';
           rx_new_word_sw       <= '1';
@@ -294,21 +294,21 @@ CAPABILITY_PLCWD           <= capability_sw           & capability_fw;
           valid_k_charac_dl_sw <= x"1";
           data_rdy_dl_sw       <= '1';
         -- Transmit DATA
-        elsif enable_transm_data_rr(1) = '1' and not((DATA_RX_PLPL(C_DATA_LENGTH-1 downto C_DATA_LENGTH/2) = C_IDLE_WORD or DATA_RX_PLPL(C_DATA_LENGTH-1 downto C_DATA_LENGTH/2) = C_SKIP_WORD) and VALID_K_CARAC_PLPL(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) = x"1") then
+        elsif enable_transm_data_rr(1) = '1' and not((DATA_RX_PLPL(C_DATA_LENGTH-1 downto C_DATA_LENGTH/2) = C_IDLE_WORD or DATA_RX_PLPL(C_DATA_LENGTH-1 downto C_DATA_LENGTH/2) = C_SKIP_WORD) and VALID_K_CHARAC_PLPL(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) = x"1") then
           data_rx_dl_sw        <= DATA_RX_PLPL(C_DATA_LENGTH-1 downto C_DATA_LENGTH/2);
-          valid_k_charac_dl_sw <= VALID_K_CARAC_PLPL(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2);
+          valid_k_charac_dl_sw <= VALID_K_CHARAC_PLPL(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2);
           data_rdy_dl_sw       <= DATA_RDY_PLPL;
           rx_new_word_sw       <= '1';
-          if DATA_RX_PLPL(C_DATA_LENGTH-1 downto C_DATA_LENGTH/2) = C_RXERR_WORD and VALID_K_CARAC_PLPL(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) = x"1" then
+          if DATA_RX_PLPL(C_DATA_LENGTH-1 downto C_DATA_LENGTH/2) = C_RXERR_WORD and VALID_K_CHARAC_PLPL(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) = x"1" then
             detected_rxerr_word_sw <= '1';
           end if;
         -- SKIP or IDLE
-        elsif (DATA_RX_PLPL(C_DATA_LENGTH-1 downto C_DATA_LENGTH/2) = C_IDLE_WORD or DATA_RX_PLPL(C_DATA_LENGTH-1 downto C_DATA_LENGTH/2) = C_SKIP_WORD) and VALID_K_CARAC_PLPL(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) = x"1" then
+        elsif (DATA_RX_PLPL(C_DATA_LENGTH-1 downto C_DATA_LENGTH/2) = C_IDLE_WORD or DATA_RX_PLPL(C_DATA_LENGTH-1 downto C_DATA_LENGTH/2) = C_SKIP_WORD) and VALID_K_CHARAC_PLPL(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) = x"1" then
           comma_k287_rxed_sw   <= '1';
           rx_new_word_sw       <= '1';
         else
           rx_new_word_sw       <= '1';
-          if DATA_RX_PLPL(C_DATA_LENGTH-1 downto C_DATA_LENGTH/2) = C_RXERR_WORD and VALID_K_CARAC_PLPL(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) = x"1" then
+          if DATA_RX_PLPL(C_DATA_LENGTH-1 downto C_DATA_LENGTH/2) = C_RXERR_WORD and VALID_K_CHARAC_PLPL(C_BYTE_BY_WORD_LENGTH-1 downto C_BYTE_BY_WORD_LENGTH/2) = x"1" then
             detected_rxerr_word_sw <= '1';
           end if;
         end if;

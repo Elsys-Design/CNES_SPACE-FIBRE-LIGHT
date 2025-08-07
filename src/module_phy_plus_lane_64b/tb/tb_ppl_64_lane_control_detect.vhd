@@ -58,11 +58,11 @@ component ppl_64_lane_ctrl_word_detect is
     ENABLE_TRANSM_DATA_PLIF          : in  std_logic_vector(1 downto 0);                       --! Flag to enable the transmision of data
     -- ppl_64_parallel_looback (PLPL) interface
     DATA_RX_PLPL                     : in  std_logic_vector(C_DATA_LENGTH-1 downto 0);         --! 64-bit data from ppl_64_parallel_looback
-    VALID_K_CARAC_PLPL               : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! 8-bit valid K character flags from ppl_64_parallel_looback
+    VALID_K_CHARAC_PLPL               : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! 8-bit valid K character flags from ppl_64_parallel_looback
     DATA_RDY_PLPL                    : in  std_logic;                                          --! Data valid flag from ppl_64_parallel_looback
     -- DATA-LINK interface
     DATA_RX_PLCWD                    : out std_logic_vector(C_DATA_LENGTH-1 downto 0);         --! 64-bit data to Data-link layer
-    VALID_K_CARAC_PLCWD              : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! 8-bit valid K character flags to Data-link layer
+    VALID_K_CHARAC_PLCWD              : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! 8-bit valid K character flags to Data-link layer
     DATA_RDY_PLCWD                   : out std_logic_vector(1 downto 0)                        --! Data valid flag to Data-link layer
    );
 end component;
@@ -92,10 +92,10 @@ signal SEND_RXERR_PLIF                  : std_logic_vector(1 downto 0) := "00";
 signal NO_SIGNAL_DETECTION_ENABLED_PLIF : std_logic := '0';
 signal ENABLE_TRANSM_DATA_PLIF          : std_logic_vector(1 downto 0) := "00";
 signal DATA_RX_PLPL                     : std_logic_vector(C_DATA_LENGTH-1 downto 0)        := (others =>'0');
-signal VALID_K_CARAC_PLPL               : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0):= (others =>'0');
+signal VALID_K_CHARAC_PLPL               : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0):= (others =>'0');
 signal DATA_RDY_PLPL                    : std_logic := '0';
 signal DATA_RX_PLCWD                    : std_logic_vector(C_DATA_LENGTH-1 downto 0);
-signal VALID_K_CARAC_PLCWD              : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
+signal VALID_K_CHARAC_PLCWD              : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
 signal DATA_RDY_PLCWD                   : std_logic_vector(1 downto 0);
 
 signal capability_in                    : std_logic_vector(7 downto 0):= (others => '0');
@@ -126,10 +126,10 @@ port map(
   NO_SIGNAL_DETECTION_ENABLED_PLIF => NO_SIGNAL_DETECTION_ENABLED_PLIF,
   ENABLE_TRANSM_DATA_PLIF          => ENABLE_TRANSM_DATA_PLIF,
   DATA_RX_PLPL                     => DATA_RX_PLPL,
-  VALID_K_CARAC_PLPL               => VALID_K_CARAC_PLPL,
+  VALID_K_CHARAC_PLPL               => VALID_K_CHARAC_PLPL,
   DATA_RDY_PLPL                    => DATA_RDY_PLPL,
   DATA_RX_PLCWD                    => DATA_RX_PLCWD,
-  VALID_K_CARAC_PLCWD              => VALID_K_CARAC_PLCWD,
+  VALID_K_CHARAC_PLCWD              => VALID_K_CHARAC_PLCWD,
   DATA_RDY_PLCWD                   => DATA_RDY_PLCWD
 );
 
@@ -165,11 +165,11 @@ begin
   -- Test 0.1: First word only
   --------------------------------------
   DATA_RX_PLPL       <= x"12345678"& C_INIT1_WORD;
-  VALID_K_CARAC_PLPL <= x"0" & x"1";
+  VALID_K_CHARAC_PLPL <= x"0" & x"1";
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 0.1: INIT 1: DATA_RX_PLCWD",        x"12345678"& x"00000000", DATA_RX_PLCWD,        test_failed);
-  check_equal("Test 0.1: INIT 1: VALID_K_CARAC_PLCWD",  x"00",                    VALID_K_CARAC_PLCWD,  test_failed);
+  check_equal("Test 0.1: INIT 1: VALID_K_CHARAC_PLCWD",  x"00",                    VALID_K_CHARAC_PLCWD,  test_failed);
   check_equal("Test 0.1: INIT 1: DATA_RDY_PLCWD",       "10",                     DATA_RDY_PLCWD,       test_failed);
   check_equal("Test 0.1: INIT 1: RX_NEW_WORD_PLCWD",    "11",                     RX_NEW_WORD_PLCWD,    test_failed);
   check_equal("Test 0.1: INIT 1: DETECTED_INIT1_PLCWD", "01",                     DETECTED_INIT1_PLCWD, test_failed);
@@ -177,11 +177,11 @@ begin
   -- Test 0.2: Second word only
   --------------------------------------
   DATA_RX_PLPL       <= C_INIT1_WORD & x"12345678";
-  VALID_K_CARAC_PLPL <= x"1" & x"0";
+  VALID_K_CHARAC_PLPL <= x"1" & x"0";
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 0.2: INIT 1: DATA_RX_PLCWD",        x"00000000" & x"12345678", DATA_RX_PLCWD,        test_failed);
-  check_equal("Test 0.2: INIT 1: VALID_K_CARAC_PLCWD",  x"00",                     VALID_K_CARAC_PLCWD,  test_failed);
+  check_equal("Test 0.2: INIT 1: VALID_K_CHARAC_PLCWD",  x"00",                     VALID_K_CHARAC_PLCWD,  test_failed);
   check_equal("Test 0.2: INIT 1: DATA_RDY_PLCWD",       "01",                      DATA_RDY_PLCWD,       test_failed);
   check_equal("Test 0.2: INIT 1: RX_NEW_WORD_PLCWD",    "11",                      RX_NEW_WORD_PLCWD,    test_failed);
   check_equal("Test 0.2: INIT 1: DETECTED_INIT1_PLCWD", "10",                      DETECTED_INIT1_PLCWD, test_failed);
@@ -189,11 +189,11 @@ begin
   -- Test 0.3: 2 words
   --------------------------------------
   DATA_RX_PLPL       <= C_INIT1_WORD & C_INIT1_WORD;
-  VALID_K_CARAC_PLPL <= x"1" & x"1";
+  VALID_K_CHARAC_PLPL <= x"1" & x"1";
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 0.3: INIT 1: DATA_RX_PLCWD",        x"00000000" & x"00000000", DATA_RX_PLCWD,        test_failed);
-  check_equal("Test 0.3: INIT 1: VALID_K_CARAC_PLCWD",  x"00",                     VALID_K_CARAC_PLCWD,  test_failed);
+  check_equal("Test 0.3: INIT 1: VALID_K_CHARAC_PLCWD",  x"00",                     VALID_K_CHARAC_PLCWD,  test_failed);
   check_equal("Test 0.3: INIT 1: DATA_RDY_PLCWD",       "00",                      DATA_RDY_PLCWD,       test_failed);
   check_equal("Test 0.3: INIT 1: RX_NEW_WORD_PLCWD",    "11",                      RX_NEW_WORD_PLCWD,    test_failed);
   check_equal("Test 0.3: INIT 1: DETECTED_INIT1_PLCWD", "11",                      DETECTED_INIT1_PLCWD, test_failed);
@@ -204,11 +204,11 @@ begin
   -- Test 1.1: First word only
   --------------------------------------
   DATA_RX_PLPL       <= x"12345678"& C_INIT2_WORD;
-  VALID_K_CARAC_PLPL <= x"0" & x"1";
+  VALID_K_CHARAC_PLPL <= x"0" & x"1";
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 1.1: INIT 2: DATA_RX_PLCWD",        x"12345678"& x"00000000", DATA_RX_PLCWD,        test_failed);
-  check_equal("Test 1.1: INIT 2: VALID_K_CARAC_PLCWD",  x"00",                    VALID_K_CARAC_PLCWD,  test_failed);
+  check_equal("Test 1.1: INIT 2: VALID_K_CHARAC_PLCWD",  x"00",                    VALID_K_CHARAC_PLCWD,  test_failed);
   check_equal("Test 1.1: INIT 2: DATA_RDY_PLCWD",       "10",                     DATA_RDY_PLCWD,       test_failed);
   check_equal("Test 1.1: INIT 2: RX_NEW_WORD_PLCWD",    "11",                     RX_NEW_WORD_PLCWD,    test_failed);
   check_equal("Test 1.1: INIT 2: DETECTED_INIT2_PLCWD", "01",                     DETECTED_INIT2_PLCWD, test_failed);
@@ -216,11 +216,11 @@ begin
   -- Test 1.2: Second word only
   --------------------------------------
   DATA_RX_PLPL       <= C_INIT2_WORD & x"12345678";
-  VALID_K_CARAC_PLPL <= x"1" & x"0";
+  VALID_K_CHARAC_PLPL <= x"1" & x"0";
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 1.2: INIT 2: DATA_RX_PLCWD",        x"00000000" & x"12345678", DATA_RX_PLCWD,        test_failed);
-  check_equal("Test 1.2: INIT 2: VALID_K_CARAC_PLCWD",  x"00",                     VALID_K_CARAC_PLCWD,  test_failed);
+  check_equal("Test 1.2: INIT 2: VALID_K_CHARAC_PLCWD",  x"00",                     VALID_K_CHARAC_PLCWD,  test_failed);
   check_equal("Test 1.2: INIT 2: DATA_RDY_PLCWD",       "01",                      DATA_RDY_PLCWD,       test_failed);
   check_equal("Test 1.2: INIT 2: RX_NEW_WORD_PLCWD",    "11",                      RX_NEW_WORD_PLCWD,    test_failed);
   check_equal("Test 1.2: INIT 2: DETECTED_INIT2_PLCWD", "10",                      DETECTED_INIT2_PLCWD, test_failed);
@@ -228,11 +228,11 @@ begin
   -- Test 1.3: 2 words
   --------------------------------------
   DATA_RX_PLPL       <= C_INIT2_WORD & C_INIT2_WORD;
-  VALID_K_CARAC_PLPL <= x"1" & x"1";
+  VALID_K_CHARAC_PLPL <= x"1" & x"1";
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 1.3: INIT 2: DATA_RX_PLCWD",        x"00000000" & x"00000000", DATA_RX_PLCWD,        test_failed);
-  check_equal("Test 1.3: INIT 2: VALID_K_CARAC_PLCWD",  x"00",                     VALID_K_CARAC_PLCWD,  test_failed);
+  check_equal("Test 1.3: INIT 2: VALID_K_CHARAC_PLCWD",  x"00",                     VALID_K_CHARAC_PLCWD,  test_failed);
   check_equal("Test 1.3: INIT 2: DATA_RDY_PLCWD",       "00",                      DATA_RDY_PLCWD,       test_failed);
   check_equal("Test 1.3: INIT 2: RX_NEW_WORD_PLCWD",    "11",                      RX_NEW_WORD_PLCWD,    test_failed);
   check_equal("Test 1.3: INIT 2: DETECTED_INIT2_PLCWD", "11",                      DETECTED_INIT2_PLCWD, test_failed);
@@ -243,12 +243,12 @@ begin
   -- Test 2.1: First word only
   --------------------------------------
   DATA_RX_PLPL       <= x"12345678"& capability_in & C_INIT3_WORD;
-  VALID_K_CARAC_PLPL <= x"0" & x"1";
+  VALID_K_CHARAC_PLPL <= x"0" & x"1";
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 2.1: INIT 3: DATA_RX_PLCWD",        x"12345678"& x"00000000", DATA_RX_PLCWD,        test_failed);
   check_equal("Test 2.1: INIT 3: CAPABILITY_PLCWD",     x"00" & x"FF",            CAPABILITY_PLCWD,     test_failed);
-  check_equal("Test 2.1: INIT 3: VALID_K_CARAC_PLCWD",  x"00",                    VALID_K_CARAC_PLCWD,  test_failed);
+  check_equal("Test 2.1: INIT 3: VALID_K_CHARAC_PLCWD",  x"00",                    VALID_K_CHARAC_PLCWD,  test_failed);
   check_equal("Test 2.1: INIT 3: DATA_RDY_PLCWD",       "10",                     DATA_RDY_PLCWD,       test_failed);
   check_equal("Test 2.1: INIT 3: RX_NEW_WORD_PLCWD",    "11",                     RX_NEW_WORD_PLCWD,    test_failed);
   check_equal("Test 2.1: INIT 3: DETECTED_INIT3_PLCWD", "01",                     DETECTED_INIT3_PLCWD, test_failed);
@@ -256,12 +256,12 @@ begin
   -- Test 2.2: Second word only
   --------------------------------------
   DATA_RX_PLPL       <= capability_in & C_INIT3_WORD & x"12345678";
-  VALID_K_CARAC_PLPL <= x"1" & x"0";
+  VALID_K_CHARAC_PLPL <= x"1" & x"0";
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 2.2: INIT 3: DATA_RX_PLCWD",        x"00000000" & x"12345678", DATA_RX_PLCWD,        test_failed);
   check_equal("Test 2.2: INIT 3: CAPABILITY_PLCWD",     x"FF" & x"00",             CAPABILITY_PLCWD,     test_failed);
-  check_equal("Test 2.2: INIT 3: VALID_K_CARAC_PLCWD",  x"00",                     VALID_K_CARAC_PLCWD,  test_failed);
+  check_equal("Test 2.2: INIT 3: VALID_K_CHARAC_PLCWD",  x"00",                     VALID_K_CHARAC_PLCWD,  test_failed);
   check_equal("Test 2.2: INIT 3: DATA_RDY_PLCWD",       "01",                      DATA_RDY_PLCWD,       test_failed);
   check_equal("Test 2.2: INIT 3: RX_NEW_WORD_PLCWD",    "11",                      RX_NEW_WORD_PLCWD,    test_failed);
   check_equal("Test 2.2: INIT 3: DETECTED_INIT3_PLCWD", "10",                      DETECTED_INIT3_PLCWD, test_failed);
@@ -269,12 +269,12 @@ begin
   -- Test 2.3: 2 words
   --------------------------------------
   DATA_RX_PLPL       <= capability_in & C_INIT3_WORD & capability_in & C_INIT3_WORD;
-  VALID_K_CARAC_PLPL <= x"1" & x"1";
+  VALID_K_CHARAC_PLPL <= x"1" & x"1";
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 2.3: INIT 3: DATA_RX_PLCWD",        x"00000000" & x"00000000", DATA_RX_PLCWD,        test_failed);
   check_equal("Test 2.3: INIT 3: CAPABILITY_PLCWD",     x"FF" & x"FF",             CAPABILITY_PLCWD,     test_failed);
-  check_equal("Test 2.3: INIT 3: VALID_K_CARAC_PLCWD",  x"00",                     VALID_K_CARAC_PLCWD,  test_failed);
+  check_equal("Test 2.3: INIT 3: VALID_K_CHARAC_PLCWD",  x"00",                     VALID_K_CHARAC_PLCWD,  test_failed);
   check_equal("Test 2.3: INIT 3: DATA_RDY_PLCWD",       "00",                      DATA_RDY_PLCWD,       test_failed);
   check_equal("Test 2.3: INIT 3: RX_NEW_WORD_PLCWD",    "11",                      RX_NEW_WORD_PLCWD,    test_failed);
   check_equal("Test 2.3: INIT 3: DETECTED_INIT3_PLCWD", "11",                      DETECTED_INIT3_PLCWD, test_failed);
@@ -285,11 +285,11 @@ begin
   -- Test 3.1: First word only
   --------------------------------------
   DATA_RX_PLPL       <= x"12345678"& C_I_INIT1_WORD;
-  VALID_K_CARAC_PLPL <= x"0" & x"1";
+  VALID_K_CHARAC_PLPL <= x"0" & x"1";
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 3.1: iINIT 1: DATA_RX_PLCWD",            x"12345678"& x"00000000", DATA_RX_PLCWD,            test_failed);
-  check_equal("Test 3.1: iINIT 1: VALID_K_CARAC_PLCWD",      x"00",                    VALID_K_CARAC_PLCWD,      test_failed);
+  check_equal("Test 3.1: iINIT 1: VALID_K_CHARAC_PLCWD",      x"00",                    VALID_K_CHARAC_PLCWD,      test_failed);
   check_equal("Test 3.1: iINIT 1: DATA_RDY_PLCWD",           "10",                     DATA_RDY_PLCWD,           test_failed);
   check_equal("Test 3.1: iINIT 1: RX_NEW_WORD_PLCWD",        "11",                     RX_NEW_WORD_PLCWD,        test_failed);
   check_equal("Test 3.1: iINIT 1: DETECTED_INV_INIT1_PLCWD", "01",                     DETECTED_INV_INIT1_PLCWD, test_failed);
@@ -297,11 +297,11 @@ begin
   -- Test 3.2: Second word only
   --------------------------------------
   DATA_RX_PLPL       <= C_I_INIT1_WORD & x"12345678";
-  VALID_K_CARAC_PLPL <= x"1" & x"0";
+  VALID_K_CHARAC_PLPL <= x"1" & x"0";
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 3.2: iINIT 1: DATA_RX_PLCWD",            x"00000000" & x"12345678", DATA_RX_PLCWD,            test_failed);
-  check_equal("Test 3.2: iINIT 1: VALID_K_CARAC_PLCWD",      x"00",                     VALID_K_CARAC_PLCWD,      test_failed);
+  check_equal("Test 3.2: iINIT 1: VALID_K_CHARAC_PLCWD",      x"00",                     VALID_K_CHARAC_PLCWD,      test_failed);
   check_equal("Test 3.2: iINIT 1: DATA_RDY_PLCWD",           "01",                      DATA_RDY_PLCWD,           test_failed);
   check_equal("Test 3.2: iINIT 1: RX_NEW_WORD_PLCWD",        "11",                      RX_NEW_WORD_PLCWD,        test_failed);
   check_equal("Test 3.2: iINIT 1: DETECTED_INV_INIT1_PLCWD", "10",                      DETECTED_INV_INIT1_PLCWD, test_failed);
@@ -309,11 +309,11 @@ begin
   -- Test 3.3: 2 words
   --------------------------------------
   DATA_RX_PLPL       <= C_I_INIT1_WORD & C_I_INIT1_WORD;
-  VALID_K_CARAC_PLPL <= x"1" & x"1";
+  VALID_K_CHARAC_PLPL <= x"1" & x"1";
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 3.3: iINIT 1: DATA_RX_PLCWD",            x"00000000" & x"00000000", DATA_RX_PLCWD,            test_failed);
-  check_equal("Test 3.3: iINIT 1: VALID_K_CARAC_PLCWD",      x"00",                     VALID_K_CARAC_PLCWD,      test_failed);
+  check_equal("Test 3.3: iINIT 1: VALID_K_CHARAC_PLCWD",      x"00",                     VALID_K_CHARAC_PLCWD,      test_failed);
   check_equal("Test 3.3: iINIT 1: DATA_RDY_PLCWD",           "00",                      DATA_RDY_PLCWD,           test_failed);
   check_equal("Test 3.3: iINIT 1: RX_NEW_WORD_PLCWD",        "11",                      RX_NEW_WORD_PLCWD,        test_failed);
   check_equal("Test 3.3: iINIT 1: DETECTED_INV_INIT1_PLCWD", "11",                      DETECTED_INV_INIT1_PLCWD, test_failed);
@@ -324,11 +324,11 @@ begin
   -- Test 4.1: First word only
   --------------------------------------
   DATA_RX_PLPL       <= x"12345678"& C_I_INIT2_WORD;
-  VALID_K_CARAC_PLPL <= x"0" & x"1";
+  VALID_K_CHARAC_PLPL <= x"0" & x"1";
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 4.1: iINIT 2: DATA_RX_PLCWD",            x"12345678"& x"00000000", DATA_RX_PLCWD,            test_failed);
-  check_equal("Test 4.1: iINIT 2: VALID_K_CARAC_PLCWD",      x"00",                    VALID_K_CARAC_PLCWD,      test_failed);
+  check_equal("Test 4.1: iINIT 2: VALID_K_CHARAC_PLCWD",      x"00",                    VALID_K_CHARAC_PLCWD,      test_failed);
   check_equal("Test 4.1: iINIT 2: DATA_RDY_PLCWD",           "10",                     DATA_RDY_PLCWD,           test_failed);
   check_equal("Test 4.1: iINIT 2: RX_NEW_WORD_PLCWD",        "11",                     RX_NEW_WORD_PLCWD,        test_failed);
   check_equal("Test 4.1: iINIT 2: DETECTED_INV_INIT2_PLCWD", "01",                     DETECTED_INV_INIT2_PLCWD, test_failed);
@@ -336,11 +336,11 @@ begin
   -- Test 4.2: Second word only
   --------------------------------------
   DATA_RX_PLPL       <= C_I_INIT2_WORD & x"12345678";
-  VALID_K_CARAC_PLPL <= x"1" & x"0";
+  VALID_K_CHARAC_PLPL <= x"1" & x"0";
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 4.2: iINIT 2: DATA_RX_PLCWD",            x"00000000" & x"12345678", DATA_RX_PLCWD,            test_failed);
-  check_equal("Test 4.2: iINIT 2: VALID_K_CARAC_PLCWD",      x"00",                     VALID_K_CARAC_PLCWD,      test_failed);
+  check_equal("Test 4.2: iINIT 2: VALID_K_CHARAC_PLCWD",      x"00",                     VALID_K_CHARAC_PLCWD,      test_failed);
   check_equal("Test 4.2: iINIT 2: DATA_RDY_PLCWD",           "01",                      DATA_RDY_PLCWD,           test_failed);
   check_equal("Test 4.2: iINIT 2: RX_NEW_WORD_PLCWD",        "11",                      RX_NEW_WORD_PLCWD,        test_failed);
   check_equal("Test 4.2: iINIT 2: DETECTED_INV_INIT2_PLCWD", "10",                      DETECTED_INV_INIT2_PLCWD, test_failed);
@@ -348,11 +348,11 @@ begin
   -- Test 4.3: 2 words
   --------------------------------------
   DATA_RX_PLPL       <= C_I_INIT2_WORD & C_I_INIT2_WORD;
-  VALID_K_CARAC_PLPL <= x"1" & x"1";
+  VALID_K_CHARAC_PLPL <= x"1" & x"1";
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 4.3: iINIT 2: DATA_RX_PLCWD",            x"00000000" & x"00000000", DATA_RX_PLCWD,            test_failed);
-  check_equal("Test 4.3: iINIT 2: VALID_K_CARAC_PLCWD",      x"00",                     VALID_K_CARAC_PLCWD,      test_failed);
+  check_equal("Test 4.3: iINIT 2: VALID_K_CHARAC_PLCWD",      x"00",                     VALID_K_CHARAC_PLCWD,      test_failed);
   check_equal("Test 4.3: iINIT 2: DATA_RDY_PLCWD",           "00",                      DATA_RDY_PLCWD,           test_failed);
   check_equal("Test 4.3: iINIT 2: RX_NEW_WORD_PLCWD",        "11",                      RX_NEW_WORD_PLCWD,        test_failed);
   check_equal("Test 4.3: iINIT 2: DETECTED_INV_INIT2_PLCWD", "11",                      DETECTED_INV_INIT2_PLCWD, test_failed);
@@ -363,12 +363,12 @@ begin
   -- Test 5.1: First word only
   --------------------------------------
   DATA_RX_PLPL       <= x"12345678"& "000000" & lost_cause & C_LOST_SIG_WORD;
-  VALID_K_CARAC_PLPL <= x"0" & x"1";
+  VALID_K_CHARAC_PLPL <= x"0" & x"1";
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 5.1: LOST SIGNAL: DATA_RX_PLCWD",              x"12345678"& x"00000000", DATA_RX_PLCWD,              test_failed);
   check_equal("Test 5.1: LOST SIGNAL: COMMA_K287_RXED_PLCWD",      "01",                     COMMA_K287_RXED_PLCWD,      test_failed);
-  check_equal("Test 5.1: LOST SIGNAL: VALID_K_CARAC_PLCWD",        x"00",                    VALID_K_CARAC_PLCWD,        test_failed);
+  check_equal("Test 5.1: LOST SIGNAL: VALID_K_CHARAC_PLCWD",        x"00",                    VALID_K_CHARAC_PLCWD,        test_failed);
   check_equal("Test 5.1: LOST SIGNAL: DATA_RDY_PLCWD",             "10",                     DATA_RDY_PLCWD,             test_failed);
   check_equal("Test 5.1: LOST SIGNAL: RX_NEW_WORD_PLCWD",          "11",                     RX_NEW_WORD_PLCWD,          test_failed);
   check_equal("Test 5.1: LOST SIGNAL: DETECTED_LOSS_SIGNAL_PLCWD", "01",                     DETECTED_LOSS_SIGNAL_PLCWD, test_failed);
@@ -376,12 +376,12 @@ begin
   -- Test 5.2: Second word only
   --------------------------------------
   DATA_RX_PLPL       <= "000000" & lost_cause & C_LOST_SIG_WORD & x"12345678";
-  VALID_K_CARAC_PLPL <= x"1" & x"0";
+  VALID_K_CHARAC_PLPL <= x"1" & x"0";
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 5.2: LOST SIGNAL: DATA_RX_PLCWD",              x"00000000" & x"12345678", DATA_RX_PLCWD,              test_failed);
   check_equal("Test 5.2: LOST SIGNAL: COMMA_K287_RXED_PLCWD",      "10",                      COMMA_K287_RXED_PLCWD,      test_failed);
-  check_equal("Test 5.2: LOST SIGNAL: VALID_K_CARAC_PLCWD",        x"00",                     VALID_K_CARAC_PLCWD,        test_failed);
+  check_equal("Test 5.2: LOST SIGNAL: VALID_K_CHARAC_PLCWD",        x"00",                     VALID_K_CHARAC_PLCWD,        test_failed);
   check_equal("Test 5.2: LOST SIGNAL: DATA_RDY_PLCWD",             "01",                      DATA_RDY_PLCWD,             test_failed);
   check_equal("Test 5.2: LOST SIGNAL: RX_NEW_WORD_PLCWD",          "11",                      RX_NEW_WORD_PLCWD,          test_failed);
   check_equal("Test 5.2: LOST SIGNAL: DETECTED_LOSS_SIGNAL_PLCWD", "10",                      DETECTED_LOSS_SIGNAL_PLCWD, test_failed);
@@ -389,12 +389,12 @@ begin
   -- Test 5.3: 2 words
   --------------------------------------
   DATA_RX_PLPL       <= "000000" & lost_cause & C_LOST_SIG_WORD & "000000" & lost_cause & C_LOST_SIG_WORD;
-  VALID_K_CARAC_PLPL <= x"1" & x"1";
+  VALID_K_CHARAC_PLPL <= x"1" & x"1";
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 5.3: LOST SIGNAL: DATA_RX_PLCWD",              x"00000000" & x"00000000", DATA_RX_PLCWD,              test_failed);
   check_equal("Test 5.3: LOST SIGNAL: COMMA_K287_RXED_PLCWD",      "11" ,                     COMMA_K287_RXED_PLCWD,      test_failed);
-  check_equal("Test 5.3: LOST SIGNAL: VALID_K_CARAC_PLCWD",        x"00",                     VALID_K_CARAC_PLCWD,        test_failed);
+  check_equal("Test 5.3: LOST SIGNAL: VALID_K_CHARAC_PLCWD",        x"00",                     VALID_K_CHARAC_PLCWD,        test_failed);
   check_equal("Test 5.3: LOST SIGNAL: DATA_RDY_PLCWD",             "00",                      DATA_RDY_PLCWD,             test_failed);
   check_equal("Test 5.3: LOST SIGNAL: RX_NEW_WORD_PLCWD",          "11",                      RX_NEW_WORD_PLCWD,          test_failed);
   check_equal("Test 5.3: LOST SIGNAL: DETECTED_LOSS_SIGNAL_PLCWD", "11",                      DETECTED_LOSS_SIGNAL_PLCWD, test_failed);
@@ -405,12 +405,12 @@ begin
   -- Test 6.1: First word only
   --------------------------------------
   DATA_RX_PLPL       <= x"12345678"& standby_reason & C_STANDBY_WORD;
-  VALID_K_CARAC_PLPL <= x"0" & x"1";
+  VALID_K_CHARAC_PLPL <= x"0" & x"1";
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 6.1: STANDBY: DATA_RX_PLCWD",          x"12345678"& x"00000000", DATA_RX_PLCWD,          test_failed);
   check_equal("Test 6.1: STANDBY: COMMA_K287_RXED_PLCWD",  "01",                     COMMA_K287_RXED_PLCWD,  test_failed);
-  check_equal("Test 6.1: STANDBY: VALID_K_CARAC_PLCWD",    x"00",                    VALID_K_CARAC_PLCWD,    test_failed);
+  check_equal("Test 6.1: STANDBY: VALID_K_CHARAC_PLCWD",    x"00",                    VALID_K_CHARAC_PLCWD,    test_failed);
   check_equal("Test 6.1: STANDBY: DATA_RDY_PLCWD",         "10",                     DATA_RDY_PLCWD,         test_failed);
   check_equal("Test 6.1: STANDBY: RX_NEW_WORD_PLCWD",      "11",                     RX_NEW_WORD_PLCWD,      test_failed);
   check_equal("Test 6.1: STANDBY: DETECTED_STANDBY_PLCWD", "01",                     DETECTED_STANDBY_PLCWD, test_failed);
@@ -418,12 +418,12 @@ begin
   -- Test 6.2: Second word only
   --------------------------------------
   DATA_RX_PLPL       <= standby_reason & C_STANDBY_WORD & x"12345678";
-  VALID_K_CARAC_PLPL <= x"1" & x"0";
+  VALID_K_CHARAC_PLPL <= x"1" & x"0";
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 6.2: STANDBY: DATA_RX_PLCWD",          x"00000000" & x"12345678", DATA_RX_PLCWD,          test_failed);
   check_equal("Test 6.2: STANDBY: COMMA_K287_RXED_PLCWD",  "10",                      COMMA_K287_RXED_PLCWD,  test_failed);
-  check_equal("Test 6.2: STANDBY: VALID_K_CARAC_PLCWD",    x"00",                     VALID_K_CARAC_PLCWD,    test_failed);
+  check_equal("Test 6.2: STANDBY: VALID_K_CHARAC_PLCWD",    x"00",                     VALID_K_CHARAC_PLCWD,    test_failed);
   check_equal("Test 6.2: STANDBY: DATA_RDY_PLCWD",         "01",                      DATA_RDY_PLCWD,         test_failed);
   check_equal("Test 6.2: STANDBY: RX_NEW_WORD_PLCWD",      "11",                      RX_NEW_WORD_PLCWD,      test_failed);
   check_equal("Test 6.2: STANDBY: DETECTED_STANDBY_PLCWD", "10",                      DETECTED_STANDBY_PLCWD, test_failed);
@@ -431,12 +431,12 @@ begin
   -- Test 6.3: 2 words
   --------------------------------------
   DATA_RX_PLPL       <= standby_reason & C_STANDBY_WORD & standby_reason & C_STANDBY_WORD;
-  VALID_K_CARAC_PLPL <= x"1" & x"1";
+  VALID_K_CHARAC_PLPL <= x"1" & x"1";
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 6.3: STANDBY: DATA_RX_PLCWD",          x"00000000" & x"00000000", DATA_RX_PLCWD,          test_failed);
   check_equal("Test 6.3: STANDBY: COMMA_K287_RXED_PLCWD",  "11",                      COMMA_K287_RXED_PLCWD,  test_failed);
-  check_equal("Test 6.3: STANDBY: VALID_K_CARAC_PLCWD",    x"00",                     VALID_K_CARAC_PLCWD,    test_failed);
+  check_equal("Test 6.3: STANDBY: VALID_K_CHARAC_PLCWD",    x"00",                     VALID_K_CHARAC_PLCWD,    test_failed);
   check_equal("Test 6.3: STANDBY: DATA_RDY_PLCWD",         "00",                      DATA_RDY_PLCWD,         test_failed);
   check_equal("Test 6.3: STANDBY: RX_NEW_WORD_PLCWD",      "11",                      RX_NEW_WORD_PLCWD,      test_failed);
   check_equal("Test 6.3: STANDBY: DETECTED_STANDBY_PLCWD", "11",                      DETECTED_STANDBY_PLCWD, test_failed);
@@ -447,12 +447,12 @@ begin
   -- Test 7.1: First word only
   --------------------------------------
   DATA_RX_PLPL       <= x"12345678" & x"12345678";
-  VALID_K_CARAC_PLPL <= x"0" & x"0";
+  VALID_K_CHARAC_PLPL <= x"0" & x"0";
   SEND_RXERR_PLIF    <= "01";
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 7.1: RXERR: DATA_RX_PLCWD",            x"12345678" & C_RXERR_WORD, DATA_RX_PLCWD,            test_failed);
-  check_equal("Test 7.1: RXERR: VALID_K_CARAC_PLCWD",      x"01",                      VALID_K_CARAC_PLCWD,      test_failed);
+  check_equal("Test 7.1: RXERR: VALID_K_CHARAC_PLCWD",      x"01",                      VALID_K_CHARAC_PLCWD,      test_failed);
   check_equal("Test 7.1: RXERR: DATA_RDY_PLCWD",           "11",                       DATA_RDY_PLCWD,           test_failed);
   check_equal("Test 7.1: RXERR: RX_NEW_WORD_PLCWD",        "10",                       RX_NEW_WORD_PLCWD,        test_failed);
 
@@ -462,7 +462,7 @@ begin
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 7.2: RXERR: DATA_RX_PLCWD",            C_RXERR_WORD & x"12345678", DATA_RX_PLCWD,            test_failed);
-  check_equal("Test 7.2: RXERR: VALID_K_CARAC_PLCWD",      x"10",                      VALID_K_CARAC_PLCWD,      test_failed);
+  check_equal("Test 7.2: RXERR: VALID_K_CHARAC_PLCWD",      x"10",                      VALID_K_CHARAC_PLCWD,      test_failed);
   check_equal("Test 7.2: RXERR: DATA_RDY_PLCWD",           "11",                       DATA_RDY_PLCWD,           test_failed);
   check_equal("Test 7.2: RXERR: RX_NEW_WORD_PLCWD",        "01",                       RX_NEW_WORD_PLCWD,        test_failed);
 
@@ -472,7 +472,7 @@ begin
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 7.3: RXERR: DATA_RX_PLCWD",            C_RXERR_WORD & C_RXERR_WORD, DATA_RX_PLCWD,            test_failed);
-  check_equal("Test 7.3: RXERR: VALID_K_CARAC_PLCWD",      x"11",                       VALID_K_CARAC_PLCWD,      test_failed);
+  check_equal("Test 7.3: RXERR: VALID_K_CHARAC_PLCWD",      x"11",                       VALID_K_CHARAC_PLCWD,      test_failed);
   check_equal("Test 7.3: RXERR: DATA_RDY_PLCWD",           "11",                        DATA_RDY_PLCWD,           test_failed);
   check_equal("Test 7.3: RXERR: RX_NEW_WORD_PLCWD",        "00",                        RX_NEW_WORD_PLCWD,        test_failed);
   SEND_RXERR_PLIF    <= "00";
@@ -482,11 +482,11 @@ begin
   -- Test 8.1: 2 data words
   --------------------------------------
   DATA_RX_PLPL       <= x"12345678" & x"9abcdef0";
-  VALID_K_CARAC_PLPL <= x"0" & x"0";
+  VALID_K_CHARAC_PLPL <= x"0" & x"0";
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 8.1: DATA: DATA_RX_PLCWD",             x"12345678" & x"9abcdef0", DATA_RX_PLCWD,             test_failed);
-  check_equal("Test 8.1: DATA: VALID_K_CARAC_PLCWD",       x"00",                     VALID_K_CARAC_PLCWD,       test_failed);
+  check_equal("Test 8.1: DATA: VALID_K_CHARAC_PLCWD",       x"00",                     VALID_K_CHARAC_PLCWD,       test_failed);
   check_equal("Test 8.1: DATA: DATA_RDY_PLCWD",            "11",                      DATA_RDY_PLCWD,            test_failed);
   check_equal("Test 8.1: DATA: RX_NEW_WORD_PLCWD",         "11",                      RX_NEW_WORD_PLCWD,         test_failed);
   check_equal("Test 8.1: DATA: DETECTED_RXERR_WORD_PLCWD", "00",                      DETECTED_RXERR_WORD_PLCWD, test_failed);
@@ -494,11 +494,11 @@ begin
   -- Test 8.2: First word only RXERR
   --------------------------------------
   DATA_RX_PLPL       <= x"12345678" & C_RXERR_WORD;
-  VALID_K_CARAC_PLPL <= x"0" & x"1";
+  VALID_K_CHARAC_PLPL <= x"0" & x"1";
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 8.2: DATA: DATA_RX_PLCWD",             x"12345678" & C_RXERR_WORD, DATA_RX_PLCWD,             test_failed);
-  check_equal("Test 8.2: DATA: VALID_K_CARAC_PLCWD",       x"01",                      VALID_K_CARAC_PLCWD,       test_failed);
+  check_equal("Test 8.2: DATA: VALID_K_CHARAC_PLCWD",       x"01",                      VALID_K_CHARAC_PLCWD,       test_failed);
   check_equal("Test 8.2: DATA: DATA_RDY_PLCWD",            "11",                       DATA_RDY_PLCWD,            test_failed);
   check_equal("Test 8.2: DATA: RX_NEW_WORD_PLCWD",         "11",                       RX_NEW_WORD_PLCWD,         test_failed);
   check_equal("Test 8.2: DATA: DETECTED_RXERR_WORD_PLCWD", "01",                       DETECTED_RXERR_WORD_PLCWD, test_failed);
@@ -506,11 +506,11 @@ begin
   -- Test 8.3: Second word only RXERR
   --------------------------------------
   DATA_RX_PLPL       <= C_RXERR_WORD & x"9abcdef0";
-  VALID_K_CARAC_PLPL <= x"1" & x"0";
+  VALID_K_CHARAC_PLPL <= x"1" & x"0";
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 8.3: DATA: DATA_RX_PLCWD",             C_RXERR_WORD & x"9abcdef0", DATA_RX_PLCWD,             test_failed);
-  check_equal("Test 8.3: DATA: VALID_K_CARAC_PLCWD",       x"10",                      VALID_K_CARAC_PLCWD,       test_failed);
+  check_equal("Test 8.3: DATA: VALID_K_CHARAC_PLCWD",       x"10",                      VALID_K_CHARAC_PLCWD,       test_failed);
   check_equal("Test 8.3: DATA: DATA_RDY_PLCWD",            "11",                       DATA_RDY_PLCWD,            test_failed);
   check_equal("Test 8.3: DATA: RX_NEW_WORD_PLCWD",         "11",                       RX_NEW_WORD_PLCWD,         test_failed);
   check_equal("Test 8.1: DATA: DETECTED_RXERR_WORD_PLCWD", "10",                       DETECTED_RXERR_WORD_PLCWD, test_failed);
@@ -518,11 +518,11 @@ begin
   -- Test 8.4: 2 words RXERR
   --------------------------------------
   DATA_RX_PLPL       <= C_RXERR_WORD & C_RXERR_WORD;
-  VALID_K_CARAC_PLPL <= x"1" & x"1";
+  VALID_K_CHARAC_PLPL <= x"1" & x"1";
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 8.4: DATA: DATA_RX_PLCWD",             C_RXERR_WORD & C_RXERR_WORD, DATA_RX_PLCWD,             test_failed);
-  check_equal("Test 8.4: DATA: VALID_K_CARAC_PLCWD",       x"11",                       VALID_K_CARAC_PLCWD,       test_failed);
+  check_equal("Test 8.4: DATA: VALID_K_CHARAC_PLCWD",       x"11",                       VALID_K_CHARAC_PLCWD,       test_failed);
   check_equal("Test 8.4: DATA: DATA_RDY_PLCWD",            "11",                        DATA_RDY_PLCWD,            test_failed);
   check_equal("Test 8.4: DATA: RX_NEW_WORD_PLCWD",         "11",                        RX_NEW_WORD_PLCWD,         test_failed);
   check_equal("Test 8.4: DATA: DETECTED_RXERR_WORD_PLCWD", "11",                        DETECTED_RXERR_WORD_PLCWD, test_failed);
@@ -533,11 +533,11 @@ begin
   -- Test 9.1: First word only
   --------------------------------------
   DATA_RX_PLPL       <= x"12345678"& C_SKIP_WORD;
-  VALID_K_CARAC_PLPL <= x"0" & x"1";
+  VALID_K_CHARAC_PLPL <= x"0" & x"1";
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 9.1: SKIP: DATA_RX_PLCWD",          x"12345678"& x"00000000", DATA_RX_PLCWD,           test_failed);
-  check_equal("Test 9.1: SKIP: VALID_K_CARAC_PLCWD",    x"00",                    VALID_K_CARAC_PLCWD,     test_failed);
+  check_equal("Test 9.1: SKIP: VALID_K_CHARAC_PLCWD",    x"00",                    VALID_K_CHARAC_PLCWD,     test_failed);
   check_equal("Test 9.1: SKIP: DATA_RDY_PLCWD",         "10",                     DATA_RDY_PLCWD,          test_failed);
   check_equal("Test 9.1: SKIP: RX_NEW_WORD_PLCWD",      "11",                     RX_NEW_WORD_PLCWD,       test_failed);
   check_equal("Test 9.1: SKIP: COMMA_K287_RXED_PLCWD",  "01",                     COMMA_K287_RXED_PLCWD,  test_failed);
@@ -545,11 +545,11 @@ begin
   -- Test 9.2: Second word only
   --------------------------------------
   DATA_RX_PLPL       <= C_SKIP_WORD & x"12345678";
-  VALID_K_CARAC_PLPL <= x"1" & x"0";
+  VALID_K_CHARAC_PLPL <= x"1" & x"0";
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 9.2: SKIP: DATA_RX_PLCWD",          x"00000000" & x"12345678", DATA_RX_PLCWD,          test_failed);
-  check_equal("Test 9.2: SKIP: VALID_K_CARAC_PLCWD",    x"00",                     VALID_K_CARAC_PLCWD,    test_failed);
+  check_equal("Test 9.2: SKIP: VALID_K_CHARAC_PLCWD",    x"00",                     VALID_K_CHARAC_PLCWD,    test_failed);
   check_equal("Test 9.2: SKIP: DATA_RDY_PLCWD",         "01",                      DATA_RDY_PLCWD,         test_failed);
   check_equal("Test 9.2: SKIP: RX_NEW_WORD_PLCWD",      "11",                      RX_NEW_WORD_PLCWD,      test_failed);
   check_equal("Test 9.2: SKIP: COMMA_K287_RXED_PLCWD",  "10",                      COMMA_K287_RXED_PLCWD,  test_failed);
@@ -557,11 +557,11 @@ begin
   -- Test 9.3: 2 words
   --------------------------------------
   DATA_RX_PLPL       <= C_SKIP_WORD & C_SKIP_WORD;
-  VALID_K_CARAC_PLPL <= x"1" & x"1";
+  VALID_K_CHARAC_PLPL <= x"1" & x"1";
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 9.3: SKIP: DATA_RX_PLCWD",          x"00000000" & x"00000000", DATA_RX_PLCWD,          test_failed);
-  check_equal("Test 9.3: SKIP: VALID_K_CARAC_PLCWD",    x"00",                     VALID_K_CARAC_PLCWD,    test_failed);
+  check_equal("Test 9.3: SKIP: VALID_K_CHARAC_PLCWD",    x"00",                     VALID_K_CHARAC_PLCWD,    test_failed);
   check_equal("Test 9.3: SKIP: DATA_RDY_PLCWD",         "00",                      DATA_RDY_PLCWD,         test_failed);
   check_equal("Test 9.3: SKIP: RX_NEW_WORD_PLCWD",      "11",                      RX_NEW_WORD_PLCWD,      test_failed);
   check_equal("Test 9.3: SKIP: COMMA_K287_RXED_PLCWD",  "11",                      COMMA_K287_RXED_PLCWD,  test_failed);
@@ -572,11 +572,11 @@ begin
   -- Test 10.1: First word only
   --------------------------------------
   DATA_RX_PLPL       <= x"12345678"& C_SKIP_WORD;
-  VALID_K_CARAC_PLPL <= x"0" & x"1";
+  VALID_K_CHARAC_PLPL <= x"0" & x"1";
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 10.1: IDLE: DATA_RX_PLCWD",          x"12345678"& x"00000000", DATA_RX_PLCWD,           test_failed);
-  check_equal("Test 10.1: IDLE: VALID_K_CARAC_PLCWD",    x"00",                    VALID_K_CARAC_PLCWD,     test_failed);
+  check_equal("Test 10.1: IDLE: VALID_K_CHARAC_PLCWD",    x"00",                    VALID_K_CHARAC_PLCWD,     test_failed);
   check_equal("Test 10.1: IDLE: DATA_RDY_PLCWD",         "10",                     DATA_RDY_PLCWD,          test_failed);
   check_equal("Test 10.1: IDLE: RX_NEW_WORD_PLCWD",      "11",                     RX_NEW_WORD_PLCWD,       test_failed);
   check_equal("Test 10.1: IDLE: COMMA_K287_RXED_PLCWD",  "01",                     COMMA_K287_RXED_PLCWD,  test_failed);
@@ -584,11 +584,11 @@ begin
   -- Test 10.2: Second word only
   --------------------------------------
   DATA_RX_PLPL       <= C_IDLE_WORD & x"12345678";
-  VALID_K_CARAC_PLPL <= x"1" & x"0";
+  VALID_K_CHARAC_PLPL <= x"1" & x"0";
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 10.2: IDLE: DATA_RX_PLCWD",          x"00000000" & x"12345678", DATA_RX_PLCWD,          test_failed);
-  check_equal("Test 10.2: IDLE: VALID_K_CARAC_PLCWD",    x"00",                     VALID_K_CARAC_PLCWD,    test_failed);
+  check_equal("Test 10.2: IDLE: VALID_K_CHARAC_PLCWD",    x"00",                     VALID_K_CHARAC_PLCWD,    test_failed);
   check_equal("Test 10.2: IDLE: DATA_RDY_PLCWD",         "01",                      DATA_RDY_PLCWD,         test_failed);
   check_equal("Test 10.2: IDLE: RX_NEW_WORD_PLCWD",      "11",                      RX_NEW_WORD_PLCWD,      test_failed);
   check_equal("Test 10.2: IDLE: COMMA_K287_RXED_PLCWD",  "10",                      COMMA_K287_RXED_PLCWD,  test_failed);
@@ -596,11 +596,11 @@ begin
   -- Test 10.3: 2 words
   --------------------------------------
   DATA_RX_PLPL       <= C_IDLE_WORD & C_IDLE_WORD;
-  VALID_K_CARAC_PLPL <= x"1" & x"1";
+  VALID_K_CHARAC_PLPL <= x"1" & x"1";
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 10.3: IDLE: DATA_RX_PLCWD",          x"00000000" & x"00000000", DATA_RX_PLCWD,          test_failed);
-  check_equal("Test 10.3: IDLE: VALID_K_CARAC_PLCWD",    x"00",                     VALID_K_CARAC_PLCWD,    test_failed);
+  check_equal("Test 10.3: IDLE: VALID_K_CHARAC_PLCWD",    x"00",                     VALID_K_CHARAC_PLCWD,    test_failed);
   check_equal("Test 10.3: IDLE: DATA_RDY_PLCWD",         "00",                      DATA_RDY_PLCWD,         test_failed);
   check_equal("Test 10.3: IDLE: RX_NEW_WORD_PLCWD",      "11",                      RX_NEW_WORD_PLCWD,      test_failed);
   check_equal("Test 10.3: IDLE: COMMA_K287_RXED_PLCWD",  "11",                      COMMA_K287_RXED_PLCWD,  test_failed);
@@ -613,11 +613,11 @@ begin
   -- Test 11.1: 2 data words
   --------------------------------------
   DATA_RX_PLPL       <= x"12345678" & x"9abcdef0";
-  VALID_K_CARAC_PLPL <= x"0" & x"0";
+  VALID_K_CHARAC_PLPL <= x"0" & x"0";
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 11.1: ELSE : DATA_RX_PLCWD",             x"00000000" & x"00000000", DATA_RX_PLCWD,             test_failed);
-  check_equal("Test 11.1: ELSE : VALID_K_CARAC_PLCWD",       x"00",                     VALID_K_CARAC_PLCWD,       test_failed);
+  check_equal("Test 11.1: ELSE : VALID_K_CHARAC_PLCWD",       x"00",                     VALID_K_CHARAC_PLCWD,       test_failed);
   check_equal("Test 11.1: ELSE : DATA_RDY_PLCWD",            "00",                      DATA_RDY_PLCWD,            test_failed);
   check_equal("Test 11.1: ELSE : RX_NEW_WORD_PLCWD",         "11",                      RX_NEW_WORD_PLCWD,         test_failed);
   check_equal("Test 11.1: ELSE : DETECTED_RXERR_WORD_PLCWD", "00",                      DETECTED_RXERR_WORD_PLCWD, test_failed);
@@ -625,11 +625,11 @@ begin
   -- Test 11.2: First word only RXERR
   --------------------------------------
   DATA_RX_PLPL       <= x"12345678" & C_RXERR_WORD;
-  VALID_K_CARAC_PLPL <= x"0" & x"1";
+  VALID_K_CHARAC_PLPL <= x"0" & x"1";
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 11.2: ELSE : DATA_RX_PLCWD",             x"00000000" & x"00000000",  DATA_RX_PLCWD,             test_failed);
-  check_equal("Test 11.2: ELSE : VALID_K_CARAC_PLCWD",       x"00",                      VALID_K_CARAC_PLCWD,       test_failed);
+  check_equal("Test 11.2: ELSE : VALID_K_CHARAC_PLCWD",       x"00",                      VALID_K_CHARAC_PLCWD,       test_failed);
   check_equal("Test 11.2: ELSE : DATA_RDY_PLCWD",            "00",                       DATA_RDY_PLCWD,            test_failed);
   check_equal("Test 11.2: ELSE : RX_NEW_WORD_PLCWD",         "11",                       RX_NEW_WORD_PLCWD,         test_failed);
   check_equal("Test 11.2: ELSE : DETECTED_RXERR_WORD_PLCWD", "01",                       DETECTED_RXERR_WORD_PLCWD, test_failed);
@@ -637,11 +637,11 @@ begin
   -- Test 11.3: Second word only RXERR
   --------------------------------------
   DATA_RX_PLPL       <= C_RXERR_WORD & x"9abcdef0";
-  VALID_K_CARAC_PLPL <= x"1" & x"0";
+  VALID_K_CHARAC_PLPL <= x"1" & x"0";
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 11.3: ELSE : DATA_RX_PLCWD",             x"00000000" & x"00000000",  DATA_RX_PLCWD,             test_failed);
-  check_equal("Test 11.3: ELSE : VALID_K_CARAC_PLCWD",       x"00",                      VALID_K_CARAC_PLCWD,       test_failed);
+  check_equal("Test 11.3: ELSE : VALID_K_CHARAC_PLCWD",       x"00",                      VALID_K_CHARAC_PLCWD,       test_failed);
   check_equal("Test 11.3: ELSE : DATA_RDY_PLCWD",            "00",                       DATA_RDY_PLCWD,            test_failed);
   check_equal("Test 11.3: ELSE : RX_NEW_WORD_PLCWD",         "11",                       RX_NEW_WORD_PLCWD,         test_failed);
   check_equal("Test 11.1: ELSE : DETECTED_RXERR_WORD_PLCWD", "10",                       DETECTED_RXERR_WORD_PLCWD, test_failed);
@@ -649,11 +649,11 @@ begin
   -- Test 11.4: 2 words RXERR
   --------------------------------------
   DATA_RX_PLPL       <= C_RXERR_WORD & C_RXERR_WORD;
-  VALID_K_CARAC_PLPL <= x"1" & x"1";
+  VALID_K_CHARAC_PLPL <= x"1" & x"1";
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 11.4: ELSE : DATA_RX_PLCWD",             x"00000000" & x"00000000",   DATA_RX_PLCWD,             test_failed);
-  check_equal("Test 11.4: ELSE : VALID_K_CARAC_PLCWD",       x"00",                       VALID_K_CARAC_PLCWD,       test_failed);
+  check_equal("Test 11.4: ELSE : VALID_K_CHARAC_PLCWD",       x"00",                       VALID_K_CHARAC_PLCWD,       test_failed);
   check_equal("Test 11.4: ELSE : DATA_RDY_PLCWD",            "00",                        DATA_RDY_PLCWD,            test_failed);
   check_equal("Test 11.4: ELSE : RX_NEW_WORD_PLCWD",         "11",                        RX_NEW_WORD_PLCWD,         test_failed);
   check_equal("Test 11.4: ELSE : DETECTED_RXERR_WORD_PLCWD", "11",                        DETECTED_RXERR_WORD_PLCWD, test_failed);

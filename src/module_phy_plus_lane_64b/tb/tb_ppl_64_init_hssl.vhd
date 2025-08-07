@@ -84,7 +84,7 @@ architecture sim of tb_ppl_64_init_hssl is
 
   -- Clock generation
   constant CLK_PERIOD : time := 10 ns;
-  
+
 begin
 
   -- Instantiate DUT
@@ -128,6 +128,9 @@ begin
     RST_N <= '0';
     wait for 20 ns;
     RST_N <= '1';
+    RECEIVER_DISABLED_PLIF    <= '0';
+    CDR_PLIF                  <= '1';
+    TRANSMITTER_DISABLED_PLIF <= '0';
     ------------------------------------------------------------
     --                     PMA PLL reset                      --
     ------------------------------------------------------------

@@ -39,8 +39,8 @@ entity ppl_64_skip_insertion is
       VALID_K_CHARAC_PLCWI    : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! Flags indicates which byte is a K character from DATA-LINK layer
       WAIT_SEND_DATA_PLSI      : out std_logic;                                          --! Flag to indicates that the lane_ctrl_word_insert send a SKIP control word
       -- HSSL Interface
-      DATA_TX_PSI             : out std_logic_vector(C_DATA_LENGTH-1 downto 0);         --! Data 64-bit send to manufacturer IP
-      VALID_K_CHARAC_PSI      : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! Flags indicates which byte is a K character
+      DATA_TX_PLSI             : out std_logic_vector(C_DATA_LENGTH-1 downto 0);         --! Data 64-bit send to manufacturer IP
+      VALID_K_CHARAC_PLSI      : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! Flags indicates which byte is a K character
       -- ppl_64_lane_init_fsm
       ENABLE_TRANSM_DATA_PLIF : in  std_logic                                           --! Flag to enable to send data
    );
@@ -92,16 +92,16 @@ begin
       state_cnt          <= (others => '0');
       data_0             <= (others => '0');
       k_char_0           <= (others => '0');
-      DATA_TX_PSI        <= (others => '0');
-      VALID_K_CHARAC_PSI <= (others => '0');
+      DATA_TX_PLSI        <= (others => '0');
+      VALID_K_CHARAC_PLSI <= (others => '0');
       WAIT_SEND_DATA_PLSI <= '0';
     elsif rising_edge(CLK) then
       data_0   <= data_2;
       k_char_0 <= k_char_2;
       case state is
         when TX_INIT_ST =>
-                          DATA_TX_PSI        <= DATA_TX_PLCWI;
-                          VALID_K_CHARAC_PSI <= VALID_K_CHARAC_PLCWI;
+                          DATA_TX_PLSI        <= DATA_TX_PLCWI;
+                          VALID_K_CHARAC_PLSI <= VALID_K_CHARAC_PLCWI;
                           WAIT_SEND_DATA_PLSI <= '0';
                           state_cnt          <= (others => '0');
                           if ENABLE_TRANSM_DATA_PLIF = '1' then -- When the lane_init_fsm is in ACTIVE_ST
@@ -109,8 +109,8 @@ begin
                           end if;
 
         when TX_DATA_1_ST =>
-                          VALID_K_CHARAC_PSI <= k_char_2 & k_char_1;
-                          DATA_TX_PSI        <= data_2 & data_1;
+                          VALID_K_CHARAC_PLSI <= k_char_2 & k_char_1;
+                          DATA_TX_PLSI        <= data_2 & data_1;
                           state_cnt          <= state_cnt + 2;
                           if ENABLE_TRANSM_DATA_PLIF = '0' then -- When the lane_init_fsm is in ACTIVE_ST
                              state    <= TX_INIT_ST;
@@ -120,14 +120,14 @@ begin
                           end if;
 
         when TX_SKIP_1_ST =>
-                          VALID_K_CHARAC_PSI <= k_char_1 & x"1";
-                          DATA_TX_PSI        <= data_1 & C_SKIP_WORD;
+                          VALID_K_CHARAC_PLSI <= k_char_1 & x"1";
+                          DATA_TX_PLSI        <= data_1 & C_SKIP_WORD;
                           state_cnt          <= state_cnt + 1;
                           state              <= TX_DATA_2_ST;
 
         when TX_DATA_2_ST =>
-                          VALID_K_CHARAC_PSI    <= k_char_1 & k_char_0;
-                          DATA_TX_PSI           <= data_1 & data_0;
+                          VALID_K_CHARAC_PLSI    <= k_char_1 & k_char_0;
+                          DATA_TX_PLSI           <= data_1 & data_0;
                           state_cnt             <= state_cnt + 2;
                           if ENABLE_TRANSM_DATA_PLIF = '0' then -- When the lane_init_fsm is in ACTIVE_ST
                              state              <= TX_INIT_ST;
@@ -138,15 +138,15 @@ begin
                           end if;
 
         when TX_SKIP_2_ST =>
-                          VALID_K_CHARAC_PSI <= x"1" & k_char_0;
-                          DATA_TX_PSI        <= C_SKIP_WORD & data_0;
+                          VALID_K_CHARAC_PLSI <= x"1" & k_char_0;
+                          DATA_TX_PLSI        <= C_SKIP_WORD & data_0;
                           state_cnt          <= (others => '0');
                           state              <= TX_DATA_1_ST;
                           WAIT_SEND_DATA_PLSI <= '0';
 
         when others =>
-                          DATA_TX_PSI        <= DATA_TX_PLCWI;
-                          VALID_K_CHARAC_PSI <= VALID_K_CHARAC_PLCWI;
+                          DATA_TX_PLSI        <= DATA_TX_PLCWI;
+                          VALID_K_CHARAC_PLSI <= VALID_K_CHARAC_PLCWI;
                           WAIT_SEND_DATA_PLSI <= '0';
                           state_cnt          <= (others => '0');
 

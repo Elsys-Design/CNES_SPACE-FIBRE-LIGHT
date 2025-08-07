@@ -52,8 +52,8 @@ architecture sim of tb_ppl_64_skip_insertion is
       VALID_K_CHARAC_PLCWI    : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! Flags indicates which byte is a K character from DATA-LINK layer
       WAIT_SEND_DATA_PLSI      : out std_logic;                                          --! Flag to indicates that the lane_ctrl_word_insert send a SKIP control word
       -- HSSL Interface
-      DATA_TX_PSI             : out std_logic_vector(C_DATA_LENGTH-1 downto 0);         --! Data 64-bit send to manufacturer IP
-      VALID_K_CHARAC_PSI      : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! Flags indicates which byte is a K character
+      DATA_TX_PLSI             : out std_logic_vector(C_DATA_LENGTH-1 downto 0);         --! Data 64-bit send to manufacturer IP
+      VALID_K_CHARAC_PLSI      : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! Flags indicates which byte is a K character
       -- ppl_64_lane_init_fsm
       ENABLE_TRANSM_DATA_PLIF : in  std_logic                                           --! Flag to enable to send data
    );
@@ -71,8 +71,8 @@ architecture sim of tb_ppl_64_skip_insertion is
   signal VALID_K_CHARAC_PLCWI    : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0) := (others => '0');
   signal WAIT_SEND_DATA_PLSI      : std_logic;
 
-  signal DATA_TX_PSI             : std_logic_vector(C_DATA_LENGTH-1 downto 0);
-  signal VALID_K_CHARAC_PSI      : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
+  signal DATA_TX_PLSI             : std_logic_vector(C_DATA_LENGTH-1 downto 0);
+  signal VALID_K_CHARAC_PLSI      : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
 
   signal ENABLE_TRANSM_DATA_PLIF : std_logic:='0';
   -- simulation signals
@@ -114,8 +114,8 @@ begin
       VALID_K_CHARAC_PLCWI    => VALID_K_CHARAC_PLCWI,
       WAIT_SEND_DATA_PLSI      => WAIT_SEND_DATA_PLSI,
       -- HSSL Interface
-      DATA_TX_PSI             => DATA_TX_PSI,
-      VALID_K_CHARAC_PSI      => VALID_K_CHARAC_PSI,
+      DATA_TX_PLSI             => DATA_TX_PLSI,
+      VALID_K_CHARAC_PLSI      => VALID_K_CHARAC_PLSI,
       -- ppl_64_lane_init_fsm
       ENABLE_TRANSM_DATA_PLIF => ENABLE_TRANSM_DATA_PLIF
     );
@@ -169,8 +169,8 @@ begin
     ------------------------------------------------------------
     --                     TX_INIT_ST                         --
     ------------------------------------------------------------
-    check_equal("TX_INIT_ST: DATA_TX_PSI"       , x"0000000000000000", DATA_TX_PSI,        test_failed);
-    check_equal("TX_INIT_ST: VALID_K_CHARAC_PSI", x"00",               VALID_K_CHARAC_PSI, test_failed);
+    check_equal("TX_INIT_ST: DATA_TX_PLSI"       , x"0000000000000000", DATA_TX_PLSI,        test_failed);
+    check_equal("TX_INIT_ST: VALID_K_CHARAC_PLSI", x"00",               VALID_K_CHARAC_PLSI, test_failed);
     check      ("TX_INIT_ST: WAIT_SEND_DATA_PLSI", '0',                 WAIT_SEND_DATA_PLSI, test_failed);
     ------------------------------------------------------------
     --                     TX_DATA_1_ST                       --
@@ -202,8 +202,8 @@ begin
       VALID_K_CHARAC_PLCWI <= k_char_2 & k_char_1;
       wait until rising_edge(clk);
       -- check outputs
-      check_equal("TX_DATA_1_ST: DATA_TX_PSI i=" & integer'image(i)      , data_2_rr & data_1_rr,     DATA_TX_PSI,        test_failed);
-      check_equal("TX_DATA_1_ST: VALID_K_CHARAC_PSI i="& integer'image(i), k_char_2_rr & k_char_1_rr, VALID_K_CHARAC_PSI, test_failed);
+      check_equal("TX_DATA_1_ST: DATA_TX_PLSI i=" & integer'image(i)      , data_2_rr & data_1_rr,     DATA_TX_PLSI,        test_failed);
+      check_equal("TX_DATA_1_ST: VALID_K_CHARAC_PLSI i="& integer'image(i), k_char_2_rr & k_char_1_rr, VALID_K_CHARAC_PLSI, test_failed);
       check      ("TX_DATA_1_ST: WAIT_SEND_DATA_PLSI i="& integer'image(i), '0',                       WAIT_SEND_DATA_PLSI, test_failed);
     end loop;
     -- transition state
@@ -216,8 +216,8 @@ begin
     VALID_K_CHARAC_PLCWI <= k_char_2 & k_char_1;
     wait until rising_edge(clk);
     -- check outputs
-    check_equal("TX_DATA_1_ST: DATA_TX_PSI i=4098",         data_2_rr & data_1_rr,     DATA_TX_PSI,        test_failed);
-    check_equal("TX_DATA_1_ST: VALID_K_CHARAC_PSI i= 4098", k_char_2_rr & k_char_1_rr, VALID_K_CHARAC_PSI, test_failed);
+    check_equal("TX_DATA_1_ST: DATA_TX_PLSI i=4098",         data_2_rr & data_1_rr,     DATA_TX_PLSI,        test_failed);
+    check_equal("TX_DATA_1_ST: VALID_K_CHARAC_PLSI i= 4098", k_char_2_rr & k_char_1_rr, VALID_K_CHARAC_PLSI, test_failed);
     check      ("TX_DATA_1_ST: WAIT_SEND_DATA_PLSI i= 4098", '0',                       WAIT_SEND_DATA_PLSI, test_failed);
     --2nd data & k_char generation for the next 5000 words
     data_1               <= std_logic_vector(to_unsigned(6,C_DATA_LENGTH/2));
@@ -228,8 +228,8 @@ begin
     VALID_K_CHARAC_PLCWI <= k_char_2 & k_char_1;
     wait until rising_edge(clk);
     -- check outputs
-    check_equal("TX_DATA_1_ST: DATA_TX_PSI i=4099",         data_2_rr & data_1_rr,     DATA_TX_PSI,        test_failed);
-    check_equal("TX_DATA_1_ST: VALID_K_CHARAC_PSI i= 4099", k_char_2_rr & k_char_1_rr, VALID_K_CHARAC_PSI, test_failed);
+    check_equal("TX_DATA_1_ST: DATA_TX_PLSI i=4099",         data_2_rr & data_1_rr,     DATA_TX_PLSI,        test_failed);
+    check_equal("TX_DATA_1_ST: VALID_K_CHARAC_PLSI i= 4099", k_char_2_rr & k_char_1_rr, VALID_K_CHARAC_PLSI, test_failed);
     check      ("TX_DATA_1_ST: WAIT_SEND_DATA_PLSI i= 4099", '0',                       WAIT_SEND_DATA_PLSI, test_failed);
     ------------------------------------------------------------
     --                     TX_SKIP_1_ST                       --
@@ -243,8 +243,8 @@ begin
     VALID_K_CHARAC_PLCWI <= k_char_2 & k_char_1;
     wait until rising_edge(clk);
     -- check Skip insertion
-    check_equal("TX_SKIP_1_ST: DATA_TX_PSI"       , data_1_rr & C_SKIP_WORD, DATA_TX_PSI,        test_failed);
-    check_equal("TX_SKIP_1_ST: VALID_K_CHARAC_PSI", k_char_1_rr & x"1",      VALID_K_CHARAC_PSI, test_failed);
+    check_equal("TX_SKIP_1_ST: DATA_TX_PLSI"       , data_1_rr & C_SKIP_WORD, DATA_TX_PLSI,        test_failed);
+    check_equal("TX_SKIP_1_ST: VALID_K_CHARAC_PLSI", k_char_1_rr & x"1",      VALID_K_CHARAC_PLSI, test_failed);
     check      ("TX_SKIP_1_ST: WAIT_SEND_DATA_PLSI", '0',                     WAIT_SEND_DATA_PLSI, test_failed);
     ------------------------------------------------------------
     --                     TX_DATA_2_ST                       --
@@ -259,21 +259,21 @@ begin
       VALID_K_CHARAC_PLCWI <= k_char_2 & k_char_1;
       wait until rising_edge(clk);
       -- check outputs
-      check_equal("TX_DATA_2_ST: DATA_TX_PSI i=" & integer'image(i)       , data_1_rr & data_0_rr ,    DATA_TX_PSI,        test_failed);
-      check_equal("TX_DATA_2_ST: VALID_K_CHARAC_PSI i=" & integer'image(i), k_char_1_rr & k_char_0_rr, VALID_K_CHARAC_PSI, test_failed);
+      check_equal("TX_DATA_2_ST: DATA_TX_PLSI i=" & integer'image(i)       , data_1_rr & data_0_rr ,    DATA_TX_PLSI,        test_failed);
+      check_equal("TX_DATA_2_ST: VALID_K_CHARAC_PLSI i=" & integer'image(i), k_char_1_rr & k_char_0_rr, VALID_K_CHARAC_PLSI, test_failed);
       check      ("TX_DATA_2_ST: WAIT_SEND_DATA_PLSI i=" & integer'image(i), '0',                       WAIT_SEND_DATA_PLSI, test_failed);
     end loop;
     wait until rising_edge(clk);
     -- check outputs and wait send data at '1'
-    check_equal("TX_DATA_2_ST: DATA_TX_PSI i=2500",         data_1_rr & data_0_rr,     DATA_TX_PSI,        test_failed);
-    check_equal("TX_DATA_2_ST: VALID_K_CHARAC_PSI i= 2500", k_char_1_rr & k_char_0_rr, VALID_K_CHARAC_PSI, test_failed);
+    check_equal("TX_DATA_2_ST: DATA_TX_PLSI i=2500",         data_1_rr & data_0_rr,     DATA_TX_PLSI,        test_failed);
+    check_equal("TX_DATA_2_ST: VALID_K_CHARAC_PLSI i= 2500", k_char_1_rr & k_char_0_rr, VALID_K_CHARAC_PLSI, test_failed);
     check      ("TX_DATA_2_ST: WAIT_SEND_DATA_PLSI i= 2500", '1',                       WAIT_SEND_DATA_PLSI, test_failed);
     wait until rising_edge(clk);
     ------------------------------------------------------------
     --                     TX_SKIP_2_ST                       --
     ------------------------------------------------------------
-    check_equal("TX_SKIP_2_ST: DATA_TX_PSI"       , C_SKIP_WORD & data_0_rr, DATA_TX_PSI,        test_failed);
-    check_equal("TX_SKIP_2_ST: VALID_K_CHARAC_PSI", x"1" & k_char_0_rr,      VALID_K_CHARAC_PSI, test_failed);
+    check_equal("TX_SKIP_2_ST: DATA_TX_PLSI"       , C_SKIP_WORD & data_0_rr, DATA_TX_PLSI,        test_failed);
+    check_equal("TX_SKIP_2_ST: VALID_K_CHARAC_PLSI", x"1" & k_char_0_rr,      VALID_K_CHARAC_PLSI, test_failed);
     check      ("TX_SKIP_2_ST: WAIT_SEND_DATA_PLSI", '0',                     WAIT_SEND_DATA_PLSI, test_failed);
 
 

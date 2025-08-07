@@ -140,8 +140,8 @@ architecture sim of tb_phy_hssl is
       VALID_K_CHARAC_PLCWI    : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! Flags indicates which byte is a K character from DATA-LINK layer
       WAIT_SEND_DATA_PLSI      : out std_logic;                                          --! Flag to indicates that the lane_ctrl_word_insert send a SKIP control word
       -- HSSL Interface
-      DATA_TX_PSI             : out std_logic_vector(C_DATA_LENGTH-1 downto 0);         --! Data 64-bit send to manufacturer IP
-      VALID_K_CHARAC_PSI      : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! Flags indicates which byte is a K character
+      DATA_TX_PLSI             : out std_logic_vector(C_DATA_LENGTH-1 downto 0);         --! Data 64-bit send to manufacturer IP
+      VALID_K_CHARAC_PLSI      : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! Flags indicates which byte is a K character
       -- ppl_64_lane_init_fsm
       ENABLE_TRANSM_DATA_PLIF : in  std_logic                                           --! Flag to enable to send data
    );
@@ -239,9 +239,9 @@ signal HSSL_RESET_DONE_PLIH         : std_logic;
 signal NEW_DATA_PLCWI               : std_logic                                          := '0';
 signal DATA_TX_PLCWI                : std_logic_vector(C_DATA_LENGTH-1 downto 0)         := (others => '0');
 signal VALID_K_CHARAC_PLCWI         : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0) := (others => '0');
-signal WAIT_SEND_DATA_PLSI           : std_logic;
-signal DATA_TX_PSI                  : std_logic_vector(C_DATA_LENGTH-1 downto 0);
-signal VALID_K_CHARAC_PSI           : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
+signal WAIT_SEND_DATA_PLSI          : std_logic;
+signal DATA_TX_PLSI                  : std_logic_vector(C_DATA_LENGTH-1 downto 0);
+signal VALID_K_CHARAC_PLSI           : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
 
 -- inst_ppl_64_rx_sync_fsm
 signal LANE_RESET_DL                : std_logic := '0';
@@ -315,10 +315,10 @@ begin
       TX0_BUSY_O                  => TX_BUSY_HSSL,
       TX0_CLK_ENA_I               => '1',
       TX0_CLK_O                   => OPEN,
-      TX0_DATA_I                  => DATA_TX_PSI,
+      TX0_DATA_I                  => DATA_TX_PLSI,
       TX0_CTRL_DRIVER_PWRDWN_N_I  => TX_DRIVER_PWRDWN_N_PLIH,
       TX0_RST_N_I                 => TX_RST_N_PLIH,
-      TX0_CTRL_CHAR_IS_K_I        => VALID_K_CHARAC_PSI,
+      TX0_CTRL_CHAR_IS_K_I        => VALID_K_CHARAC_PLSI,
       RX0_BUSY_O                  => RX_BUSY_HSSL,
       RX0_CTRL_EL_BUFF_STAT_O     => OPEN,
       RX0_CTRL_CHAR_IS_ALIGNED_O  => RX_WORD_IS_ALIGNED_HSSL,
@@ -372,8 +372,8 @@ begin
       DATA_TX_PLCWI           => DATA_TX_PLCWI,
       VALID_K_CHARAC_PLCWI    => VALID_K_CHARAC_PLCWI,
       WAIT_SEND_DATA_PLSI      => WAIT_SEND_DATA_PLSI,
-      DATA_TX_PSI             => DATA_TX_PSI,
-      VALID_K_CHARAC_PSI      => VALID_K_CHARAC_PSI,
+      DATA_TX_PLSI             => DATA_TX_PLSI,
+      VALID_K_CHARAC_PLSI      => VALID_K_CHARAC_PLSI,
       ENABLE_TRANSM_DATA_PLIF => ENABLE_TRANSM_DATA_PLIF
     );
 
