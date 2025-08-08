@@ -42,16 +42,16 @@ architecture tb of tb_ppl_64_rx_sync_fsm is
       -- FROM Data-link layer
       LANE_RESET_DL                    : in  std_logic;                                            --! Lane reset command from Data-Link Layer.
       -- ppl_64_lane_ctrl_word_detect (PLCWD) interface
-      DATA_RX_PLRSF                    : out std_logic_vector(C_DATA_LENGTH-1  downto 0);          --! 64-bit data to lane_ctrl_word_detect
-      VALID_K_CHARAC_PLRSF             : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);  --! 8-bit valid K character flags to lane_ctrl_word_detect
+      DATA_RX_PLRSF                    : out std_logic_vector(C_DATA_WIDTH-1  downto 0);          --! 64-bit data to lane_ctrl_word_detect
+      VALID_K_CHARAC_PLRSF             : out std_logic_vector(C_K_CHAR_WIDTH-1  downto 0);  --! 8-bit valid K character flags to lane_ctrl_word_detect
       DATA_RDY_PLRSF                   : out std_logic;                                            --! Data valid flag to lane_ctrl_word_detect
       -- ppl_64_word_alignment (PLWA) interface
-      DATA_RX_PLWA                     : in  std_logic_vector(C_DATA_LENGTH-1  downto 0);          --! 64-bit data from GTY IP
-      VALID_K_CHARAC_PLWA              : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);  --! 8-bit valid K character flags from GTY IP
-      INVALID_CHAR_PLWA                : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);  --! Invalid character flags from GTY IP
-      DISPARITY_ERR_PLWA               : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);  --! Disparity error flags from GTY IP
+      DATA_RX_PLWA                     : in  std_logic_vector(C_DATA_WIDTH-1  downto 0);          --! 64-bit data from GTY IP
+      VALID_K_CHARAC_PLWA              : in  std_logic_vector(C_K_CHAR_WIDTH-1  downto 0);  --! 8-bit valid K character flags from GTY IP
+      INVALID_CHAR_PLWA                : in  std_logic_vector(C_K_CHAR_WIDTH-1  downto 0);  --! Invalid character flags from GTY IP
+      DISPARITY_ERR_PLWA               : in  std_logic_vector(C_K_CHAR_WIDTH-1  downto 0);  --! Disparity error flags from GTY IP
       RX_WORD_IS_ALIGNED_PLWA          : in  std_logic;                                            --! RX word realign from GTY IP
-      COMMA_DET_PLWA                   : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);  --! Flag indicates that a comma is detected on the word receive
+      COMMA_DET_PLWA                   : in  std_logic_vector(C_K_CHAR_WIDTH-1  downto 0);  --! Flag indicates that a comma is detected on the word receive
       -- PARAMETERS (MIB)
       LANE_RESET                       : in  std_logic                                             --! Asserts or de-asserts LaneReset for the lane
     );
@@ -68,16 +68,16 @@ signal CLK                              : std_logic := '0';
 -- FROM Data-link layer
 signal LANE_RESET_DL                    : std_logic := '0';
 -- TO lane_ctrl_word_detection
-signal DATA_RX_PLRSF                 : std_logic_vector(C_DATA_LENGTH-1 downto 0);
-signal VALID_K_CHARAC_PLRSF          : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);
+signal DATA_RX_PLRSF                 : std_logic_vector(C_DATA_WIDTH-1 downto 0);
+signal VALID_K_CHARAC_PLRSF          : std_logic_vector(C_K_CHAR_WIDTH-1  downto 0);
 signal DATA_RDY_PLRSF                : std_logic;
 -- FROM MANUFACTURER IP
-signal DATA_RX_PLWA                  : std_logic_vector(C_DATA_LENGTH-1 downto 0)          := (others => '0');
-signal VALID_K_CHARAC_PLWA           : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0) := (others => '0');
-signal INVALID_CHAR_PLWA             : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0) := (others => '0');
-signal DISPARITY_ERR_PLWA            : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0) := (others => '0');
+signal DATA_RX_PLWA                  : std_logic_vector(C_DATA_WIDTH-1 downto 0)          := (others => '0');
+signal VALID_K_CHARAC_PLWA           : std_logic_vector(C_K_CHAR_WIDTH-1  downto 0) := (others => '0');
+signal INVALID_CHAR_PLWA             : std_logic_vector(C_K_CHAR_WIDTH-1  downto 0) := (others => '0');
+signal DISPARITY_ERR_PLWA            : std_logic_vector(C_K_CHAR_WIDTH-1  downto 0) := (others => '0');
 signal RX_WORD_IS_ALIGNED_PLWA         : std_logic                                           := '1';
-signal COMMA_DET_PLWA                : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0) := (others => '0');
+signal COMMA_DET_PLWA                : std_logic_vector(C_K_CHAR_WIDTH-1  downto 0) := (others => '0');
 -- PARAMETERS
 signal LANE_RESET                       : std_logic                                           := '0';
 

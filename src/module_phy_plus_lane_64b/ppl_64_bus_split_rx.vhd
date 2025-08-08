@@ -32,24 +32,24 @@ library phy_plus_lane_64_lib;
 
 entity ppl_64_bus_split_rx is
    port (
-      RST_N                        : in  std_logic;                                           --! global reset
-      CLK                          : in  std_logic;                                           --! Clock synchronous of the Data-link layer
+      RST_N                        : in  std_logic;                                   --! global reset
+      CLK                          : in  std_logic;                                   --! Clock synchronous of the Data-link layer
       -- Data-link layer interface
-      FIFO_RX_RD_EN_DL             : in  std_logic;                                           --! FIFO RX read enable flag from the Data-link layer
-      DATA_RX_PLBSR                : out std_logic_vector(31 downto 0);                       --! 32-bit Data parallel
-      FIFO_RX_DATA_VALID_PLBSR     : out std_logic;                                           --! Flag new data
-      VALID_K_CHARAC_RX_PLBSR      : out std_logic_vector(3 downto 0);                        --! 4-bit valid K character
-      FAR_END_CAPA_PLBSR           : out std_logic_vector(7 downto 0);                        --! Capability field received in INIT3 control word
-      LANE_ACTIVE_PLBSR            : out std_logic;                                           --! Lane Active flag
+      FIFO_RX_RD_EN_DL             : in  std_logic;                                   --! FIFO RX read enable flag from the Data-link layer
+      DATA_RX_PLBSR                : out std_logic_vector(31 downto 0);               --! 32-bit Data parallel
+      FIFO_RX_DATA_VALID_PLBSR     : out std_logic;                                   --! Flag new data
+      VALID_K_CHARAC_RX_PLBSR      : out std_logic_vector(3 downto 0);                --! 4-bit valid K character
+      FAR_END_CAPA_PLBSR           : out std_logic_vector(7 downto 0);                --! Capability field received in INIT3 control word
+      LANE_ACTIVE_PLBSR            : out std_logic;                                   --! Lane Active flag
       -- fifo_rx_data (PLFRD) interface
-      FIFO_RX_RD_EN_PLBSR          : out std_logic;                                          --! FIFO RX read enable flag
-      DATA_RX_PLFRD                : in  std_logic_vector(C_DATA_LENGTH-1  downto 0);        --! 64-bit Data parallel
-      FIFO_RX_DATA_VALID_PLFRD     : in  std_logic;                                          --! Flag new data
-      FIFO_RX_EMPTY_PLFRD          : in  std_logic;                                          --! Flag FIFO Empty
-      VALID_K_CHARAC_RX_PLFRD      : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! 8-bit valid K character flags
+      FIFO_RX_RD_EN_PLBSR          : out std_logic;                                   --! FIFO RX read enable flag
+      DATA_RX_PLFRD                : in  std_logic_vector(C_DATA_WIDTH-1  downto 0);  --! 64-bit Data parallel
+      FIFO_RX_DATA_VALID_PLFRD     : in  std_logic;                                   --! Flag new data
+      FIFO_RX_EMPTY_PLFRD          : in  std_logic;                                   --! Flag FIFO Empty
+      VALID_K_CHARAC_RX_PLFRD      : in  std_logic_vector(C_K_CHAR_WIDTH-1 downto 0); --! 8-bit valid K character flags
       -- ppl_64_ctrl_fifo_rx (PLCFR) interface
-      FAR_END_CAPA_PLFRC           : in std_logic_vector(7 downto 0);                       --! Capability field received in INIT3 control word
-      LANE_ACTIVE_PLFRC            : in std_logic                                            --! Lane Active flag
+      FAR_END_CAPA_PLFRC           : in std_logic_vector(7 downto 0);                 --! Capability field received in INIT3 control word
+      LANE_ACTIVE_PLFRC            : in std_logic                                     --! Lane Active flag
    );
 end ppl_64_bus_split_rx;
 

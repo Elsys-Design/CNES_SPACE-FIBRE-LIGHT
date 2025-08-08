@@ -44,14 +44,14 @@ component ppl_64_lane_ctrl_word_insert is
     RD_DATA_EN_PLCWI                           : out std_logic;                                          --! Read command to receive data from Data-link layer
     RD_DATA_VALID_DL                     : in  std_logic;                                          --! Data valid flag from Data-link layer
     CAPABILITY_DL                        : in  std_logic_vector(7 downto 0);                       --! Capability field from DATA-LINK layer
-    DATA_TX_DL                           : in  std_logic_vector(C_DATA_LENGTH-1 downto 0);         --! Data 64-bit receive from DATA_LINK layer
-    VALID_K_CHARAC_DL                    : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! Flags indicates which byte is a K character from DATA-LINK layer
+    DATA_TX_DL                           : in  std_logic_vector(C_DATA_WIDTH-1 downto 0);         --! Data 64-bit receive from DATA_LINK layer
+    VALID_K_CHARAC_DL                    : in  std_logic_vector(C_K_CHAR_WIDTH-1 downto 0); --! Flags indicates which byte is a K character from DATA-LINK layer
     NO_DATA_DL                           : in  std_logic;                                          --! Flag to enable the send of IDLE words when no data should be available from Data-Link
     -- ppl_64_skip_insertion (PLSI) interface
     WAIT_SEND_DATA_PLSI                  : in  std_logic;                                          --! Flag to indicates that the skip_insertion send a SKIP control word
     NEW_DATA_PLCWI                       : out std_logic;                                          --! New data send to skip_insertion
-    DATA_TX_PLCWI                        : out std_logic_vector(C_DATA_LENGTH-1 downto 0);         --! Data 64-bit send to manufacturer IP
-    VALID_K_CHARAC_PLCWI                 : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! Flags indicates which byte is a K character
+    DATA_TX_PLCWI                        : out std_logic_vector(C_DATA_WIDTH-1 downto 0);         --! Data 64-bit send to manufacturer IP
+    VALID_K_CHARAC_PLCWI                 : out std_logic_vector(C_K_CHAR_WIDTH-1 downto 0); --! Flags indicates which byte is a K character
     -- ppl_64_lane_init_fsm (PLIF) interface
     SEND_INIT1_CTRL_WORD_PLIF           : in  std_logic;                                          --! Flag to send INIT1 control word following by 64 pseudo-random data words
     SEND_INIT2_CTRL_WORD_PLIF           : in  std_logic;                                          --! Flag to send INIT2 control word following by 64 pseudo-random data words
@@ -79,13 +79,13 @@ signal CLK                                    : std_logic := '0';
 signal RD_DATA_EN_PLCWI                             : std_logic;
 signal RD_DATA_VALID_DL                       : std_logic:='0';
 signal CAPABILITY_DL                          : std_logic_vector(7 downto 0) := (others => '0');
-signal DATA_TX_DL                             : std_logic_vector(C_DATA_LENGTH-1 downto 0) := (others => '0');
-signal VALID_K_CHARAC_DL                      : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0) := (others => '0');
+signal DATA_TX_DL                             : std_logic_vector(C_DATA_WIDTH-1 downto 0) := (others => '0');
+signal VALID_K_CHARAC_DL                      : std_logic_vector(C_K_CHAR_WIDTH-1 downto 0) := (others => '0');
 signal NO_DATA_DL                             : std_logic := '0';
 signal WAIT_SEND_DATA_PLSI                    : std_logic := '0';
 signal NEW_DATA_PLCWI                         : std_logic;
-signal DATA_TX_PLCWI                          : std_logic_vector(C_DATA_LENGTH-1 downto 0);
-signal VALID_K_CHARAC_PLCWI                   : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
+signal DATA_TX_PLCWI                          : std_logic_vector(C_DATA_WIDTH-1 downto 0);
+signal VALID_K_CHARAC_PLCWI                   : std_logic_vector(C_K_CHAR_WIDTH-1 downto 0);
 signal SEND_INIT1_CTRL_WORD_PLIF             : std_logic := '0';
 signal SEND_INIT2_CTRL_WORD_PLIF             : std_logic := '0';
 signal SEND_INIT3_CTRL_WORD_PLIF             : std_logic := '0';

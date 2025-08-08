@@ -48,10 +48,10 @@ architecture tb of tb_ppl_64_bus_split_rx is
       LANE_ACTIVE_PLBSR            : out std_logic;                                           --! Lane Active flag for the DATA Link Layer
       -- ppl_64_data_fifo_rx (PLDFR) interface
       FIFO_RX_RD_EN_PLBSR          : out std_logic;                                          --! FiFo RX read enable flag
-      DATA_RX_PLFRD                : in  std_logic_vector(C_DATA_LENGTH-1  downto 0);        --! 64-bit Data parallel to be send from Data-Link Layer
+      DATA_RX_PLFRD                : in  std_logic_vector(C_DATA_WIDTH-1  downto 0);        --! 64-bit Data parallel to be send from Data-Link Layer
       FIFO_RX_DATA_VALID_PLFRD     : in  std_logic;                                          --! Flag new data
       FIFO_RX_EMPTY_PLFRD          : in  std_logic;                                          --! Flag FIFO Empty
-      VALID_K_CHARAC_RX_PLFRD      : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! 8-bit valid K character flags from Data-link layer
+      VALID_K_CHARAC_RX_PLFRD      : in  std_logic_vector(C_K_CHAR_WIDTH-1 downto 0); --! 8-bit valid K character flags from Data-link layer
       -- ppl_64_ctrl_fifo_rx (PLCFR) interface
       FAR_END_CAPA_PLFRC           : in std_logic_vector(15 downto 0);                      --! Capability field send in INIT3 control word
       LANE_ACTIVE_PLFRC            : in std_logic                                           --! Flag new data
@@ -109,10 +109,10 @@ signal FAR_END_CAPA_PLBSR           : std_logic_vector(7 downto 0);
 signal LANE_ACTIVE_PLBSR            : std_logic;
 -- ppl_64_data_fifo_rx (PLDFR) interface
 signal FIFO_RX_RD_EN_PLBSR          : std_logic;
-signal DATA_RX_PLFRD                : std_logic_vector(C_DATA_LENGTH-1  downto 0);
+signal DATA_RX_PLFRD                : std_logic_vector(C_DATA_WIDTH-1  downto 0);
 signal FIFO_RX_DATA_VALID_PLFRD     : std_logic;
 signal FIFO_RX_EMPTY_PLFRD          : std_logic;
-signal VALID_K_CHARAC_RX_PLFRD      : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
+signal VALID_K_CHARAC_RX_PLFRD      : std_logic_vector(C_K_CHAR_WIDTH-1 downto 0);
 -- ppl_64_ctrl_fifo_rx (PLCFR) interface
 signal FAR_END_CAPA_PLFRC           : std_logic_vector(15 downto 0):= (others => '0');
 signal LANE_ACTIVE_PLFRC            : std_logic :='0';

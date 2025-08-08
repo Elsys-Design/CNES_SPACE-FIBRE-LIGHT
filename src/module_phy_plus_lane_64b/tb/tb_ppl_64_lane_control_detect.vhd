@@ -57,12 +57,12 @@ component ppl_64_lane_ctrl_word_detect is
     NO_SIGNAL_DETECTION_ENABLED_PLIF : in  std_logic;                                          --! Flag to enable the no signal function
     ENABLE_TRANSM_DATA_PLIF          : in  std_logic_vector(1 downto 0);                       --! Flag to enable the transmision of data
     -- ppl_64_parallel_looback (PLPL) interface
-    DATA_RX_PLPL                     : in  std_logic_vector(C_DATA_LENGTH-1 downto 0);         --! 64-bit data from ppl_64_parallel_looback
-    VALID_K_CHARAC_PLPL               : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! 8-bit valid K character flags from ppl_64_parallel_looback
+    DATA_RX_PLPL                     : in  std_logic_vector(C_DATA_WIDTH-1 downto 0);         --! 64-bit data from ppl_64_parallel_looback
+    VALID_K_CHARAC_PLPL               : in  std_logic_vector(C_K_CHAR_WIDTH-1 downto 0); --! 8-bit valid K character flags from ppl_64_parallel_looback
     DATA_RDY_PLPL                    : in  std_logic;                                          --! Data valid flag from ppl_64_parallel_looback
     -- DATA-LINK interface
-    DATA_RX_PLCWD                    : out std_logic_vector(C_DATA_LENGTH-1 downto 0);         --! 64-bit data to Data-link layer
-    VALID_K_CHARAC_PLCWD              : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! 8-bit valid K character flags to Data-link layer
+    DATA_RX_PLCWD                    : out std_logic_vector(C_DATA_WIDTH-1 downto 0);         --! 64-bit data to Data-link layer
+    VALID_K_CHARAC_PLCWD              : out std_logic_vector(C_K_CHAR_WIDTH-1 downto 0); --! 8-bit valid K character flags to Data-link layer
     DATA_RDY_PLCWD                   : out std_logic_vector(1 downto 0)                        --! Data valid flag to Data-link layer
    );
 end component;
@@ -91,11 +91,11 @@ signal CAPABILITY_PLCWD                 : std_logic_vector(15 downto 0);
 signal SEND_RXERR_PLIF                  : std_logic_vector(1 downto 0) := "00";
 signal NO_SIGNAL_DETECTION_ENABLED_PLIF : std_logic := '0';
 signal ENABLE_TRANSM_DATA_PLIF          : std_logic_vector(1 downto 0) := "00";
-signal DATA_RX_PLPL                     : std_logic_vector(C_DATA_LENGTH-1 downto 0)        := (others =>'0');
-signal VALID_K_CHARAC_PLPL               : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0):= (others =>'0');
+signal DATA_RX_PLPL                     : std_logic_vector(C_DATA_WIDTH-1 downto 0)        := (others =>'0');
+signal VALID_K_CHARAC_PLPL               : std_logic_vector(C_K_CHAR_WIDTH-1 downto 0):= (others =>'0');
 signal DATA_RDY_PLPL                    : std_logic := '0';
-signal DATA_RX_PLCWD                    : std_logic_vector(C_DATA_LENGTH-1 downto 0);
-signal VALID_K_CHARAC_PLCWD              : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
+signal DATA_RX_PLCWD                    : std_logic_vector(C_DATA_WIDTH-1 downto 0);
+signal VALID_K_CHARAC_PLCWD              : std_logic_vector(C_K_CHAR_WIDTH-1 downto 0);
 signal DATA_RDY_PLCWD                   : std_logic_vector(1 downto 0);
 
 signal capability_in                    : std_logic_vector(7 downto 0):= (others => '0');

@@ -30,23 +30,23 @@ library phy_plus_lane_64_lib;
   use phy_plus_lane_64_lib.pkg_phy_plus_lane_64b.all;
 
 entity ppl_64_bus_concat_tx is
-   port (
-      RST_N                        : in  std_logic;                                          --! global reset
-      CLK                          : in  std_logic;                                          --! Clock synchronous with the Data-Link Layer
-      -- Data-link layer interface
-      DATA_TX_DL                   : in  std_logic_vector(31 downto 0);                      --! 32-bit data parallel to be sent from Data-Link Layer
-      NEW_DATA_TX_DL               : in  std_logic;                                          --! New data flag
-      VALID_K_CHARAC_TX_DL         : in  std_logic_vector(3 downto 0);                       --! 4-bit valid K character flags from Data-link layer
-      CAPABILITY_TX_DL             : in  std_logic_vector(7 downto 0);                       --! Capability field sent in INIT3 control word
-      LANE_RESET_DL                : in  std_logic;                                          --! Lane reset command from Data-Link Layer
-      -- ppl_64_data_fifo_tx (PLDFT) interface
-      DATA_TX_PLBCT                : out std_logic_vector(C_DATA_LENGTH-1  downto 0);        --! 64-bit Data parallel to be sent
-      NEW_DATA_TX_PLBCT            : out std_logic;                                          --! New data flag
-      VALID_K_CHARAC_TX_PLBCT      : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! 8-bit valid K character flags
-      -- ppl_64_ctrl_fifo_tx (PLCFT) interface
-      CAPABILITY_TX_PLBCT          : out std_logic_vector(7 downto 0);                       --! Capability field sent in INIT3 control word
-      LANE_RESET_PLBCT             : out std_logic                                           --! Lane reset command
-   );
+  port (
+    RST_N                        : in  std_logic;                                   --! global reset
+    CLK                          : in  std_logic;                                   --! Clock synchronous with the Data-Link Layer
+    -- Data-link layer interface
+    DATA_TX_DL                   : in  std_logic_vector(31 downto 0);               --! 32-bit data parallel to be sent from Data-Link Layer
+    NEW_DATA_TX_DL               : in  std_logic;                                   --! New data flag
+    VALID_K_CHARAC_TX_DL         : in  std_logic_vector(3 downto 0);                --! 4-bit valid K character flags from Data-link layer
+    CAPABILITY_TX_DL             : in  std_logic_vector(7 downto 0);                --! Capability field sent in INIT3 control word
+    LANE_RESET_DL                : in  std_logic;                                   --! Lane reset command from Data-Link Layer
+    -- ppl_64_data_fifo_tx (PLDFT) interface
+    DATA_TX_PLBCT                : out std_logic_vector(C_DATA_WIDTH-1  downto 0);  --! 64-bit Data parallel to be sent
+    NEW_DATA_TX_PLBCT            : out std_logic;                                   --! New data flag
+    VALID_K_CHARAC_TX_PLBCT      : out std_logic_vector(C_K_CHAR_WIDTH-1 downto 0); --! 8-bit valid K character flags
+    -- ppl_64_ctrl_fifo_tx (PLCFT) interface
+    CAPABILITY_TX_PLBCT          : out std_logic_vector(7 downto 0);                --! Capability field sent in INIT3 control word
+    LANE_RESET_PLBCT             : out std_logic                                    --! Lane reset command
+  );
 end ppl_64_bus_concat_tx;
 
 architecture rtl of ppl_64_bus_concat_tx is
