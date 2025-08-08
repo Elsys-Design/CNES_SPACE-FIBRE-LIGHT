@@ -68,8 +68,9 @@ package pkg_phy_plus_lane_64b is
    --constant C_5000_WORDS         : unsigned(12 downto 00) := "0" & x"00A";      -- 10 for test
    constant C_SYMB_X5             : unsigned(02 downto 00) := "100";          -- 5 = 0 to 4 values
    --FIFOs size
-   constant C_DWIDTH              : integer := 36;
-   constant C_AWIDTH              : integer := 10; -- Nb of bit
+   constant C_DWIDTH              : integer := 72;
+   constant C_AWIDTH_TX           : integer := 5; -- Nb of bit
+   constant C_AWIDTH_RX           : integer := 12; -- Nb of bit
    constant C_DWIDTH_CTRL_TX      : integer := 9;
    constant C_AWIDTH_CTRL_TX      : integer := 3;
    constant C_DWIDTH_CTRL_RX      : integer := 9;

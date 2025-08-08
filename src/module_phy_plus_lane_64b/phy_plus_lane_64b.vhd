@@ -32,7 +32,7 @@ library ieee;
 library phy_plus_lane_64_lib;
   use phy_plus_lane_64_lib.pkg_phy_plus_lane_64b.all;
 
-entity phy_plus_lane is
+entity phy_plus_lane_64b is
   port(
     RST_N                            : in  std_logic;                       --! global reset
     CLK                              : in  std_logic;                       --! Main clock
@@ -82,9 +82,9 @@ entity phy_plus_lane is
     FAR_END_CAPA                     : out std_logic_vector(07 downto 00);  --! Capabilities field (INT3 flags)
     RX_POLARITY                      : out std_logic                        --! Set when the receiver polarity is inverted
   );
-end phy_plus_lane;
+end phy_plus_lane_64b;
 
-architecture rtl of phy_plus_lane is
+architecture rtl of phy_plus_lane_64b is
 ---------------------------------------------------------
 -----               Component declaration           -----
 ---------------------------------------------------------
@@ -193,7 +193,7 @@ architecture rtl of phy_plus_lane is
       NEW_DATA_TX_PLBCT            : out std_logic;                                          --! Flag new data
       VALID_K_CHARAC_TX_PLBCT      : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! 8-bit valid K character flags from Data-link layer
       -- ppl_64_ctrl_fifo_tx (PLCFT) interface
-      CAPABILITY_TX_PLBCT          : out std_logic_vector(15 downto 0);                      --! Capability field send in INIT3 control word
+      CAPABILITY_TX_PLBCT          : out std_logic_vector(7 downto 0);                      --! Capability field send in INIT3 control word
       LANE_RESET_PLBCT             : out std_logic                                           --! Flag new data
     );
   end component;
@@ -224,7 +224,7 @@ architecture rtl of phy_plus_lane is
       LOST_SIGNAL_X32_PLCWI                : out std_logic;                                          --! Flag LOST_SIGNAL control word has been send x32
       -- MIB interface
       STANDBY_REASON_MIB                   : in  std_logic_vector(7 downto 0);                       --! Standby reason from MIB
-      LOST_CAUSE_MIB                       : in  std_logic_vector(1 downto 0)                        --! Flag to indicate the reason of the LOST_SIGNAL
+      LOST_CAUSE_PLIF                       : in  std_logic_vector(1 downto 0)                        --! Flag to indicate the reason of the LOST_SIGNAL
     );
   end component;
 
@@ -260,7 +260,7 @@ architecture rtl of phy_plus_lane is
       -- ppl_64_skip_insertion (PLSI) interface
       WAIT_SEND_DATA_PLSI      : in  std_logic;                                          --! Wait for data to be skip
       --ppl_64_lane_ctrl_word_detection (PLCWD) interface
-      DATA_TX_PLPL             : out std_logic_vector(C_DATA_LENGTH-1 downto 0);         --! 64-bit Data
+      DATA_RX_PLPL             : out std_logic_vector(C_DATA_LENGTH-1 downto 0);         --! 64-bit Data
       VALID_K_CHARAC_PLPL      : out std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! 8-bit Valid K character
       DATA_RDY_PLPL            : out std_logic;                                          --! Data ready flag
       -- MIB interface
@@ -332,7 +332,7 @@ end component;
       FIFO_RX_EMPTY_PLFRD          : in  std_logic;                                          --! Flag FIFO Empty
       VALID_K_CHARAC_RX_PLFRD      : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! 8-bit valid K character flags from Data-link layer
       -- ppl_64_ctrl_fifo_rx (PLCFR) interface
-      FAR_END_CAPA_PLFRC           : in std_logic_vector(15 downto 0);                      --! Capability field send in INIT3 control word
+      FAR_END_CAPA_PLFRC           : in std_logic_vector(7 downto 0);                      --! Capability field send in INIT3 control word
       LANE_ACTIVE_PLFRC            : in std_logic                                           --! Flag new data
     );
   end component;
@@ -371,7 +371,7 @@ end component;
       CAPABILITY_PLCWD                 : out std_logic_vector(15 downto 0);                      --! Capability from INIT3 control word (31 downto 24) and (63 downto 56)
       SEND_RXERR_PLIF                  : in  std_logic_vector(1 downto 0);                       --! Flag send RXERR control word to Data-Link layer when FSM leave ACTIVE_ST
       NO_SIGNAL_DETECTION_ENABLED_PLIF : in  std_logic;                                          --! Flag to enable the no signal function
-      ENABLE_TRANSM_DATA_PLIF          : in  std_logic_vector(1 downto 0);                       --! Flag to enable the transmision of data
+      ENABLE_TRANSM_DATA_PLIF          : in  std_logic;                                          --! Flag to enable the transmision of data
       -- ppl_64_parallel_looback (PLPL) interface
       DATA_RX_PLPL                     : in  std_logic_vector(C_DATA_LENGTH-1 downto 0);         --! 64-bit data from ppl_64_parallel_looback
       VALID_K_CHARAC_PLPL               : in  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0); --! 8-bit valid K character flags from ppl_64_parallel_looback
@@ -463,8 +463,8 @@ end component;
   ----------------------------------------------------------------------------------------------------------------------------------------
   -------------------------------------------------------- Internal signals declaration --------------------------------------------------
   ----------------------------------------------------------------------------------------------------------------------------------------
-  -- Internal signals from lane_init_fsm
-  signal send_rxerr_plif                      : std_logic;
+  -- Internal signals from ppl_64_lane_init_fsm
+  signal send_rxerr_plif                      : std_logic_vector(1 downto 0);
   signal invert_rx_bits_plif                  : std_logic;
   signal no_signal_detection_enabled_plif     : std_logic;
   signal send_init1_ctrl_word_plif            : std_logic;
@@ -472,111 +472,127 @@ end component;
   signal send_init3_ctrl_word_plif            : std_logic;
   signal enable_transm_data_plif              : std_logic;
   signal send_32_standby_ctrl_words_plif      : std_logic;
-  signal send_32_loss_signal_ctrl_word_plif   : std_logic;
+  signal send_32_loss_signal_ctrl_words_plif  : std_logic;
   signal lost_cause_plif                      : std_logic_vector(01 downto 00);
 
-  signal transmitter_dis_plif             : std_logic;
-  signal receiver_dis_plif                : std_logic;
-  signal cdr_plif                         : std_logic;
+  signal transmitter_disabled_plif            : std_logic;
+  signal receiver_disabled_plif               : std_logic;
+  signal cdr_plif                             : std_logic;
 
-  signal lane_state_plif                  : std_logic_vector(03 downto 00);
-  signal rx_error_cnt_plif                : std_logic_vector(07 downto 00);
-  signal rx_error_ovf_plif                : std_logic;
+  signal lane_state_plif                      : std_logic_vector(03 downto 00);
+  signal rx_error_cnt_plif                    : std_logic_vector(07 downto 00);
+  signal rx_error_ovf_plif                    : std_logic;
   -------------- TX Flow --------------------------------------
-  -- Internal signals from plbct
-  signal data_tx_plbct                    : std_logic_vector(C_DATA_LENGTH-1  downto 0);
-  signal new_data_tx_plbct                : std_logic;
-  signal valid_k_charac_tx_plbct          : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
-  signal capability_tx_plbct              : std_logic_vector(15 downto 0);
-  signal lane_reset_plbct                 : std_logic;
-  signal ctrl_in_plbct                    : std_logic_vector(8 downto 0);
-  signal data_plus_k_char_plbct           : std_logic_vector(71 downto 0);
-  -- Internal signals from FiFos TX ctrl
-  signal ctrl_in_plfic                    : std_logic_vector(8 downto 0);
-  signal data_valid_plfic                 : std_logic;
-  -- Internal signals from FiFos TX data
-  signal data_tx_plftd                    : std_logic_vector(71 downto 00);
-  signal fifo_tx_empty_plftd              : std_logic;
-  signal data_valid_plftd                 : std_logic;
+  -- Internal signals from ppl_64_bus_concat_tx
+  signal data_tx_plbct                        : std_logic_vector(C_DATA_LENGTH-1  downto 0);
+  signal new_data_tx_plbct                    : std_logic;
+  signal valid_k_charac_tx_plbct              : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
+  signal capability_tx_plbct                  : std_logic_vector(7 downto 0);
+  signal lane_reset_plbct                     : std_logic;
+  signal ctrl_in_plbct                        : std_logic_vector(C_DWIDTH_CTRL_TX-1 downto 0);
+  signal data_plus_k_char_plbct               : std_logic_vector(71 downto 0);
+  -- Internal signals from FiFo TX ctrl
+  signal ctrl_in_plfic                        : std_logic_vector(C_DWIDTH_CTRL_TX-1 downto 0);
+  signal data_valid_plfic                     : std_logic;
+  signal capability_tx_plfic                  : std_logic_vector (7 downto 0);
+  -- Internal signals from FiFo TX data
+  signal data_tx_plftd                        : std_logic_vector(71 downto 00);
+  signal fifo_tx_empty_plftd                  : std_logic;
+  signal data_valid_plftd                     : std_logic;
    -- Internal signals from ppl_64_lane_ctrl_word_insert
-  signal rd_data_en_plcwi                 : std_logic;
-  signal new_data_plcwi                   : std_logic;
-  signal data_tx_plcwi                    : std_logic_vector(C_DATA_LENGTH-1 downto 00);
-  signal valid_k_charac_plcwi             : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 00);
-  signal standby_signal_x32_plcwi         : std_logic;
-  signal lost_signal_x32_plcwi            : std_logic;
-
+  signal rd_data_en_plcwi                     : std_logic;
+  signal new_data_plcwi                       : std_logic;
+  signal data_tx_plcwi                        : std_logic_vector(C_DATA_LENGTH-1 downto 00);
+  signal valid_k_charac_plcwi                 : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 00);
+  signal standby_signal_x32_plcwi             : std_logic;
+  signal lost_signal_x32_plcwi                : std_logic;
    -- Internal signals from skip_insertion
-  signal wait_send_data_plsi              : std_logic;
-  signal data_tx_plsi                     : std_logic_vector(127 downto 00);
-  signal valid_k_charac_plsi              : std_logic_vector(07 downto 00);
-
+  signal wait_send_data_plsi                  : std_logic;
+  signal data_tx_plsi                         : std_logic_vector(C_DATA_LENGTH-1 downto 00);
+  signal valid_k_charac_plsi                  : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 00);
    -- Internal signals from parallel_loopback
-  signal data_tx_plpl                     : std_logic_vector(31 downto 00);
-  signal valid_k_charac_plpl              : std_logic_vector(03 downto 00);
-  signal data_rdy_plpl                    : std_logic;
+  signal data_rx_plpl                         : std_logic_vector(C_DATA_LENGTH-1 downto 00);
+  signal valid_k_charac_plpl                  : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 00);
+  signal data_rdy_plpl                        : std_logic;
   -------------- HSSL  ----------------------------------------
   -- HSSL instance
-  signal hssl_clock_i                     : std_logic_vector(3 downto 0);
-  signal clk_tx                           : std_logic;
-  signal pll_pma_lock_analog_hssl         : std_logic;
-  signal tx_busy_hssl                     : std_logic;
-  signal rx_pma_ll_slow_locked_hssl       : std_logic;
-  signal rx_pma_loss_of_signal_hssl       : std_logic;
-  signal rx_busy_hssl                     : std_logic;
-  signal data_rx_hssl                     : std_logic_vector(C_DATA_LENGTH-1 downto 0);
-  signal valid_k_charac_hssl              : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
-  signal invalid_char_hssl                : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);
-  signal disparity_err_hssl               : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);
-  signal rx_word_is_aligned_hssl          : std_logic;
-  signal comma_det_hssl                   : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
+  signal hssl_clock_i                         : std_logic_vector(3 downto 0);
+  signal clk_tx                               : std_logic;
+  signal pll_pma_lock_analog_hssl             : std_logic;
+  signal tx_busy_hssl                         : std_logic;
+  signal rx_pma_ll_slow_locked_hssl           : std_logic;
+  signal rx_pma_loss_of_signal_hssl           : std_logic;
+  signal rx_busy_hssl                         : std_logic;
+  signal data_rx_hssl                         : std_logic_vector(C_DATA_LENGTH-1 downto 0);
+  signal valid_k_charac_hssl                  : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
+  signal invalid_char_hssl                    : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);
+  signal disparity_err_hssl                   : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);
+  signal rx_word_is_aligned_hssl              : std_logic;
+  signal comma_det_hssl                       : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
   -- inst_ppl_64_init_hssl
-  signal pll_pma_pwr_up_plih              : std_logic;
-  signal tx_driver_pwrdwn_n_plih          : std_logic;
-  signal pll_pma_rst_n_plih               : std_logic;
-  signal tx_rst_n_plih                    : std_logic;
-  signal rx_pma_pwr_up_plih               : std_logic;
-  signal rx_pma_rst_n_plih                : std_logic;
-  signal rx_rst_n_plih                    : std_logic;
-  signal hssl_reset_done_plih             : std_logic;
+  signal pll_pma_pwr_up_plih                  : std_logic;
+  signal tx_driver_pwrdwn_n_plih              : std_logic;
+  signal pll_pma_rst_n_plih                   : std_logic;
+  signal tx_rst_n_plih                        : std_logic;
+  signal rx_pma_pwr_up_plih                   : std_logic;
+  signal rx_pma_rst_n_plih                    : std_logic;
+  signal rx_rst_n_plih                        : std_logic;
+  signal hssl_reset_done_plih                 : std_logic;
   -------------- RX Flow --------------------------------------
-  -- Internal signals from rx_sync_fsm
-  signal data_rx_plrsf                    : std_logic_vector(31 downto 00);
-  signal valid_k_charac_plrsf             : std_logic_vector(03 downto 00);
-  signal data_rdy_plrsf                   : std_logic;
-
-  -- Internal signals from FIFO_RX
-  signal data_plus_k_char_plfrd           : std_logic_vector(35 downto 00);
-
-  -- Internal signals from lane_ctrl_word_detect
-  signal no_signal_plcwd                  : std_logic;
-  signal rx_new_word_plcwd                : std_logic_vector(1 downto 0);
-  signal detected_init1_plcwd             : std_logic_vector(1 downto 0);
-  signal detected_init2_plcwd             : std_logic_vector(1 downto 0);
-  signal detected_init3_plcwd             : std_logic_vector(1 downto 0);
-  signal detected_inv_init1_plcwd         : std_logic_vector(1 downto 0);
-  signal detected_inv_init2_plcwd         : std_logic_vector(1 downto 0);
-  signal detected_rxerr_word_plcwd        : std_logic_vector(1 downto 0);
-  signal detected_loss_signal_plcwd       : std_logic_vector(1 downto 0);
-  signal detected_standby_plcwd           : std_logic_vector(1 downto 0);
-  signal comma_k287_rxed_plcwd            : std_logic_vector(1 downto 0);
-  signal capability_plcwd                 : std_logic_vector(15 downto 0);
-  signal data_rx_plcwd                    : std_logic_vector(C_DATA_LENGTH-1 downto 0);
-  signal valid_k_charac_plcwd             : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
-  signal data_rdy_plcwd                   : std_logic_vector(1 downto 0);
-  -- Internal signals from lane_ctrl_word_detect
-  signal data_rx_plrds                    :  std_logic_vector(C_DATA_LENGTH-1 downto 0);
-  signal valid_k_charac_plrds             :  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
-  signal data_wr_en_plrds                 :  std_logic;
-  signal data_plus_k_char_plrds           : std_logic_vector(35 downto 00);
+  -- inst_ppl_64_word_alignment
+  signal data_rx_plwa                         : std_logic_vector(C_DATA_LENGTH-1 downto 0);
+  signal valid_k_charac_plwa                  : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
+  signal data_rdy_plwa                        : std_logic;
+  signal invalid_char_plwa                    : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);
+  signal disparity_err_plwa                   : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 0);
+  signal rx_word_is_aligned_plwa              : std_logic;
+  signal comma_det_plwa                       : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
+  -- Internal signals from ppl_64_rx_sync_fsm
+  signal data_rx_plrsf                        : std_logic_vector(C_DATA_LENGTH-1 downto 00);
+  signal valid_k_charac_plrsf                 : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1  downto 00);
+  signal data_rdy_plrsf                       : std_logic;
+  -- Internal signals from from ppl_64_lane_ctrl_word_detect
+  signal no_signal_plcwd                      : std_logic;
+  signal rx_new_word_plcwd                    : std_logic_vector(1 downto 0);
+  signal detected_init1_plcwd                 : std_logic_vector(1 downto 0);
+  signal detected_init2_plcwd                 : std_logic_vector(1 downto 0);
+  signal detected_init3_plcwd                 : std_logic_vector(1 downto 0);
+  signal detected_inv_init1_plcwd             : std_logic_vector(1 downto 0);
+  signal detected_inv_init2_plcwd             : std_logic_vector(1 downto 0);
+  signal detected_rxerr_word_plcwd            : std_logic_vector(1 downto 0);
+  signal detected_loss_signal_plcwd           : std_logic_vector(1 downto 0);
+  signal detected_standby_plcwd               : std_logic_vector(1 downto 0);
+  signal comma_k287_rxed_plcwd                : std_logic_vector(1 downto 0);
+  signal capability_plcwd                     : std_logic_vector(15 downto 0);
+  signal data_rx_plcwd                        : std_logic_vector(C_DATA_LENGTH-1 downto 0);
+  signal valid_k_charac_plcwd                 : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
+  signal data_rdy_plcwd                       : std_logic_vector(1 downto 0);
+  -- Internal signals from ppl_64_rx_detect_suppr
+  signal data_rx_plrds                        :  std_logic_vector(C_DATA_LENGTH-1 downto 0);
+  signal valid_k_charac_plrds                 :  std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
+  signal data_wr_en_plrds                     :  std_logic;
+  signal data_plus_k_char_plrds               : std_logic_vector(71 downto 00);
+  -- Internal signals from FIFO_RX data
+  signal data_plus_k_char_plfrd               : std_logic_vector(71 downto 00);
+  signal data_rx_plfrd                        : std_logic_vector(C_DATA_LENGTH-1 downto 0);
+  signal valid_k_charac_rx_plfrd              : std_logic_vector(C_BYTE_BY_WORD_LENGTH-1 downto 0);
+  signal fifo_rx_data_valid_plfrd             : std_logic;
+  signal fifo_rx_empty_plfrd                  : std_logic;
+  -- Internal signals from FIFO_RX ctrl
+  signal lane_active_capa_in_fifo_rx          : std_logic_vector(C_DWIDTH_CTRL_RX-1 downto 0);
+  signal lane_active_capa_plfrc               : std_logic_vector(C_DWIDTH_CTRL_RX-1 downto 0);
+  signal lane_active_plfrc                    : std_logic;
+  signal far_end_capa_plfrc                   : std_logic_vector (7 downto 0);
+  signal fifo_data_valid_plfrc                : std_logic;
+  -- Internal signals from ppl_64_bus_split_rx
+  signal fifo_rx_rd_en_plbsr                  : std_logic;
+  signal far_end_capa_plbsr                   : std_logic_vector (7 downto 0);
   -- ctrl internal signals
-  signal ctrl_out_dl                      : std_logic_vector(8 downto 0);
-  signal ctrl_out_dl_sync                 : std_logic_vector(8 downto 0);
-  signal lane_reset_dl_i                  : std_logic;
-  signal fifo_out_ctrl_data_valid         : std_logic;
+  signal lane_reset_dl_i                      : std_logic;
+  
 begin
   ----------------------------------------------------------------------------------------------------------------------------------------
-  -------------------------------------------------------- Control Instaiation -----------------------------------------------------------
+  -------------------------------------------------------- Control Instantiation -----------------------------------------------------------
   ----------------------------------------------------------------------------------------------------------------------------------------
 
   LANE_RESET_PPL_OUT <= lane_reset_dl_i or LANE_RESET;
@@ -646,9 +662,9 @@ begin
   ------------------------------------------------------------------------------
   -- Instance of TX FIFO_1MB_wrapper module
   ------------------------------------------------------------------------------
-  ctrl_in_plbct   <= lane_reset_plbct & capability_tx_plbct;
-  lane_reset_dl_i <= '0'                       when lane_state_plif = "0000" else ctrl_in_plfic(8) when data_valid_plfic ='1';
-  capability_tx_i <= ctrl_in_plfic(7 downto 0) when data_valid_plfic ='1';
+  ctrl_in_plbct       <= lane_reset_plbct & capability_tx_plbct;
+  lane_reset_dl_i     <= '0'                       when lane_state_plif = "0000" else ctrl_in_plfic(8) when data_valid_plfic ='1';
+  capability_tx_plfic <= ctrl_in_plfic(7 downto 0) when data_valid_plfic ='1';
 
   inst_fifo_in_ctrl : FIFO_DC
     generic map(
@@ -687,8 +703,8 @@ begin
   inst_fifo_tx_data : FIFO_DC
   generic map(
        G_DWIDTH                => C_DWIDTH,
-       G_AWIDTH                => C_AWIDTH,
-       G_THRESHOLD_HIGH        => 2**C_AWIDTH,
+       G_AWIDTH                => C_AWIDTH_TX,
+       G_THRESHOLD_HIGH        => 2**C_AWIDTH_TX,
        G_THRESHOLD_LOW         => 0
    )
    port map(
@@ -700,7 +716,7 @@ begin
        -- Reading port
        RD_CLK                  => clk_tx,
        RD_DATA                 => data_tx_plftd,
-       RD_DATA_EN              => rd_data_en_from_lcwi,
+       RD_DATA_EN              => rd_data_en_plcwi,
        RD_DATA_VLD             => data_valid_plftd,
        -- Command port
        CMD_FLUSH               => LANE_RESET_DL,
@@ -715,7 +731,7 @@ begin
    );
 
   ------------------------------------------------------------------------------
-  -- Instance of lane_ctrl_word_insert module
+  -- Instance of ppl_64_lane_ctrl_word_insert module
   ------------------------------------------------------------------------------
   inst_ppl_64_lane_ctrl_word_insert: ppl_64_lane_ctrl_word_insert
     port map(
@@ -723,7 +739,7 @@ begin
       CLK                                  => clk_tx,
       RD_DATA_EN_PLCWI                     => rd_data_en_plcwi,
       RD_DATA_VALID_DL                     => data_valid_plftd,
-      CAPABILITY_DL                        => capability_tx_i,
+      CAPABILITY_DL                        => capability_tx_plfic,
       DATA_TX_DL                           => data_tx_plftd(63 downto 0),
       VALID_K_CHARAC_DL                    => data_tx_plftd(71 downto 64),
       NO_DATA_DL                           => fifo_tx_empty_plftd,
@@ -739,8 +755,9 @@ begin
       SEND_32_LOSS_SIGNAL_CTRL_WORDS_PLIF  => send_32_loss_signal_ctrl_words_plif,
       STANDBY_SIGNAL_X32_PLCWI             => standby_signal_x32_plcwi,
       LOST_SIGNAL_X32_PLCWI                => lost_signal_x32_plcwi,
-      STANDBY_REASON_MIB                   => standby_reason_mib,
-      LOST_CAUSE_MIB                       => lost_cause_mib
+      LOST_CAUSE_PLIF                      => lost_cause_plif,
+      STANDBY_REASON_MIB                 => STANDBY_REASON
+
    );
 
   ------------------------------------------------------------------------------
@@ -766,16 +783,21 @@ begin
     port map(
       CLK                      => RST_TXCLK_N,
       RST_N                    => clk_tx,
+      -- ppl_64_lane_ctrl_word_insert (PLCWI) interface
       DATA_TX_PLCWI            => data_tx_plcwi,
-      VALID_K_CARAC_PLCWI      => valid_k_carac_plcwi,
-      DATA_RDY_PLCWI           => data_rdy_plcwi,
-      DATA_TX_PLRSF            => data_tx_plrsf,
-      VALID_K_CARAC_PLRSF      => valid_k_carac_plrsf,
+      VALID_K_CARAC_PLCWI      => valid_k_charac_plcwi,
+      DATA_RDY_PLCWI           => new_data_plcwi,
+      -- ppl_64_rx_sync_fsm (PLRSF) interface
+      DATA_TX_PLRSF            => data_rx_plrsf,
+      VALID_K_CARAC_PLRSF      => valid_k_charac_plrsf,
       DATA_RDY_PLRSF           => data_rdy_plrsf,
+      -- ppl_64_skip_insertion (PLSI) interface
       WAIT_SEND_DATA_PLSI      => wait_send_data_plsi,
-      DATA_TX_PLPL             => data_tx_plpl,
+      --ppl_64_lane_ctrl_word_detection (PLCWD) interface
+      DATA_RX_PLPL             => data_rx_plpl,
       VALID_K_CHARAC_PLPL      => valid_k_charac_plpl,
       DATA_RDY_PLPL            => data_rdy_plpl,
+      -- MIB interface
       PARALLEL_LOOPBACK_EN_MIB => parallel_loopback_en
     );
   ----------------------------------------------------------------------------------------------------------------------------------------
@@ -786,82 +808,82 @@ begin
   hssl_clock_i(2) <= clk_tx;
   hssl_clock_i(3) <= clk_tx;
 
-  reset <= not RST_N or LANE_RESET or lane_reset_dl_i;
+  -- reset <= not RST_N or LANE_RESET or lane_reset_dl_i;
   ------------------------------------------------------------------------------
   -- Instance of hssl module
   ------------------------------------------------------------------------------
-  inst_SpaceFibre_64b : SpaceFibre_64b
-    port map (
-      HSSL_CLOCK_I                => hssl_clock_i,
-      RX0N                        => RX_NEG,
-      RX0P                        => RX_POS,
-      RX1N                        => '1',
-      RX1P                        => '0',
-      RX2N                        => '1',
-      RX2P                        => '0',
-      RX3N                        => '1',
-      RX3P                        => '0',
-      TX0N                        => TX_NEG,
-      TX0P                        => TX_POS,
-      TX1N                        => open,
-      TX1P                        => open,
-      TX2N                        => open,
-      TX2P                        => open,
-      TX3N                        => open,
-      TX3P                        => open,
-      CKREFN                      => tb_ckref_in_n,
-      CKREFP                      => tb_ckref_in,
-      CLOCK_O                     => clkt_tx,
-      DYN_CFG_EN_I                => '0',
-      DYN_ADDR_I                  => (others => '0'),
-      DYN_CALIBRATION_CS_N_I      => '1',
-      DYN_LANE_CS_N_I             => "1111",
-      DYN_WDATA_I                 => (others => '0'),
-      DYN_WDATA_SEL_I             => '0',
-      DYN_WE_N_I                  => '1',
-      PLL_PMA_LOCK_ANALOG         => pll_pma_lock_analog_hssl,
-      PLL_PMA_PWR_UP_I            => pll_pma_pwr_up_plih,
-      PLL_PMA_RST_N_I             => pll_pma_rst_n_plih,
-      PLL_LOCK                    => open,
-      TX0_BUSY_O                  => tx_busy_hssl,
-      TX0_CLK_ENA_I               => '1',
-      TX0_CLK_O                   => open,
-      TX0_DATA_I                  => data_tx_plsi,
-      TX0_CTRL_DRIVER_PWRDWN_N_I  => tx_driver_pwrdwn_n_plih,
-      TX0_RST_N_I                 => tx_rst_n_plih,
-      TX0_CTRL_CHAR_IS_K_I        => valid_k_charac_plsi,
-      RX0_BUSY_O                  => rx_busy_hssl,
-      RX0_CTRL_EL_BUFF_STAT_O     => open,
-      RX0_CTRL_CHAR_IS_ALIGNED_O  => rx_word_is_aligned_hssl,
-      RX0_CTRL_CHAR_IS_COMMA_O    => comma_det_hssl,
-      RX0_CTRL_CHAR_IS_F_O        => open,
-      RX0_CTRL_CHAR_IS_K_O        => valid_k_charac_hssl,
-      RX0_CTRL_DISP_ERR_O         => disparity_err_hssl,
-      RX0_CTRL_NOT_IN_TABLE_O     => invalid_char_hssl,
-      RX0_CTRL_VALID_REALIGN_O    => open,
-      RX0_DATA_O                  => data_rx_hssl,
-      RX0_OVS_BIT_SEL_I           => "00",
-      RX0_EYE_RST_I               => '0',
-      RX0_PMA_LL_FAST_LOCKED_O    => open,
-      RX0_PMA_LL_SLOW_LOCKED_O    => rx_pma_ll_slow_locked_hssl,
-      RX0_PMA_LOSS_OF_SIGNAL_O    => rx_pma_loss_of_signal_hssl,
-      RX0_PMA_PLL_LOCK_O          => open,
-      RX0_PMA_PLL_LOCK_TRACK_O    => open,
-      RX0_PMA_RST_N_I             => rx_pma_rst_n_plih,
-      RX0_PMA_PWR_UP_I            => rx_pma_pwr_up_plih,
-      RX0_RST_N_I                 => rx_rst_n_plih,
-      RX0_TEST_O                  => open,
-      RX0_REPLACE_EN_I            => '0',
-      RX0_ALIGN_SYNC_I            => rx_align_sync,
-      RX0_EL_BUFF_RST_I           => '0'
-    );
+  -- inst_SpaceFibre_64b : SpaceFibre_64b
+  --   port map (
+  --     HSSL_CLOCK_I                => hssl_clock_i,
+  --     RX0N                        => RX_NEG,
+  --     RX0P                        => RX_POS,
+  --     RX1N                        => '1',
+  --     RX1P                        => '0',
+  --     RX2N                        => '1',
+  --     RX2P                        => '0',
+  --     RX3N                        => '1',
+  --     RX3P                        => '0',
+  --     TX0N                        => TX_NEG,
+  --     TX0P                        => TX_POS,
+  --     TX1N                        => open,
+  --     TX1P                        => open,
+  --     TX2N                        => open,
+  --     TX2P                        => open,
+  --     TX3N                        => open,
+  --     TX3P                        => open,
+  --     CKREFN                      => tb_ckref_in_n,
+  --     CKREFP                      => tb_ckref_in,
+  --     CLOCK_O                     => clk_tx,
+  --     DYN_CFG_EN_I                => '0',
+  --     DYN_ADDR_I                  => (others => '0'),
+  --     DYN_CALIBRATION_CS_N_I      => '1',
+  --     DYN_LANE_CS_N_I             => "1111",
+  --     DYN_WDATA_I                 => (others => '0'),
+  --     DYN_WDATA_SEL_I             => '0',
+  --     DYN_WE_N_I                  => '1',
+  --     PLL_PMA_LOCK_ANALOG         => pll_pma_lock_analog_hssl,
+  --     PLL_PMA_PWR_UP_I            => pll_pma_pwr_up_plih,
+  --     PLL_PMA_RST_N_I             => pll_pma_rst_n_plih,
+  --     PLL_LOCK                    => open,
+  --     TX0_BUSY_O                  => tx_busy_hssl,
+  --     TX0_CLK_ENA_I               => '1',
+  --     TX0_CLK_O                   => open,
+  --     TX0_DATA_I                  => data_tx_plsi,
+  --     TX0_CTRL_DRIVER_PWRDWN_N_I  => tx_driver_pwrdwn_n_plih,
+  --     TX0_RST_N_I                 => tx_rst_n_plih,
+  --     TX0_CTRL_CHAR_IS_K_I        => valid_k_charac_plsi,
+  --     RX0_BUSY_O                  => rx_busy_hssl,
+  --     RX0_CTRL_EL_BUFF_STAT_O     => open,
+  --     RX0_CTRL_CHAR_IS_ALIGNED_O  => rx_word_is_aligned_hssl,
+  --     RX0_CTRL_CHAR_IS_COMMA_O    => comma_det_hssl,
+  --     RX0_CTRL_CHAR_IS_F_O        => open,
+  --     RX0_CTRL_CHAR_IS_K_O        => valid_k_charac_hssl,
+  --     RX0_CTRL_DISP_ERR_O         => disparity_err_hssl,
+  --     RX0_CTRL_NOT_IN_TABLE_O     => invalid_char_hssl,
+  --     RX0_CTRL_VALID_REALIGN_O    => open,
+  --     RX0_DATA_O                  => data_rx_hssl,
+  --     RX0_OVS_BIT_SEL_I           => "00",
+  --     RX0_EYE_RST_I               => '0',
+  --     RX0_PMA_LL_FAST_LOCKED_O    => open,
+  --     RX0_PMA_LL_SLOW_LOCKED_O    => rx_pma_ll_slow_locked_hssl,
+  --     RX0_PMA_LOSS_OF_SIGNAL_O    => rx_pma_loss_of_signal_hssl,
+  --     RX0_PMA_PLL_LOCK_O          => open,
+  --     RX0_PMA_PLL_LOCK_TRACK_O    => open,
+  --     RX0_PMA_RST_N_I             => rx_pma_rst_n_plih,
+  --     RX0_PMA_PWR_UP_I            => rx_pma_pwr_up_plih,
+  --     RX0_RST_N_I                 => rx_rst_n_plih,
+  --     RX0_TEST_O                  => open,
+  --     RX0_REPLACE_EN_I            => '0',
+  --     RX0_ALIGN_SYNC_I            => rx_align_sync,
+  --     RX0_EL_BUFF_RST_I           => '0'
+  --   );
   ------------------------------------------------------------------------------
   -- Instance of hssl module
   ------------------------------------------------------------------------------
   inst_ppl_64_init_hssl: ppl_64_init_hssl
     port map (
       RST_N                      => RST_TXCLK_N,
-      CLK                        => clkt_tx,
+      CLK                        => clk_tx,
       RECEIVER_DISABLED_PLIF     => receiver_disabled_plif,
       CDR_PLIF                   => cdr_plif,
       TRANSMITTER_DISABLED_PLIF  => transmitter_disabled_plif,
@@ -881,6 +903,29 @@ begin
   ----------------------------------------------------------------------------------------------------------------------------------------
   -------------------------------------------------------- RX Flow -----------------------------------------------------------------------
   ----------------------------------------------------------------------------------------------------------------------------------------
+  ------------------------------------------------------------------------------
+  -- Instance of ppl_64_word_alignment module
+  ------------------------------------------------------------------------------
+  inst_ppl_64_word_alignment : ppl_64_word_alignment
+    port map(
+      RST_N                   => RST_TXCLK_N,
+      CLK                     => clk_tx,
+      -- ppl_64_rx_sync_fsm (PLRSF) interface
+      DATA_RX_PLWA            => data_rx_plwa,
+      VALID_K_CHARAC_PLWA     => valid_k_charac_plwa,
+      DATA_RDY_PLWA           => data_rdy_plwa,
+      INVALID_CHAR_PLWA       => invalid_char_plwa,
+      DISPARITY_ERR_PLWA      => disparity_err_plwa,
+      RX_WORD_IS_ALIGNED_PLWA => rx_word_is_aligned_plwa,
+      COMMA_DET_PLWA          => comma_det_plwa,
+      -- HSSL IP interface
+      DATA_RX_HSSL            => data_rx_hssl,
+      VALID_K_CHARAC_HSSL     => valid_k_charac_hssl,
+      INVALID_CHAR_HSSL       => invalid_char_hssl,
+      DISPARITY_ERR_HSSL      => disparity_err_hssl,
+      RX_WORD_IS_ALIGNED_HSSL => rx_word_is_aligned_hssl,
+      COMMA_DET_HSSL          => comma_det_hssl
+    );
   ------------------------------------------------------------------------------
   -- Instance of rx_sync_fsm module
   ------------------------------------------------------------------------------
@@ -953,8 +998,8 @@ begin
   inst_fifo_rx_data : FIFO_DC
      generic map(
           G_DWIDTH                => C_DWIDTH,
-          G_AWIDTH                => C_AWIDTH,
-          G_THRESHOLD_HIGH        => 2**C_AWIDTH,
+          G_AWIDTH                => C_AWIDTH_RX,
+          G_THRESHOLD_HIGH        => 2**C_AWIDTH_RX,
           G_THRESHOLD_LOW         => 0
       )
       port map(
@@ -975,16 +1020,16 @@ begin
           STATUS_THRESHOLD_HIGH   => open,
           STATUS_THRESHOLD_LOW    => open,
           STATUS_FULL             => open,
-          STATUS_EMPTY            => FIFO_RX_EMPTY,
+          STATUS_EMPTY            => fifo_rx_empty_plfrd,
           STATUS_LEVEL_WR         => open,
           STATUS_LEVEL_RD         => open
       );
   ------------------------------------------------------------------------------
   -- Instance of TX FIFO_1MB_wrapper module
   ------------------------------------------------------------------------------
-  ctrl_out_dl           <= enable_transm_data_plif & capability_plcwd;
-  lane_active_plfrc     <= ctrl_out_dl_sync(8)          when fifo_out_ctrl_data_valid ='1';
-  far_end_capa_plfrc    <= ctrl_out_dl_sync(7 downto 0) when fifo_out_ctrl_data_valid ='1';
+  lane_active_capa_in_fifo_rx <= enable_transm_data_plif & capability_plcwd(15 downto 8);
+  lane_active_plfrc           <= lane_active_capa_plfrc(8)          when fifo_data_valid_plfrc ='1';
+  far_end_capa_plfrc          <= lane_active_capa_plfrc(7 downto 0) when fifo_data_valid_plfrc ='1';
   inst_fifo_rx_ctrl : FIFO_DC
   generic map(
        G_DWIDTH                => C_DWIDTH_CTRL_RX,
@@ -996,13 +1041,13 @@ begin
        RST_N                   => RST_N,
        -- Writing port
        WR_CLK                  => clk_tx,
-       WR_DATA                 => ctrl_out_dl,
+       WR_DATA                 => lane_active_capa_in_fifo_rx,
        WR_DATA_EN              => '1',
        -- Reading port
        RD_CLK                  => CLK,
-       RD_DATA                 => ctrl_out_dl_sync,
+       RD_DATA                 => lane_active_capa_plfrc,
        RD_DATA_EN              => '1',
-       RD_DATA_VLD             => fifo_out_ctrl_data_valid,
+       RD_DATA_VLD             => fifo_data_valid_plfrc,
        -- Command port
        CMD_FLUSH               => '0',
        STATUS_BUSY_FLUSH       => open,
@@ -1036,16 +1081,16 @@ begin
       FIFO_RX_EMPTY_PLFRD         => fifo_rx_empty_plfrd,
       VALID_K_CHARAC_RX_PLFRD     => valid_k_charac_rx_plfrd,
       FAR_END_CAPA_PLFRC          => far_end_capa_plfrc,
-      LANE_ACTIVE_PLFRC           => LANE_ACTIVE_DL
+      LANE_ACTIVE_PLFRC           => lane_active_plfrc
     );
 
   -- Inputs/Outputs
 CLK_TX_OUT                 <= clk_tx;
-
+FIFO_RX_EMPTY              <= fifo_rx_empty_plfrd;
 LANE_STATE                 <= lane_state_plif;
 RX_ERROR_CNT               <= rx_error_cnt_plif;
 RX_ERROR_OVF               <= rx_error_ovf_plif;
-LOSS_SIGNAL                <= no_signal_from_lcwd;
+LOSS_SIGNAL                <= no_signal_plcwd;
 RX_POLARITY                <= invert_rx_bits_plif;
 FAR_END_CAPA               <= far_end_capa_plbsr;
 FAR_END_CAPA_DL            <= far_end_capa_plbsr;

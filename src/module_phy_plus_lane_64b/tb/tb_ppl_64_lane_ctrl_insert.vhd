@@ -63,7 +63,7 @@ component ppl_64_lane_ctrl_word_insert is
     LOST_SIGNAL_X32_PLCWI                : out std_logic;                                          --! Flag LOST_SIGNAL control word has been send x32
     -- MIB interface
     STANDBY_REASON_MIB                   : in  std_logic_vector(7 downto 0);                       --! Standby reason from MIB
-    LOST_CAUSE_MIB                       : in  std_logic_vector(1 downto 0)                        --! Flag to indicate the reason of the LOST_SIGNAL
+    LOST_CAUSE_PLIF                       : in  std_logic_vector(1 downto 0)                        --! Flag to indicate the reason of the LOST_SIGNAL
   );
 end component;
 
@@ -93,7 +93,7 @@ signal ENABLE_TRANSM_DATA_PLIF               : std_logic := '0';
 signal SEND_32_STANDBY_CTRL_WORDS_PLIF       : std_logic := '0';
 signal STANDBY_REASON_MIB                     : std_logic_vector(7 downto 0) := (others => '0');
 signal SEND_32_LOSS_SIGNAL_CTRL_WORDS_PLIF   : std_logic := '0';
-signal LOST_CAUSE_MIB                         : std_logic_vector(1 downto 0) := (others => '0');
+signal LOST_CAUSE_PLIF                         : std_logic_vector(1 downto 0) := (others => '0');
 signal STANDBY_SIGNAL_X32_PLCWI               : std_logic;
 signal LOST_SIGNAL_X32_PLCWI                  : std_logic;
 
@@ -125,7 +125,7 @@ port map(
    STANDBY_SIGNAL_X32_PLCWI             => STANDBY_SIGNAL_X32_PLCWI,
    LOST_SIGNAL_X32_PLCWI                => LOST_SIGNAL_X32_PLCWI,
    STANDBY_REASON_MIB                   => STANDBY_REASON_MIB,
-   LOST_CAUSE_MIB                       => LOST_CAUSE_MIB
+   LOST_CAUSE_PLIF                       => LOST_CAUSE_PLIF
 );
 
 ---------------------------------------------------------
@@ -311,7 +311,7 @@ begin
   --------------------------------------
   -- test LOST_LIGNAL
   SEND_32_LOSS_SIGNAL_CTRL_WORDS_PLIF      <= '1';
-  LOST_CAUSE_MIB                          <= "11";
+  LOST_CAUSE_PLIF                          <= "11";
   wait until falling_edge(CLK);
   for i in 0 to 15 loop
     wait until falling_edge(CLK);
