@@ -607,7 +607,7 @@ begin
   -- Data-link interface
   FIFO_RX_EMPTY              <= fifo_rx_empty_plfrd;
   FAR_END_CAPA_DL            <= far_end_capa_plbsr;
-  LANE_RESET_PPL_OUT <= lane_reset_dl_i or LANE_RESET;
+  LANE_RESET_PPL_OUT         <= lane_reset_dl_i or LANE_RESET;
   -- MIB Interface
   LANE_STATE                 <= lane_state_plif;
   RX_ERROR_CNT               <= rx_error_cnt_plif;
@@ -910,11 +910,11 @@ begin
       RX0_RST_N_I                 => rx_rst_n_plih,
       RX0_TEST_O                  => open,
       RX0_REPLACE_EN_I            => '0',
-      RX0_ALIGN_SYNC_I            => rx_align_sync,
+      RX0_ALIGN_SYNC_I            => '1',
       RX0_EL_BUFF_RST_I           => '0'
     );
   ------------------------------------------------------------------------------
-  -- Instance of hssl module
+  -- Instance of ppl_64_init_hssl module
   ------------------------------------------------------------------------------
   reset_n <= RST_N or not(LANE_RESET) or not(lane_reset_dl_i);
 
