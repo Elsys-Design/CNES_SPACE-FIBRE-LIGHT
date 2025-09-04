@@ -45,7 +45,11 @@ except ImportError as e:
     print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     print("")
     exit()               
-    
+
+
+
+target = os.environ.get("HARDWARE_TARGET")
+
 #Global variable of test success or failure
 test_failed = 0
 
@@ -157,6 +161,7 @@ async def cocotb_run(dut):
 
     #Specific variable for the scenario
     global test_failed 
+    global target
 
 
     ##########################################################################
@@ -782,6 +787,38 @@ async def cocotb_run(dut):
 
 
     
+    if target=="NGULTRA": 
+
+        await tb.masters[2].read_data(Data_lane_ana_status)
+        error_cnt_1 = format(Data_lane_ana_status.data[1], '0>8b')[6:8] + format(Data_lane_ana_status.data[0], '0>8b')[0:6]
+
+        await stimuli
+
+        await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/SKIP.dat", file_format = 16)
+        await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/SKIP.dat", file_format = 16)
+        await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/SKIP.dat", file_format = 16)
+        await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/IDLE.dat", file_format = 16)
+        await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/IDLE.dat", file_format = 16)
+        await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/SKIP.dat", file_format = 16)
+        await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/IDLE.dat", file_format = 16)
+        await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/SKIP.dat", file_format = 16)
+        await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/SKIP.dat", file_format = 16)
+        await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/IDLE.dat", file_format = 16)
+
+
+
+        stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+
+        await tb.masters[2].read_data(Data_lane_ana_status)
+        error_cnt_2 = format(Data_lane_ana_status.data[1], '0>8b')[6:8] + format(Data_lane_ana_status.data[0], '0>8b')[0:6]
+
+        if error_cnt_1 != error_cnt_2:        
+            step_2_failed = 1
+            tb.logger.error("simulation time %d ns : step 2.12 result: Failed\nError counter initial: %d\nError counter final: %d\n\n\n", get_sim_time(units = "ns"), error_cnt_1, error_cnt_2)
+        else:
+            tb.logger.info("simulation time %d ns : step 2.12 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
+
+    
     if step_2_failed == 0:
         tb.logger.info("simulation time %d ns : step 2 result: Pass")
     else:
@@ -1083,8 +1120,7 @@ async def cocotb_run(dut):
     error_cnt = format(Data_read_lane_config_status.data[1], '0>8b')[4:8] + format(Data_read_lane_config_status.data[0], '0>8b')[0:4]
     error_overflow = format(Data_read_lane_config_status.data[1], '0>8b')[3]
 
-    print (error_cnt)
-    print (error_overflow)
+    
 
     if error_cnt != "00000010" or error_overflow != "0":
         step_3_failed = 1
@@ -1197,6 +1233,325 @@ async def cocotb_run(dut):
         tb.logger.error("simulation time %d ns : step 3.26 result: Failed\nError counter : %s\nError counter overflow: %s\n\n\n", get_sim_time(units = "ns"), error_cnt, error_overflow)
     else:
         tb.logger.info("simulation time %d ns : step 3.26 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    #Specific test for NGULTRA 64b datapath width lane layer structure 
+    if target == "NGULTRA" : 
+
+        #RXERR word reception
+
+        #Configure Lane_Analizer
+        Data_lane_ana_config.data = bytearray( [0x04,0x00,0x00,0x04])
+        await tb.masters[2].write_data(Data_lane_ana_config)
+
+        #Start Test
+        Data_lane_ana_control.data = bytearray( [0x01,0x00,0x00,0x00])
+        await tb.masters[2].write_data(Data_lane_ana_control)
+
+        await wait_check_error
+
+        #inject error on first 32bit of datapath
+        await write_10b_to_Rx(tb, "1111110101", 0)
+        await write_10b_to_Rx(tb, "1100011001", 0)
+        await write_10b_to_Rx(tb, "1100011001", 0)
+        await write_10b_to_Rx(tb, "1100011001", 0)
+
+        await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16)
+
+        #inject error on second 32bit of datapath
+        await write_10b_to_Rx(tb, "1111110101", 0)
+        await write_10b_to_Rx(tb, "1100011001", 0)
+        await write_10b_to_Rx(tb, "1100011001", 0)
+        await write_10b_to_Rx(tb, "1100011001", 0)
+
+
+        await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16)
+
+        #inject error on both 32bit of datapath
+        await write_10b_to_Rx(tb, "1111110101", 0)
+        await write_10b_to_Rx(tb, "1100011001", 0)
+        await write_10b_to_Rx(tb, "1100011001", 0)
+        await write_10b_to_Rx(tb, "1100011001", 0) 
+
+        await write_10b_to_Rx(tb, "1111110101", 0)
+        await write_10b_to_Rx(tb, "1100011001", 0)
+        await write_10b_to_Rx(tb, "1100011001", 0)
+        await write_10b_to_Rx(tb, "1100011001", 0)
+
+        stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+        
+        await wait_end_test(tb)
+
+        await stimuli
+        
+        check_error = cocotb.start_soon(tb.masters[0].read_data(Data_read_lane_config_status))
+        stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+        
+        await check_error
+
+        error_cnt = format(Data_read_lane_config_status.data[1], '0>8b')[4:8] + format(Data_read_lane_config_status.data[0], '0>8b')[0:4]
+        error_overflow = format(Data_read_lane_config_status.data[1], '0>8b')[3]
+
+        
+
+        if error_cnt != "00000100" or error_overflow != "0":
+            step_3_failed = 1
+            tb.logger.error("simulation time %d ns : step 3.26.NGULTRA result: Failed\nError counter : %s\nError counter overflow: %s\n\n\n", get_sim_time(units = "ns"), error_cnt, error_overflow)
+        else:
+            tb.logger.info("simulation time %d ns : step 3.26.NGULTRA result: Pass\n\n\n\n", get_sim_time(units = "ns"))
+
+
+        for seed in range (17):
+            #Configure Lane_Analizer
+            Data_lane_ana_config.data = bytearray( [0x90,0x20,0x00,0x01])
+            await tb.masters[2].write_data(Data_lane_ana_config)
+
+            #Seed of Lane_Analyzer
+            Data_lane_ana_seed.data = bytearray( [0x2F+seed,0x00,0x00,0x00])
+            await tb.masters[2].write_data(Data_lane_ana_seed)
+
+            #Start Test
+            Data_lane_ana_control.data = bytearray( [0x01,0x00,0x00,0x00])
+            await tb.masters[2].write_data(Data_lane_ana_control)
+            
+            await stimuli
+            
+            logfile  = "reference/spacefibre_serial/12288 _word_step_3_1_" + str(12 + seed) + ".dat"
+
+            await tb.spacefibre_random_generator.write_random_inputs(logfile,
+                                                                    frame_number = 0x10,
+                                                                    frame_size = 0x100,
+                                                                    seed = 0x00_00_00_2F+seed)
+            stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+
+                
+            #Pull until Test End
+            error_cnt = await wait_end_test(tb)
+            
+            if error_cnt != "00000000":
+                step_3_failed = 1
+                tb.logger.error("simulation time %d ns : step 3.25.%d result: Failed\nError counter : %s\n\n\n", get_sim_time(units = "ns"), seed, error_cnt)
+            else:
+                tb.logger.info("simulation time %d ns : step 3.25.%d result: Pass\n\n\n\n", get_sim_time(units = "ns"), seed)
+
+        await stimuli
+
+        check_error = cocotb.start_soon(tb.masters[0].read_data(Data_read_lane_config_status))
+        wait_check_error = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+        await check_error
+
+        error_cnt = format(Data_read_lane_config_status.data[1], '0>8b')[4:8] + format(Data_read_lane_config_status.data[0], '0>8b')[0:4]
+        error_overflow = format(Data_read_lane_config_status.data[1], '0>8b')[3]
+
+        if error_cnt != "00000011" or error_overflow != "0":
+            step_3_failed = 1
+            tb.logger.error("simulation time %d ns : step 3.26 result: Failed\nError counter : %s\nError counter overflow: %s\n\n\n", get_sim_time(units = "ns"), error_cnt, error_overflow)
+        else:
+            tb.logger.info("simulation time %d ns : step 3.26 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
+
+
+
+
+        for seed in range (17):
+            #Configure Lane_Analizer
+            Data_lane_ana_config.data = bytearray( [0x90,0x20,0x00,0x01])
+            await tb.masters[2].write_data(Data_lane_ana_config)
+
+            #Seed of Lane_Analyzer
+            Data_lane_ana_seed.data = bytearray( [0x2F+seed,0x00,0x00,0x00])
+            await tb.masters[2].write_data(Data_lane_ana_seed)
+
+            #Start Test
+            Data_lane_ana_control.data = bytearray( [0x01,0x00,0x00,0x00])
+            await tb.masters[2].write_data(Data_lane_ana_control)
+            
+            await stimuli
+            
+            logfile  = "reference/spacefibre_serial/12288 _word_step_3_1_" + str(12 + seed) + ".dat"
+
+            await tb.spacefibre_random_generator.write_random_inputs(logfile,
+                                                                    frame_number = 0x10,
+                                                                    frame_size = 0x100,
+                                                                    seed = 0x00_00_00_2F+seed)
+            stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+
+                
+            #Pull until Test End
+            error_cnt = await wait_end_test(tb)
+            
+            if error_cnt != "00000000":
+                step_3_failed = 1
+                tb.logger.error("simulation time %d ns : step 3.25.%d result: Failed\nError counter : %s\n\n\n", get_sim_time(units = "ns"), seed, error_cnt)
+            else:
+                tb.logger.info("simulation time %d ns : step 3.25.%d result: Pass\n\n\n\n", get_sim_time(units = "ns"), seed)
+
+        await stimuli
+
+        check_error = cocotb.start_soon(tb.masters[0].read_data(Data_read_lane_config_status))
+        wait_check_error = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+        await check_error
+
+        error_cnt = format(Data_read_lane_config_status.data[1], '0>8b')[4:8] + format(Data_read_lane_config_status.data[0], '0>8b')[0:4]
+        error_overflow = format(Data_read_lane_config_status.data[1], '0>8b')[3]
+
+        if error_cnt != "00000010" or error_overflow != "0":
+            step_3_failed = 1
+            tb.logger.error("simulation time %d ns : step 3.26 result: Failed\nError counter : %s\nError counter overflow: %s\n\n\n", get_sim_time(units = "ns"), error_cnt, error_overflow)
+        else:
+            tb.logger.info("simulation time %d ns : step 3.26 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
+
+
+
+
+
+        for seed in range (17):
+            #Configure Lane_Analizer
+            Data_lane_ana_config.data = bytearray( [0x90,0x20,0x00,0x01])
+            await tb.masters[2].write_data(Data_lane_ana_config)
+
+            #Seed of Lane_Analyzer
+            Data_lane_ana_seed.data = bytearray( [0x2F+seed,0x00,0x00,0x00])
+            await tb.masters[2].write_data(Data_lane_ana_seed)
+
+            #Start Test
+            Data_lane_ana_control.data = bytearray( [0x01,0x00,0x00,0x00])
+            await tb.masters[2].write_data(Data_lane_ana_control)
+            
+            await stimuli
+            
+            logfile  = "reference/spacefibre_serial/12288 _word_step_3_1_" + str(12 + seed) + ".dat"
+
+            await tb.spacefibre_random_generator.write_random_inputs(logfile,
+                                                                    frame_number = 0x10,
+                                                                    frame_size = 0x100,
+                                                                    seed = 0x00_00_00_2F+seed)
+            stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+
+                
+            #Pull until Test End
+            error_cnt = await wait_end_test(tb)
+            
+            if error_cnt != "00000000":
+                step_3_failed = 1
+                tb.logger.error("simulation time %d ns : step 3.25.%d result: Failed\nError counter : %s\n\n\n", get_sim_time(units = "ns"), seed, error_cnt)
+            else:
+                tb.logger.info("simulation time %d ns : step 3.25.%d result: Pass\n\n\n\n", get_sim_time(units = "ns"), seed)
+
+        await stimuli
+
+        check_error = cocotb.start_soon(tb.masters[0].read_data(Data_read_lane_config_status))
+        wait_check_error = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+        await check_error
+
+        error_cnt = format(Data_read_lane_config_status.data[1], '0>8b')[4:8] + format(Data_read_lane_config_status.data[0], '0>8b')[0:4]
+        error_overflow = format(Data_read_lane_config_status.data[1], '0>8b')[3]
+
+        if error_cnt != "00000001" or error_overflow != "0":
+            step_3_failed = 1
+            tb.logger.error("simulation time %d ns : step 3.26 result: Failed\nError counter : %s\nError counter overflow: %s\n\n\n", get_sim_time(units = "ns"), error_cnt, error_overflow)
+        else:
+            tb.logger.info("simulation time %d ns : step 3.26 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
+
+
+
+
+        for seed in range (17):
+            #Configure Lane_Analizer
+            Data_lane_ana_config.data = bytearray( [0x90,0x20,0x00,0x01])
+            await tb.masters[2].write_data(Data_lane_ana_config)
+
+            #Seed of Lane_Analyzer
+            Data_lane_ana_seed.data = bytearray( [0x2F+seed,0x00,0x00,0x00])
+            await tb.masters[2].write_data(Data_lane_ana_seed)
+
+            #Start Test
+            Data_lane_ana_control.data = bytearray( [0x01,0x00,0x00,0x00])
+            await tb.masters[2].write_data(Data_lane_ana_control)
+            
+            await stimuli
+            
+            logfile  = "reference/spacefibre_serial/12288 _word_step_3_1_" + str(12 + seed) + ".dat"
+
+            await tb.spacefibre_random_generator.write_random_inputs(logfile,
+                                                                    frame_number = 0x10,
+                                                                    frame_size = 0x100,
+                                                                    seed = 0x00_00_00_2F+seed)
+            stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+
+                
+            #Pull until Test End
+            error_cnt = await wait_end_test(tb)
+            
+            if error_cnt != "00000000":
+                step_3_failed = 1
+                tb.logger.error("simulation time %d ns : step 3.25.%d result: Failed\nError counter : %s\n\n\n", get_sim_time(units = "ns"), seed, error_cnt)
+            else:
+                tb.logger.info("simulation time %d ns : step 3.25.%d result: Pass\n\n\n\n", get_sim_time(units = "ns"), seed)
+
+        await stimuli
+
+        check_error = cocotb.start_soon(tb.masters[0].read_data(Data_read_lane_config_status))
+        wait_check_error = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+        await check_error
+
+        error_cnt = format(Data_read_lane_config_status.data[1], '0>8b')[4:8] + format(Data_read_lane_config_status.data[0], '0>8b')[0:4]
+        error_overflow = format(Data_read_lane_config_status.data[1], '0>8b')[3]
+
+        if error_cnt != "00000000" or error_overflow != "0":
+            step_3_failed = 1
+            tb.logger.error("simulation time %d ns : step 3.26 result: Failed\nError counter : %s\nError counter overflow: %s\n\n\n", get_sim_time(units = "ns"), error_cnt, error_overflow)
+        else:
+            tb.logger.info("simulation time %d ns : step 3.26 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1465,105 +1820,106 @@ async def cocotb_run(dut):
 
 
 
+    if target == "VERSAL":
 
-    ##########################################################################
-    ##########################################################################
-    ##########################################################################
-    #####             Step 4: Check inversion of RX polarity             #####
-    ##########################################################################
-    ##########################################################################
-    ##########################################################################
+        ##########################################################################
+        ##########################################################################
+        ##########################################################################
+        #####             Step 4: Check inversion of RX polarity             #####
+        ##########################################################################
+        ##########################################################################
+        ##########################################################################
 
-    step_4_failed = 0
+        step_4_failed = 0
 
-    not_started=1
+        not_started=1
+        
+        #Reset of the DUT
+        await tb.reset_lane_only()
+
+        #LaneReset with Lane_Configurator
+        await tb.masters[0].init_run("stimuli/axi/Lane_reset.json")
+
+        #Wait end of phy reset
+        tb.logger.info("sim_time %d ns: Wait PHY reset completion", get_sim_time(units = 'ns') )
+        await RisingEdge(tb.dut.spacefibre_instance.inst_phy_plus_lane.RST_TX_DONE)
+        tb.logger.info("sim_time %d ns: Reset PHY completed", get_sim_time(units = 'ns') )
+
+        #Wait to go to Disabled
+        await Timer(2, units = "us")
+
+        #Enable LaneStart and wait to be in Started state
+        Data_read_lane_config_parameters.data = bytearray([0x01,0x00,0x00,0x00])
     
-    #Reset of the DUT
-    await tb.reset_lane_only()
+        time_out = 0
+        await tb.masters[0].write_data(Data_read_lane_config_parameters)
+        while not_started==1 and time_out < 100:
+            await tb.masters[0].read_data(Data_read_lane_config_status)
+            if format(Data_read_lane_config_status.data[0], '0>8b')[4:8] == STARTED:
+                not_started = 0
+            time_out += 1
+        
+        #Set Lane initialisatiion FSM from Started to Active state
 
-    #LaneReset with Lane_Configurator
-    await tb.masters[0].init_run("stimuli/axi/Lane_reset.json")
+        await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/Started_to_Connecting.dat", invert_polarity = 1)
 
-    #Wait end of phy reset
-    tb.logger.info("sim_time %d ns: Wait PHY reset completion", get_sim_time(units = 'ns') )
-    await RisingEdge(tb.dut.spacefibre_instance.inst_phy_plus_lane.RST_TX_DONE)
-    tb.logger.info("sim_time %d ns: Reset PHY completed", get_sim_time(units = 'ns') )
+        Started_to_Connecting = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/Started_to_Connecting.dat", invert_polarity = 1))
 
-    #Wait to go to Disabled
-    await Timer(2, units = "us")
-
-    #Enable LaneStart and wait to be in Started state
-    Data_read_lane_config_parameters.data = bytearray([0x01,0x00,0x00,0x00])
- 
-    time_out = 0
-    await tb.masters[0].write_data(Data_read_lane_config_parameters)
-    while not_started==1 and time_out < 100:
         await tb.masters[0].read_data(Data_read_lane_config_status)
-        if format(Data_read_lane_config_status.data[0], '0>8b')[4:8] == STARTED:
-            not_started = 0
-        time_out += 1
-    
-    #Set Lane initialisatiion FSM from Started to Active state
 
-    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/Started_to_Connecting.dat", invert_polarity = 1)
+        if format(Data_read_lane_config_status.data[0], '0>8b')[4:8] != INVERTRXPOLARITY or format(Data_read_lane_config_status.data[2], '0>8b')[1] != "1":
+            step_4_failed = 1
+            tb.logger.error("simulation time %d ns : step 4.1 result: Failed\n\n\n", get_sim_time(units = "ns"))
+        else:
+            tb.logger.info("simulation time %d ns : step 4.1 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
 
-    Started_to_Connecting = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/Started_to_Connecting.dat", invert_polarity = 1))
+            
+        
+        await Started_to_Connecting
 
-    await tb.masters[0].read_data(Data_read_lane_config_status)
 
-    if format(Data_read_lane_config_status.data[0], '0>8b')[4:8] != INVERTRXPOLARITY or format(Data_read_lane_config_status.data[2], '0>8b')[1] != "1":
-        step_4_failed = 1
-        tb.logger.error("simulation time %d ns : step 4.1 result: Failed\n\n\n", get_sim_time(units = "ns"))
-    else:
-        tb.logger.info("simulation time %d ns : step 4.1 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
+
+        Connecting_to_Connected = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/Connecting_to_Connected.dat", invert_polarity = 1))
+
+        await tb.masters[0].read_data(Data_read_lane_config_status)
+
+        if format(Data_read_lane_config_status.data[0], '0>8b')[4:8] != CONNECTING or format(Data_read_lane_config_status.data[2], '0>8b')[1] != "1":
+            step_4_failed = 1
+            tb.logger.error("simulation time %d ns : step 4.2 result: Failed\n\n\n", get_sim_time(units = "ns"))
+        else:
+            tb.logger.info("simulation time %d ns : step 4.2 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
+        
+        await Connecting_to_Connected
+
+
+
+        Connected_to_Active = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/Connected_to_Active.dat", invert_polarity = 1))
+
+        await tb.masters[0].read_data(Data_read_lane_config_status)
+
+        if format(Data_read_lane_config_status.data[0], '0>8b')[4:8] != CONNECTED or format(Data_read_lane_config_status.data[2], '0>8b')[1] != "1":
+            step_4_failed = 1
+            tb.logger.error("simulation time %d ns : step 4.3 result: Failed\n\n\n", get_sim_time(units = "ns"))
+        else:
+            tb.logger.info("simulation time %d ns : step 4.3 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
+        
+        await Connected_to_Active
+
+
+        tempo = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", invert_polarity = 1))
+
+        #Check that Lane initialisatiion FSM is in Active State
+        await tb.masters[0].read_data(Data_read_lane_config_status)
+        if format(Data_read_lane_config_status.data[0], '0>8b')[4:8] != ACTIVE or format(Data_read_lane_config_status.data[2], '0>8b')[1] != "1":
+            step_4_failed = 1
+            tb.logger.error("simulation time %d ns : step 4.4 result: Failed\n\n\n", get_sim_time(units = "ns"))
+        else:
+            tb.logger.info("simulation time %d ns : step 4.4 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
+
+        await tempo
+
 
         
-    
-    await Started_to_Connecting
-
-
-
-    Connecting_to_Connected = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/Connecting_to_Connected.dat", invert_polarity = 1))
-
-    await tb.masters[0].read_data(Data_read_lane_config_status)
-
-    if format(Data_read_lane_config_status.data[0], '0>8b')[4:8] != CONNECTING or format(Data_read_lane_config_status.data[2], '0>8b')[1] != "1":
-        step_4_failed = 1
-        tb.logger.error("simulation time %d ns : step 4.2 result: Failed\n\n\n", get_sim_time(units = "ns"))
-    else:
-        tb.logger.info("simulation time %d ns : step 4.2 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
-    
-    await Connecting_to_Connected
-
-
-
-    Connected_to_Active = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/Connected_to_Active.dat", invert_polarity = 1))
-
-    await tb.masters[0].read_data(Data_read_lane_config_status)
-
-    if format(Data_read_lane_config_status.data[0], '0>8b')[4:8] != CONNECTED or format(Data_read_lane_config_status.data[2], '0>8b')[1] != "1":
-        step_4_failed = 1
-        tb.logger.error("simulation time %d ns : step 4.3 result: Failed\n\n\n", get_sim_time(units = "ns"))
-    else:
-        tb.logger.info("simulation time %d ns : step 4.3 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
-    
-    await Connected_to_Active
-
-
-    tempo = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", invert_polarity = 1))
-
-    #Check that Lane initialisatiion FSM is in Active State
-    await tb.masters[0].read_data(Data_read_lane_config_status)
-    if format(Data_read_lane_config_status.data[0], '0>8b')[4:8] != ACTIVE or format(Data_read_lane_config_status.data[2], '0>8b')[1] != "1":
-        step_4_failed = 1
-        tb.logger.error("simulation time %d ns : step 4.4 result: Failed\n\n\n", get_sim_time(units = "ns"))
-    else:
-        tb.logger.info("simulation time %d ns : step 4.4 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
-
-    await tempo
-
-
-    
 
 
 
@@ -1584,303 +1940,261 @@ async def cocotb_run(dut):
 
 
 
-    #Incremental data generation
-
-    #Configure Lane_Analizer
-    Data_lane_ana_config.data = bytearray( [0x84,0x20,0x00,0x00])
-    await tb.masters[2].write_data(Data_lane_ana_config)
-
-    #Seed of Lane_Analyzer
-    Data_lane_ana_seed.data = bytearray( [0x00,0x01,0x00,0x00])
-    await tb.masters[2].write_data(Data_lane_ana_seed)
-
-    #Start Test
-    Data_lane_ana_control.data = bytearray( [0x01,0x00,0x00,0x00])
-    await tb.masters[2].write_data(Data_lane_ana_control)
-    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/255_incremental_data_1_frame.dat", file_format = 16, invert_polarity = 1)
-    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16, invert_polarity = 1))
-
-    #Pull until Test End
-    error_cnt = await wait_end_test(tb)
-    
-    await stimuli
-
-    if error_cnt != "00000000":
-        step_4_failed = 1
-        tb.logger.error("simulation time %d ns : step 4.5 result: Failed\nError counter : %d\n\n\n", get_sim_time(units = "ns"), error_cnt)
-    else:
-        tb.logger.info("simulation time %d ns : step 4.5 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
-
-
-
-    #PRBS data generation
-
-    for seed in range(16):
-
-        stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16, invert_polarity = 1))
+        #Incremental data generation
 
         #Configure Lane_Analizer
-        Data_lane_ana_config.data = bytearray( [0x9F,0x20,0x00,0x01])
+        Data_lane_ana_config.data = bytearray( [0x84,0x20,0x00,0x00])
         await tb.masters[2].write_data(Data_lane_ana_config)
-        
+
         #Seed of Lane_Analyzer
-        Data_lane_ana_seed.data = bytearray( [0x2A+seed,0x00,0x00,0x00])
+        Data_lane_ana_seed.data = bytearray( [0x00,0x01,0x00,0x00])
         await tb.masters[2].write_data(Data_lane_ana_seed)
-        
+
         #Start Test
         Data_lane_ana_control.data = bytearray( [0x01,0x00,0x00,0x00])
         await tb.masters[2].write_data(Data_lane_ana_control)
-
-        await stimuli
-
-        logfile = "reference/spacefibre_serial/16384_PRBS_data_0x1F_frame_" + str(seed) + ".dat"
-
-        await tb.spacefibre_random_generator.write_random_inputs(logfile,
-                                                                        frame_number = 0x1F,
-                                                                        frame_size = 0x100,
-                                                                        seed = 0x00_00_00_2A+seed,
-                                                                        invert_polarity = 1)
-        
+        await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/255_incremental_data_1_frame.dat", file_format = 16, invert_polarity = 1)
         stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16, invert_polarity = 1))
-        
+
         #Pull until Test End
         error_cnt = await wait_end_test(tb)
+        
+        await stimuli
 
         if error_cnt != "00000000":
             step_4_failed = 1
-            tb.logger.error("simulation time %d ns : step 4.%d result: Failed\nError counter : %d\n\n\n", get_sim_time(units = "ns"), 6 + seed, error_cnt)
+            tb.logger.error("simulation time %d ns : step 4.5 result: Failed\nError counter : %d\n\n\n", get_sim_time(units = "ns"), error_cnt)
         else:
-            tb.logger.info("simulation time %d ns : step 4.%d result: Pass\n\n\n\n", get_sim_time(units = "ns"), 6 + seed) 
-
-        await stimuli
+            tb.logger.info("simulation time %d ns : step 4.5 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
 
 
-    
 
-    tempo = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", invert_polarity = 1))
+        #PRBS data generation
 
-    #Check that Lane initialisatiion FSM is in Active State
-    await tb.masters[0].read_data(Data_read_lane_config_status)
-    if format(Data_read_lane_config_status.data[0], '0>8b')[4:8] != ACTIVE or format(Data_read_lane_config_status.data[2], '0>8b')[1] != "1":
-        step_4_failed = 1
-        tb.logger.error("simulation time %d ns : step 4.22 result: Failed\n\n\n", get_sim_time(units = "ns"))
-    else:
-        tb.logger.info("simulation time %d ns : step 4.22 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
+        for seed in range(16):
 
-    await tempo
+            stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16, invert_polarity = 1))
+
+            #Configure Lane_Analizer
+            Data_lane_ana_config.data = bytearray( [0x9F,0x20,0x00,0x01])
+            await tb.masters[2].write_data(Data_lane_ana_config)
+            
+            #Seed of Lane_Analyzer
+            Data_lane_ana_seed.data = bytearray( [0x2A+seed,0x00,0x00,0x00])
+            await tb.masters[2].write_data(Data_lane_ana_seed)
+            
+            #Start Test
+            Data_lane_ana_control.data = bytearray( [0x01,0x00,0x00,0x00])
+            await tb.masters[2].write_data(Data_lane_ana_control)
+
+            await stimuli
+
+            logfile = "reference/spacefibre_serial/16384_PRBS_data_0x1F_frame_" + str(seed) + ".dat"
+
+            await tb.spacefibre_random_generator.write_random_inputs(logfile,
+                                                                            frame_number = 0x1F,
+                                                                            frame_size = 0x100,
+                                                                            seed = 0x00_00_00_2A+seed,
+                                                                            invert_polarity = 1)
+            
+            stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16, invert_polarity = 1))
+            
+            #Pull until Test End
+            error_cnt = await wait_end_test(tb)
+
+            if error_cnt != "00000000":
+                step_4_failed = 1
+                tb.logger.error("simulation time %d ns : step 4.%d result: Failed\nError counter : %d\n\n\n", get_sim_time(units = "ns"), 6 + seed, error_cnt)
+            else:
+                tb.logger.info("simulation time %d ns : step 4.%d result: Pass\n\n\n\n", get_sim_time(units = "ns"), 6 + seed) 
+
+            await stimuli
 
 
-     #Data_lane control word reception
-
-    
-    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16, invert_polarity = 1))
-
-    #Configure Lane_Analizer
-    Data_lane_ana_config.data = bytearray( [0x00,0x00,0x00,0x02])
-    await tb.masters[2].write_data(Data_lane_ana_config)
-
-    #Seed of Lane_Analyzer
-    Data_lane_ana_seed.data = bytearray( [0x2D,0x00,0x00,0x00])
-    await tb.masters[2].write_data(Data_lane_ana_seed)
-
-    #Start Test
-    Data_lane_ana_control.data = bytearray( [0x01,0x00,0x00,0x00])
-    await tb.masters[2].write_data(Data_lane_ana_control)
-
-    await stimuli
-
-
-    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/Data_Link_control_word.dat", file_format = 16, invert_polarity = 1)
-
-    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16, invert_polarity = 1))
         
-    #Pull until Test End
-    error_cnt = await wait_end_test(tb)
 
-    await stimuli
-    
-    if error_cnt != "00000000":
-        step_4_failed = 1
-        tb.logger.error("simulation time %d ns : step 4.23 result: Failed\nError counter : %s\n\n\n", get_sim_time(units = "ns"), error_cnt)
-    else:
-        tb.logger.info("simulation time %d ns : step 4.23 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
+        tempo = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", invert_polarity = 1))
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    #LaneReset with Lane_Configurator
-    await tb.masters[0].init_run("stimuli/axi/Lane_reset.json")
-
-    #Wait end of phy reset
-    tb.logger.info("sim_time %d ns: Wait PHY reset completion", get_sim_time(units = 'ns') )
-    await RisingEdge(tb.dut.spacefibre_instance.inst_phy_plus_lane.RST_TX_DONE)
-    tb.logger.info("sim_time %d ns: Reset PHY completed", get_sim_time(units = 'ns') )
-
-    #Wait to go to Disabled
-    await Timer(2, units = "us")
-
-    #Enable LaneStart and wait to be in Started state
-    Data_read_lane_config_parameters.data = bytearray([0x01,0x00,0x00,0x00])
-    
-    not_started = 1
-    time_out = 0
-    await tb.masters[0].write_data(Data_read_lane_config_parameters)
-    while not_started==1 and time_out < 100:
+        #Check that Lane initialisatiion FSM is in Active State
         await tb.masters[0].read_data(Data_read_lane_config_status)
-        if format(Data_read_lane_config_status.data[0], '0>8b')[4:8] == STARTED:
-            not_started = 0
-        time_out += 1
-    
-    #Set Lane initialisation FSM from Started to Active state
+        if format(Data_read_lane_config_status.data[0], '0>8b')[4:8] != ACTIVE or format(Data_read_lane_config_status.data[2], '0>8b')[1] != "1":
+            step_4_failed = 1
+            tb.logger.error("simulation time %d ns : step 4.22 result: Failed\n\n\n", get_sim_time(units = "ns"))
+        else:
+            tb.logger.info("simulation time %d ns : step 4.22 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
 
-    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/Started_to_Connecting.dat", invert_polarity = 0)
-
-    Connecting_to_Connected = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/Connecting_to_Connected.dat", invert_polarity = 0))
-
-    await tb.masters[0].read_data(Data_read_lane_config_status)
-
-    if format(Data_read_lane_config_status.data[0], '0>8b')[4:8] != CONNECTING or format(Data_read_lane_config_status.data[2], '0>8b')[0] != "0":
-        step_4_failed = 1
-        tb.logger.error("simulation time %d ns : step 4.24 result: Failed\n\n\n", get_sim_time(units = "ns"))
-    else:
-        tb.logger.info("simulation time %d ns : step 4.24 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
-    
-    await Connecting_to_Connected
+        await tempo
 
 
+        #Data_lane control word reception
 
-    Connected_to_Active = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/Connected_to_Active.dat", invert_polarity = 0))
-
-    await tb.masters[0].read_data(Data_read_lane_config_status)
-
-    if format(Data_read_lane_config_status.data[0], '0>8b')[4:8] != CONNECTED or format(Data_read_lane_config_status.data[2], '0>8b')[0] != "0":
-        step_4_failed = 1
-        tb.logger.error("simulation time %d ns : step 4.25 result: Failed\n\n\n", get_sim_time(units = "ns"))
-    else:
-        tb.logger.info("simulation time %d ns : step 4.25 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
-    
-    await Connected_to_Active
-
-
-    tempo = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", invert_polarity = 0))
-
-    #Check that Lane initialisatiion FSM is in Active State
-    await tb.masters[0].read_data(Data_read_lane_config_status)
-    if format(Data_read_lane_config_status.data[0], '0>8b')[4:8] != ACTIVE or format(Data_read_lane_config_status.data[2], '0>8b')[0] != "0":
-        step_4_failed = 1
-        tb.logger.error("simulation time %d ns : step 4.26 result: Failed\n\n\n", get_sim_time(units = "ns"))
-    else:
-        tb.logger.info("simulation time %d ns : step 4.26 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
-
-    await tempo
-
-    
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    #Incremental data generation
-
-    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
-
-    #Configure Lane_Analizer
-    Data_lane_ana_config.data = bytearray( [0x84,0x20,0x00,0x00])
-    await tb.masters[2].write_data(Data_lane_ana_config)
-
-    #Seed of Lane_Analyzer
-    Data_lane_ana_seed.data = bytearray( [0x00,0x01,0x00,0x00])
-    await tb.masters[2].write_data(Data_lane_ana_seed)
-
-    #Start Test
-    Data_lane_ana_control.data = bytearray( [0x01,0x00,0x00,0x00])
-    await tb.masters[2].write_data(Data_lane_ana_control)
-
-    await stimuli
-
-    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/255_incremental_data_1_frame.dat", file_format = 16, invert_polarity = 0)
-    
-    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
-
-    #Pull until Test End
-    error_cnt = await wait_end_test(tb)
-
-    await stimuli
-
-    if error_cnt != "00000000":
-        step_4_failed = 1
-        tb.logger.error("simulation time %d ns : step 4.27 result: Failed\nError counter : %d\n\n\n", get_sim_time(units = "ns"), error_cnt)
-    else:
-        tb.logger.info("simulation time %d ns : step 4.27 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
-
-
-
-    #PRBS data generation
-
-    for seed in range(16):
-        stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+        
+        stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16, invert_polarity = 1))
 
         #Configure Lane_Analizer
-        Data_lane_ana_config.data = bytearray( [0x9F,0x20,0x00,0x01])
+        Data_lane_ana_config.data = bytearray( [0x00,0x00,0x00,0x02])
         await tb.masters[2].write_data(Data_lane_ana_config)
-        
+
         #Seed of Lane_Analyzer
-        Data_lane_ana_seed.data = bytearray( [0x2A+seed,0x00,0x00,0x00])
+        Data_lane_ana_seed.data = bytearray( [0x2D,0x00,0x00,0x00])
         await tb.masters[2].write_data(Data_lane_ana_seed)
-        
+
         #Start Test
         Data_lane_ana_control.data = bytearray( [0x01,0x00,0x00,0x00])
         await tb.masters[2].write_data(Data_lane_ana_control)
 
         await stimuli
 
-        logfile = "reference/spacefibre_serial/16384_PRBS_data_0x1F_frame_" + str(seed) + ".dat"
 
-        await tb.spacefibre_random_generator.write_random_inputs(logfile,
-                                                                        frame_number = 0x1F,
-                                                                        frame_size = 0x100,
-                                                                        seed = 0x00_00_00_2A+seed,
-                                                                        invert_polarity = 0)
+        await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/Data_Link_control_word.dat", file_format = 16, invert_polarity = 1)
+
+        stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16, invert_polarity = 1))
+            
+        #Pull until Test End
+        error_cnt = await wait_end_test(tb)
+
+        await stimuli
+        
+        if error_cnt != "00000000":
+            step_4_failed = 1
+            tb.logger.error("simulation time %d ns : step 4.23 result: Failed\nError counter : %s\n\n\n", get_sim_time(units = "ns"), error_cnt)
+        else:
+            tb.logger.info("simulation time %d ns : step 4.23 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        #LaneReset with Lane_Configurator
+        await tb.masters[0].init_run("stimuli/axi/Lane_reset.json")
+
+        #Wait end of phy reset
+        tb.logger.info("sim_time %d ns: Wait PHY reset completion", get_sim_time(units = 'ns') )
+        await RisingEdge(tb.dut.spacefibre_instance.inst_phy_plus_lane.RST_TX_DONE)
+        tb.logger.info("sim_time %d ns: Reset PHY completed", get_sim_time(units = 'ns') )
+
+        #Wait to go to Disabled
+        await Timer(2, units = "us")
+
+        #Enable LaneStart and wait to be in Started state
+        Data_read_lane_config_parameters.data = bytearray([0x01,0x00,0x00,0x00])
+        
+        not_started = 1
+        time_out = 0
+        await tb.masters[0].write_data(Data_read_lane_config_parameters)
+        while not_started==1 and time_out < 100:
+            await tb.masters[0].read_data(Data_read_lane_config_status)
+            if format(Data_read_lane_config_status.data[0], '0>8b')[4:8] == STARTED:
+                not_started = 0
+            time_out += 1
+        
+        #Set Lane initialisation FSM from Started to Active state
+
+        await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/Started_to_Connecting.dat", invert_polarity = 0)
+
+        Connecting_to_Connected = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/Connecting_to_Connected.dat", invert_polarity = 0))
+
+        await tb.masters[0].read_data(Data_read_lane_config_status)
+
+        if format(Data_read_lane_config_status.data[0], '0>8b')[4:8] != CONNECTING or format(Data_read_lane_config_status.data[2], '0>8b')[0] != "0":
+            step_4_failed = 1
+            tb.logger.error("simulation time %d ns : step 4.24 result: Failed\n\n\n", get_sim_time(units = "ns"))
+        else:
+            tb.logger.info("simulation time %d ns : step 4.24 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
+        
+        await Connecting_to_Connected
+
+
+
+        Connected_to_Active = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/Connected_to_Active.dat", invert_polarity = 0))
+
+        await tb.masters[0].read_data(Data_read_lane_config_status)
+
+        if format(Data_read_lane_config_status.data[0], '0>8b')[4:8] != CONNECTED or format(Data_read_lane_config_status.data[2], '0>8b')[0] != "0":
+            step_4_failed = 1
+            tb.logger.error("simulation time %d ns : step 4.25 result: Failed\n\n\n", get_sim_time(units = "ns"))
+        else:
+            tb.logger.info("simulation time %d ns : step 4.25 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
+        
+        await Connected_to_Active
+
+
+        tempo = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", invert_polarity = 0))
+
+        #Check that Lane initialisatiion FSM is in Active State
+        await tb.masters[0].read_data(Data_read_lane_config_status)
+        if format(Data_read_lane_config_status.data[0], '0>8b')[4:8] != ACTIVE or format(Data_read_lane_config_status.data[2], '0>8b')[0] != "0":
+            step_4_failed = 1
+            tb.logger.error("simulation time %d ns : step 4.26 result: Failed\n\n\n", get_sim_time(units = "ns"))
+        else:
+            tb.logger.info("simulation time %d ns : step 4.26 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
+
+        await tempo
+
+        
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        #Incremental data generation
+
+        stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+
+        #Configure Lane_Analizer
+        Data_lane_ana_config.data = bytearray( [0x84,0x20,0x00,0x00])
+        await tb.masters[2].write_data(Data_lane_ana_config)
+
+        #Seed of Lane_Analyzer
+        Data_lane_ana_seed.data = bytearray( [0x00,0x01,0x00,0x00])
+        await tb.masters[2].write_data(Data_lane_ana_seed)
+
+        #Start Test
+        Data_lane_ana_control.data = bytearray( [0x01,0x00,0x00,0x00])
+        await tb.masters[2].write_data(Data_lane_ana_control)
+
+        await stimuli
+
+        await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/255_incremental_data_1_frame.dat", file_format = 16, invert_polarity = 0)
         
         stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
-        
+
         #Pull until Test End
         error_cnt = await wait_end_test(tb)
 
@@ -1888,55 +2202,97 @@ async def cocotb_run(dut):
 
         if error_cnt != "00000000":
             step_4_failed = 1
-            tb.logger.error("simulation time %d ns : step 4.%d result: Failed\nError counter : %d\n\n\n", get_sim_time(units = "ns"), 28 + seed, error_cnt)
+            tb.logger.error("simulation time %d ns : step 4.27 result: Failed\nError counter : %d\n\n\n", get_sim_time(units = "ns"), error_cnt)
         else:
-            tb.logger.info("simulation time %d ns : step 4.%d result: Pass\n\n\n\n", get_sim_time(units = "ns"), 28 + seed) 
- 
+            tb.logger.info("simulation time %d ns : step 4.27 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
 
 
 
-    #Data_lane control word reception
+        #PRBS data generation
 
+        for seed in range(16):
+            stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
 
-    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+            #Configure Lane_Analizer
+            Data_lane_ana_config.data = bytearray( [0x9F,0x20,0x00,0x01])
+            await tb.masters[2].write_data(Data_lane_ana_config)
+            
+            #Seed of Lane_Analyzer
+            Data_lane_ana_seed.data = bytearray( [0x2A+seed,0x00,0x00,0x00])
+            await tb.masters[2].write_data(Data_lane_ana_seed)
+            
+            #Start Test
+            Data_lane_ana_control.data = bytearray( [0x01,0x00,0x00,0x00])
+            await tb.masters[2].write_data(Data_lane_ana_control)
 
-    #Configure Lane_Analizer
-    Data_lane_ana_config.data = bytearray( [0x00,0x00,0x00,0x02])
-    await tb.masters[2].write_data(Data_lane_ana_config)
+            await stimuli
 
-    #Seed of Lane_Analyzer
-    Data_lane_ana_seed.data = bytearray( [0x2D,0x00,0x00,0x00])
-    await tb.masters[2].write_data(Data_lane_ana_seed)
+            logfile = "reference/spacefibre_serial/16384_PRBS_data_0x1F_frame_" + str(seed) + ".dat"
 
-    #Start Test
-    Data_lane_ana_control.data = bytearray( [0x01,0x00,0x00,0x00])
-    await tb.masters[2].write_data(Data_lane_ana_control)
+            await tb.spacefibre_random_generator.write_random_inputs(logfile,
+                                                                            frame_number = 0x1F,
+                                                                            frame_size = 0x100,
+                                                                            seed = 0x00_00_00_2A+seed,
+                                                                            invert_polarity = 0)
+            
+            stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+            
+            #Pull until Test End
+            error_cnt = await wait_end_test(tb)
 
-    await stimuli
+            await stimuli
+
+            if error_cnt != "00000000":
+                step_4_failed = 1
+                tb.logger.error("simulation time %d ns : step 4.%d result: Failed\nError counter : %d\n\n\n", get_sim_time(units = "ns"), 28 + seed, error_cnt)
+            else:
+                tb.logger.info("simulation time %d ns : step 4.%d result: Pass\n\n\n\n", get_sim_time(units = "ns"), 28 + seed) 
     
-    await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/Data_Link_control_word.dat", file_format = 16)
-
-    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
-
-    #Pull until Test End
-    error_cnt = await wait_end_test(tb)
-
-    await stimuli
-    
-    if error_cnt != "00000000":
-        step_4_failed = 1
-        tb.logger.error("simulation time %d ns : step 4.44 result: Failed\nError counter : %d\n\n\n", get_sim_time(units = "ns"), error_cnt)
-    else:
-        tb.logger.info("simulation time %d ns : step 4.44 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
 
 
 
+        #Data_lane control word reception
 
-    if step_4_failed == 0:
-        tb.logger.info("simulation time %d ns : step 4 result: Pass")
-    else:
-        test_failed = 1
-        tb.logger.error("simulation time %d ns : step 4 result: Failed")
+
+        stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+
+        #Configure Lane_Analizer
+        Data_lane_ana_config.data = bytearray( [0x00,0x00,0x00,0x02])
+        await tb.masters[2].write_data(Data_lane_ana_config)
+
+        #Seed of Lane_Analyzer
+        Data_lane_ana_seed.data = bytearray( [0x2D,0x00,0x00,0x00])
+        await tb.masters[2].write_data(Data_lane_ana_seed)
+
+        #Start Test
+        Data_lane_ana_control.data = bytearray( [0x01,0x00,0x00,0x00])
+        await tb.masters[2].write_data(Data_lane_ana_control)
+
+        await stimuli
+        
+        await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/Data_Link_control_word.dat", file_format = 16)
+
+        stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+
+        #Pull until Test End
+        error_cnt = await wait_end_test(tb)
+
+        await stimuli
+        
+        if error_cnt != "00000000":
+            step_4_failed = 1
+            tb.logger.error("simulation time %d ns : step 4.44 result: Failed\nError counter : %d\n\n\n", get_sim_time(units = "ns"), error_cnt)
+        else:
+            tb.logger.info("simulation time %d ns : step 4.44 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
+
+
+
+
+        if step_4_failed == 0:
+            tb.logger.info("simulation time %d ns : step 4 result: Pass")
+        else:
+            test_failed = 1
+            tb.logger.error("simulation time %d ns : step 4 result: Failed")
 
 
 
@@ -1965,10 +2321,11 @@ async def cocotb_run(dut):
     else:
         tb.logger.error("simulation time %d ns : step 3 result: Failed", get_sim_time(units="ns"))
 
-    if step_4_failed == 0:
-        tb.logger.info("simulation time %d ns : step 4 result: Pass",get_sim_time(units="ns"))
-    else:
-        tb.logger.error("simulation time %d ns : step 4 result: Failed", get_sim_time(units="ns"))
+    if target == "VERSAL":
+        if step_4_failed == 0:
+            tb.logger.info("simulation time %d ns : step 4 result: Pass",get_sim_time(units="ns"))
+        else:
+            tb.logger.error("simulation time %d ns : step 4 result: Failed", get_sim_time(units="ns"))
 
     if test_failed == 1:
         raise TestFailure
