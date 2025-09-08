@@ -787,7 +787,7 @@ async def cocotb_run(dut):
 
 
     
-    if target=="NGULTRA": 
+    if target=="NG_ULTRA": 
 
         await tb.masters[2].read_data(Data_lane_ana_status)
         error_cnt_1 = format(Data_lane_ana_status.data[1], '0>8b')[6:8] + format(Data_lane_ana_status.data[0], '0>8b')[0:6]
@@ -1255,7 +1255,7 @@ async def cocotb_run(dut):
 
 
     #Specific test for NGULTRA 64b datapath width lane layer structure 
-    if target == "NGULTRA" : 
+    if target == "NG_ULTRA" : 
 
         #RXERR word reception
 

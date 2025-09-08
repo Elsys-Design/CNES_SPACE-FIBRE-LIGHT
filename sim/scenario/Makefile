@@ -7,18 +7,14 @@ endif
 ifeq (, $(HARDWARE_TARGET))
     $(error ******* please set HARDWARE_TARGET variable ********)
 endif
-
 path_to_root_dir=$(SPACEFIBRELIGHT_ROOT_PATH)
 
 #this make file is for configuration 1
 TOPLEVEL_LANG = vhdl
 
-ifeq ("NG_ULTRA", $(HARDWARE_TARGET))
-TOPLEVEL = configuration_2_bench_nx
-endif
-ifeq ("VERSAL", $(HARDWARE_TARGET))
+
 TOPLEVEL = configuration_2_bench
-endif
+
 
 #select module to simulate based on providede variable
 export MODULE = "$\
@@ -42,7 +38,7 @@ export RANDOM_SEED = 123456789
 #Add VHDL sources
 VHDL_SOURCES =  $(path_to_root_dir)/sim/benches/common/pkg_model.vhd
 VHDL_SOURCES += $(path_to_root_dir)/src/ip_spacefibre_light_top/reset_gen.vhd
-VHDL_SOURCES += $(path_to_root_dir)/src/ip_spacefibre_light_top/spacefibre_light_top.vhd
+VHDL_SOURCES += $(path_to_root_dir)/src/ip_spacefibre_light_top/spacefibre_light_top_nano.vhd
 VHDL_SOURCES += $(path_to_root_dir)/sim/models/lane/resync_double.vhd
 VHDL_SOURCES += $(path_to_root_dir)/sim/models/data_link/data_link_analyzer/data_link_analyzer.vhd
 VHDL_SOURCES += $(path_to_root_dir)/sim/models/data_link/data_link_configurator/data_link_configurator.vhd
@@ -50,18 +46,19 @@ VHDL_SOURCES += $(path_to_root_dir)/sim/models/data_link/data_link_generator/dat
 VHDL_SOURCES += $(path_to_root_dir)/sim/models/lane/lane_analyzer/lane_analyzer.vhd
 VHDL_SOURCES += $(path_to_root_dir)/sim/models/lane/lane_generator/lane_generator.vhd
 VHDL_SOURCES += $(path_to_root_dir)/sim/benches/configuration_2_bench/configuration_2_bench.vhd
-VHDL_SOURCES += $(path_to_root_dir)/sim/benches/configuration_2_bench/configuration_2_bench_nx.vhd
 
 SCRIPT_FILE = ../compile_sim_lib.tcl
 
 COCOTB_HDL_TIMEPRECISION = 1fs
 
-ifeq ("NG_ULTRA", $(HARDWARE_TARGET))
+ifeq (NG_ULTRA, $(HARDWARE_TARGET))
+$(info ******* HARDWARE_TARGET variable is NG_ULTRA important ********)
 COMPILE_ARGS_VLOG = -l questa_compile_verilog_log.dat 
-COMPILE_ARGS_VCOM = -explicit -l questa_vhdl_compile_log.dat
-SIM_ARGS = -cover -L work -L sim_build/work -L xpm -L unisim -L secureip -L commun -L phy_plus_lane_lib -L phy_plus_lane_64_lib -L interlayer_lib -L data_link_lib -GTARGET="NGULTRA" -l questa_simulation_log.dat -voptargs="+acc" -suppress 14408 -suppress 16154 -do wave.do $(EXTRA_VSIM_CMD) unisim.glbl
+COMPILE_ARGS_VCOM = -2008 -explicit -l questa_vhdl_compile_log.dat
+SIM_ARGS = -cover -L work -L sim_build/work -L xpm -L unisim -L secureip -L commun -L phy_plus_lane_lib -L phy_plus_lane_64_lib -L interlayer_lib -L data_link_lib -L nx -GTARGET="NG_ULTRA" -l questa_simulation_log.dat -voptargs="+acc" -suppress 14408 -suppress 16154 -do wave.do $(EXTRA_VSIM_CMD) unisim.glbl
 endif
-ifeq ("VERSAL", $(HARDWARE_TARGET))
+ifeq (VERSAL, $(HARDWARE_TARGET))
+$(info ******* HARDWARE_TARGET variable is VERSAL ********)
 COMPILE_ARGS_VLOG = -l questa_compile_verilog_log.dat 
 COMPILE_ARGS_VCOM = -explicit -l questa_vhdl_compile_log.dat
 SIM_ARGS = -cover -L work -L sim_build/work -L xpm -L unisim -L secureip -L commun -L phy_plus_lane_lib -L phy_plus_lane_64_lib -L interlayer_lib -L data_link_lib -GTARGET="VERSAL" -l questa_simulation_log.dat -voptargs="+acc" -suppress 14408 -suppress 16154 -do wave.do $(EXTRA_VSIM_CMD) unisim.glbl
