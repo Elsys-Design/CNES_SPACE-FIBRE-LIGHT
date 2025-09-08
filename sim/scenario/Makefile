@@ -52,16 +52,16 @@ SCRIPT_FILE = ../compile_sim_lib.tcl
 COCOTB_HDL_TIMEPRECISION = 1fs
 
 ifeq (NG_ULTRA, $(HARDWARE_TARGET))
-$(info ******* HARDWARE_TARGET variable is NG_ULTRA important ********)
+$(info ******* HARDWARE_TARGET variable is NG_ULTRA ********)
 COMPILE_ARGS_VLOG = -l questa_compile_verilog_log.dat 
 COMPILE_ARGS_VCOM = -2008 -explicit -l questa_vhdl_compile_log.dat
-SIM_ARGS = -cover -L work -L sim_build/work -L xpm -L unisim -L secureip -L commun -L phy_plus_lane_lib -L phy_plus_lane_64_lib -L interlayer_lib -L data_link_lib -L nx -GTARGET="NG_ULTRA" -l questa_simulation_log.dat -voptargs="+acc" -suppress 14408 -suppress 16154 -do wave.do $(EXTRA_VSIM_CMD) unisim.glbl
+SIM_ARGS = -cover -L work -L sim_build/work -L commun -L phy_plus_lane_lib -L phy_plus_lane_64_lib -L interlayer_lib -L data_link_lib -L nx -GG_TARGET_TOP="NG_ULTRA" -l questa_simulation_log.dat -voptargs="+acc" -suppress 14408 -suppress 16154 -do wave.do $(EXTRA_VSIM_CMD)
 endif
 ifeq (VERSAL, $(HARDWARE_TARGET))
 $(info ******* HARDWARE_TARGET variable is VERSAL ********)
 COMPILE_ARGS_VLOG = -l questa_compile_verilog_log.dat 
 COMPILE_ARGS_VCOM = -explicit -l questa_vhdl_compile_log.dat
-SIM_ARGS = -cover -L work -L sim_build/work -L xpm -L unisim -L secureip -L commun -L phy_plus_lane_lib -L phy_plus_lane_64_lib -L interlayer_lib -L data_link_lib -GTARGET="VERSAL" -l questa_simulation_log.dat -voptargs="+acc" -suppress 14408 -suppress 16154 -do wave.do $(EXTRA_VSIM_CMD) unisim.glbl
+SIM_ARGS = -cover -L work -L sim_build/work -L xpm -L unisim -L secureip -L commun -L phy_plus_lane_lib -L phy_plus_lane_64_lib -L interlayer_lib -L data_link_lib -GG_TARGET_TOP="VERSAL" -l questa_simulation_log.dat -voptargs="+acc" -suppress 14408 -suppress 16154 -do wave.do $(EXTRA_VSIM_CMD) unisim.glbl
 endif
 
 

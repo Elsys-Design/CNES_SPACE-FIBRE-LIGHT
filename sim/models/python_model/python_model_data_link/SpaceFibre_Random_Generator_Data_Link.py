@@ -41,8 +41,89 @@ class SpaceFibre_Random_Generator:
         self.dut_Tx_disparity = dut_Tx_disparity
         self.logger = logger
         self.time_per_input = period_ps
+        self.time_per_output = period_ps
 
-    
+
+    async def read_from_Tx(self, previous_buffer = ""):
+        """
+        Read data received on the Tx port of the SpaceFibreLight IP encoded
+        on 10bits and return it after deserializing and deencoding it to 8bits.
+        """
+        time_per_output = self.time_per_output
+        data = previous_buffer
+        realigned = 0
+        variation = random.randint(0, 2)
+        if variation > 0:
+            variation = 1
+        for t in range(10):
+            if not self.dut.TX_POS.value.binstr == "Z" and self.dut.TX_NEG.value.binstr == "Z":
+                if not self.dut.TX_POS.value == (self.dut.TX_NEG.value^1):
+                    self.logger.error("sim_time %d ns: Tx+ and Tx- are not of opposite value", get_sim_time(units = 'ns'))
+            # data = self.dut.TX_POS.value.binstr + data
+            data = data + self.dut.TX_POS.value.binstr
+
+
+            if len(data) > 10:
+                data = data[1:]
+                # data = data[:-1]
+            await Timer(time_per_output + variation, units="fs")
+
+            #realignement procedure
+            pos_comma_index = data.find("0011111")
+            neg_comma_index = data.find("1100000")
+            
+            if neg_comma_index == 0 and len(data) >= 10:
+                realigned = 1
+                break  
+            if pos_comma_index == 0 and len(data) >= 10:
+                realigned = 1
+                break  
+
+        self.logger.debug("sim_time %d ns: Read result before decoder is %s", get_sim_time(units = "ns"), data)
+        if not "Z" in data:
+            decoded_data = self.decode(data)
+            self.logger.debug("sim_time %d ns: Read result after decoder is %s", get_sim_time(units = "ns"), decoded_data)
+        else :
+            self.logger.debug("sim_time %d ns: No decoder since High Impedance detected", get_sim_time(units = "ns"))
+            decoded_data = ("00000000", 1)
+        return decoded_data, data, realigned
+
+
+    async def monitor_FCT(self, number_of_word):
+        """check for number_of_word period of time if an FCT is received, and modify the FCT counters accordingly"""
+        data_received = []
+        k_encoding_received = []
+        buffer = ""
+        for i in range(number_of_word):
+            word = ""
+            word_bin = ""
+            word_10b = ""
+            k_encoded_word = ""
+            j = 0
+            word_realigned = 0
+            buffer = previous_buffer
+            while j < 4:
+                (data, k_encoded), buffer, realigned = await self.read_from_Tx(previous_buffer = buffer)
+                
+                if realigned == 1 and j != 0:
+                    word = data
+                    word_bin = data
+                    word_10b = buffer
+                    k_encoded_word = str(k_encoded)
+                    j = 0
+                else:
+                    word = data + word
+                    word_bin = data + "_" + word_bin
+                    word_10b = buffer + "_" + word_10b
+                    k_encoded_word = str(k_encoded) + k_encoded_word
+                if realigned == 1 :
+                    word_realigned = 1
+                j += 1
+            previous_buffer = buffer
+            output_file_hexa.write((f"{int(word, base = 2):0>8X}" + ";" + k_encoded_word + ";" + str(time_per_output) + ";" + str(word_realigned) + "\n"))
+
+
+
     def invert(self, encoded_data):
         """
         Take in input a encoded data as a string of bits of 0 or 1, and convert them to a list of integer,

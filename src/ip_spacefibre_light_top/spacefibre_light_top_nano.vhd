@@ -902,7 +902,7 @@ begin
       );
    
    elsif G_TARGET = "NG_ULTRA" generate
-      inst_phy_plus_lane_64b : phy_plus_lane_64b
+      inst_phy_plus_lane : phy_plus_lane_64b
       port map(
          RST_N                            => RST_N,
          CLK                              => CLK,

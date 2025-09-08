@@ -32,7 +32,7 @@ from SpaceFibre_Random_Generator import SpaceFibre_Random_Generator
 from SpaceFibre_Sink import SpaceFibre_Sink
 from SpaceFibre_Loopback import SpaceFibre_Loopback
 
-target = os.environ.get("HARDWARE_TARGET")
+target = os.environ.get('HARDWARE_TARGET')
 
 #Frequency definition
 if target == "VERSAL" :
@@ -48,7 +48,7 @@ if target == "VERSAL" :
 
     SpaceFibre_GTY_period_ps_int = int(1_000_000_000_000_000/100_000_000)
 
-elif target == "NGULTRA" :
+elif target == "NG_ULTRA" :
     SpaceFibre_IP_freq = 78_125_000
     SpaceFibre_serial_port_freq = 6_250_000_000
 
@@ -60,6 +60,8 @@ elif target == "NGULTRA" :
     SpaceFibre_serial_port_period_ps_int = int(1_000_000_000_000_000/6_250_000_000)
 
     SpaceFibre_GTY_period_ps_int = int(1_000_000_000_000_000/156_250_000)
+else :
+    print ("\n\nno valid hardware target\n\n target specified is ", target, "\n\n")
 
 #Lane initialisation state machine state encoding
 CLEARLINE="0000"
@@ -90,10 +92,10 @@ class TB:
         self.clock = Clock(dut.CLK, SpaceFibre_IP_period_ps_int, units = "fs")
         cocotb.start_soon(self.clock.start(start_high = False))
 
-        self.clock_gty_p = Clock(dut.CLK_REF_P, SpaceFibre_GTY_period_ps_int, units = "fs")
+        self.clock_gty_p = Clock(dut.CLK_HSSL_P, SpaceFibre_GTY_period_ps_int, units = "fs")
         cocotb.start_soon(self.clock_gty_p.start(start_high = False))
 
-        self.clock_gty_n = Clock(dut.CLK_REF_N, SpaceFibre_GTY_period_ps_int, units = "fs")
+        self.clock_gty_n = Clock(dut.CLK_HSSL_N, SpaceFibre_GTY_period_ps_int, units = "fs")
         cocotb.start_soon(self.clock_gty_n.start(start_high = False))
 
         #building Axi, AxiLite and AxiStream environments
