@@ -916,7 +916,7 @@ begin
   ------------------------------------------------------------------------------
   -- Instance of ppl_64_init_hssl module
   ------------------------------------------------------------------------------
-  reset_n <= RST_N or not(LANE_RESET) or not(lane_reset_dl_i);
+  reset_n <= RST_N and not(LANE_RESET) and not(lane_reset_dl_i);
 
   inst_ppl_64_init_hssl: ppl_64_init_hssl
     port map (

@@ -128,7 +128,7 @@ class TB:
         """
         self.logger.info("sim_time %d ns: Reset is active for 10 ns", get_sim_time(units = 'ns') )
         self.dut.RST_N.value = 0
-        await Timer(10, units="ns")
+        await Timer(40, units="ns")
         self.dut.RST_N.value = 1
 
 
