@@ -93,7 +93,7 @@ class TB:
         cocotb.start_soon(self.clock.start(start_high = False))
 
         self.clock_gty_p = Clock(dut.CLK_HSSL_P, SpaceFibre_GTY_period_ps_int, units = "fs")
-        cocotb.start_soon(self.clock_gty_p.start(start_high = False))
+        cocotb.start_soon(self.clock_gty_p.start(start_high = True))
 
         self.clock_gty_n = Clock(dut.CLK_HSSL_N, SpaceFibre_GTY_period_ps_int, units = "fs")
         cocotb.start_soon(self.clock_gty_n.start(start_high = False))

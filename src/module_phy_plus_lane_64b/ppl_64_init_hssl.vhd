@@ -208,7 +208,8 @@ begin
   if RST_N ='0' then
     HSSL_RESET_DONE_PLIH <= '0';
   elsif rising_edge(CLK)  then
-    if tx_pcs_started ='1' and rx_pll_pma_started ='1' then -- TX PCS rst and RX PCS rst are done
+    -- if tx_pcs_started ='1' and rx_pll_pma_started ='1' then -- TX PCS rst and RX PCS rst are done
+    if pma_pll_seq_end = '1' then -- TX PCS rst and RX PCS rst are done
       HSSL_RESET_DONE_PLIH <= '1';
     else
       HSSL_RESET_DONE_PLIH <= '0';
