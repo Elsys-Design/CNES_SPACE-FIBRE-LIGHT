@@ -42,13 +42,15 @@ entity ppl_64_word_alignment is
     DISPARITY_ERR_PLWA      : out std_logic_vector(C_K_CHAR_WIDTH-1 downto 0); --! Disparity error flags from PLWA
     RX_WORD_IS_ALIGNED_PLWA : out std_logic;                                   --! RX word is aligned from PLWA
     COMMA_DET_PLWA          : out std_logic_vector(C_K_CHAR_WIDTH-1 downto 0); --! Flag indicates that a comma is detected on the word receive from PLWA
+    LOSS_OF_SIGNAL_PLWA     : out  std_logic;                                  --! Loss of signal flag from PLWA
     -- HSSL IP interface
     DATA_RX_HSSL            : in  std_logic_vector(C_DATA_WIDTH-1 downto 0);   --! 64-bit data from HSSL IP
     VALID_K_CHARAC_HSSL     : in  std_logic_vector(C_K_CHAR_WIDTH-1 downto 0); --! 8-bit valid K character flags from HSSL IP
     INVALID_CHAR_HSSL       : in  std_logic_vector(C_K_CHAR_WIDTH-1 downto 0); --! Invalid character flags from HSSL IP
     DISPARITY_ERR_HSSL      : in  std_logic_vector(C_K_CHAR_WIDTH-1 downto 0); --! Disparity error flags from HSSL IP
     RX_WORD_IS_ALIGNED_HSSL : in  std_logic;                                   --! RX word is aligned from HSSL IP
-    COMMA_DET_HSSL          : in  std_logic_vector(C_K_CHAR_WIDTH-1 downto 0)  --! Flag indicates that a comma is detected on the word receive
+    COMMA_DET_HSSL          : in  std_logic_vector(C_K_CHAR_WIDTH-1 downto 0); --! Flag indicates that a comma is detected on the word receive
+    LOSS_OF_SIGNAL_HSSL     : in  std_logic                                    --! Loss of signal flag from HSSL IP
   );
 end ppl_64_word_alignment;
 
@@ -163,11 +165,13 @@ begin
       DISPARITY_ERR_PLWA      <= (others => '0');
       RX_WORD_IS_ALIGNED_PLWA <= '0';
       COMMA_DET_PLWA          <= (others => '0');
+      LOSS_OF_SIGNAL_PLWA     <= '0';
     elsif rising_edge(CLK) then
       INVALID_CHAR_PLWA       <= INVALID_CHAR_HSSL;
       DISPARITY_ERR_PLWA      <= DISPARITY_ERR_HSSL;
       RX_WORD_IS_ALIGNED_PLWA <= RX_WORD_IS_ALIGNED_HSSL;
       COMMA_DET_PLWA          <= COMMA_DET_HSSL;
+      LOSS_OF_SIGNAL_PLWA     <= LOSS_OF_SIGNAL_HSSL;
     end if;
   end process p_sync;
 

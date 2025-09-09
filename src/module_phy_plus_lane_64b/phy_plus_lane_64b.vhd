@@ -263,12 +263,14 @@ architecture rtl of phy_plus_lane_64b is
       DATA_TX_PLRSF            : in  std_logic_vector(C_DATA_WIDTH-1 downto 0);   --! 64-bit Data
       VALID_K_CARAC_PLRSF      : in  std_logic_vector(C_K_CHAR_WIDTH-1 downto 0); --! 8-bit Valid K character
       DATA_RDY_PLRSF           : in  std_logic;                                   --! Data ready flag
+      LOSS_OF_SIGNAL_PLRSF     : in  std_logic;                                   --! Loss of signal flag from PLRSF
       -- ppl_64_skip_insertion (PLSI) interface
       WAIT_SEND_DATA_PLSI      : in  std_logic;                                   --! Wait send data signal for SKIP insertion
       -- ppl_64_lane_ctrl_word_detection (PLCWD) interface
       DATA_RX_PLPL             : out std_logic_vector(C_DATA_WIDTH-1 downto 0);   --! 64-bit Data
       VALID_K_CHARAC_PLPL      : out std_logic_vector(C_K_CHAR_WIDTH-1 downto 0); --! 8-bit Valid K character
       DATA_RDY_PLPL            : out std_logic;                                   --! Data ready flag
+      LOSS_OF_SIGNAL_PLPL      : out std_logic;                                   --! Loss of signal flag from PLPL 
       -- MIB interface
       PARALLEL_LOOPBACK_EN_MIB : in  std_logic                                    --! Enable or disable the parallel loopback
     );
@@ -382,6 +384,7 @@ architecture rtl of phy_plus_lane_64b is
       DATA_RX_PLPL                     : in  std_logic_vector(C_DATA_WIDTH-1 downto 0);    --! 64-bit data from ppl_64_parallel_loopback
       VALID_K_CHARAC_PLPL              : in  std_logic_vector(C_K_CHAR_WIDTH-1 downto 0);  --! 8-bit valid K character flags from ppl_64_parallel_loopback
       DATA_RDY_PLPL                    : in  std_logic;                                    --! Data valid flag from ppl_64_parallel_loopback
+      LOSS_OF_SIGNAL_PLPL              : in  std_logic;                                    --! Loss of signal flag from ppl_64_parallel_loopback 
       -- ppl_64_rx_detect_suppr (PLRDS) interface
       DATA_RX_PLCWD                    : out std_logic_vector(C_DATA_WIDTH-1 downto 0);    --! 64-bit data sent to Data-Link layer
       VALID_K_CHARAC_PLCWD             : out std_logic_vector(C_K_CHAR_WIDTH-1 downto 0);  --! 8-bit valid K character flags sent to Data-Link layer
@@ -399,6 +402,7 @@ architecture rtl of phy_plus_lane_64b is
       DATA_RX_PLRSF                    : out std_logic_vector(C_DATA_WIDTH-1  downto 0);   --! 64-bit data to lane_ctrl_word_detect
       VALID_K_CHARAC_PLRSF             : out std_logic_vector(C_K_CHAR_WIDTH-1  downto 0); --! 8-bit valid K character flags to lane_ctrl_word_detect
       DATA_RDY_PLRSF                   : out std_logic;                                    --! Data valid flag to lane_ctrl_word_detect
+      LOSS_OF_SIGNAL_PLRSF             : out  std_logic;                                   --! Loss of signal flag from PLRSF
       -- ppl_64_word_alignment (PLWA) interface
       DATA_RX_PLWA                     : in  std_logic_vector(C_DATA_WIDTH-1  downto 0);   --! 64-bit data from ppl_64_word_alignment
       VALID_K_CHARAC_PLWA              : in  std_logic_vector(C_K_CHAR_WIDTH-1  downto 0); --! 8-bit valid K character flags from ppl_64_word_alignment
@@ -406,6 +410,7 @@ architecture rtl of phy_plus_lane_64b is
       DISPARITY_ERR_PLWA               : in  std_logic_vector(C_K_CHAR_WIDTH-1  downto 0); --! Disparity error flags from ppl_64_word_alignment
       RX_WORD_IS_ALIGNED_PLWA          : in  std_logic;                                    --! RX word is aligned from ppl_64_word_alignment
       COMMA_DET_PLWA                   : in  std_logic_vector(C_K_CHAR_WIDTH-1  downto 0); --! Flag indicates that a comma is detected on the word received
+      LOSS_OF_SIGNAL_PLWA              : in  std_logic;                                    --! Loss of signal flag from PLWA
       -- PARAMETERS (MIB)
       LANE_RESET                       : in  std_logic                                     --! Asserts or de-asserts LaneReset for the lane
    );
@@ -423,13 +428,15 @@ architecture rtl of phy_plus_lane_64b is
       DISPARITY_ERR_PLWA      : out std_logic_vector(C_K_CHAR_WIDTH-1 downto 0); --! Disparity error flags from PLWA
       RX_WORD_IS_ALIGNED_PLWA : out std_logic;                                   --! RX word is aligned from PLWA
       COMMA_DET_PLWA          : out std_logic_vector(C_K_CHAR_WIDTH-1 downto 0); --! Flag indicates that a comma is detected on the word receive from PLWA
+      LOSS_OF_SIGNAL_PLWA     : out  std_logic;                                   --! Loss of signal flag from PLWA
       -- HSSL IP interface
       DATA_RX_HSSL            : in  std_logic_vector(C_DATA_WIDTH-1 downto 0);   --! 64-bit data from HSSL IP
       VALID_K_CHARAC_HSSL     : in  std_logic_vector(C_K_CHAR_WIDTH-1 downto 0); --! 8-bit valid K character flags from HSSL IP
       INVALID_CHAR_HSSL       : in  std_logic_vector(C_K_CHAR_WIDTH-1 downto 0); --! Invalid character flags from HSSL IP
       DISPARITY_ERR_HSSL      : in  std_logic_vector(C_K_CHAR_WIDTH-1 downto 0); --! Disparity error flags from HSSL IP
       RX_WORD_IS_ALIGNED_HSSL : in  std_logic;                                   --! RX word is aligned from HSSL IP
-      COMMA_DET_HSSL          : in  std_logic_vector(C_K_CHAR_WIDTH-1 downto 0)  --! Flag indicates that a comma is detected on the word receive
+      COMMA_DET_HSSL          : in  std_logic_vector(C_K_CHAR_WIDTH-1 downto 0);  --! Flag indicates that a comma is detected on the word receive
+      LOSS_OF_SIGNAL_HSSL     : in  std_logic                                    --! Loss of signal flag from HSSL IP
     );
   end component;
 
@@ -520,6 +527,7 @@ architecture rtl of phy_plus_lane_64b is
   signal data_rx_plpl                         : std_logic_vector(C_DATA_WIDTH-1 downto 00);
   signal valid_k_charac_plpl                  : std_logic_vector(C_K_CHAR_WIDTH-1 downto 00);
   signal data_rdy_plpl                        : std_logic;
+  signal loss_of_signal_plpl                  : std_logic;
   -------------- HSSL  ----------------------------------------
   -- HSSL instance
   signal hssl_clock_i                         : std_logic_vector(3 downto 0);
@@ -554,10 +562,12 @@ architecture rtl of phy_plus_lane_64b is
   signal disparity_err_plwa                   : std_logic_vector(C_K_CHAR_WIDTH-1  downto 0);
   signal rx_word_is_aligned_plwa              : std_logic;
   signal comma_det_plwa                       : std_logic_vector(C_K_CHAR_WIDTH-1 downto 0);
+  signal loss_of_signal_plwa                  : std_logic;  
   -- Internal signals from ppl_64_rx_sync_fsm
   signal data_rx_plrsf                        : std_logic_vector(C_DATA_WIDTH-1 downto 00);
   signal valid_k_charac_plrsf                 : std_logic_vector(C_K_CHAR_WIDTH-1  downto 00);
   signal data_rdy_plrsf                       : std_logic;
+  signal loss_of_signal_plrsf                 : std_logic;  
   -- Internal signals from from ppl_64_lane_ctrl_word_detect
   signal no_signal_plcwd                      : std_logic;
   signal rx_new_word_plcwd                    : std_logic_vector(1 downto 0);
@@ -829,12 +839,14 @@ begin
       DATA_TX_PLRSF            => data_rx_plrsf,
       VALID_K_CARAC_PLRSF      => valid_k_charac_plrsf,
       DATA_RDY_PLRSF           => data_rdy_plrsf,
+      LOSS_OF_SIGNAL_PLRSF     => loss_of_signal_plrsf,
       -- ppl_64_skip_insertion (PLSI) interface
       WAIT_SEND_DATA_PLSI      => wait_send_data_plsi,
       --ppl_64_lane_ctrl_word_detection (PLCWD) interface
       DATA_RX_PLPL             => data_rx_plpl,
       VALID_K_CHARAC_PLPL      => valid_k_charac_plpl,
       DATA_RDY_PLPL            => data_rdy_plpl,
+      LOSS_OF_SIGNAL_PLPL      => loss_of_signal_plpl,
       -- MIB interface
       PARALLEL_LOOPBACK_EN_MIB => parallel_loopback_en
     );
@@ -959,13 +971,15 @@ begin
       DISPARITY_ERR_PLWA      => disparity_err_plwa,
       RX_WORD_IS_ALIGNED_PLWA => rx_word_is_aligned_plwa,
       COMMA_DET_PLWA          => comma_det_plwa,
+      LOSS_OF_SIGNAL_PLWA     => loss_of_signal_plwa,
       -- HSSL IP interface
       DATA_RX_HSSL            => data_rx_hssl,
       VALID_K_CHARAC_HSSL     => valid_k_charac_hssl,
       INVALID_CHAR_HSSL       => invalid_char_hssl,
       DISPARITY_ERR_HSSL      => disparity_err_hssl,
       RX_WORD_IS_ALIGNED_HSSL => rx_word_is_aligned_hssl,
-      COMMA_DET_HSSL          => comma_det_hssl
+      COMMA_DET_HSSL          => comma_det_hssl,
+      LOSS_OF_SIGNAL_HSSL     => rx_pma_loss_of_signal_hssl
     );
   ------------------------------------------------------------------------------
   -- Instance of rx_sync_fsm module
@@ -980,6 +994,7 @@ begin
       DATA_RX_PLRSF           => data_rx_plrsf,
       VALID_K_CHARAC_PLRSF    => valid_k_charac_plrsf,
       DATA_RDY_PLRSF          => data_rdy_plrsf,
+      LOSS_OF_SIGNAL_PLRSF    => loss_of_signal_plrsf,
       -- ppl_64_word_alignment (PLWA) interface
       DATA_RX_PLWA            => data_rx_plwa,
       VALID_K_CHARAC_PLWA     => valid_k_charac_plwa,
@@ -987,6 +1002,7 @@ begin
       DISPARITY_ERR_PLWA      => disparity_err_plwa,
       RX_WORD_IS_ALIGNED_PLWA => rx_word_is_aligned_plwa,
       COMMA_DET_PLWA          => comma_det_plwa,
+      LOSS_OF_SIGNAL_PLWA     => loss_of_signal_plwa,
       -- PARAMETERS (MIB)
       LANE_RESET              => lane_reset
     );
@@ -1018,6 +1034,7 @@ begin
       DATA_RX_PLPL                     => data_rx_plpl,
       VALID_K_CHARAC_PLPL              => valid_k_charac_plpl,
       DATA_RDY_PLPL                    => data_rdy_plpl,
+      LOSS_OF_SIGNAL_PLPL              => loss_of_signal_plpl,
       -- ppl_64_rx_detect_suppr (PLRDS) interface
       DATA_RX_PLCWD                    => data_rx_plcwd,
       VALID_K_CHARAC_PLCWD             => valid_k_charac_plcwd,

@@ -53,6 +53,7 @@ entity ppl_64_lane_ctrl_word_detect is
     DATA_RX_PLPL                     : in  std_logic_vector(C_DATA_WIDTH-1 downto 0);    --! 64-bit data from ppl_64_parallel_loopback
     VALID_K_CHARAC_PLPL              : in  std_logic_vector(C_K_CHAR_WIDTH-1 downto 0);  --! 8-bit valid K character flags from ppl_64_parallel_loopback
     DATA_RDY_PLPL                    : in  std_logic;                                    --! Data valid flag from ppl_64_parallel_loopback
+    LOSS_OF_SIGNAL_PLPL              : in  std_logic;                                    --! Loss of signal flag from ppl_64_parallel_loopback 
     -- ppl_64_rx_detect_suppr (PLRDS) interface
     DATA_RX_PLCWD                    : out std_logic_vector(C_DATA_WIDTH-1 downto 0);    --! 64-bit data sent to Data-Link layer
     VALID_K_CHARAC_PLCWD             : out std_logic_vector(C_K_CHAR_WIDTH-1 downto 0);  --! 8-bit valid K character flags sent to Data-Link layer
@@ -325,7 +326,7 @@ CAPABILITY_PLCWD           <= capability_sw           & capability_fw;
       NO_SIGNAL_PLCWD   <= '0';
     elsif rising_edge(CLK) then
       if NO_SIGNAL_DETECTION_ENABLED_PLIF = '1' then
-        NO_SIGNAL_PLCWD   <= '1';
+        NO_SIGNAL_PLCWD   <= LOSS_OF_SIGNAL_PLPL;
       else
         NO_SIGNAL_PLCWD   <= '0';
       end if;

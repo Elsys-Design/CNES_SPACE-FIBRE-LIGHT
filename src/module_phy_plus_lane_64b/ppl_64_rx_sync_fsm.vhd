@@ -37,6 +37,7 @@ entity ppl_64_rx_sync_fsm is
     DATA_RX_PLRSF                    : out std_logic_vector(C_DATA_WIDTH-1  downto 0);   --! 64-bit data to lane_ctrl_word_detect
     VALID_K_CHARAC_PLRSF             : out std_logic_vector(C_K_CHAR_WIDTH-1  downto 0); --! 8-bit valid K character flags to lane_ctrl_word_detect
     DATA_RDY_PLRSF                   : out std_logic;                                    --! Data valid flag to lane_ctrl_word_detect
+    LOSS_OF_SIGNAL_PLRSF             : out  std_logic;                                   --! Loss of signal flag from PLRSF
     -- ppl_64_word_alignment (PLWA) interface
     DATA_RX_PLWA                     : in  std_logic_vector(C_DATA_WIDTH-1  downto 0);   --! 64-bit data from ppl_64_word_alignment
     VALID_K_CHARAC_PLWA              : in  std_logic_vector(C_K_CHAR_WIDTH-1  downto 0); --! 8-bit valid K character flags from ppl_64_word_alignment
@@ -44,6 +45,7 @@ entity ppl_64_rx_sync_fsm is
     DISPARITY_ERR_PLWA               : in  std_logic_vector(C_K_CHAR_WIDTH-1  downto 0); --! Disparity error flags from ppl_64_word_alignment
     RX_WORD_IS_ALIGNED_PLWA          : in  std_logic;                                    --! RX word is aligned from ppl_64_word_alignment
     COMMA_DET_PLWA                   : in  std_logic_vector(C_K_CHAR_WIDTH-1  downto 0); --! Flag indicates that a comma is detected on the word received
+    LOSS_OF_SIGNAL_PLWA              : in  std_logic;                                    --! Loss of signal flag from PLWA
     -- PARAMETERS (MIB)
     LANE_RESET                       : in  std_logic                                     --! Asserts or de-asserts LaneReset for the lane
   );
@@ -217,4 +219,18 @@ DATA_RDY_PLRSF       <= data_rdy_to_lcwd_i;
       end if;
     end if;
   end process p_rx_sync_action_on_state;
+
+  ---------------------------------------------------------
+  -- Process: p_loss_signal_sync
+  --!Loss of signal detection synchronization
+  ---------------------------------------------------------
+  p_loss_signal_sync : process(CLK,RST_N)
+  begin
+    if RST_N = '0' then
+      LOSS_OF_SIGNAL_PLRSF   <= '0';
+    elsif rising_edge(CLK) then
+      LOSS_OF_SIGNAL_PLRSF <= LOSS_OF_SIGNAL_PLWA;
+    end if;
+  end process p_loss_signal_sync;
+
 end architecture rtl;

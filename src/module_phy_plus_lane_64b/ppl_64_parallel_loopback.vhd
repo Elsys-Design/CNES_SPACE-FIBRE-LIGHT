@@ -41,12 +41,14 @@ entity ppl_64_parallel_loopback is
       DATA_TX_PLRSF            : in  std_logic_vector(C_DATA_WIDTH-1 downto 0);   --! 64-bit Data
       VALID_K_CARAC_PLRSF      : in  std_logic_vector(C_K_CHAR_WIDTH-1 downto 0); --! 8-bit Valid K character
       DATA_RDY_PLRSF           : in  std_logic;                                   --! Data ready flag
+      LOSS_OF_SIGNAL_PLRSF     : in  std_logic;                                   --! Loss of signal flag from PLRSF
       -- ppl_64_skip_insertion (PLSI) interface
       WAIT_SEND_DATA_PLSI      : in  std_logic;                                   --! Wait send data signal for SKIP insertion
       -- ppl_64_lane_ctrl_word_detection (PLCWD) interface
       DATA_RX_PLPL             : out std_logic_vector(C_DATA_WIDTH-1 downto 0);   --! 64-bit Data
       VALID_K_CHARAC_PLPL      : out std_logic_vector(C_K_CHAR_WIDTH-1 downto 0); --! 8-bit Valid K character
       DATA_RDY_PLPL            : out std_logic;                                   --! Data ready flag
+      LOSS_OF_SIGNAL_PLPL      : out std_logic;                                   --! Loss of signal flag from PLPL 
       -- MIB interface
       PARALLEL_LOOPBACK_EN_MIB : in  std_logic                                    --! Enable or disable the parallel loopback
     );
@@ -82,8 +84,8 @@ begin
   end process p_delay_wait_send_data;
 
   -- Allows a parallel loopback into the LANE layer
-  DATA_RX_PLPL        <= DATA_TX_PLCWI       when PARALLEL_LOOPBACK_EN_MIB = '1' else DATA_TX_PLRSF;
-  VALID_K_CHARAC_PLPL <= VALID_K_CARAC_PLCWI when PARALLEL_LOOPBACK_EN_MIB = '1' else VALID_K_CARAC_PLRSF;
+  DATA_RX_PLPL        <= DATA_TX_PLCWI                                    when PARALLEL_LOOPBACK_EN_MIB = '1' else DATA_TX_PLRSF;
+  VALID_K_CHARAC_PLPL <= VALID_K_CARAC_PLCWI                              when PARALLEL_LOOPBACK_EN_MIB = '1' else VALID_K_CARAC_PLRSF;
   DATA_RDY_PLPL       <= (DATA_RDY_PLCWI and not(wait_send_data_rrr) )    when PARALLEL_LOOPBACK_EN_MIB = '1' else DATA_RDY_PLRSF;
-
+  LOSS_OF_SIGNAL_PLPL <= '0'                                              when PARALLEL_LOOPBACK_EN_MIB = '1' else LOSS_OF_SIGNAL_PLRSF;
 end architecture rtl;
