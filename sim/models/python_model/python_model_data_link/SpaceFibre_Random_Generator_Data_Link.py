@@ -91,8 +91,7 @@ class SpaceFibre_Random_Generator:
 
     async def monitor_FCT(self, number_of_word):
         """check for number_of_word period of time if an FCT is received, and modify the FCT counters accordingly"""
-        data_received = []
-        k_encoding_received = []
+        data_received = ""
         buffer = ""
         for i in range(number_of_word):
             word = ""
@@ -120,7 +119,9 @@ class SpaceFibre_Random_Generator:
                     word_realigned = 1
                 j += 1
             previous_buffer = buffer
-            output_file_hexa.write((f"{int(word, base = 2):0>8X}" + ";" + k_encoded_word + ";" + str(time_per_output) + ";" + str(word_realigned) + "\n"))
+            data_received = f"{int(word, base = 2):0>8X}
+            if data_received[6:8] == "7C" and k_encoded_word == "0001":
+                
 
 
 
