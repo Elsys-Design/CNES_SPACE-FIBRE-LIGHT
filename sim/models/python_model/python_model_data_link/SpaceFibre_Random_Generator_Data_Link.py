@@ -119,8 +119,9 @@ class SpaceFibre_Random_Generator:
                     word_realigned = 1
                 j += 1
             previous_buffer = buffer
-            data_received = f"{int(word, base = 2):0>8X}
+            data_received = f"{int(word, base = 2):0>8X}"
             if data_received[6:8] == "7C" and k_encoded_word == "0001":
+                data_received = 1
                 
 
 

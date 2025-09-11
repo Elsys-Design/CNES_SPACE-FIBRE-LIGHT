@@ -89,6 +89,11 @@ begin
       VALID_K_CHARAC_TX_PLBCT <= VALID_K_CHARAC_TX_DL & buffer_k_char_4;
       NEW_DATA_TX_PLBCT       <= '1';
       toggle_data             <= '0';
+    else
+      DATA_TX_PLBCT           <= C_IDLE_WORD & buffer_data_32;
+      VALID_K_CHARAC_TX_PLBCT <= "0001" & buffer_k_char_4;
+      NEW_DATA_TX_PLBCT       <= '1';
+      toggle_data             <= '0';
     end if;
   end if;
 end process p_concat_data;
