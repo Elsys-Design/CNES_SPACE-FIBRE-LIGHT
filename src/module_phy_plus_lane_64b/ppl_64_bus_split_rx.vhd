@@ -47,6 +47,7 @@ entity ppl_64_bus_split_rx is
       FIFO_RX_DATA_VALID_PLFRD     : in  std_logic;                                   --! Flag new data
       FIFO_RX_EMPTY_PLFRD          : in  std_logic;                                   --! Flag FIFO Empty
       VALID_K_CHARAC_RX_PLFRD      : in  std_logic_vector(C_K_CHAR_WIDTH-1 downto 0); --! 8-bit valid K character flags
+      DATA_RDY_RX_PLFRD            : in  std_logic_vector(1 downto 0);                --! Data valid flag
       -- ppl_64_ctrl_fifo_rx (PLCFR) interface
       FAR_END_CAPA_PLFRC           : in std_logic_vector(7 downto 0);                 --! Capability field received in INIT3 control word
       LANE_ACTIVE_PLFRC            : in std_logic                                     --! Lane Active flag
@@ -67,6 +68,7 @@ type split_bus_fsm_type is (
 
 -- data path
 signal current_state       : split_bus_fsm_type;
+signal next_state          : split_bus_fsm_type;
 signal buffer_data_32      : std_logic_vector(31 downto 0);
 signal buffer_k_char_4     : std_logic_vector(3 downto 0);
 signal buffer_data_64      : std_logic_vector(63 downto 0);
@@ -89,6 +91,7 @@ begin
     VALID_K_CHARAC_RX_PLBSR  <= (others=>'0');
     FIFO_RX_DATA_VALID_PLBSR <= '0';
     current_state            <= IDLE_ST;
+    next_state               <= IDLE_ST;
     buffer_data_32           <= (others => '0');
     buffer_k_char_4          <= (others => '0');
     buffer_data_64           <= (others => '0');
@@ -104,8 +107,10 @@ begin
                                       current_state       <= FIRST_WORD_ST;
                                     end if;
 
-      when FIRST_WORD_ST          =>
-                                    if FIFO_RX_DATA_VALID_PLFRD = '1' then
+      when FIRST_WORD_ST          =>---------------------------------
+                                    --       2 words received      --
+                                    ---------------------------------
+                                    if FIFO_RX_DATA_VALID_PLFRD = '1' and DATA_RDY_RX_PLFRD ="11" then
                                       -- Word 1 ready to be sent
                                       DATA_RX_PLBSR            <= DATA_RX_PLFRD(31 downto 0);
                                       VALID_K_CHARAC_RX_PLBSR  <= VALID_K_CHARAC_RX_PLFRD(3 downto 0);
@@ -117,35 +122,92 @@ begin
                                         FIFO_RX_DATA_VALID_PLBSR <= '1';
                                         if FIFO_RX_EMPTY_PLFRD = '0' then
                                           FIFO_RX_RD_EN_PLBSR    <= '1';
-                                        else 
+                                        else
                                           req_read_not_done <= '1';
                                         end if;
-                                        current_state            <= SECOND_WORD_ST;
+                                        current_state <= SECOND_WORD_ST;
                                       else
-                                        current_state          <= FIRST_WORD_WAIT_RD_ST;
+                                        current_state <= FIRST_WORD_WAIT_RD_ST;
+                                        next_state    <= SECOND_WORD_ST;
                                       end if;
-                                    elsif FIFO_RX_EMPTY_PLFRD = '1' then 
-                                        current_state          <= IDLE_ST;                                      
+                                    --------------------------------
+                                    --       First word received  --
+                                    --------------------------------
+                                    elsif FIFO_RX_DATA_VALID_PLFRD = '1' and DATA_RDY_RX_PLFRD ="01"then
+                                      -- Word 1 ready to be sent
+                                      DATA_RX_PLBSR            <= DATA_RX_PLFRD(31 downto 0);
+                                      VALID_K_CHARAC_RX_PLBSR  <= VALID_K_CHARAC_RX_PLFRD(3 downto 0);
+                                      if FIFO_RX_RD_EN_DL = '1' then
+                                        -- Send word 1
+                                        FIFO_RX_DATA_VALID_PLBSR <= '1';
+                                        if FIFO_RX_EMPTY_PLFRD = '0' then
+                                          FIFO_RX_RD_EN_PLBSR    <= '1';
+                                        else
+                                          current_state          <= IDLE_ST;
+                                        end if;
+                                      else
+                                        current_state <= FIRST_WORD_WAIT_RD_ST;
+                                        next_state    <= FIRST_WORD_ST;
+                                      end if;
+                                    --------------------------------
+                                    --      Second word received  --
+                                    --------------------------------
+                                    elsif FIFO_RX_DATA_VALID_PLFRD = '1' and DATA_RDY_RX_PLFRD ="10"then
+                                      -- Word 1 ready to be sent
+                                      DATA_RX_PLBSR            <= DATA_RX_PLFRD(63 downto 32);
+                                      VALID_K_CHARAC_RX_PLBSR  <= VALID_K_CHARAC_RX_PLFRD(7 downto 4);
+                                      if FIFO_RX_RD_EN_DL = '1' then
+                                        -- Send word 1
+                                        FIFO_RX_DATA_VALID_PLBSR <= '1';
+                                        if FIFO_RX_EMPTY_PLFRD = '0' then
+                                          FIFO_RX_RD_EN_PLBSR    <= '1';
+                                        else
+                                          current_state          <= IDLE_ST;
+                                        end if;
+                                      else
+                                        current_state <= FIRST_WORD_WAIT_RD_ST;
+                                        next_state    <= FIRST_WORD_ST;
+                                      end if;
+                                    ------------------------------
+                                    --      No word received    --
+                                    ------------------------------
+                                    elsif FIFO_RX_EMPTY_PLFRD = '1' then
+                                        current_state          <= IDLE_ST;
                                     end if;
 
       when FIRST_WORD_WAIT_RD_ST  =>
                                     if FIFO_RX_RD_EN_DL = '1' then
                                       -- Send word 1
                                       FIFO_RX_DATA_VALID_PLBSR <= '1';
-                                      current_state            <= SECOND_WORD_ST;
-                                      if FIFO_RX_EMPTY_PLFRD = '0' then
-                                        FIFO_RX_RD_EN_PLBSR    <= '1';
-                                      else 
-                                        req_read_not_done <= '1';
+                                      -----------------------------
+                                      --   No data buffurized    --
+                                      -----------------------------
+                                      if next_state = FIRST_WORD_ST then
+                                        if FIFO_RX_EMPTY_PLFRD = '0' then
+                                          FIFO_RX_RD_EN_PLBSR    <= '1';
+                                          current_state          <= FIRST_WORD_ST;
+                                        else
+                                          current_state          <= IDLE_ST;
+                                        end if;
+                                      -----------------------------
+                                      --   1 data buffurized     --
+                                      -----------------------------
+                                      elsif next_state = SECOND_WORD_ST then
+                                        current_state         <= SECOND_WORD_ST;
+                                        if FIFO_RX_EMPTY_PLFRD = '0' then
+                                          FIFO_RX_RD_EN_PLBSR <= '1';
+                                        else
+                                          req_read_not_done   <= '1';
+                                        end if;
                                       end if;
                                     end if;
 
       when FIRST_WORD_BUFF_ST    =>
                                     if FIFO_RX_RD_EN_DL = '1' then
-                                      -- Send word 3 (new word 1)
+                                      -- Send word 1
                                       DATA_RX_PLBSR            <= buffer_data_64(31 downto 0);
                                       VALID_K_CHARAC_RX_PLBSR  <= buffer_k_char_8(3 downto 0);
-                                      --! Save word 4 (new word 2) to be sent as word 2
+                                      -- Save word 2
                                       buffer_data_32           <= buffer_data_64(63 downto 32);
                                       buffer_k_char_4          <= buffer_k_char_8(7 downto 4);
                                       FIFO_RX_DATA_VALID_PLBSR <= '1';
@@ -153,22 +215,58 @@ begin
                                       current_state            <= SECOND_WORD_ST;
                                     end if;
 
-      when SECOND_WORD_ST         =>
+      when SECOND_WORD_ST         =>--------------------------------------
+                                    --           Word received          --
+                                    --------------------------------------
                                     if FIFO_RX_DATA_VALID_PLFRD = '1' then
-                                      -- Save word 3 & 4
-                                      buffer_data_64  <= DATA_RX_PLFRD;
-                                      buffer_k_char_8 <= VALID_K_CHARAC_RX_PLFRD;
-                                      if FIFO_RX_RD_EN_DL ='1' then
-                                        -- Send word 2
-                                        DATA_RX_PLBSR            <= buffer_data_32;
-                                        VALID_K_CHARAC_RX_PLBSR  <= buffer_k_char_4;
-                                        FIFO_RX_DATA_VALID_PLBSR <= '1';
-                                        current_state            <= FIRST_WORD_BUFF_ST;
-                                      else
-                                        toggle_data <= '1';
+                                      ------------------------------------------------
+                                      --       2 words received & 1 word saved      --
+                                      ------------------------------------------------
+                                      if DATA_RDY_RX_PLFRD ="11" then
+                                        -- Save word 1 & 2
+                                        buffer_data_64  <= DATA_RX_PLFRD;
+                                        buffer_k_char_8 <= VALID_K_CHARAC_RX_PLFRD;
+                                        if FIFO_RX_RD_EN_DL ='1' then
+                                          -- Send word bufferized
+                                          DATA_RX_PLBSR            <= buffer_data_32;
+                                          VALID_K_CHARAC_RX_PLBSR  <= buffer_k_char_4;
+                                          FIFO_RX_DATA_VALID_PLBSR <= '1';
+                                          current_state            <= FIRST_WORD_BUFF_ST;
+                                        else
+                                          toggle_data <= '1';
+                                        end if;
+                                      ----------------------------------------------------
+                                      --       First word received & 1 word saved       --
+                                      ----------------------------------------------------
+                                      elsif DATA_RDY_RX_PLFRD ="01" then
+                                        -- Word 1 saved
+                                        buffer_data_32           <= DATA_RX_PLFRD(31 downto 0);
+                                        buffer_k_char_4          <= VALID_K_CHARAC_RX_PLFRD(3 downto 0);
+                                        if FIFO_RX_RD_EN_DL ='1' then
+                                          -- Send word bufferized
+                                          DATA_RX_PLBSR            <= buffer_data_32;
+                                          VALID_K_CHARAC_RX_PLBSR  <= buffer_k_char_4;
+                                          FIFO_RX_DATA_VALID_PLBSR <= '1';
+                                        end if;
+                                      -----------------------------------------------------
+                                      --       Second word received & 1 word saved       --
+                                      -----------------------------------------------------
+                                      elsif DATA_RDY_RX_PLFRD ="10" then
+                                        -- Word 2 saved
+                                        buffer_data_32           <= DATA_RX_PLFRD(63 downto 32);
+                                        buffer_k_char_4          <= VALID_K_CHARAC_RX_PLFRD(7 downto 4);
+                                        if FIFO_RX_RD_EN_DL ='1' then
+                                          -- Send word bufferized
+                                          DATA_RX_PLBSR            <= buffer_data_32;
+                                          VALID_K_CHARAC_RX_PLBSR  <= buffer_k_char_4;
+                                          FIFO_RX_DATA_VALID_PLBSR <= '1';
+                                        end if;
                                       end if;
+                                    ---------------------------------------------------------------------
+                                    --    No word received & 1 word saved but read enable from DL      --
+                                    ---------------------------------------------------------------------
                                     elsif FIFO_RX_RD_EN_DL ='1' then
-                                      -- Send word 2
+                                      -- Send word bufferized
                                       DATA_RX_PLBSR            <= buffer_data_32;
                                       VALID_K_CHARAC_RX_PLBSR  <= buffer_k_char_4;
                                       FIFO_RX_DATA_VALID_PLBSR <= '1';
@@ -180,15 +278,18 @@ begin
                                       else
                                         current_state <= FIRST_WORD_ST;
                                         if req_read_not_done = '1' then
-                                          FIFO_RX_RD_EN_PLBSR    <= '1';
-                                          req_read_not_done <= '0';
+                                          FIFO_RX_RD_EN_PLBSR <= '1';
+                                          req_read_not_done   <= '0';
                                         end if;
                                       end if;
+                                    --------------------------------------------------------------------------------------------
+                                    --    No word received & 1 word saved & no read enable from DL & no read fifo pending     --
+                                    --------------------------------------------------------------------------------------------
                                     elsif req_read_not_done = '1' then
-                                        if FIFO_RX_EMPTY_PLFRD = '0' then
-                                          FIFO_RX_RD_EN_PLBSR    <= '1';
-                                          req_read_not_done <= '0';
-                                        end if;
+                                      if FIFO_RX_EMPTY_PLFRD = '0' then
+                                        FIFO_RX_RD_EN_PLBSR  <= '1';
+                                        req_read_not_done    <= '0';
+                                      end if;
                                     end if;
 
       when others                 =>

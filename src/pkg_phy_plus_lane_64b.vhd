@@ -67,6 +67,7 @@ package pkg_phy_plus_lane_64b is
    constant C_5000_WORDS          : unsigned(12 downto 00)         := to_unsigned(4998,13);                --! 4999 = 0 to 4998 values
    constant C_SYMB_X5             : unsigned(02 downto 00)         := "100";                               --! 5 = 0 to 4 values
    -- FIFO sizes
+   constant C_RDY_WORD            : integer                        := 2;                                   --! 2 words by data bus
    constant C_DWIDTH              : integer                        := C_DATA_WIDTH + C_K_CHAR_WIDTH;       --! data + k character
    constant C_AWIDTH_TX           : integer                        := 5;                                   --! 2^5 x 72 = 288 B
    constant C_AWIDTH_RX           : integer                        := 12;                                  --! 2^12 x 72 = 36 kB
