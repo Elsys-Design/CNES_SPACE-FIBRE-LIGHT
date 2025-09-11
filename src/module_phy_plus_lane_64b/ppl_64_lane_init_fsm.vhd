@@ -887,7 +887,7 @@ begin
       comma_k287_rxed_r <= COMMA_K287_RXED_PLCWD(1);
       init3_rxed_x3_fw  <= '0';
       -- States for detection of at least one INIT3 is received
-      if current_state = current_state_r and (current_state = CONNECTING_ST or current_state = STARTED_ST or current_state = INVERT_RX_POLARITY_ST) then
+      if current_state = current_state_r and (current_state = CONNECTING_ST or current_state = CONNECTED_ST) then
         -------------------------
         -- INIT3
         -------------------------

@@ -72,6 +72,7 @@ signal buffer_k_char_4     : std_logic_vector(3 downto 0);
 signal buffer_data_64      : std_logic_vector(63 downto 0);
 signal buffer_k_char_8     : std_logic_vector(7 downto 0);
 signal toggle_data         : std_logic;
+signal req_read_not_done   : std_logic;
 begin
 ---------------------------------------------------------
 -----                     Process                   -----
@@ -114,11 +115,17 @@ begin
                                       if FIFO_RX_RD_EN_DL = '1' then
                                         -- Send word 1
                                         FIFO_RX_DATA_VALID_PLBSR <= '1';
-                                        FIFO_RX_RD_EN_PLBSR      <= '1';
+                                        if FIFO_RX_EMPTY_PLFRD = '0' then
+                                          FIFO_RX_RD_EN_PLBSR    <= '1';
+                                        else 
+                                          req_read_not_done <= '1';
+                                        end if;
                                         current_state            <= SECOND_WORD_ST;
                                       else
                                         current_state          <= FIRST_WORD_WAIT_RD_ST;
                                       end if;
+                                    elsif FIFO_RX_EMPTY_PLFRD = '1' then 
+                                        current_state          <= IDLE_ST;                                      
                                     end if;
 
       when FIRST_WORD_WAIT_RD_ST  =>
@@ -128,6 +135,8 @@ begin
                                       current_state            <= SECOND_WORD_ST;
                                       if FIFO_RX_EMPTY_PLFRD = '0' then
                                         FIFO_RX_RD_EN_PLBSR    <= '1';
+                                      else 
+                                        req_read_not_done <= '1';
                                       end if;
                                     end if;
 
@@ -166,9 +175,20 @@ begin
                                       if toggle_data = '1' then
                                         toggle_data   <= '0';
                                         current_state <= FIRST_WORD_BUFF_ST;
+                                      elsif req_read_not_done = '1' and FIFO_RX_EMPTY_PLFRD = '1' then
+                                        current_state <= IDLE_ST;
                                       else
                                         current_state <= FIRST_WORD_ST;
+                                        if req_read_not_done = '1' then
+                                          FIFO_RX_RD_EN_PLBSR    <= '1';
+                                          req_read_not_done <= '0';
+                                        end if;
                                       end if;
+                                    elsif req_read_not_done = '1' then
+                                        if FIFO_RX_EMPTY_PLFRD = '0' then
+                                          FIFO_RX_RD_EN_PLBSR    <= '1';
+                                          req_read_not_done <= '0';
+                                        end if;
                                     end if;
 
       when others                 =>
