@@ -74,7 +74,7 @@ signal buffer_k_char_4     : std_logic_vector(3 downto 0);
 signal buffer_data_64      : std_logic_vector(63 downto 0);
 signal buffer_k_char_8     : std_logic_vector(7 downto 0);
 signal toggle_data         : std_logic;
-signal req_read_not_done   : std_logic;
+signal req_fifo_rd_pending   : std_logic;
 begin
 ---------------------------------------------------------
 -----                     Process                   -----
@@ -97,6 +97,7 @@ begin
     buffer_data_64           <= (others => '0');
     buffer_k_char_8          <= (others => '0');
     toggle_data              <= '0';
+    req_fifo_rd_pending      <= '0';
   elsif rising_edge(CLK)  then
     FIFO_RX_DATA_VALID_PLBSR <= '0';
     FIFO_RX_RD_EN_PLBSR      <= '0';
@@ -104,6 +105,7 @@ begin
       when IDLE_ST                =>
                                     if FIFO_RX_EMPTY_PLFRD = '0' then
                                       FIFO_RX_RD_EN_PLBSR <= '1';
+                                      req_fifo_rd_pending<= '1';
                                       current_state       <= FIRST_WORD_ST;
                                     end if;
 
@@ -111,6 +113,7 @@ begin
                                     --       2 words received      --
                                     ---------------------------------
                                     if FIFO_RX_DATA_VALID_PLFRD = '1' and DATA_RDY_RX_PLFRD ="11" then
+                                      req_fifo_rd_pending    <= '0';
                                       -- Word 1 ready to be sent
                                       DATA_RX_PLBSR            <= DATA_RX_PLFRD(31 downto 0);
                                       VALID_K_CHARAC_RX_PLBSR  <= VALID_K_CHARAC_RX_PLFRD(3 downto 0);
@@ -122,8 +125,7 @@ begin
                                         FIFO_RX_DATA_VALID_PLBSR <= '1';
                                         if FIFO_RX_EMPTY_PLFRD = '0' then
                                           FIFO_RX_RD_EN_PLBSR    <= '1';
-                                        else
-                                          req_read_not_done <= '1';
+                                          req_fifo_rd_pending    <= '1';
                                         end if;
                                         current_state <= SECOND_WORD_ST;
                                       else
@@ -134,6 +136,7 @@ begin
                                     --       First word received  --
                                     --------------------------------
                                     elsif FIFO_RX_DATA_VALID_PLFRD = '1' and DATA_RDY_RX_PLFRD ="01"then
+                                      req_fifo_rd_pending    <= '0';
                                       -- Word 1 ready to be sent
                                       DATA_RX_PLBSR            <= DATA_RX_PLFRD(31 downto 0);
                                       VALID_K_CHARAC_RX_PLBSR  <= VALID_K_CHARAC_RX_PLFRD(3 downto 0);
@@ -142,6 +145,7 @@ begin
                                         FIFO_RX_DATA_VALID_PLBSR <= '1';
                                         if FIFO_RX_EMPTY_PLFRD = '0' then
                                           FIFO_RX_RD_EN_PLBSR    <= '1';
+                                          req_fifo_rd_pending    <= '1';
                                         else
                                           current_state          <= IDLE_ST;
                                         end if;
@@ -153,6 +157,7 @@ begin
                                     --      Second word received  --
                                     --------------------------------
                                     elsif FIFO_RX_DATA_VALID_PLFRD = '1' and DATA_RDY_RX_PLFRD ="10"then
+                                      req_fifo_rd_pending    <= '0';
                                       -- Word 1 ready to be sent
                                       DATA_RX_PLBSR            <= DATA_RX_PLFRD(63 downto 32);
                                       VALID_K_CHARAC_RX_PLBSR  <= VALID_K_CHARAC_RX_PLFRD(7 downto 4);
@@ -161,6 +166,7 @@ begin
                                         FIFO_RX_DATA_VALID_PLBSR <= '1';
                                         if FIFO_RX_EMPTY_PLFRD = '0' then
                                           FIFO_RX_RD_EN_PLBSR    <= '1';
+                                          req_fifo_rd_pending    <= '1';
                                         else
                                           current_state          <= IDLE_ST;
                                         end if;
@@ -185,6 +191,7 @@ begin
                                       if next_state = FIRST_WORD_ST then
                                         if FIFO_RX_EMPTY_PLFRD = '0' then
                                           FIFO_RX_RD_EN_PLBSR    <= '1';
+                                          req_fifo_rd_pending    <= '1';
                                           current_state          <= FIRST_WORD_ST;
                                         else
                                           current_state          <= IDLE_ST;
@@ -196,8 +203,7 @@ begin
                                         current_state         <= SECOND_WORD_ST;
                                         if FIFO_RX_EMPTY_PLFRD = '0' then
                                           FIFO_RX_RD_EN_PLBSR <= '1';
-                                        else
-                                          req_read_not_done   <= '1';
+                                          req_fifo_rd_pending <= '1';
                                         end if;
                                       end if;
                                     end if;
@@ -211,14 +217,18 @@ begin
                                       buffer_data_32           <= buffer_data_64(63 downto 32);
                                       buffer_k_char_4          <= buffer_k_char_8(7 downto 4);
                                       FIFO_RX_DATA_VALID_PLBSR <= '1';
-                                      FIFO_RX_RD_EN_PLBSR      <= '1';
                                       current_state            <= SECOND_WORD_ST;
+                                      if req_fifo_rd_pending    <= '0' then
+                                        FIFO_RX_RD_EN_PLBSR      <= '1';
+                                        req_fifo_rd_pending      <= '1';
+                                      end if;
                                     end if;
 
       when SECOND_WORD_ST         =>--------------------------------------
                                     --           Word received          --
                                     --------------------------------------
                                     if FIFO_RX_DATA_VALID_PLFRD = '1' then
+                                      req_fifo_rd_pending    <= '0';
                                       ------------------------------------------------
                                       --       2 words received & 1 word saved      --
                                       ------------------------------------------------
@@ -273,22 +283,22 @@ begin
                                       if toggle_data = '1' then
                                         toggle_data   <= '0';
                                         current_state <= FIRST_WORD_BUFF_ST;
-                                      elsif req_read_not_done = '1' and FIFO_RX_EMPTY_PLFRD = '1' then
+                                      elsif req_fifo_rd_pending = '0' and FIFO_RX_EMPTY_PLFRD = '1' then
                                         current_state <= IDLE_ST;
                                       else
                                         current_state <= FIRST_WORD_ST;
-                                        if req_read_not_done = '1' then
+                                        if req_fifo_rd_pending = '0' then
                                           FIFO_RX_RD_EN_PLBSR <= '1';
-                                          req_read_not_done   <= '0';
+                                          req_fifo_rd_pending <= '1';
                                         end if;
                                       end if;
                                     --------------------------------------------------------------------------------------------
                                     --    No word received & 1 word saved & no read enable from DL & no read fifo pending     --
                                     --------------------------------------------------------------------------------------------
-                                    elsif req_read_not_done = '1' then
+                                    elsif req_fifo_rd_pending = '0' then
                                       if FIFO_RX_EMPTY_PLFRD = '0' then
                                         FIFO_RX_RD_EN_PLBSR  <= '1';
-                                        req_read_not_done    <= '0';
+                                        req_fifo_rd_pending  <= '1';
                                       end if;
                                     end if;
 
