@@ -586,6 +586,7 @@ architecture rtl of LANE_ANALYZER is
                else 
                  if (cnt_data_valid > 3) then
                    err_counter_frame  <= err_counter_frame+1;
+                   cnt_frame        <= (others=>'0');
                    generation_state   <= END_TEST;
                    cnt_data_valid     <= (others =>'0');
                  else 

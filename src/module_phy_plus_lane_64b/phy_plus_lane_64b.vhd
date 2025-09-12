@@ -594,7 +594,7 @@ architecture rtl of phy_plus_lane_64b is
   signal data_plus_k_char_plrwef               : std_logic_vector(73 downto 00);
   -- Internal signals from FIFO_RX data
   signal data_plus_k_char_plfrd               : std_logic_vector(73 downto 00);
-  signal data_rx_plfrd                        : std_logic_vector(C_DATA_WIDTH-1 downto 0);data_rdy_rx_plfrd
+  signal data_rx_plfrd                        : std_logic_vector(C_DATA_WIDTH-1 downto 0);
   signal valid_k_charac_rx_plfrd              : std_logic_vector(C_K_CHAR_WIDTH-1 downto 0);
   signal data_rdy_rx_plfrd                    : std_logic_vector(1 downto 0);
   signal fifo_rx_data_valid_plfrd             : std_logic;
