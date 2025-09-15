@@ -1819,7 +1819,7 @@ async def cocotb_run(dut):
     #With loopback during init
     ###########################
     
-    stimulus_tx = cocotb.start_soon(tb.spacefibre_loopback.loopback(30000))
+    stimulus_tx = cocotb.start_soon(tb.spacefibre_loopback.loopback(150000))
     await wait_for_started_to_active(tb)
 
     #Incremental data generation
