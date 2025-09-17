@@ -70,10 +70,7 @@ begin
 ---------------------------------------------------------
 -----                     Assignement               -----
 ---------------------------------------------------------
-data_2   <= DATA_TX_PLCWI(C_DATA_WIDTH-1   downto C_DATA_WIDTH/2);
-data_1   <= DATA_TX_PLCWI(C_DATA_WIDTH/2-1 downto 0);
-k_char_2 <= VALID_K_CHARAC_PLCWI(C_K_CHAR_WIDTH-1   downto C_K_CHAR_WIDTH/2);
-k_char_1 <= VALID_K_CHARAC_PLCWI(C_K_CHAR_WIDTH/2-1 downto 0);
+
 ---------------------------------------------------------
 -----                     Process                   -----
 ---------------------------------------------------------
@@ -84,62 +81,72 @@ k_char_1 <= VALID_K_CHARAC_PLCWI(C_K_CHAR_WIDTH/2-1 downto 0);
 p_skip_insertion: process(CLK,RST_N)
 begin
   if RST_N = '0' then
-    state              <= TX_INIT_ST;
-    state_cnt          <= (others => '0');
-    data_0             <= (others => '0');
-    k_char_0           <= (others => '0');
-    DATA_TX_PLSI       <= (others => '0');
+    state               <= TX_INIT_ST;
+    state_cnt           <= (others => '0');
+    data_0              <= (others => '0');
+    k_char_0            <= (others => '0');
+    DATA_TX_PLSI        <= (others => '0');
     VALID_K_CHARAC_PLSI <= (others => '0');
     WAIT_SEND_DATA_PLSI <= '0';
   elsif rising_edge(CLK) then
     data_0   <= data_2;
     k_char_0 <= k_char_2;
+    data_2   <= DATA_TX_PLCWI(C_DATA_WIDTH-1   downto C_DATA_WIDTH/2);
+    data_1   <= DATA_TX_PLCWI(C_DATA_WIDTH/2-1 downto 0);
+    k_char_2 <= VALID_K_CHARAC_PLCWI(C_K_CHAR_WIDTH-1   downto C_K_CHAR_WIDTH/2);
+    k_char_1 <= VALID_K_CHARAC_PLCWI(C_K_CHAR_WIDTH/2-1 downto 0);
     case state is
+
       when TX_INIT_ST =>
-        DATA_TX_PLSI <= DATA_TX_PLCWI;
-        VALID_K_CHARAC_PLSI <= VALID_K_CHARAC_PLCWI;
+        DATA_TX_PLSI        <= data_2 & data_1;
+        VALID_K_CHARAC_PLSI <= k_char_2 & k_char_1;
         WAIT_SEND_DATA_PLSI <= '0';
-        state_cnt <= (others => '0');
+        state_cnt           <= (others => '0');
         if ENABLE_TRANSM_DATA_PLIF = '1' then -- When the lane_init_fsm is in ACTIVE_ST
-          state <= TX_DATA_1_ST;
+          state             <= TX_DATA_1_ST;
         end if;
+
       when TX_DATA_1_ST =>
         VALID_K_CHARAC_PLSI <= k_char_2 & k_char_1;
-        DATA_TX_PLSI <= data_2 & data_1;
-        state_cnt <= state_cnt + 2;
+        DATA_TX_PLSI        <= data_2 & data_1;
+        state_cnt           <= state_cnt + 2;
         if ENABLE_TRANSM_DATA_PLIF = '0' then -- When the lane_init_fsm is in ACTIVE_ST
-          state <= TX_INIT_ST;
+          state             <= TX_INIT_ST;
         elsif state_cnt >= C_5000_WORDS then
-          state_cnt <= (others => '0');
-          state <= TX_SKIP_1_ST;
+          state_cnt         <= (others => '0');
+          state             <= TX_SKIP_1_ST;
         end if;
+
       when TX_SKIP_1_ST =>
         VALID_K_CHARAC_PLSI <= k_char_1 & x"1";
-        DATA_TX_PLSI <= data_1 & C_SKIP_WORD;
-        state_cnt <= state_cnt + 1;
-        state <= TX_DATA_2_ST;
+        DATA_TX_PLSI        <= data_1 & C_SKIP_WORD;
+        state_cnt           <= state_cnt + 1;
+        state               <= TX_DATA_2_ST;
+
       when TX_DATA_2_ST =>
         VALID_K_CHARAC_PLSI <= k_char_1 & k_char_0;
-        DATA_TX_PLSI <= data_1 & data_0;
-        state_cnt <= state_cnt + 2;
+        DATA_TX_PLSI        <= data_1 & data_0;
+        state_cnt           <= state_cnt + 2;
         if ENABLE_TRANSM_DATA_PLIF = '0' then -- When the lane_init_fsm is in ACTIVE_ST
-          state <= TX_INIT_ST;
+          state             <= TX_INIT_ST;
         elsif state_cnt >= C_5000_WORDS-1 then
-          state_cnt <= (others => '0');
-          state <= TX_SKIP_2_ST;
+          state_cnt           <= (others => '0');
+          state               <= TX_SKIP_2_ST;
           WAIT_SEND_DATA_PLSI <= '1';
         end if;
+
       when TX_SKIP_2_ST =>
         VALID_K_CHARAC_PLSI <= x"1" & k_char_0;
-        DATA_TX_PLSI <= C_SKIP_WORD & data_0;
-        state_cnt <= (others => '0');
-        state <= TX_DATA_1_ST;
+        DATA_TX_PLSI        <= C_SKIP_WORD & data_0;
+        state_cnt           <= (others => '0');
+        state               <= TX_DATA_1_ST;
         WAIT_SEND_DATA_PLSI <= '0';
+
       when others =>
-        DATA_TX_PLSI <= DATA_TX_PLCWI;
+        DATA_TX_PLSI        <= DATA_TX_PLCWI;
         VALID_K_CHARAC_PLSI <= VALID_K_CHARAC_PLCWI;
         WAIT_SEND_DATA_PLSI <= '0';
-        state_cnt <= (others => '0');
+        state_cnt           <= (others => '0');
     end case;
   end if;
 end process p_skip_insertion;
