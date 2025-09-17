@@ -27,6 +27,10 @@ from framework import   AxiStreamSource, AxiStreamSink, AxiStreamMonitor, AxiBus
                         AxiMaster, AxiLiteMaster, AxiRam, AxiLiteRam, \
                         AxiMonitor, AxiLiteMonitor, Data
 
+
+target = os.environ.get('HARDWARE_TARGET')
+
+
 def ceil(number):
     """return first int above or equal to number"""
     if number == int(number):
@@ -42,6 +46,10 @@ class SpaceFibre_Random_Generator:
         self.logger = logger
         self.time_per_input = period_ps
         self.time_per_output = period_ps
+        if target == "NG_ULTRA":
+            self.precision = "fs"
+        elif target == "VERSAL":
+            self.precision = "fs"
 
 
     async def read_from_Tx(self, previous_buffer = ""):
@@ -66,7 +74,7 @@ class SpaceFibre_Random_Generator:
             if len(data) > 10:
                 data = data[1:]
                 # data = data[:-1]
-            await Timer(time_per_output + variation, units="fs")
+            await Timer(time_per_output + variation, units=self.precision)
 
             #realignement procedure
             pos_comma_index = data.find("0011111")
@@ -194,7 +202,7 @@ class SpaceFibre_Random_Generator:
         if variation > 0:
             variation = 1
         if delay != 0:
-            await Timer(delay, units="fs")
+            await Timer(delay, units=self.precision)
         for d in range(len(serialized_data)):
             if invert_polarity == 0:
                 self.dut.RX_POS.value = serialized_data[d]
@@ -202,7 +210,7 @@ class SpaceFibre_Random_Generator:
             else :
                 self.dut.RX_POS.value = serialized_data[d]^1
                 self.dut.RX_NEG.value = serialized_data[d]
-            await Timer(time_per_input + variation, units="fs")
+            await Timer(time_per_input + variation, units=self.precision)
         self.logger.debug("sim_time %d ns: Data encoded sent : %d", get_sim_time(units = "ns"), encoded_data)
         return encoded_data, k_encoding
 
@@ -252,7 +260,7 @@ class SpaceFibre_Random_Generator:
             data_to_log = data_10b + "_" + data_to_log
             k_encoded_to_log = str(k_encoded) + k_encoded_to_log
 
-            log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
+            log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
             log_file.write("32;CFCFCEFC;0;0001;\n")
 
         word_counter_for_skip = 5000
@@ -277,7 +285,7 @@ class SpaceFibre_Random_Generator:
             data_to_log = data_10b + "_" + data_to_log
             k_encoded_to_log = str(k_encoded) + k_encoded_to_log
 
-            log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
+            log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
             log_file.write("32;7F7FCEFC;0;0001;\n")
             word_counter_for_skip = 0
         current_frame_size = 0
@@ -310,7 +318,7 @@ class SpaceFibre_Random_Generator:
             k_encoded_to_log = str(k_encoded) + k_encoded_to_log
             crc_16 = self.compute_crc_16("00000000", crc_16)
 
-            log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
+            log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
             log_file.write("32;00"+f"{(int(target, 2)):0>2X}"+"50FC;0;0001;\n")
             word_counter_for_skip += 1
             current_packet_size = 0
@@ -339,7 +347,7 @@ class SpaceFibre_Random_Generator:
                     data_to_log = data_10b + "_" + data_to_log
                     k_encoded_to_log = str(k_encoded) + k_encoded_to_log
 
-                    log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
+                    log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
                     log_file.write("32;7F7FCEFC;0;0001;\n")
                     word_counter_for_skip = 0
 
@@ -372,7 +380,7 @@ class SpaceFibre_Random_Generator:
                     data_to_log = data_10b + "_" + data_to_log
                     k_encoded_to_log = str(k_encoded) + k_encoded_to_log
 
-                    log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
+                    log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
                     log_file.write("32;00"+f"{(int(crc_16, 2)):0>4X}"+f"{(sequence%128 + 128 * sequence_polarity):0>2X}" + "1C;0;0001;\n")
 
                     word_counter_for_skip += 1
@@ -398,7 +406,7 @@ class SpaceFibre_Random_Generator:
                         data_to_log = data_10b + "_" + data_to_log
                         k_encoded_to_log = str(k_encoded) + k_encoded_to_log
 
-                        log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
+                        log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
                         log_file.write("32;7F7FCEFC;0;0001;\n")
                         word_counter_for_skip = 0
                     
@@ -426,7 +434,7 @@ class SpaceFibre_Random_Generator:
                     k_encoded_to_log = str(k_encoded) + k_encoded_to_log
                     crc_16 = self.compute_crc_16("00000000", crc_16)
 
-                    log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
+                    log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
                     log_file.write("32;00"+f"{(int(target, 2)):0>2X}"+"50FC;0;0001;\n")
 
                     word_counter_for_skip += 1
@@ -452,7 +460,7 @@ class SpaceFibre_Random_Generator:
                         data_to_log = data_10b + "_" + data_to_log
                         k_encoded_to_log = str(k_encoded) + k_encoded_to_log
 
-                        log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
+                        log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
                         log_file.write("32;7F7FCEFC;0;0001;\n")
                         word_counter_for_skip = 0
                 else :
@@ -475,7 +483,7 @@ class SpaceFibre_Random_Generator:
                         k_encoded_to_log = str(k_encoded) + k_encoded_to_log
                         crc_16 = self.compute_crc_16(word_binary[32-8*(n+1):32-8*n], crc_16)
                 log_file.write("32;" + f"{(int(word_binary, 2)):0>8X}" + ";0;0000;\n")
-                log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
+                log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
                 
                 word_counter_for_skip += 1
 
@@ -502,7 +510,7 @@ class SpaceFibre_Random_Generator:
                     data_to_log = data_10b + "_" + data_to_log
                     k_encoded_to_log = str(k_encoded) + k_encoded_to_log
 
-                    log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
+                    log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
                     log_file.write("32;7F7FCEFC;0;0001;\n")
                     word_counter_for_skip = 0
                 
@@ -535,7 +543,7 @@ class SpaceFibre_Random_Generator:
                 data_to_log = data_10b + "_" + data_to_log
                 k_encoded_to_log = str(k_encoded) + k_encoded_to_log
 
-                log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
+                log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
                 log_file.write("32;00" + f"{(int(crc_16, 2)):0>4X}" + f"{(sequence%128 + 128 * sequence_polarity):0>2X}" + "1C;0;0001;\n")
 
                 word_counter_for_skip += 1
@@ -561,7 +569,7 @@ class SpaceFibre_Random_Generator:
                     data_to_log = data_10b + "_" + data_to_log
                     k_encoded_to_log = str(k_encoded) + k_encoded_to_log
 
-                    log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
+                    log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
                     log_file.write("32;7F7FCEFC;0;0001;\n")
                     word_counter_for_skip = 0
                 
@@ -589,7 +597,7 @@ class SpaceFibre_Random_Generator:
                 k_encoded_to_log = str(k_encoded) + k_encoded_to_log
                 crc_16 = self.compute_crc_16("00000000", crc_16)
 
-                log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
+                log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
                 log_file.write("32;00"+f"{(int(target, 2)):0>2X}"+"50FC;0;0001;\n")
 
                 word_counter_for_skip += 1
@@ -615,7 +623,7 @@ class SpaceFibre_Random_Generator:
                     data_to_log = data_10b + "_" + data_to_log
                     k_encoded_to_log = str(k_encoded) + k_encoded_to_log
 
-                    log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
+                    log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
                     log_file.write("32;7F7FCEFC;0;0001;\n")
                     word_counter_for_skip = 0
             else :
@@ -645,7 +653,7 @@ class SpaceFibre_Random_Generator:
                     k_encoded_to_log = str(k_encoded) + k_encoded_to_log
                     crc_16 = self.compute_crc_16("11111011", crc_16)
             log_file.write("32;" + f"{(int(word_binary, 2)):0>8X}" + ";0;0000;\n")
-            log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
+            log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
                 
             #check if skip needed
             if  word_counter_for_skip >= 5000:
@@ -668,7 +676,7 @@ class SpaceFibre_Random_Generator:
                 data_to_log = data_10b + "_" + data_to_log
                 k_encoded_to_log = str(k_encoded) + k_encoded_to_log
 
-                log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
+                log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
                 log_file.write("32;7F7FCEFC;0;0001;\n")
                 word_counter_for_skip = 0
             
@@ -695,7 +703,7 @@ class SpaceFibre_Random_Generator:
             data_to_log = data_10b + "_" + data_to_log
             k_encoded_to_log = str(k_encoded) + k_encoded_to_log
 
-            log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
+            log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
             log_file.write("32;00"+f"{(int(crc_16, 2)):0>4X}"+ f"{(sequence%128 + 128 * sequence_polarity):0>2X}" + "1C;0;0001;\n")
 
             word_counter_for_skip += 1
@@ -721,7 +729,7 @@ class SpaceFibre_Random_Generator:
                 data_to_log = data_10b + "_" + data_to_log
                 k_encoded_to_log = str(k_encoded) + k_encoded_to_log
 
-                log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
+                log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
                 log_file.write("32;7F7FCEFC;0;0001;\n")
                 word_counter_for_skip = 0
 
@@ -751,7 +759,7 @@ class SpaceFibre_Random_Generator:
                     data_to_log = data_10b + "_" + data_to_log
                     k_encoded_to_log = str(k_encoded) + k_encoded_to_log
 
-                    log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
+                    log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
                     log_file.write("32;7F7FCEFC;0;0001;\n")
                     word_counter_for_skip = 0
 
@@ -778,7 +786,7 @@ class SpaceFibre_Random_Generator:
                 k_encoded_to_log = str(k_encoded) + k_encoded_to_log
                 crc_8 = self.compute_crc_8("00101010", crc_8)
 
-                log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
+                log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
                 log_file.write("32;2A"+f"{(int(target, 2)):0>2X}"+"5DFC;0;0001;\n")
                 
                 word_counter_for_skip += 1
@@ -806,7 +814,7 @@ class SpaceFibre_Random_Generator:
                     data_to_log = data_10b + "_" + data_to_log
                     k_encoded_to_log = str(k_encoded) + k_encoded_to_log
 
-                    log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
+                    log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
                     log_file.write("32;7F7FCEFC;0;0001;\n")
                     word_counter_for_skip = 0
 
@@ -829,7 +837,7 @@ class SpaceFibre_Random_Generator:
                     log_file.write("32;" + f"{(packet_size):0>16X}"[8:16] + ";0;0000;\n")
                 else:    
                     log_file.write("32;" + f"{(int(word_binary, 2)):0>8X}" + ";0;0000;\n")
-                log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
+                log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
 
                 word_binary = word_binary[1:32] + str(int(word_binary[0])^int(word_binary[1])^int(word_binary[3])^int(word_binary[4]))
 
@@ -858,7 +866,7 @@ class SpaceFibre_Random_Generator:
                     data_to_log = data_10b + "_" + data_to_log
                     k_encoded_to_log = str(k_encoded) + k_encoded_to_log
 
-                    log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
+                    log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
                     log_file.write("32;7F7FCEFC;0;0001;\n")
                     word_counter_for_skip = 0
 
@@ -886,7 +894,7 @@ class SpaceFibre_Random_Generator:
                     log_file.write("32;FD" + f"{(packet_size):0>16X}"[2:8] + ";0;0000;\n")
                 else:    
                     log_file.write("32;FD" + f"{(int(word_binary, 2)):0>8X}"[2:8] + ";0;0000;\n")
-                log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
+                log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
 
                 word_binary = word_binary[1:32] + str(int(word_binary[0])^int(word_binary[1])^int(word_binary[3])^int(word_binary[4]))
 
@@ -913,7 +921,7 @@ class SpaceFibre_Random_Generator:
                     data_to_log = data_10b + "_" + data_to_log
                     k_encoded_to_log = str(k_encoded) + k_encoded_to_log
 
-                    log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
+                    log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
                     log_file.write("32;7F7FCEFC;0;0001;\n")
                     word_counter_for_skip = 0
                 
@@ -943,7 +951,7 @@ class SpaceFibre_Random_Generator:
                 data_to_log = data_10b + "_" + data_to_log
                 k_encoded_to_log = str(k_encoded) + k_encoded_to_log
 
-                log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
+                log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
                 log_file.write("32;" + f"{(int(crc_8,2)):0>2X}" + f"{(sequence%128 + 128 * sequence_polarity):0>2X}" + "005C;0;0001;\n")
 
                 word_counter_for_skip += 1
@@ -969,7 +977,7 @@ class SpaceFibre_Random_Generator:
                     data_to_log = data_10b + "_" + data_to_log
                     k_encoded_to_log = str(k_encoded) + k_encoded_to_log
 
-                    log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
+                    log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
                     log_file.write("32;7F7FCEFC;0;0001;\n")
                     word_counter_for_skip = 0
 
@@ -999,7 +1007,7 @@ class SpaceFibre_Random_Generator:
             data_to_log = data_10b + "_" + data_to_log
             k_encoded_to_log = str(k_encoded) + k_encoded_to_log
 
-            log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
+            log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
             log_file.write("32;" + f"{(int(crc_8[0:8],2)):0>2X}" + f"{(sequence%128 +128 * sequence_polarity):0>2X}" + "84FC;0;0001;\n")
 
             word_counter_for_skip += 1
@@ -1026,7 +1034,7 @@ class SpaceFibre_Random_Generator:
                     data_to_log = data_10b + "_" + data_to_log
                     k_encoded_to_log = str(k_encoded) + k_encoded_to_log
 
-                    log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
+                    log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
                     log_file.write("32;7F7FCEFC;0;0001;\n")
                     word_counter_for_skip = 0
                 #check if SIF needed
@@ -1053,7 +1061,7 @@ class SpaceFibre_Random_Generator:
                     data_to_log = data_10b + "_" + data_to_log
                     k_encoded_to_log = str(k_encoded) + k_encoded_to_log
 
-                    log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
+                    log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
                     log_file.write("32;" + f"{(int(crc_8[0:8],2)):0>2X}" + f"{(sequence%128 + sequence_polarity*128):0>2X}" + "005C;0;0001;\n")
 
                     word_counter_for_skip += 1
@@ -1081,7 +1089,7 @@ class SpaceFibre_Random_Generator:
                     data_to_log = data_10b + "_" + data_to_log
                     k_encoded_to_log = str(k_encoded) + k_encoded_to_log
 
-                    log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
+                    log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
                     log_file.write("32;7F7FCEFC;0;0001;\n")
                     word_counter_for_skip = 0
                     
@@ -1092,7 +1100,7 @@ class SpaceFibre_Random_Generator:
                     k_encoded_to_log = str(k_encoded) + k_encoded_to_log
                     
                 log_file.write("32;" + f"{(int(word_binary, 2)):0>8X}" + ";0;0000;\n")
-                log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
+                log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
 
                 word_binary = word_binary[1:32] + str(int(word_binary[0])^int(word_binary[1])^int(word_binary[3])^int(word_binary[4]))
 
@@ -1121,7 +1129,7 @@ class SpaceFibre_Random_Generator:
             data_to_log = data_10b + "_" + data_to_log
             k_encoded_to_log = str(k_encoded) + k_encoded_to_log
 
-            log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = "fs")) + "\n")
+            log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
             log_file.write("32;CFCFCEFC;0;0001;\n")
 
         self.dut.RX_POS.value = cocotb.types.Logic("Z")

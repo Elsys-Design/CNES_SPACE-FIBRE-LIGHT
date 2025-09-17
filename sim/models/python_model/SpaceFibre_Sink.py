@@ -125,7 +125,7 @@ class SpaceFibre_Sink:
                 
                 if realigned == 1 and j != 0:
                     output_file_bin.write((word_bin + ";" + k_encoded_word + ";" + str(time_per_output) + ";" + str(word_realigned) + "\n"))
-                    output_file_10b.write((word_10b + ";" + k_encoded_word + ";" + str(time_per_output) + ";" + str(word_realigned) + "\n"))
+                    output_file_10b.write((word_10b + ";" + k_encoded_word + ";" + str(time_per_output) + ";" + str(word_realigned) + ";" + str(get_sim_time(units = "ns")) + "\n"))
                     if len(k_encoded_word) == 3:
                         output_file_hexa.write((f"{int(word, base = 2):0>6X}" + ";" + k_encoded_word + ";" + str(time_per_output) + ";" + str(word_realigned) + "\n"))
                     if len(k_encoded_word) == 2:
@@ -147,7 +147,7 @@ class SpaceFibre_Sink:
                 j += 1
             previous_buffer = buffer
             output_file_bin.write((word_bin + ";" + k_encoded_word + ";" + str(time_per_output) + ";" + str(word_realigned) + "\n"))
-            output_file_10b.write((word_10b + ";" + k_encoded_word + ";" + str(time_per_output) + ";" + str(word_realigned) + "\n"))
+            output_file_10b.write((word_10b + ";" + k_encoded_word + ";" + str(time_per_output) + ";" + str(word_realigned) + ";" + str(get_sim_time(units = "ns")) + "\n"))
             output_file_hexa.write((f"{int(word, base = 2):0>8X}" + ";" + k_encoded_word + ";" + str(time_per_output) + ";" + str(word_realigned) + "\n"))
 
         output_file_bin.close()

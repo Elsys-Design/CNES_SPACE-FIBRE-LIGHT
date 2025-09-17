@@ -148,6 +148,12 @@ async def write_10b_to_Rx(tb, encoded_data, delay, invert_polarity = 0):
         await Timer(time_per_input, units="fs")
     tb.logger.debug("sim_time %d ns: Data encoded sent : %d", get_sim_time(units = "ns"), encoded_data)
 
+async def send_idle_ctrl_word(tb, number_of_words):
+    for x in range(number_of_words):
+        await tb.spacefibre_driver.write_to_Rx("11111100", delay = 0, k_encoding = 1)
+        await tb.spacefibre_driver.write_to_Rx("11001110", delay = 0, k_encoding = 0)
+        await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
+        await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
 
 @cocotb.test()
 async def cocotb_run(dut):
@@ -177,6 +183,7 @@ async def cocotb_run(dut):
     #Sets DUT lane initialisation FSM to Active
     await initialization_procedure(tb)
 
+    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
 
     #Incremental data generation
 
@@ -191,6 +198,7 @@ async def cocotb_run(dut):
     #Start Test
     Data_lane_ana_control.data = bytearray( [0x01,0x00,0x00,0x00])
     await tb.masters[2].write_data(Data_lane_ana_control)
+    await stimuli 
     stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/255_incremental_data_1_frame.dat", file_format = 16))
     
     await stimuli 
@@ -277,7 +285,6 @@ async def cocotb_run(dut):
     else:
         tb.logger.info("simulation time %d ns : step 1.3 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
     
-
     #Configure Lane_Analizer
     Data_lane_ana_config.data = bytearray( [0x02,0x20,0x00,0x01])
     await tb.masters[2].write_data(Data_lane_ana_config)
@@ -311,7 +318,6 @@ async def cocotb_run(dut):
         tb.logger.error("simulation time %d ns : step 1.4 result: Failed\nError_count : %s \n\n\n", get_sim_time(units = "ns"), error_cnt)
     else:
         tb.logger.info("simulation time %d ns : step 1.4 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
-
 
     #Configure Lane_Analizer
     Data_lane_ana_config.data = bytearray( [0x81,0x20,0x00,0x01])
@@ -467,7 +473,6 @@ async def cocotb_run(dut):
 
         stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
 
-        await stimuli
 
         #Configure Lane_Analizer
         Data_lane_ana_config.data = bytearray( [0x19,0x19,0x00,0x01])
@@ -493,10 +498,12 @@ async def cocotb_run(dut):
 
         stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
 
-        await stimuli
 
         #Pull until Test End
         error_cnt = await wait_end_test(tb)
+        
+        await stimuli
+        
         
         if error_cnt != "00000000":
             step_2_failed = 1
