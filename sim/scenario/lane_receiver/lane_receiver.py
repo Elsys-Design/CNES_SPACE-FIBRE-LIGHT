@@ -203,7 +203,7 @@ async def cocotb_run(dut):
     
     await stimuli 
 
-    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
 
     #Pull until Test End
     error_cnt = await wait_end_test(tb)
@@ -239,7 +239,7 @@ async def cocotb_run(dut):
     
     await stimuli 
 
-    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
     
     #Pull until Test End
     error_cnt = await wait_end_test(tb)
@@ -274,7 +274,7 @@ async def cocotb_run(dut):
 
     await stimuli 
 
-    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
 
     #Pull until Test End
     error_cnt = await wait_end_test(tb)
@@ -308,7 +308,7 @@ async def cocotb_run(dut):
     
     await stimuli 
 
-    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
 
     #Pull until Test End
     error_cnt = await wait_end_test(tb)
@@ -341,7 +341,7 @@ async def cocotb_run(dut):
 
     await stimuli 
 
-    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
 
     #Pull until Test End
     error_cnt = await wait_end_test(tb)
@@ -375,7 +375,7 @@ async def cocotb_run(dut):
     
     await stimuli 
 
-    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
 
     #Pull until Test End
     error_cnt = await wait_end_test(tb)
@@ -496,7 +496,7 @@ async def cocotb_run(dut):
 
         await stimuli
 
-        stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+        stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
 
 
         #Pull until Test End
@@ -536,7 +536,7 @@ async def cocotb_run(dut):
 
     await stimuli
 
-    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
     
     #Pull until Test End
     error_cnt = await wait_end_test(tb)
@@ -590,7 +590,7 @@ async def cocotb_run(dut):
                                                                     frame_size = 0xC4,
                                                                     seed = 0x00_00_00_2E)
 
-    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
 
     #Pull until Test End
     error_cnt = await wait_end_test(tb)
@@ -620,7 +620,7 @@ async def cocotb_run(dut):
                                                                     frame_size = 0xC4,
                                                                     seed = 0x00_00_00_1E)
 
-    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
 
     #Pull until Test End
     error_cnt = await wait_end_test(tb)
@@ -652,7 +652,7 @@ async def cocotb_run(dut):
                                                                     frame_size = 0xC4,
                                                                     seed = 0x00_00_00_2F)
 
-    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
 
     #Pull until Test End
     error_cnt = await wait_end_test(tb)
@@ -749,7 +749,7 @@ async def cocotb_run(dut):
                                                                     frame_size = 0xC4,
                                                                     seed = 0x00_00_00_30)
 
-    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
 
     #Pull until Test End
     error_cnt = await wait_end_test(tb)
@@ -780,7 +780,7 @@ async def cocotb_run(dut):
                                                                     frame_size = 0xC4,
                                                                     seed = 0x00_00_00_31)
 
-    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
 
     #Pull until Test End
     error_cnt = await wait_end_test(tb)
@@ -866,7 +866,7 @@ async def cocotb_run(dut):
                                                                     seed = 0x00_00_00_2A)
     
 
-    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
 
 
     #Pull until Test End
@@ -949,7 +949,7 @@ async def cocotb_run(dut):
                                                                     frame_size = 0x100,
                                                                     seed = 0x00_00_00_2B)
     
-    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
 
         
     #Pull until Test End
@@ -1004,7 +1004,7 @@ async def cocotb_run(dut):
                                                                  frame_size = 0x100,
                                                                  seed = 0x00_00_00_2C + seed)
         
-        stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+        stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
             
         #Pull until Test End
         error_cnt = await wait_end_test(tb)
@@ -1059,7 +1059,7 @@ async def cocotb_run(dut):
                                                                  frame_size = 0x100,
                                                                  seed = 0x00_00_00_2C + seed)
         
-        stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+        stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
             
         #Pull until Test End
         error_cnt = await wait_end_test(tb)
@@ -1113,14 +1113,14 @@ async def cocotb_run(dut):
     await write_10b_to_Rx(tb, "1100011001", 0)
     await write_10b_to_Rx(tb, "1100011001", 0)
 
-    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
     
     await wait_end_test(tb)
 
     await stimuli
     
     check_error = cocotb.start_soon(tb.masters[0].read_data(Data_read_lane_config_status))
-    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
     
     await check_error
 
@@ -1160,7 +1160,7 @@ async def cocotb_run(dut):
                                                                  frame_number = 0x10,
                                                                  frame_size = 0x100,
                                                                  seed = 0x00_00_00_2F+seed)
-        stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+        stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
 
             
         #Pull until Test End
@@ -1177,7 +1177,7 @@ async def cocotb_run(dut):
     await stimuli
 
     check_error = cocotb.start_soon(tb.masters[0].read_data(Data_read_lane_config_status))
-    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
     await check_error
 
     error_cnt = format(Data_read_lane_config_status.data[1], '0>8b')[4:8] + format(Data_read_lane_config_status.data[0], '0>8b')[0:4]
@@ -1214,7 +1214,7 @@ async def cocotb_run(dut):
                                                                  frame_number = 0x10,
                                                                  frame_size = 0x100,
                                                                  seed = 0x00_00_00_2F+seed)
-        stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+        stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
 
             
         #Pull until Test End
@@ -1304,7 +1304,7 @@ async def cocotb_run(dut):
         await write_10b_to_Rx(tb, "1100011001", 0)
         await write_10b_to_Rx(tb, "1100011001", 0)
 
-        stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+        stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
         
         await wait_end_test(tb)
 
@@ -1348,7 +1348,7 @@ async def cocotb_run(dut):
                                                                     frame_number = 0x10,
                                                                     frame_size = 0x100,
                                                                     seed = 0x00_00_00_2F+seed)
-            stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+            stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
 
                 
             #Pull until Test End
@@ -1399,7 +1399,7 @@ async def cocotb_run(dut):
                                                                     frame_number = 0x10,
                                                                     frame_size = 0x100,
                                                                     seed = 0x00_00_00_2F+seed)
-            stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+            stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
 
                 
             #Pull until Test End
@@ -1451,7 +1451,7 @@ async def cocotb_run(dut):
                                                                     frame_number = 0x10,
                                                                     frame_size = 0x100,
                                                                     seed = 0x00_00_00_2F+seed)
-            stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+            stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
 
                 
             #Pull until Test End
@@ -1502,7 +1502,7 @@ async def cocotb_run(dut):
                                                                     frame_number = 0x10,
                                                                     frame_size = 0x100,
                                                                     seed = 0x00_00_00_2F+seed)
-            stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+            stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
 
                 
             #Pull until Test End
@@ -1579,7 +1579,7 @@ async def cocotb_run(dut):
     await write_10b_to_Rx(tb, "1110110101", 0)
     await write_10b_to_Rx(tb, "1100011001", 0)
 
-    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
     
 
     
@@ -1634,7 +1634,7 @@ async def cocotb_run(dut):
             await write_10b_to_Rx(tb, "1100011001", 0)
             await write_10b_to_Rx(tb, "1100011001", 0)
 
-        stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+        stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
 
         #Pull until Test End
         error_cnt = await wait_end_test(tb)
@@ -1671,7 +1671,7 @@ async def cocotb_run(dut):
         await write_10b_to_Rx(tb, "1100011001", 0)
         await write_10b_to_Rx(tb, "1100011001", 0)
 
-    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
 
     #Pull until Test End
     error_cnt = await wait_end_test(tb)
@@ -1718,7 +1718,7 @@ async def cocotb_run(dut):
     await write_10b_to_Rx(tb, "1100011001", 0)
     await write_10b_to_Rx(tb, "1100011001", 0)
 
-    wait_check_error = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+    wait_check_error = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
 
     #Pull until Test End
     error_cnt = await wait_end_test(tb)
@@ -2182,7 +2182,7 @@ async def cocotb_run(dut):
 
         #Incremental data generation
 
-        stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+        stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
 
         #Configure Lane_Analizer
         Data_lane_ana_config.data = bytearray( [0x84,0x20,0x00,0x00])
@@ -2200,7 +2200,7 @@ async def cocotb_run(dut):
 
         await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/255_incremental_data_1_frame.dat", file_format = 16, invert_polarity = 0)
         
-        stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+        stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
 
         #Pull until Test End
         error_cnt = await wait_end_test(tb)
@@ -2242,7 +2242,7 @@ async def cocotb_run(dut):
                                                                             seed = 0x00_00_00_2A+seed,
                                                                             invert_polarity = 0)
             
-            stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+            stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
             
             #Pull until Test End
             error_cnt = await wait_end_test(tb)
@@ -2279,7 +2279,7 @@ async def cocotb_run(dut):
         
         await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/Data_Link_control_word.dat", file_format = 16)
 
-        stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+        stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
 
         #Pull until Test End
         error_cnt = await wait_end_test(tb)
