@@ -227,7 +227,7 @@ async def cocotb_run(dut):
 
     #Incremental data generation
 
-    tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 20))
+    tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 50))
     #Configure Lane_Generator
     Data_lane_gen_config.data = bytearray( [0x84,0x20,0x00,0x00])
     gen_config = cocotb.start_soon(tb.masters[1].write_data(Data_lane_gen_config))
@@ -261,11 +261,11 @@ async def cocotb_run(dut):
     
     await log_rx
     
-    await tempo_idle
 
-    
     #Pull until Test End
     error_cnt = await wait_end_test(tb)
+    
+    await tempo_idle
 
     if error_cnt != "00000000":
         step_1_failed = 1 
@@ -276,7 +276,7 @@ async def cocotb_run(dut):
     
     #PRBS data generation
 
-    tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 20))
+    tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 50))
     #Configure Lane_Generator
     Data_lane_gen_config.data = bytearray( [0x9F,0x20,0x00,0x01])
     gen_config = cocotb.start_soon(tb.masters[1].write_data(Data_lane_gen_config))
@@ -313,11 +313,11 @@ async def cocotb_run(dut):
     
     await log_rx
     
-    await tempo_idle
 
-    
     #Pull until Test End
     error_cnt = await wait_end_test(tb)
+    
+    await tempo_idle
 
     if error_cnt != "00000000":
         step_1_failed = 1
@@ -326,7 +326,7 @@ async def cocotb_run(dut):
         tb.logger.info("simulation time %d ns : step 1.2 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
     
 
-    tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 20))
+    tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 50))
     #Configure Lane_Generator
     Data_lane_gen_config.data = bytearray( [0x9F,0x20,0x00,0x01])
     gen_config = cocotb.start_soon(tb.masters[1].write_data(Data_lane_gen_config))
@@ -364,11 +364,11 @@ async def cocotb_run(dut):
     
     await log_rx
     
-    await tempo_idle
-
-    
     #Pull until Test End
     error_cnt = await wait_end_test(tb)
+
+    await tempo_idle
+    
 
     
     if error_cnt != "00000000":
@@ -379,7 +379,7 @@ async def cocotb_run(dut):
 
 
 
-    tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 20))
+    tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 50))
     #Configure Lane_Generator
     Data_lane_gen_config.data = bytearray( [0x82,0x20,0x00,0x01])
     gen_config = cocotb.start_soon(tb.masters[1].write_data(Data_lane_gen_config))
@@ -416,11 +416,11 @@ async def cocotb_run(dut):
     
     await log_rx
     
-    await tempo_idle
-
-    
     #Pull until Test End
     error_cnt = await wait_end_test(tb)
+
+    await tempo_idle
+    
     
     if error_cnt != "00000000":
         step_1_failed = 1 
@@ -429,7 +429,7 @@ async def cocotb_run(dut):
         tb.logger.info("simulation time %d ns : step 1.4 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
 
 
-    tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 20))
+    tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 50))
     #Configure Lane_Generator
     Data_lane_gen_config.data = bytearray( [0x81,0x08,0x00,0x01])
     gen_config = cocotb.start_soon(tb.masters[1].write_data(Data_lane_gen_config))
@@ -466,11 +466,11 @@ async def cocotb_run(dut):
     
     await log_rx
     
-    await tempo_idle
-
-    
     #Pull until Test End
     error_cnt = await wait_end_test(tb)
+
+    await tempo_idle
+    
     
     if error_cnt != "00000000":
         step_1_failed = 1
@@ -522,11 +522,11 @@ async def cocotb_run(dut):
     
     await log_rx
     
-    await tempo_idle
 
-    
     #Pull until Test End
     error_cnt = await wait_end_test(tb)
+    
+    await tempo_idle
 
     if error_cnt != "00000000":
         step_1_failed = 1 
@@ -536,7 +536,7 @@ async def cocotb_run(dut):
 
     #PRBS data generation
 
-    tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 20))
+    tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 50))
     #Configure Lane_Generator
     Data_lane_gen_config.data = bytearray( [0x9F,0x20,0x00,0x01])
     gen_config = cocotb.start_soon(tb.masters[1].write_data(Data_lane_gen_config))
@@ -573,11 +573,11 @@ async def cocotb_run(dut):
     
     await log_rx
     
-    await tempo_idle
 
-    
     #Pull until Test End
     error_cnt = await wait_end_test(tb)
+    
+    await tempo_idle
 
     if error_cnt != "00000000":
         step_1_failed = 1 
@@ -587,7 +587,7 @@ async def cocotb_run(dut):
 
 
 
-    tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 20))
+    tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 50))
     #Configure Lane_Generator
     Data_lane_gen_config.data = bytearray( [0x9F,0x20,0x00,0x01])
     gen_config = cocotb.start_soon(tb.masters[1].write_data(Data_lane_gen_config))
@@ -625,11 +625,11 @@ async def cocotb_run(dut):
     
     await log_rx
     
-    await tempo_idle
-
-    
     #Pull until Test End
     error_cnt = await wait_end_test(tb)
+
+    await tempo_idle
+
 
     if error_cnt != "00000000":
         step_1_failed = 1 
@@ -638,7 +638,7 @@ async def cocotb_run(dut):
         tb.logger.info("simulation time %d ns : step 1.8 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
 
 
-    tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 20))
+    tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 50))
     #Configure Lane_Generator
     Data_lane_gen_config.data = bytearray( [0x82,0x20,0x00,0x01])
     gen_config = cocotb.start_soon(tb.masters[1].write_data(Data_lane_gen_config))
@@ -675,11 +675,11 @@ async def cocotb_run(dut):
     
     await log_rx
     
-    await tempo_idle
-
-    
     #Pull until Test End
     error_cnt = await wait_end_test(tb)
+
+    await tempo_idle
+    
     
     if error_cnt != "00000000":
         step_1_failed = 1 
@@ -688,7 +688,7 @@ async def cocotb_run(dut):
         tb.logger.info("simulation time %d ns : step 1.9 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
 
 
-    tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 20))
+    tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 50))
     #Configure Lane_Generator
     Data_lane_gen_config.data = bytearray( [0x81,0x08,0x00,0x01])
     gen_config = cocotb.start_soon(tb.masters[1].write_data(Data_lane_gen_config))
@@ -725,11 +725,11 @@ async def cocotb_run(dut):
     
     await log_rx
     
-    await tempo_idle
-
-    
     #Pull until Test End
     error_cnt = await wait_end_test(tb)
+
+    await tempo_idle
+    
     
     if error_cnt != "00000000":
         step_1_failed = 1
@@ -780,11 +780,11 @@ async def cocotb_run(dut):
     
     await log_rx
     
-    await tempo_idle
-
-    
     #Pull until Test End
     error_cnt = await wait_end_test(tb)
+
+    await tempo_idle
+    
 
     if error_cnt != "00000000":
         step_1_failed = 1 
@@ -794,7 +794,7 @@ async def cocotb_run(dut):
 
     #PRBS data generation
 
-    tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 20))
+    tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 50))
     #Configure Lane_Generator
     Data_lane_gen_config.data = bytearray( [0x9F,0x20,0x00,0x01])
     gen_config = cocotb.start_soon(tb.masters[1].write_data(Data_lane_gen_config))
@@ -831,11 +831,11 @@ async def cocotb_run(dut):
     
     await log_rx
     
-    await tempo_idle
-
-    
     #Pull until Test End
     error_cnt = await wait_end_test(tb)
+
+    await tempo_idle
+    
 
     if error_cnt != "00000000":
         step_1_failed = 1 
@@ -843,7 +843,7 @@ async def cocotb_run(dut):
     else:
         tb.logger.info("simulation time %d ns : step 1.12 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
 
-    tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 20))
+    tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 50))
     #Configure Lane_Generator
     Data_lane_gen_config.data = bytearray( [0x9F,0x20,0x00,0x01])
     gen_config = cocotb.start_soon(tb.masters[1].write_data(Data_lane_gen_config))
@@ -881,11 +881,11 @@ async def cocotb_run(dut):
     
     await log_rx
     
-    await tempo_idle
-
-    
     #Pull until Test End
     error_cnt = await wait_end_test(tb)
+
+    await tempo_idle
+    
     
     if error_cnt != "00000000":
         step_1_failed = 1 
@@ -893,7 +893,7 @@ async def cocotb_run(dut):
     else:
         tb.logger.info("simulation time %d ns : step 1.13 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
 
-    tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 20))
+    tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 50))
     #Configure Lane_Generator
     Data_lane_gen_config.data = bytearray( [0x82,0x20,0x00,0x01])
     gen_config = cocotb.start_soon(tb.masters[1].write_data(Data_lane_gen_config))
@@ -930,11 +930,11 @@ async def cocotb_run(dut):
     
     await log_rx
     
-    await tempo_idle
-
-    
     #Pull until Test End
     error_cnt = await wait_end_test(tb)
+
+    await tempo_idle
+    
     
     if error_cnt != "00000000":
         step_1_failed = 1 
@@ -943,7 +943,7 @@ async def cocotb_run(dut):
         tb.logger.info("simulation time %d ns : step 1.14 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
 
 
-    tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 20))
+    tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 50))
     #Configure Lane_Generator
     Data_lane_gen_config.data = bytearray( [0x81,0x08,0x00,0x01])
     gen_config = cocotb.start_soon(tb.masters[1].write_data(Data_lane_gen_config))
@@ -980,11 +980,11 @@ async def cocotb_run(dut):
     
     await log_rx
     
-    await tempo_idle
 
-    
     #Pull until Test End
     error_cnt = await wait_end_test(tb)
+    
+    await tempo_idle
     
     if error_cnt != "00000000":
         step_1_failed = 1
@@ -1002,6 +1002,42 @@ async def cocotb_run(dut):
 
     Data_read_lane_config_parameters.data = bytearray([0x01,0x00,0x00,0x00]) # Enable  Parallele loopback
     await tb.masters[0].write_data(Data_read_lane_config_parameters)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     if target == "VERSAL" : 
@@ -1028,7 +1064,7 @@ async def cocotb_run(dut):
 
         #Incremental data generation
 
-        tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 20))
+        tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 50))
         #Configure Lane_Generator
         Data_lane_gen_config.data = bytearray( [0x84,0x20,0x00,0x00])
         gen_config = cocotb.start_soon(tb.masters[1].write_data(Data_lane_gen_config))
@@ -1062,11 +1098,11 @@ async def cocotb_run(dut):
         
         await log_rx
         
-        await tempo_idle
-
-        
         #Pull until Test End
         error_cnt = await wait_end_test(tb)
+
+        await tempo_idle
+        
 
         if error_cnt != "00000000":
             step_2_failed = 1
@@ -1076,7 +1112,7 @@ async def cocotb_run(dut):
 
         #PRBS data generation
 
-        tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 20))
+        tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 50))
         #Configure Lane_Generator
         Data_lane_gen_config.data = bytearray( [0x9F,0x20,0x00,0x01])
         gen_config = cocotb.start_soon(tb.masters[1].write_data(Data_lane_gen_config))
@@ -1113,11 +1149,11 @@ async def cocotb_run(dut):
         
         await log_rx
         
-        await tempo_idle
-
-        
         #Pull until Test End
         error_cnt = await wait_end_test(tb)
+
+        await tempo_idle
+        
 
         if error_cnt != "00000000":
             step_2_failed = 1
@@ -1126,7 +1162,7 @@ async def cocotb_run(dut):
             tb.logger.info("simulation time %d ns : step 2.2 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
         
         
-        tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 20))
+        tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 50))
         #Configure Lane_Generator
         Data_lane_gen_config.data = bytearray( [0x9F,0x20,0x00,0x01])
         gen_config = cocotb.start_soon(tb.masters[1].write_data(Data_lane_gen_config))
@@ -1164,11 +1200,11 @@ async def cocotb_run(dut):
         
         await log_rx
         
-        await tempo_idle
-
-        
         #Pull until Test End
         error_cnt = await wait_end_test(tb)
+
+        await tempo_idle
+        
         
         if error_cnt != "00000000":
             step_2_failed = 1
@@ -1177,7 +1213,7 @@ async def cocotb_run(dut):
             tb.logger.info("simulation time %d ns : step 2.3 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
         
 
-        tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 20))
+        tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 50))
         #Configure Lane_Generator
         Data_lane_gen_config.data = bytearray( [0x82,0x20,0x00,0x01])
         gen_config = cocotb.start_soon(tb.masters[1].write_data(Data_lane_gen_config))
@@ -1214,11 +1250,11 @@ async def cocotb_run(dut):
         
         await log_rx
         
-        await tempo_idle
-
-        
         #Pull until Test End
         error_cnt = await wait_end_test(tb)
+
+        await tempo_idle
+        
         
         if error_cnt != "00000000":
             step_2_failed = 1
@@ -1227,7 +1263,7 @@ async def cocotb_run(dut):
             tb.logger.info("simulation time %d ns : step 2.4 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
 
         
-        tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 20))
+        tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 50))
         #Configure Lane_Generator
         Data_lane_gen_config.data = bytearray( [0x81,0x08,0x00,0x01])
         gen_config = cocotb.start_soon(tb.masters[1].write_data(Data_lane_gen_config))
@@ -1264,11 +1300,11 @@ async def cocotb_run(dut):
         
         await log_rx
         
-        await tempo_idle
 
-        
         #Pull until Test End
         error_cnt = await wait_end_test(tb)
+        
+        await tempo_idle
         
         if error_cnt != "00000000":
             step_2_failed = 1
@@ -1319,11 +1355,11 @@ async def cocotb_run(dut):
         
         await log_rx
         
-        await tempo_idle
 
-        
         #Pull until Test End
         error_cnt = await wait_end_test(tb)
+        
+        await tempo_idle
 
         if error_cnt != "00000000":
             step_2_failed = 1
@@ -1334,7 +1370,7 @@ async def cocotb_run(dut):
         #PRBS data generation
 
 
-        tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 20))
+        tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 50))
         #Configure Lane_Generator
         Data_lane_gen_config.data = bytearray( [0x9F,0x20,0x00,0x01])
         gen_config = cocotb.start_soon(tb.masters[1].write_data(Data_lane_gen_config))
@@ -1371,11 +1407,11 @@ async def cocotb_run(dut):
         
         await log_rx
         
-        await tempo_idle
-
-        
         #Pull until Test End
         error_cnt = await wait_end_test(tb)
+
+        await tempo_idle
+        
 
         if error_cnt != "00000000":
             step_2_failed = 1
@@ -1384,7 +1420,7 @@ async def cocotb_run(dut):
             tb.logger.info("simulation time %d ns : step 2.7 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
         
 
-        tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 20))
+        tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 50))
         #Configure Lane_Generator
         Data_lane_gen_config.data = bytearray( [0x9F,0x20,0x00,0x01])
         gen_config = cocotb.start_soon(tb.masters[1].write_data(Data_lane_gen_config))
@@ -1422,11 +1458,11 @@ async def cocotb_run(dut):
         
         await log_rx
         
-        await tempo_idle
 
-        
         #Pull until Test End
         error_cnt = await wait_end_test(tb)
+        
+        await tempo_idle
         
         if error_cnt != "00000000":
             step_2_failed = 1
@@ -1435,7 +1471,7 @@ async def cocotb_run(dut):
             tb.logger.info("simulation time %d ns : step 2.8 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
         
 
-        tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 20))
+        tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 50))
         #Configure Lane_Generator
         Data_lane_gen_config.data = bytearray( [0x82,0x20,0x00,0x01])
         gen_config = cocotb.start_soon(tb.masters[1].write_data(Data_lane_gen_config))
@@ -1471,12 +1507,12 @@ async def cocotb_run(dut):
         tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
         
         await log_rx
-        
-        await tempo_idle
-
-        
         #Pull until Test End
         error_cnt = await wait_end_test(tb)
+        
+
+        await tempo_idle
+        
         
         if error_cnt != "00000000":
             step_2_failed = 1
@@ -1485,7 +1521,7 @@ async def cocotb_run(dut):
             tb.logger.info("simulation time %d ns : step 2.9 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
 
         
-        tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 20))
+        tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 50))
         #Configure Lane_Generator
         Data_lane_gen_config.data = bytearray( [0x81,0x08,0x00,0x01])
         gen_config = cocotb.start_soon(tb.masters[1].write_data(Data_lane_gen_config))
@@ -1522,11 +1558,11 @@ async def cocotb_run(dut):
         
         await log_rx
         
-        await tempo_idle
-
-        
         #Pull until Test End
         error_cnt = await wait_end_test(tb)
+
+        
+        await tempo_idle
         
         if error_cnt != "00000000":
             step_2_failed = 1
@@ -1576,11 +1612,11 @@ async def cocotb_run(dut):
         
         await log_rx
         
-        await tempo_idle
-
-        
         #Pull until Test End
         error_cnt = await wait_end_test(tb)
+
+        await tempo_idle
+        
 
         if error_cnt != "00000000":
             step_2_failed = 1
@@ -1591,7 +1627,7 @@ async def cocotb_run(dut):
         #PRBS data generation
 
 
-        tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 20))
+        tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 50))
         #Configure Lane_Generator
         Data_lane_gen_config.data = bytearray( [0x9F,0x20,0x00,0x01])
         gen_config = cocotb.start_soon(tb.masters[1].write_data(Data_lane_gen_config))
@@ -1628,11 +1664,11 @@ async def cocotb_run(dut):
         
         await log_rx
         
-        await tempo_idle
-
-        
         #Pull until Test End
         error_cnt = await wait_end_test(tb)
+
+        await tempo_idle
+        
 
         if error_cnt != "00000000":
             step_2_failed = 1
@@ -1641,7 +1677,7 @@ async def cocotb_run(dut):
             tb.logger.info("simulation time %d ns : step 2.12 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
         
         
-        tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 20))
+        tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 50))
         #Configure Lane_Generator
         Data_lane_gen_config.data = bytearray( [0x9F,0x20,0x00,0x01])
         gen_config = cocotb.start_soon(tb.masters[1].write_data(Data_lane_gen_config))
@@ -1679,11 +1715,11 @@ async def cocotb_run(dut):
         
         await log_rx
         
-        await tempo_idle
-
-        
         #Pull until Test End
         error_cnt = await wait_end_test(tb)
+
+        await tempo_idle
+        
         
         if error_cnt != "00000000":
             step_2_failed = 1
@@ -1692,7 +1728,7 @@ async def cocotb_run(dut):
             tb.logger.info("simulation time %d ns : step 2.13 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
         
 
-        tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 20))
+        tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 50))
         #Configure Lane_Generator
         Data_lane_gen_config.data = bytearray( [0x82,0x20,0x00,0x01])
         gen_config = cocotb.start_soon(tb.masters[1].write_data(Data_lane_gen_config))
@@ -1729,11 +1765,11 @@ async def cocotb_run(dut):
         
         await log_rx
         
-        await tempo_idle
-
-        
         #Pull until Test End
         error_cnt = await wait_end_test(tb)
+
+        await tempo_idle
+        
         
         if error_cnt != "00000000":
             step_2_failed = 1
@@ -1741,7 +1777,7 @@ async def cocotb_run(dut):
         else:
             tb.logger.info("simulation time %d ns : step 2.14 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
 
-        tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 20))
+        tempo_idle = cocotb.start_soon(send_idle_ctrl_word(tb, 50))
         #Configure Lane_Generator
         Data_lane_gen_config.data = bytearray( [0x81,0x08,0x00,0x01])
         gen_config = cocotb.start_soon(tb.masters[1].write_data(Data_lane_gen_config))
@@ -1778,11 +1814,11 @@ async def cocotb_run(dut):
         
         await log_rx
         
-        await tempo_idle
-
         
         #Pull until Test End
         error_cnt = await wait_end_test(tb)
+
+        await tempo_idle
         
         if error_cnt != "00000000":
             step_2_failed = 1
@@ -1999,7 +2035,7 @@ async def cocotb_run(dut):
     #Pull until Test End
     error_cnt = await wait_end_test(tb)
 
-    await Combine(*[stimulus_tx, log_rx])
+    await Combine(*[log_rx,stimulus_tx])
     
     if error_cnt != "00000000":
         step_4_failed = 1
@@ -2017,17 +2053,18 @@ async def cocotb_run(dut):
     #writting the monitors loggers
     tb.write_monitor_data()
 
-        #print results of test
+    #print results of test
     tb.logger.info("simulation time %d ns : TEST RESULTS :",get_sim_time(units="ns"))
+    
     if step_1_failed == 0:
         tb.logger.info("simulation time %d ns : step 1 result: Pass",get_sim_time(units="ns"))
     else:
         tb.logger.error("simulation time %d ns : step 1 result: Failed", get_sim_time(units="ns"))
-
-    if step_2_failed == 0:
-        tb.logger.info("simulation time %d ns : step 2 result: Pass",get_sim_time(units="ns"))
-    else:
-        tb.logger.error("simulation time %d ns : step 2 result: Failed", get_sim_time(units="ns"))
+    if target == "VERSAL":
+        if step_2_failed == 0:
+            tb.logger.info("simulation time %d ns : step 2 result: Pass",get_sim_time(units="ns"))
+        else:
+            tb.logger.error("simulation time %d ns : step 2 result: Failed", get_sim_time(units="ns"))
 
     if step_4_failed == 0:
         tb.logger.info("simulation time %d ns : step 4 result: Pass",get_sim_time(units="ns"))

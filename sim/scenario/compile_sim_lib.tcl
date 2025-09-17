@@ -131,9 +131,9 @@ vcom +cover=sb +acc -work phy_plus_lane_64_lib  $rootpath/src/module_phy_plus_la
 vcom +cover=sb +acc -work phy_plus_lane_64_lib  $rootpath/src/module_phy_plus_lane_64b/ppl_64_word_alignment.vhd
 
 echo "############# Start compile NX HSSL #############"
-vcom +cover=sb +acc -2008 -work nx  $rootpath/src/ip/cores/HSSL_Nanoxplore/nxLibrary-Ultra.vhdp
-vlog +cover=sb +acc -sv -work phy_plus_lane_64_lib  $rootpath/src/ip/cores/HSSL_Nanoxplore/merged_nx_hssl_u_full.svp
-vcom +cover=sb +acc -work phy_plus_lane_64_lib  $rootpath/src/ip/cores/HSSL_Nanoxplore/hssl_SpaceFibre_64b.vhd
+vlog +cover=sb +acc -incr -timescale=1ps/1ps -sv -work phy_plus_lane_64_lib  $rootpath/src/ip/cores/HSSL_Nanoxplore/merged_nx_hssl_u_full.svp
+vcom +cover=sb +acc -2008 -work nx -mixedsvvh pc  $rootpath/src/ip/cores/HSSL_Nanoxplore/nxLibrary-Ultra.vhdp
+vcom +cover=sb +acc -2008 -mixedsvvh pc -work  phy_plus_lane_64_lib  $rootpath/src/ip/cores/HSSL_Nanoxplore/hssl_SpaceFibre_64b.vhd
 
 echo "######## Start compile Lane_layer VERSAL #########"
 vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/src/module_phy_plus_lane/lane_ctrl_word_detect.vhd
