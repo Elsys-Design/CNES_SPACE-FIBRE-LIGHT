@@ -49,19 +49,28 @@ entity ppl_64_word_alignment is
     INVALID_CHAR_HSSL       : in  std_logic_vector(C_K_CHAR_WIDTH-1 downto 0); --! Invalid character flags from HSSL IP
     DISPARITY_ERR_HSSL      : in  std_logic_vector(C_K_CHAR_WIDTH-1 downto 0); --! Disparity error flags from HSSL IP
     RX_WORD_IS_ALIGNED_HSSL : in  std_logic;                                   --! RX word is aligned from HSSL IP
+    RX_VALID_REALIGN_HSSL : in  std_logic;                                   --! RX word is aligned from HSSL IP
     COMMA_DET_HSSL          : in  std_logic_vector(C_K_CHAR_WIDTH-1 downto 0); --! Flag indicates that a comma is detected on the word receive
-    LOSS_OF_SIGNAL_HSSL     : in  std_logic                                    --! Loss of signal flag from HSSL IP
+    LOSS_OF_SIGNAL_HSSL     : in  std_logic                                   --! Loss of signal flag from HSSL IP
   );
 end ppl_64_word_alignment;
 
 architecture rtl of ppl_64_word_alignment is
 ---------------------------------------------------------
+----- Type declaration -----
+---------------------------------------------------------
+type rx_word_align_fsm_type is (
+   INIT_ST,  --! INIT state of the FSM waiting for alignment
+   WAITING_COMMA_ST,
+   ALIGNED_ST --! Checking data to validate synchronization state
+   );
+---------------------------------------------------------
 -----                  Signal declaration           -----
 ---------------------------------------------------------
-
+  signal current_state               : rx_word_align_fsm_type;
   signal reg_data                    : std_logic_vector(C_DATA_WIDTH-1 downto 0);
   signal reg_k_char                  : std_logic_vector(C_K_CHAR_WIDTH-1 downto 0);
-  signal alignment_byte              : std_logic_vector(C_K_CHAR_WIDTH-1 downto 0);
+  signal alignment_byte              : unsigned(C_K_CHAR_WIDTH-1 downto 0);
 begin
 ---------------------------------------------------------
 -----                     Process                   -----
@@ -79,79 +88,215 @@ begin
       alignment_byte         <= (others => '0');
       reg_data               <= (others => '0');
       reg_k_char             <= (others => '0');
+      current_state          <= INIT_ST;
     elsif rising_edge(CLK) then
-      if RX_WORD_IS_ALIGNED_HSSL ='1' then
-        -- Comma on byte 7
-        if alignment_byte(7) = '1' or (COMMA_DET_HSSL(7) = '1' and alignment_byte = std_logic_vector(to_unsigned(0,alignment_byte'length)))  then
-          alignment_byte      <= "10000000";
-          reg_data            <= DATA_RX_HSSL;
-          DATA_RX_PLWA        <= DATA_RX_HSSL(7*8-1 downto 0) & reg_data(C_K_CHAR_WIDTH*8-1 downto 7*8)  ;
-          reg_k_char          <= VALID_K_CHARAC_HSSL;
-          VALID_K_CHARAC_PLWA <= VALID_K_CHARAC_HSSL(7-1 downto 0) & reg_k_char(7);
-          DATA_RDY_PLWA       <= '1';
-        -- Comma on byte 6
-        elsif alignment_byte(6) = '1' or (COMMA_DET_HSSL(6) = '1' and alignment_byte= std_logic_vector(to_unsigned(0,alignment_byte'length)))  then
-          alignment_byte      <= "01000000";
-          reg_data            <= DATA_RX_HSSL;
-          DATA_RX_PLWA        <= DATA_RX_HSSL(6*8-1 downto 0) & reg_data(C_K_CHAR_WIDTH*8-1 downto 6*8);
-          reg_k_char          <= VALID_K_CHARAC_HSSL;
-          VALID_K_CHARAC_PLWA <= VALID_K_CHARAC_HSSL(6-1 downto 0) & reg_k_char(7 downto 6);
-          DATA_RDY_PLWA       <= '1';
-        -- Comma on byte 5
-        elsif alignment_byte(5) = '1' or (COMMA_DET_HSSL(5) = '1' and alignment_byte = std_logic_vector(to_unsigned(0,alignment_byte'length)))  then
-          alignment_byte      <= "00100000";
-          reg_data            <= DATA_RX_HSSL;
-          DATA_RX_PLWA        <= DATA_RX_HSSL(5*8-1 downto 0) & reg_data(C_K_CHAR_WIDTH*8-1 downto 5*8);
-          reg_k_char          <= VALID_K_CHARAC_HSSL;
-          VALID_K_CHARAC_PLWA <= VALID_K_CHARAC_HSSL(5-1 downto 0) & reg_k_char(7 downto 5);
-          DATA_RDY_PLWA       <= '1';
-        -- Comma on byte 4
-        elsif alignment_byte(4) = '1' or (COMMA_DET_HSSL(4) = '1' and alignment_byte = std_logic_vector(to_unsigned(0,alignment_byte'length)))  then
-          alignment_byte      <= "00010000";
-          reg_data            <= DATA_RX_HSSL;
-          DATA_RX_PLWA        <= DATA_RX_HSSL(4*8-1 downto 0) & reg_data(C_K_CHAR_WIDTH*8-1 downto 4*8);
-          reg_k_char          <= VALID_K_CHARAC_HSSL;
-          VALID_K_CHARAC_PLWA <= VALID_K_CHARAC_HSSL(4-1 downto 0) & reg_k_char(7 downto 4);
-          DATA_RDY_PLWA       <= '1';
-        -- Comma on byte 3
-        elsif alignment_byte(3) = '1' or (COMMA_DET_HSSL(3) = '1' and alignment_byte = std_logic_vector(to_unsigned(0,alignment_byte'length)))  then
-          alignment_byte      <= "00001000";
-          reg_data            <= DATA_RX_HSSL;
-          DATA_RX_PLWA        <= DATA_RX_HSSL(3*8-1 downto 0) & reg_data(C_K_CHAR_WIDTH*8-1 downto 3*8);
-          reg_k_char          <= VALID_K_CHARAC_HSSL;
-          VALID_K_CHARAC_PLWA <= VALID_K_CHARAC_HSSL(3-1 downto 0) & reg_k_char(7 downto 3);
-          DATA_RDY_PLWA       <= '1';
-        -- Comma on byte 2
-        elsif alignment_byte(2) = '1' or (COMMA_DET_HSSL(2) = '1' and alignment_byte = std_logic_vector(to_unsigned(0,alignment_byte'length)))  then
-          alignment_byte      <= "00000100";
-          reg_data            <= DATA_RX_HSSL;
-          DATA_RX_PLWA        <= DATA_RX_HSSL(2*8-1 downto 0) & reg_data(C_K_CHAR_WIDTH*8-1 downto 2*8);
-          reg_k_char          <= VALID_K_CHARAC_HSSL;
-          VALID_K_CHARAC_PLWA <= VALID_K_CHARAC_HSSL(2-1 downto 0) & reg_k_char(7 downto 2);
-          DATA_RDY_PLWA       <= '1';
-        -- Comma on byte 1
-        elsif alignment_byte(1) = '1' or (COMMA_DET_HSSL(1) = '1' and alignment_byte = std_logic_vector(to_unsigned(0,alignment_byte'length)))  then
-          alignment_byte      <= "00000010";
-          reg_data            <= DATA_RX_HSSL;
-          DATA_RX_PLWA        <= DATA_RX_HSSL(1*8-1 downto 0) & reg_data(C_K_CHAR_WIDTH*8-1 downto 1*8);
-          reg_k_char          <= VALID_K_CHARAC_HSSL;
-          VALID_K_CHARAC_PLWA <= VALID_K_CHARAC_HSSL(1-1 downto 0) & reg_k_char(7 downto 1);
-          DATA_RDY_PLWA       <= '1';
-        -- Comma on byte 0
-        elsif alignment_byte(0) = '1' or (COMMA_DET_HSSL(0) = '1' and alignment_byte = std_logic_vector(to_unsigned(0,alignment_byte'length)))  then
-          alignment_byte      <= "00000001";
-          DATA_RX_PLWA        <= DATA_RX_HSSL;
-          VALID_K_CHARAC_PLWA <= VALID_K_CHARAC_HSSL;
-          DATA_RDY_PLWA       <= '1';
-        end if;
-      else
-        DATA_RX_PLWA           <= (others => '0');
-        VALID_K_CHARAC_PLWA    <= (others => '0');
-        DATA_RDY_PLWA          <= '0';
-        alignment_byte         <= (others => '0');
-        reg_data               <= (others => '0');
-        reg_k_char             <= (others => '0');
-      end if;
+      case current_state is
+        when INIT_ST  =>
+          -- Word is aligned
+          if RX_WORD_IS_ALIGNED_HSSL ='1' and RX_VALID_REALIGN_HSSL= '1' then
+            current_state  <= WAITING_COMMA_ST;
+          end if;
+
+        when WAITING_COMMA_ST =>
+          -- Word is aligned
+          if RX_WORD_IS_ALIGNED_HSSL ='1' then
+            -- Comma on byte 7
+            if COMMA_DET_HSSL(7) = '1'  then
+              alignment_byte      <= "10000000";
+              reg_data            <= DATA_RX_HSSL;
+              DATA_RX_PLWA        <= DATA_RX_HSSL(7*8-1 downto 0) & reg_data(C_K_CHAR_WIDTH*8-1 downto 7*8)  ;
+              reg_k_char          <= VALID_K_CHARAC_HSSL;
+              VALID_K_CHARAC_PLWA <= VALID_K_CHARAC_HSSL(7-1 downto 0) & reg_k_char(7);
+              DATA_RDY_PLWA       <= '1';
+              current_state       <= ALIGNED_ST;
+            -- Comma on byte 6
+            elsif COMMA_DET_HSSL(6) = '1'  then
+              alignment_byte      <= "01000000";
+              reg_data            <= DATA_RX_HSSL;
+              DATA_RX_PLWA        <= DATA_RX_HSSL(6*8-1 downto 0) & reg_data(C_K_CHAR_WIDTH*8-1 downto 6*8);
+              reg_k_char          <= VALID_K_CHARAC_HSSL;
+              VALID_K_CHARAC_PLWA <= VALID_K_CHARAC_HSSL(6-1 downto 0) & reg_k_char(7 downto 6);
+              DATA_RDY_PLWA       <= '1';
+              current_state       <= ALIGNED_ST;
+            -- Comma on byte 5
+            elsif COMMA_DET_HSSL(5) = '1' then
+              alignment_byte      <= "00100000";
+              reg_data            <= DATA_RX_HSSL;
+              DATA_RX_PLWA        <= DATA_RX_HSSL(5*8-1 downto 0) & reg_data(C_K_CHAR_WIDTH*8-1 downto 5*8);
+              reg_k_char          <= VALID_K_CHARAC_HSSL;
+              VALID_K_CHARAC_PLWA <= VALID_K_CHARAC_HSSL(5-1 downto 0) & reg_k_char(7 downto 5);
+              DATA_RDY_PLWA       <= '1';
+              current_state       <= ALIGNED_ST;
+            -- Comma on byte 4
+            elsif COMMA_DET_HSSL(4) = '1' then
+              alignment_byte      <= "00010000";
+              reg_data            <= DATA_RX_HSSL;
+              DATA_RX_PLWA        <= DATA_RX_HSSL(4*8-1 downto 0) & reg_data(C_K_CHAR_WIDTH*8-1 downto 4*8);
+              reg_k_char          <= VALID_K_CHARAC_HSSL;
+              VALID_K_CHARAC_PLWA <= VALID_K_CHARAC_HSSL(4-1 downto 0) & reg_k_char(7 downto 4);
+              DATA_RDY_PLWA       <= '1';
+              current_state       <= ALIGNED_ST;
+            -- Comma on byte 3
+            elsif COMMA_DET_HSSL(3) = '1' then
+              alignment_byte      <= "00001000";
+              reg_data            <= DATA_RX_HSSL;
+              DATA_RX_PLWA        <= DATA_RX_HSSL(3*8-1 downto 0) & reg_data(C_K_CHAR_WIDTH*8-1 downto 3*8);
+              reg_k_char          <= VALID_K_CHARAC_HSSL;
+              VALID_K_CHARAC_PLWA <= VALID_K_CHARAC_HSSL(3-1 downto 0) & reg_k_char(7 downto 3);
+              DATA_RDY_PLWA       <= '1';
+              current_state       <= ALIGNED_ST;
+            -- Comma on byte 2
+            elsif COMMA_DET_HSSL(2) = '1' then
+              alignment_byte      <= "00000100";
+              reg_data            <= DATA_RX_HSSL;
+              DATA_RX_PLWA        <= DATA_RX_HSSL(2*8-1 downto 0) & reg_data(C_K_CHAR_WIDTH*8-1 downto 2*8);
+              reg_k_char          <= VALID_K_CHARAC_HSSL;
+              VALID_K_CHARAC_PLWA <= VALID_K_CHARAC_HSSL(2-1 downto 0) & reg_k_char(7 downto 2);
+              DATA_RDY_PLWA       <= '1';
+              current_state       <= ALIGNED_ST;
+            -- Comma on byte 1
+            elsif COMMA_DET_HSSL(1) = '1' then
+              alignment_byte      <= "00000010";
+              reg_data            <= DATA_RX_HSSL;
+              DATA_RX_PLWA        <= DATA_RX_HSSL(1*8-1 downto 0) & reg_data(C_K_CHAR_WIDTH*8-1 downto 1*8);
+              reg_k_char          <= VALID_K_CHARAC_HSSL;
+              VALID_K_CHARAC_PLWA <= VALID_K_CHARAC_HSSL(1-1 downto 0) & reg_k_char(7 downto 1);
+              DATA_RDY_PLWA       <= '1';
+              current_state       <= ALIGNED_ST;
+            -- Comma on byte 0
+            elsif COMMA_DET_HSSL(0) = '1' then
+              alignment_byte      <= "00000001";
+              DATA_RX_PLWA        <= DATA_RX_HSSL;
+              VALID_K_CHARAC_PLWA <= VALID_K_CHARAC_HSSL;
+              DATA_RDY_PLWA       <= '1';
+              current_state       <= ALIGNED_ST;
+            -- No comma is detected
+            else
+              DATA_RX_PLWA        <= (others => '0');
+              VALID_K_CHARAC_PLWA <= (others => '0');
+              DATA_RDY_PLWA       <= '0';
+              alignment_byte      <= (others => '0');
+              reg_data            <= (others => '0');
+              reg_k_char          <= (others => '0');
+            end if;
+          -- Word is not aligned
+          else
+            DATA_RX_PLWA        <= (others => '0');
+            VALID_K_CHARAC_PLWA <= (others => '0');
+            DATA_RDY_PLWA       <= '0';
+            alignment_byte      <= (others => '0');
+            reg_data            <= (others => '0');
+            reg_k_char          <= (others => '0');
+            current_state       <= INIT_ST;
+          end if;
+
+        when ALIGNED_ST  =>
+          -- Word is aligned
+          if RX_WORD_IS_ALIGNED_HSSL = '1' then
+            -- When a comma is present, it is placed at the same position in the word
+            if std_logic_vector(alignment_byte) = COMMA_DET_HSSL or COMMA_DET_HSSL = "00000000" or std_logic_vector(alignment_byte) = COMMA_DET_HSSL(3 downto 0) & COMMA_DET_HSSL(7 downto 4) then
+              -- Comma on byte 7
+              if alignment_byte(7) = '1' then
+                alignment_byte      <= "10000000";
+                reg_data            <= DATA_RX_HSSL;
+                DATA_RX_PLWA        <= DATA_RX_HSSL(7*8-1 downto 0) & reg_data(C_K_CHAR_WIDTH*8-1 downto 7*8)  ;
+                reg_k_char          <= VALID_K_CHARAC_HSSL;
+                VALID_K_CHARAC_PLWA <= VALID_K_CHARAC_HSSL(7-1 downto 0) & reg_k_char(7);
+                DATA_RDY_PLWA       <= '1';
+              -- Comma on byte 6
+              elsif alignment_byte(6) = '1' then
+                alignment_byte      <= "01000000";
+                reg_data            <= DATA_RX_HSSL;
+                DATA_RX_PLWA        <= DATA_RX_HSSL(6*8-1 downto 0) & reg_data(C_K_CHAR_WIDTH*8-1 downto 6*8);
+                reg_k_char          <= VALID_K_CHARAC_HSSL;
+                VALID_K_CHARAC_PLWA <= VALID_K_CHARAC_HSSL(6-1 downto 0) & reg_k_char(7 downto 6);
+                DATA_RDY_PLWA       <= '1';
+              -- Comma on byte 5
+              elsif alignment_byte(5) = '1' then
+                alignment_byte      <= "00100000";
+                reg_data            <= DATA_RX_HSSL;
+                DATA_RX_PLWA        <= DATA_RX_HSSL(5*8-1 downto 0) & reg_data(C_K_CHAR_WIDTH*8-1 downto 5*8);
+                reg_k_char          <= VALID_K_CHARAC_HSSL;
+                VALID_K_CHARAC_PLWA <= VALID_K_CHARAC_HSSL(5-1 downto 0) & reg_k_char(7 downto 5);
+                DATA_RDY_PLWA       <= '1';
+              -- Comma on byte 4
+              elsif alignment_byte(4) = '1' then
+                alignment_byte      <= "00010000";
+                reg_data            <= DATA_RX_HSSL;
+                DATA_RX_PLWA        <= DATA_RX_HSSL(4*8-1 downto 0) & reg_data(C_K_CHAR_WIDTH*8-1 downto 4*8);
+                reg_k_char          <= VALID_K_CHARAC_HSSL;
+                VALID_K_CHARAC_PLWA <= VALID_K_CHARAC_HSSL(4-1 downto 0) & reg_k_char(7 downto 4);
+                DATA_RDY_PLWA       <= '1';
+              -- Comma on byte 3
+              elsif alignment_byte(3) = '1' then
+                alignment_byte      <= "00001000";
+                reg_data            <= DATA_RX_HSSL;
+                DATA_RX_PLWA        <= DATA_RX_HSSL(3*8-1 downto 0) & reg_data(C_K_CHAR_WIDTH*8-1 downto 3*8);
+                reg_k_char          <= VALID_K_CHARAC_HSSL;
+                VALID_K_CHARAC_PLWA <= VALID_K_CHARAC_HSSL(3-1 downto 0) & reg_k_char(7 downto 3);
+                DATA_RDY_PLWA       <= '1';
+              -- Comma on byte 2
+              elsif alignment_byte(2) = '1' then
+                alignment_byte      <= "00000100";
+                reg_data            <= DATA_RX_HSSL;
+                DATA_RX_PLWA        <= DATA_RX_HSSL(2*8-1 downto 0) & reg_data(C_K_CHAR_WIDTH*8-1 downto 2*8);
+                reg_k_char          <= VALID_K_CHARAC_HSSL;
+                VALID_K_CHARAC_PLWA <= VALID_K_CHARAC_HSSL(2-1 downto 0) & reg_k_char(7 downto 2);
+                DATA_RDY_PLWA       <= '1';
+              -- Comma on byte 1
+              elsif alignment_byte(1) = '1' then
+                alignment_byte      <= "00000010";
+                reg_data            <= DATA_RX_HSSL;
+                DATA_RX_PLWA        <= DATA_RX_HSSL(1*8-1 downto 0) & reg_data(C_K_CHAR_WIDTH*8-1 downto 1*8);
+                reg_k_char          <= VALID_K_CHARAC_HSSL;
+                VALID_K_CHARAC_PLWA <= VALID_K_CHARAC_HSSL(1-1 downto 0) & reg_k_char(7 downto 1);
+                DATA_RDY_PLWA       <= '1';
+              -- Comma on byte 0
+              elsif alignment_byte(0) = '1' then
+                alignment_byte      <= "00000001";
+                DATA_RX_PLWA        <= DATA_RX_HSSL;
+                VALID_K_CHARAC_PLWA <= VALID_K_CHARAC_HSSL;
+                DATA_RDY_PLWA       <= '1';
+              else
+                DATA_RX_PLWA        <= (others => '0');
+                VALID_K_CHARAC_PLWA <= (others => '0');
+                DATA_RDY_PLWA       <= '0';
+                alignment_byte      <= (others => '0');
+                reg_data            <= (others => '0');
+                reg_k_char          <= (others => '0');
+                current_state       <= WAITING_COMMA_ST;
+              end if;
+            -- Comma placed incorrectly
+            else
+              DATA_RX_PLWA        <= (others => '0');
+              VALID_K_CHARAC_PLWA <= (others => '0');
+              DATA_RDY_PLWA       <= '0';
+              alignment_byte      <= (others => '0');
+              reg_data            <= (others => '0');
+              reg_k_char          <= (others => '0');
+              current_state       <= WAITING_COMMA_ST;
+            end if;
+          -- Word is not aligned
+          else
+            DATA_RX_PLWA        <= (others => '0');
+            VALID_K_CHARAC_PLWA <= (others => '0');
+            DATA_RDY_PLWA       <= '0';
+            alignment_byte      <= (others => '0');
+            reg_data            <= (others => '0');
+            reg_k_char          <= (others => '0');
+            current_state       <= INIT_ST;
+          end if;
+
+        when others =>
+          DATA_RX_PLWA        <= (others => '0');
+          VALID_K_CHARAC_PLWA <= (others => '0');
+          DATA_RDY_PLWA       <= '0';
+          alignment_byte      <= (others => '0');
+          reg_data            <= (others => '0');
+          reg_k_char          <= (others => '0');
+          current_state       <= INIT_ST;
+
+        end case;
     end if;
   end process p_rx_realignment;
 ---------------------------------------------------------

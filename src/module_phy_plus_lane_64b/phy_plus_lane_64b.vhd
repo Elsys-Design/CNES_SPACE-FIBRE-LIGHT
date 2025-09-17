@@ -430,15 +430,16 @@ architecture rtl of phy_plus_lane_64b is
       DISPARITY_ERR_PLWA      : out std_logic_vector(C_K_CHAR_WIDTH-1 downto 0); --! Disparity error flags from PLWA
       RX_WORD_IS_ALIGNED_PLWA : out std_logic;                                   --! RX word is aligned from PLWA
       COMMA_DET_PLWA          : out std_logic_vector(C_K_CHAR_WIDTH-1 downto 0); --! Flag indicates that a comma is detected on the word receive from PLWA
-      LOSS_OF_SIGNAL_PLWA     : out  std_logic;                                   --! Loss of signal flag from PLWA
+      LOSS_OF_SIGNAL_PLWA     : out  std_logic;                                  --! Loss of signal flag from PLWA
       -- HSSL IP interface
       DATA_RX_HSSL            : in  std_logic_vector(C_DATA_WIDTH-1 downto 0);   --! 64-bit data from HSSL IP
       VALID_K_CHARAC_HSSL     : in  std_logic_vector(C_K_CHAR_WIDTH-1 downto 0); --! 8-bit valid K character flags from HSSL IP
       INVALID_CHAR_HSSL       : in  std_logic_vector(C_K_CHAR_WIDTH-1 downto 0); --! Invalid character flags from HSSL IP
       DISPARITY_ERR_HSSL      : in  std_logic_vector(C_K_CHAR_WIDTH-1 downto 0); --! Disparity error flags from HSSL IP
       RX_WORD_IS_ALIGNED_HSSL : in  std_logic;                                   --! RX word is aligned from HSSL IP
-      COMMA_DET_HSSL          : in  std_logic_vector(C_K_CHAR_WIDTH-1 downto 0);  --! Flag indicates that a comma is detected on the word receive
-      LOSS_OF_SIGNAL_HSSL     : in  std_logic                                    --! Loss of signal flag from HSSL IP
+      RX_VALID_REALIGN_HSSL : in  std_logic;                                   --! RX word is aligned from HSSL IP
+      COMMA_DET_HSSL          : in  std_logic_vector(C_K_CHAR_WIDTH-1 downto 0); --! Flag indicates that a comma is detected on the word receive
+      LOSS_OF_SIGNAL_HSSL     : in  std_logic                                   --! Loss of signal flag from HSSL IP
     );
   end component;
 
@@ -544,6 +545,7 @@ architecture rtl of phy_plus_lane_64b is
   signal invalid_char_hssl                    : std_logic_vector(C_K_CHAR_WIDTH-1  downto 0);
   signal disparity_err_hssl                   : std_logic_vector(C_K_CHAR_WIDTH-1  downto 0);
   signal rx_word_is_aligned_hssl              : std_logic;
+  signal rx_valid_realign_hssl              : std_logic;
   signal comma_det_hssl                       : std_logic_vector(C_K_CHAR_WIDTH-1 downto 0);
   -- inst_ppl_64_init_hssl
   signal reset_n                              : std_logic;
@@ -564,12 +566,12 @@ architecture rtl of phy_plus_lane_64b is
   signal disparity_err_plwa                   : std_logic_vector(C_K_CHAR_WIDTH-1  downto 0);
   signal rx_word_is_aligned_plwa              : std_logic;
   signal comma_det_plwa                       : std_logic_vector(C_K_CHAR_WIDTH-1 downto 0);
-  signal loss_of_signal_plwa                  : std_logic;  
+  signal loss_of_signal_plwa                  : std_logic;
   -- Internal signals from ppl_64_rx_sync_fsm
   signal data_rx_plrsf                        : std_logic_vector(C_DATA_WIDTH-1 downto 00);
   signal valid_k_charac_plrsf                 : std_logic_vector(C_K_CHAR_WIDTH-1  downto 00);
   signal data_rdy_plrsf                       : std_logic;
-  signal loss_of_signal_plrsf                 : std_logic;  
+  signal loss_of_signal_plrsf                 : std_logic;
   -- Internal signals from from ppl_64_lane_ctrl_word_detect
   signal no_signal_plcwd                      : std_logic;
   signal rx_new_word_plcwd                    : std_logic_vector(1 downto 0);
@@ -912,7 +914,7 @@ begin
       RX0_CTRL_CHAR_IS_K_O        => valid_k_charac_hssl,
       RX0_CTRL_DISP_ERR_O         => disparity_err_hssl,
       RX0_CTRL_NOT_IN_TABLE_O     => invalid_char_hssl,
-      RX0_CTRL_VALID_REALIGN_O    => open,
+      RX0_CTRL_VALID_REALIGN_O    => rx_valid_realign_hssl,
       RX0_DATA_O                  => data_rx_hssl,
       RX0_OVS_BIT_SEL_I           => "00",
       RX0_EYE_RST_I               => '0',
@@ -982,6 +984,7 @@ begin
       INVALID_CHAR_HSSL       => invalid_char_hssl,
       DISPARITY_ERR_HSSL      => disparity_err_hssl,
       RX_WORD_IS_ALIGNED_HSSL => rx_word_is_aligned_hssl,
+      RX_VALID_REALIGN_HSSL   => rx_valid_realign_hssl,
       COMMA_DET_HSSL          => comma_det_hssl,
       LOSS_OF_SIGNAL_HSSL     => rx_pma_loss_of_signal_hssl
     );
