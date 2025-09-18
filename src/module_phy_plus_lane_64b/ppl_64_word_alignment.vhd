@@ -230,7 +230,8 @@ begin
           -- Word is aligned
           if RX_WORD_IS_ALIGNED_HSSL = '1' then
             -- When a comma is present, it is placed at the same position in the word
-            if std_logic_vector(alignment_byte) = COMMA_DET_HSSL or COMMA_DET_HSSL = "00000000" or std_logic_vector(alignment_byte) = COMMA_DET_HSSL(3 downto 0) & COMMA_DET_HSSL(7 downto 4) then
+            if (std_logic_vector(alignment_byte(7 downto 4)) = COMMA_DET_HSSL(7 downto 4) or std_logic_vector(alignment_byte(3 downto 0)) = COMMA_DET_HSSL(7 downto 4))and
+               (std_logic_vector(alignment_byte(7 downto 4)) = COMMA_DET_HSSL(3 downto 0) or std_logic_vector(alignment_byte(3 downto 0)) = COMMA_DET_HSSL(3 downto 0)) then
               -- Comma on byte 7
               if alignment_byte(7) = '1' then
                 alignment_byte      <= "10000000";
