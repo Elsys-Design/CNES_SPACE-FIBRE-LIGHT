@@ -347,8 +347,6 @@ begin
       COMMA_DET_PLWA          <= (others => '0');
       LOSS_OF_SIGNAL_PLWA     <= '0';
     elsif rising_edge(CLK) then
-      INVALID_CHAR_PLWA       <= INVALID_CHAR_HSSL;
-      DISPARITY_ERR_PLWA      <= DISPARITY_ERR_HSSL;
       RX_WORD_IS_ALIGNED_PLWA <= RX_WORD_IS_ALIGNED_HSSL;
       COMMA_DET_PLWA          <= COMMA_DET_HSSL;
       LOSS_OF_SIGNAL_PLWA     <= LOSS_OF_SIGNAL_HSSL;
