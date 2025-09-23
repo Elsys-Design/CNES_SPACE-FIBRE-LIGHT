@@ -37,24 +37,25 @@ end entity;
 architecture tb of tb_ppl_64_bus_split_rx is
   component ppl_64_bus_split_rx is
    port (
-      RST_N                        : in  std_logic;                                          --! global reset
-      CLK                          : in  std_logic;                                          --! Clock from Data-link layer
+      RST_N                        : in  std_logic;                                   --! global reset
+      CLK                          : in  std_logic;                                   --! Clock synchronous of the Data-link layer
       -- Data-link layer interface
-      FIFO_RX_RD_EN_DL             : in  std_logic;                                           --! FiFo RX read enable flag
-      DATA_RX_PLBSR                : out  std_logic_vector(31 downto 0);                      --! 32-bit Data parallel to be send from Data-Link Layer
-      FIFO_RX_DATA_VALID_PLBSR     : out  std_logic;                                          --! Flag new data
-      VALID_K_CHARAC_RX_PLBSR      : out  std_logic_vector(3 downto 0);                       --! 4-bit valid K character flags from Data-link layer
-      FAR_END_CAPA_PLBSR           : out  std_logic_vector(7 downto 0);                       --! Capability field send in INIT3 control word
-      LANE_ACTIVE_PLBSR            : out std_logic;                                           --! Lane Active flag for the DATA Link Layer
-      -- ppl_64_data_fifo_rx (PLDFR) interface
-      FIFO_RX_RD_EN_PLBSR          : out std_logic;                                          --! FiFo RX read enable flag
-      DATA_RX_PLFRD                : in  std_logic_vector(C_DATA_WIDTH-1  downto 0);        --! 64-bit Data parallel to be send from Data-Link Layer
-      FIFO_RX_DATA_VALID_PLFRD     : in  std_logic;                                          --! Flag new data
-      FIFO_RX_EMPTY_PLFRD          : in  std_logic;                                          --! Flag FIFO Empty
-      VALID_K_CHARAC_RX_PLFRD      : in  std_logic_vector(C_K_CHAR_WIDTH-1 downto 0); --! 8-bit valid K character flags from Data-link layer
+      FIFO_RX_RD_EN_DL             : in  std_logic;                                   --! FIFO RX read enable flag from the Data-link layer
+      DATA_RX_PLBSR                : out std_logic_vector(31 downto 0);               --! 32-bit Data parallel
+      FIFO_RX_DATA_VALID_PLBSR     : out std_logic;                                   --! Flag new data
+      VALID_K_CHARAC_RX_PLBSR      : out std_logic_vector(3 downto 0);                --! 4-bit valid K character
+      FAR_END_CAPA_PLBSR           : out std_logic_vector(7 downto 0);                --! Capability field received in INIT3 control word
+      LANE_ACTIVE_PLBSR            : out std_logic;                                   --! Lane Active flag
+      -- fifo_rx_data (PLFRD) interface
+      FIFO_RX_RD_EN_PLBSR          : out std_logic;                                   --! FIFO RX read enable flag
+      DATA_RX_PLFRD                : in  std_logic_vector(C_DATA_WIDTH-1  downto 0);  --! 64-bit Data parallel
+      FIFO_RX_DATA_VALID_PLFRD     : in  std_logic;                                   --! Flag new data
+      FIFO_RX_EMPTY_PLFRD          : in  std_logic;                                   --! Flag FIFO Empty
+      VALID_K_CHARAC_RX_PLFRD      : in  std_logic_vector(C_K_CHAR_WIDTH-1 downto 0); --! 8-bit valid K character flags
+      DATA_RDY_RX_PLFRD            : in  std_logic_vector(1 downto 0);                --! Data valid flag
       -- ppl_64_ctrl_fifo_rx (PLCFR) interface
-      FAR_END_CAPA_PLFRC           : in std_logic_vector(15 downto 0);                      --! Capability field send in INIT3 control word
-      LANE_ACTIVE_PLFRC            : in std_logic                                           --! Flag new data
+      FAR_END_CAPA_PLFRC           : in std_logic_vector(7 downto 0);                 --! Capability field received in INIT3 control word
+      LANE_ACTIVE_PLFRC            : in std_logic                                     --! Lane Active flag
    );
    end component;
 
@@ -113,8 +114,9 @@ signal DATA_RX_PLFRD                : std_logic_vector(C_DATA_WIDTH-1  downto 0)
 signal FIFO_RX_DATA_VALID_PLFRD     : std_logic;
 signal FIFO_RX_EMPTY_PLFRD          : std_logic;
 signal VALID_K_CHARAC_RX_PLFRD      : std_logic_vector(C_K_CHAR_WIDTH-1 downto 0);
+signal DATA_RDY_RX_PLFRD            : std_logic_vector(1 downto 0)                  := "11";
 -- ppl_64_ctrl_fifo_rx (PLCFR) interface
-signal FAR_END_CAPA_PLFRC           : std_logic_vector(15 downto 0):= (others => '0');
+signal FAR_END_CAPA_PLFRC           : std_logic_vector(7 downto 0):= (others => '0');
 signal LANE_ACTIVE_PLFRC            : std_logic :='0';
 -- fifo
 signal FIFO_WRITE_0_wr_data         : std_logic_vector(71 downto 00) := (others => '0');
@@ -165,6 +167,7 @@ DUT : ppl_64_bus_split_rx
       FIFO_RX_DATA_VALID_PLFRD    => FIFO_RX_DATA_VALID_PLFRD,
       FIFO_RX_EMPTY_PLFRD         => FIFO_RX_EMPTY_PLFRD,
       VALID_K_CHARAC_RX_PLFRD     => VALID_K_CHARAC_RX_PLFRD,
+      DATA_RDY_RX_PLFRD           => DATA_RDY_RX_PLFRD,
       FAR_END_CAPA_PLFRC          => FAR_END_CAPA_PLFRC,
       LANE_ACTIVE_PLFRC           => LANE_ACTIVE_PLFRC
    );

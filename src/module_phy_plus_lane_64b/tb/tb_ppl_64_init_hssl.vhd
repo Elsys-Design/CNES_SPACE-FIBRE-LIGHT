@@ -127,10 +127,10 @@ begin
     -- Reset
     RST_N <= '0';
     wait for 20 ns;
-    RST_N <= '1';
-    RECEIVER_DISABLED_PLIF    <= '0';
-    CDR_PLIF                  <= '1';
-    TRANSMITTER_DISABLED_PLIF <= '0';
+    RST_N                     <= '1';
+    RECEIVER_DISABLED_PLIF    <= '1';
+    CDR_PLIF                  <= '0';
+    TRANSMITTER_DISABLED_PLIF <= '1';
     ------------------------------------------------------------
     --                     PMA PLL reset                      --
     ------------------------------------------------------------
@@ -140,9 +140,11 @@ begin
     wait until rising_edge(CLK);
     PLL_PMA_LOCK_ANALOG_HSSL <='1';
 
+    wait until (HSSL_RESET_DONE_PLIH ='1'); -- CLK HSSL OK
     ------------------------------------------------------------
     --                     TX PCS reset                      --
     ------------------------------------------------------------
+    TRANSMITTER_DISABLED_PLIF <= '0';
     wait until (TX_RST_N_PLIH ='1');-- TX PCS rst pulse
 
     wait for 20 ns;
@@ -152,6 +154,8 @@ begin
     ------------------------------------------------------------
     --                     RX PMA PLL reset                   --
     ------------------------------------------------------------
+    RECEIVER_DISABLED_PLIF    <= '0';
+    CDR_PLIF                  <= '1';
     if RX_PMA_PWR_UP_PLIH ='0' then
         wait until (RX_PMA_PWR_UP_PLIH ='1');-- RX PMA power up
     end if;
