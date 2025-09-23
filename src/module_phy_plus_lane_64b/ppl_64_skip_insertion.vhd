@@ -85,6 +85,10 @@ begin
     state_cnt           <= (others => '0');
     data_0              <= (others => '0');
     k_char_0            <= (others => '0');
+    data_1              <= (others => '0');
+    k_char_1            <= (others => '0');
+    data_2              <= (others => '0');
+    k_char_2            <= (others => '0');
     DATA_TX_PLSI        <= (others => '0');
     VALID_K_CHARAC_PLSI <= (others => '0');
     WAIT_SEND_DATA_PLSI <= '0';

@@ -49,9 +49,9 @@ entity ppl_64_word_alignment is
     INVALID_CHAR_HSSL       : in  std_logic_vector(C_K_CHAR_WIDTH-1 downto 0); --! Invalid character flags from HSSL IP
     DISPARITY_ERR_HSSL      : in  std_logic_vector(C_K_CHAR_WIDTH-1 downto 0); --! Disparity error flags from HSSL IP
     RX_WORD_IS_ALIGNED_HSSL : in  std_logic;                                   --! RX word is aligned from HSSL IP
-    RX_VALID_REALIGN_HSSL : in  std_logic;                                   --! RX word is aligned from HSSL IP
+    RX_VALID_REALIGN_HSSL   : in  std_logic;                                   --! RX word is aligned from HSSL IP
     COMMA_DET_HSSL          : in  std_logic_vector(C_K_CHAR_WIDTH-1 downto 0); --! Flag indicates that a comma is detected on the word receive
-    LOSS_OF_SIGNAL_HSSL     : in  std_logic                                   --! Loss of signal flag from HSSL IP
+    LOSS_OF_SIGNAL_HSSL     : in  std_logic                                    --! Loss of signal flag from HSSL IP
   );
 end ppl_64_word_alignment;
 
