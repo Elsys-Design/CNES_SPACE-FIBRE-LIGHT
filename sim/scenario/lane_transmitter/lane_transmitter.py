@@ -48,6 +48,7 @@ except ImportError as e:
 #Global variable of test success or failure
 test_failed = 0
 
+target = os.environ.get("HARDWARE_TARGET")
 
 def clean_dir(path):
     """Suppress all files of a directory pointed by path"""
@@ -150,7 +151,8 @@ def check_skip_word(file_path,tb):
     init = 1
     line_number = 0
     for line in input_file:
-        c += 1
+        if len(line) == 22:
+            c += 1
         line_number += 1
         skip_word_detected = line.find(skip_word)
         if skip_word_detected >= 0:
@@ -201,6 +203,7 @@ async def cocotb_run(dut):
 
     #Specific variable for the scenario
     global test_failed 
+    global target
 
 
     ##########################################################################
@@ -216,8 +219,12 @@ async def cocotb_run(dut):
     #Sets DUT lane initialisation FSM to Active with parallel loopback enabled 
     await initialization_procedure(tb)
 
-    loopback = cocotb.start_soon(tb.spacefibre_loopback.loopback(72000))
-    monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_1", number_of_word = 18000))
+    if target == "NG_ULTRA" :
+        monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_1", number_of_word = 75000))
+        loopback = cocotb.start_soon(tb.spacefibre_loopback.loopback(300000))
+    else :
+        loopback = cocotb.start_soon(tb.spacefibre_loopback.loopback(72000))
+        monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_1", number_of_word = 18000))
 
 
     #Send 256 incremental data words
@@ -281,8 +288,12 @@ async def cocotb_run(dut):
     #Sets DUT lane initialisation FSM to Active with parallel loopback enabled 
     await initialization_procedure(tb)
 
-    loopback = cocotb.start_soon(tb.spacefibre_loopback.loopback(111200))
-    monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_2", number_of_word = 27800))
+    if target == "NG_ULTRA" :
+        monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_2", number_of_word = 50000))
+        loopback = cocotb.start_soon(tb.spacefibre_loopback.loopback(400000))
+    else:
+        loopback = cocotb.start_soon(tb.spacefibre_loopback.loopback(111200))
+        monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_2", number_of_word = 27800))
 
     #Send 16384 PRBS data words
     for seed in range(0x2A, 0x2A+16):
@@ -315,11 +326,20 @@ async def cocotb_run(dut):
     #check that the right amount of idle words have been generated
     idle_number = check_idle_word("reference/spacefibre_serial/monitor_step_2_hexa.dat", tb)
 
-    if idle_number != (11160- skip_number):
-        step_2_failed = 1
-        tb.logger.error("simulation time %d ns : step 2.18 result: Failed\nIdle_umber : %d\n\n\n", get_sim_time(units = "ns"), idle_number)
-    else:
-        tb.logger.info("simulation time %d ns : step 2.18 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
+
+
+    if target == "NG_ULTRA" :
+        if idle_number != (33360 - skip_number):
+            step_2_failed = 1
+            tb.logger.error("simulation time %d ns : step 2.18 result: Failed\nIdle_umber : %d\n\n\n", get_sim_time(units = "ns"), idle_number)
+        else:
+            tb.logger.info("simulation time %d ns : step 2.18 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
+    else :
+        if idle_number != (11160- skip_number):
+            step_2_failed = 1
+            tb.logger.error("simulation time %d ns : step 2.18 result: Failed\nIdle_umber : %d\n\n\n", get_sim_time(units = "ns"), idle_number)
+        else:
+            tb.logger.info("simulation time %d ns : step 2.18 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
 
 
 

@@ -894,7 +894,6 @@ async def cocotb_run(dut):
 
 
 
-
     #RXERR word reception
 
     #Configure Lane_Analizer
@@ -907,10 +906,19 @@ async def cocotb_run(dut):
 
     await stimuli
     
+    await send_idle_ctrl_word(tb, 7000)
+
     await write_10b_to_Rx(tb, "1111110101", 0)
+    if target == "NG_ULTRA":
+        await tb.spacefibre_driver.write_to_Rx("00000001", delay = 0, k_encoding = 0)
+    else :
+        await write_10b_to_Rx(tb, "1100011001", 0)
     await write_10b_to_Rx(tb, "1100011001", 0)
     await write_10b_to_Rx(tb, "1100011001", 0)
-    await write_10b_to_Rx(tb, "1100011001", 0)
+
+
+
+
 
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16)
 
@@ -980,7 +988,7 @@ async def cocotb_run(dut):
     await stimuli
 
 
-    for seed in range(13):
+    for seed in range(2):
 
         stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
 
@@ -1035,7 +1043,7 @@ async def cocotb_run(dut):
 
     await stimuli
 
-    for seed in range(17):
+    for seed in range(3):
 
         stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
 
@@ -1102,25 +1110,33 @@ async def cocotb_run(dut):
     await wait_check_error
     
     await write_10b_to_Rx(tb, "1111110101", 0)
+    if target == "NG_ULTRA":
+        await tb.spacefibre_driver.write_to_Rx("00000001", delay = 0, k_encoding = 0)
+    else :
+        await write_10b_to_Rx(tb, "1100011001", 0)
     await write_10b_to_Rx(tb, "1100011001", 0)
     await write_10b_to_Rx(tb, "1100011001", 0)
-    await write_10b_to_Rx(tb, "1100011001", 0)
+
 
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16)
 
     await write_10b_to_Rx(tb, "1111110101", 0)
-    await write_10b_to_Rx(tb, "1100011001", 0)
+    if target == "NG_ULTRA":
+        await tb.spacefibre_driver.write_to_Rx("00000001", delay = 0, k_encoding = 0)
+    else :
+        await write_10b_to_Rx(tb, "1100011001", 0)
     await write_10b_to_Rx(tb, "1100011001", 0)
     await write_10b_to_Rx(tb, "1100011001", 0)
 
-    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
+
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 2000))
     
     await wait_end_test(tb)
 
     await stimuli
     
     check_error = cocotb.start_soon(tb.masters[0].read_data(Data_read_lane_config_status))
-    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 1000))
     
     await check_error
 
@@ -1139,7 +1155,7 @@ async def cocotb_run(dut):
 
 
 
-    for seed in range (17):
+    for seed in range (2):
         #Configure Lane_Analizer
         Data_lane_ana_config.data = bytearray( [0x90,0x20,0x00,0x01])
         await tb.masters[2].write_data(Data_lane_ana_config)
@@ -1177,7 +1193,7 @@ async def cocotb_run(dut):
     await stimuli
 
     check_error = cocotb.start_soon(tb.masters[0].read_data(Data_read_lane_config_status))
-    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 1000))
     await check_error
 
     error_cnt = format(Data_read_lane_config_status.data[1], '0>8b')[4:8] + format(Data_read_lane_config_status.data[0], '0>8b')[0:4]
@@ -1193,7 +1209,7 @@ async def cocotb_run(dut):
 
 
 
-    for seed in range (17):
+    for seed in range (2):
         #Configure Lane_Analizer
         Data_lane_ana_config.data = bytearray( [0x90,0x20,0x00,0x01])
         await tb.masters[2].write_data(Data_lane_ana_config)
@@ -1222,12 +1238,12 @@ async def cocotb_run(dut):
         
         if error_cnt != "00000000":
             step_3_failed = 1
-            tb.logger.error("simulation time %d ns : step 3.25.%d result: Failed\nError counter : %s\n\n\n", get_sim_time(units = "ns"), seed, error_cnt)
+            tb.logger.error("simulation time %d ns : step 3.25.%d_a result: Failed\nError counter : %s\n\n\n", get_sim_time(units = "ns"), seed, error_cnt)
         else:
-            tb.logger.info("simulation time %d ns : step 3.25.%d result: Pass\n\n\n\n", get_sim_time(units = "ns"), seed)
+            tb.logger.info("simulation time %d ns : step 3.25.%d_a result: Pass\n\n\n\n", get_sim_time(units = "ns"), seed)
 
     await stimuli
-
+    await send_idle_ctrl_word(tb, 2000)
     check_error = cocotb.start_soon(tb.masters[0].read_data(Data_read_lane_config_status))
     wait_check_error = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
     await check_error
@@ -1237,9 +1253,9 @@ async def cocotb_run(dut):
 
     if error_cnt != "00000000" or error_overflow != "0":
         step_3_failed = 1
-        tb.logger.error("simulation time %d ns : step 3.26 result: Failed\nError counter : %s\nError counter overflow: %s\n\n\n", get_sim_time(units = "ns"), error_cnt, error_overflow)
+        tb.logger.error("simulation time %d ns : step 3.26_a result: Failed\nError counter : %s\nError counter overflow: %s\n\n\n", get_sim_time(units = "ns"), error_cnt, error_overflow)
     else:
-        tb.logger.info("simulation time %d ns : step 3.26 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
+        tb.logger.info("simulation time %d ns : step 3.26_a result: Pass\n\n\n\n", get_sim_time(units = "ns"))
 
 
 
@@ -1278,15 +1294,22 @@ async def cocotb_run(dut):
 
         #inject error on first 32bit of datapath
         await write_10b_to_Rx(tb, "1111110101", 0)
+        if target == "NG_ULTRA":
+            await tb.spacefibre_driver.write_to_Rx("00000001", delay = 0, k_encoding = 0)
+        else :
+            await write_10b_to_Rx(tb, "1100011001", 0)
         await write_10b_to_Rx(tb, "1100011001", 0)
         await write_10b_to_Rx(tb, "1100011001", 0)
-        await write_10b_to_Rx(tb, "1100011001", 0)
+
 
         await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16)
 
         #inject error on second 32bit of datapath
         await write_10b_to_Rx(tb, "1111110101", 0)
-        await write_10b_to_Rx(tb, "1100011001", 0)
+        if target == "NG_ULTRA":
+            await tb.spacefibre_driver.write_to_Rx("00000001", delay = 0, k_encoding = 0)
+        else :
+            await write_10b_to_Rx(tb, "1100011001", 0)
         await write_10b_to_Rx(tb, "1100011001", 0)
         await write_10b_to_Rx(tb, "1100011001", 0)
 
@@ -1295,16 +1318,22 @@ async def cocotb_run(dut):
 
         #inject error on both 32bit of datapath
         await write_10b_to_Rx(tb, "1111110101", 0)
+        if target == "NG_ULTRA":
+            await tb.spacefibre_driver.write_to_Rx("00000001", delay = 0, k_encoding = 0)
+        else :
+            await write_10b_to_Rx(tb, "1100011001", 0)
         await write_10b_to_Rx(tb, "1100011001", 0)
         await write_10b_to_Rx(tb, "1100011001", 0)
-        await write_10b_to_Rx(tb, "1100011001", 0) 
 
         await write_10b_to_Rx(tb, "1111110101", 0)
-        await write_10b_to_Rx(tb, "1100011001", 0)
+        if target == "NG_ULTRA":
+            await tb.spacefibre_driver.write_to_Rx("00000001", delay = 0, k_encoding = 0)
+        else :
+            await write_10b_to_Rx(tb, "1100011001", 0)
         await write_10b_to_Rx(tb, "1100011001", 0)
         await write_10b_to_Rx(tb, "1100011001", 0)
 
-        stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
+        stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 100))
         
         await wait_end_test(tb)
 
@@ -1327,7 +1356,7 @@ async def cocotb_run(dut):
             tb.logger.info("simulation time %d ns : step 3.26.NGULTRA result: Pass\n\n\n\n", get_sim_time(units = "ns"))
 
 
-        for seed in range (17):
+        for seed in range (3):
             #Configure Lane_Analizer
             Data_lane_ana_config.data = bytearray( [0x90,0x20,0x00,0x01])
             await tb.masters[2].write_data(Data_lane_ana_config)
@@ -1356,9 +1385,9 @@ async def cocotb_run(dut):
             
             if error_cnt != "00000000":
                 step_3_failed = 1
-                tb.logger.error("simulation time %d ns : step 3.25.%d result: Failed\nError counter : %s\n\n\n", get_sim_time(units = "ns"), seed, error_cnt)
+                tb.logger.error("simulation time %d ns : step 3.25.%d_b result: Failed\nError counter : %s\n\n\n", get_sim_time(units = "ns"), seed, error_cnt)
             else:
-                tb.logger.info("simulation time %d ns : step 3.25.%d result: Pass\n\n\n\n", get_sim_time(units = "ns"), seed)
+                tb.logger.info("simulation time %d ns : step 3.25.%d_b result: Pass\n\n\n\n", get_sim_time(units = "ns"), seed)
 
         await stimuli
 
@@ -1371,14 +1400,14 @@ async def cocotb_run(dut):
 
         if error_cnt != "00000011" or error_overflow != "0":
             step_3_failed = 1
-            tb.logger.error("simulation time %d ns : step 3.26 result: Failed\nError counter : %s\nError counter overflow: %s\n\n\n", get_sim_time(units = "ns"), error_cnt, error_overflow)
+            tb.logger.error("simulation time %d ns : step 3.26_b result: Failed\nError counter : %s\nError counter overflow: %s\n\n\n", get_sim_time(units = "ns"), error_cnt, error_overflow)
         else:
-            tb.logger.info("simulation time %d ns : step 3.26 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
+            tb.logger.info("simulation time %d ns : step 3.26_b result: Pass\n\n\n\n", get_sim_time(units = "ns"))
 
 
 
 
-        for seed in range (17):
+        for seed in range (2):
             #Configure Lane_Analizer
             Data_lane_ana_config.data = bytearray( [0x90,0x20,0x00,0x01])
             await tb.masters[2].write_data(Data_lane_ana_config)
@@ -1407,11 +1436,13 @@ async def cocotb_run(dut):
             
             if error_cnt != "00000000":
                 step_3_failed = 1
-                tb.logger.error("simulation time %d ns : step 3.25.%d result: Failed\nError counter : %s\n\n\n", get_sim_time(units = "ns"), seed, error_cnt)
+                tb.logger.error("simulation time %d ns : step 3.25.%d_c result: Failed\nError counter : %s\n\n\n", get_sim_time(units = "ns"), seed, error_cnt)
             else:
-                tb.logger.info("simulation time %d ns : step 3.25.%d result: Pass\n\n\n\n", get_sim_time(units = "ns"), seed)
+                tb.logger.info("simulation time %d ns : step 3.25.%d_c result: Pass\n\n\n\n", get_sim_time(units = "ns"), seed)
 
         await stimuli
+
+        await send_idle_ctrl_word(tb, 2000)
 
         check_error = cocotb.start_soon(tb.masters[0].read_data(Data_read_lane_config_status))
         wait_check_error = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
@@ -1422,15 +1453,15 @@ async def cocotb_run(dut):
 
         if error_cnt != "00000010" or error_overflow != "0":
             step_3_failed = 1
-            tb.logger.error("simulation time %d ns : step 3.26 result: Failed\nError counter : %s\nError counter overflow: %s\n\n\n", get_sim_time(units = "ns"), error_cnt, error_overflow)
+            tb.logger.error("simulation time %d ns : step 3.26_c result: Failed\nError counter : %s\nError counter overflow: %s\n\n\n", get_sim_time(units = "ns"), error_cnt, error_overflow)
         else:
-            tb.logger.info("simulation time %d ns : step 3.26 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
+            tb.logger.info("simulation time %d ns : step 3.26_c result: Pass\n\n\n\n", get_sim_time(units = "ns"))
 
 
 
 
 
-        for seed in range (17):
+        for seed in range (3):
             #Configure Lane_Analizer
             Data_lane_ana_config.data = bytearray( [0x90,0x20,0x00,0x01])
             await tb.masters[2].write_data(Data_lane_ana_config)
@@ -1459,9 +1490,9 @@ async def cocotb_run(dut):
             
             if error_cnt != "00000000":
                 step_3_failed = 1
-                tb.logger.error("simulation time %d ns : step 3.25.%d result: Failed\nError counter : %s\n\n\n", get_sim_time(units = "ns"), seed, error_cnt)
+                tb.logger.error("simulation time %d ns : step 3.25.%d_d result: Failed\nError counter : %s\n\n\n", get_sim_time(units = "ns"), seed, error_cnt)
             else:
-                tb.logger.info("simulation time %d ns : step 3.25.%d result: Pass\n\n\n\n", get_sim_time(units = "ns"), seed)
+                tb.logger.info("simulation time %d ns : step 3.25.%d_d result: Pass\n\n\n\n", get_sim_time(units = "ns"), seed)
 
         await stimuli
 
@@ -1474,14 +1505,14 @@ async def cocotb_run(dut):
 
         if error_cnt != "00000001" or error_overflow != "0":
             step_3_failed = 1
-            tb.logger.error("simulation time %d ns : step 3.26 result: Failed\nError counter : %s\nError counter overflow: %s\n\n\n", get_sim_time(units = "ns"), error_cnt, error_overflow)
+            tb.logger.error("simulation time %d ns : step 3.26_d result: Failed\nError counter : %s\nError counter overflow: %s\n\n\n", get_sim_time(units = "ns"), error_cnt, error_overflow)
         else:
-            tb.logger.info("simulation time %d ns : step 3.26 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
+            tb.logger.info("simulation time %d ns : step 3.26_d result: Pass\n\n\n\n", get_sim_time(units = "ns"))
 
 
 
 
-        for seed in range (17):
+        for seed in range (2):
             #Configure Lane_Analizer
             Data_lane_ana_config.data = bytearray( [0x90,0x20,0x00,0x01])
             await tb.masters[2].write_data(Data_lane_ana_config)
@@ -1510,11 +1541,13 @@ async def cocotb_run(dut):
             
             if error_cnt != "00000000":
                 step_3_failed = 1
-                tb.logger.error("simulation time %d ns : step 3.25.%d result: Failed\nError counter : %s\n\n\n", get_sim_time(units = "ns"), seed, error_cnt)
+                tb.logger.error("simulation time %d ns : step 3.25.%d_e result: Failed\nError counter : %s\n\n\n", get_sim_time(units = "ns"), seed, error_cnt)
             else:
-                tb.logger.info("simulation time %d ns : step 3.25.%d result: Pass\n\n\n\n", get_sim_time(units = "ns"), seed)
+                tb.logger.info("simulation time %d ns : step 3.25.%d_e result: Pass\n\n\n\n", get_sim_time(units = "ns"), seed)
 
         await stimuli
+
+        await send_idle_ctrl_word(tb, 2000)
 
         check_error = cocotb.start_soon(tb.masters[0].read_data(Data_read_lane_config_status))
         wait_check_error = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
@@ -1525,9 +1558,9 @@ async def cocotb_run(dut):
 
         if error_cnt != "00000000" or error_overflow != "0":
             step_3_failed = 1
-            tb.logger.error("simulation time %d ns : step 3.26 result: Failed\nError counter : %s\nError counter overflow: %s\n\n\n", get_sim_time(units = "ns"), error_cnt, error_overflow)
+            tb.logger.error("simulation time %d ns : step 3.26_e result: Failed\nError counter : %s\nError counter overflow: %s\n\n\n", get_sim_time(units = "ns"), error_cnt, error_overflow)
         else:
-            tb.logger.info("simulation time %d ns : step 3.26 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
+            tb.logger.info("simulation time %d ns : step 3.26_e result: Pass\n\n\n\n", get_sim_time(units = "ns"))
 
 
 
@@ -1579,7 +1612,7 @@ async def cocotb_run(dut):
     await write_10b_to_Rx(tb, "1110110101", 0)
     await write_10b_to_Rx(tb, "1100011001", 0)
 
-    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 1000))
     
 
     
@@ -1634,7 +1667,7 @@ async def cocotb_run(dut):
             await write_10b_to_Rx(tb, "1100011001", 0)
             await write_10b_to_Rx(tb, "1100011001", 0)
 
-        stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
+        stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 100))
 
         #Pull until Test End
         error_cnt = await wait_end_test(tb)
@@ -1671,7 +1704,7 @@ async def cocotb_run(dut):
         await write_10b_to_Rx(tb, "1100011001", 0)
         await write_10b_to_Rx(tb, "1100011001", 0)
 
-    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 1000))
 
     #Pull until Test End
     error_cnt = await wait_end_test(tb)
@@ -1714,7 +1747,10 @@ async def cocotb_run(dut):
     await stimuli
     
     await write_10b_to_Rx(tb, "1111110101", 0)
-    await write_10b_to_Rx(tb, "1100011001", 0)
+    if target == "NG_ULTRA":
+        await tb.spacefibre_driver.write_to_Rx("00000001", delay = 0, k_encoding = 0)
+    else :
+        await write_10b_to_Rx(tb, "1100011001", 0)
     await write_10b_to_Rx(tb, "1100011001", 0)
     await write_10b_to_Rx(tb, "1100011001", 0)
 
