@@ -99,10 +99,10 @@ begin
     case state is
 
       when TX_INIT_ST =>
-        data_2   <= DATA_TX_PLCWI(C_DATA_WIDTH-1   downto C_DATA_WIDTH/2);
-        data_1   <= DATA_TX_PLCWI(C_DATA_WIDTH/2-1 downto 0);
-        k_char_2 <= VALID_K_CHARAC_PLCWI(C_K_CHAR_WIDTH-1   downto C_K_CHAR_WIDTH/2);
-        k_char_1 <= VALID_K_CHARAC_PLCWI(C_K_CHAR_WIDTH/2-1 downto 0);
+        data_2              <= DATA_TX_PLCWI(C_DATA_WIDTH-1   downto C_DATA_WIDTH/2);
+        data_1              <= DATA_TX_PLCWI(C_DATA_WIDTH/2-1 downto 0);
+        k_char_2            <= VALID_K_CHARAC_PLCWI(C_K_CHAR_WIDTH-1   downto C_K_CHAR_WIDTH/2);
+        k_char_1            <= VALID_K_CHARAC_PLCWI(C_K_CHAR_WIDTH/2-1 downto 0);
         DATA_TX_PLSI        <= data_2 & data_1;
         VALID_K_CHARAC_PLSI <= k_char_2 & k_char_1;
         state_cnt           <= (others => '0');
@@ -111,10 +111,10 @@ begin
         end if;
 
       when TX_DATA_1_ST =>
-        data_2   <= DATA_TX_PLCWI(C_DATA_WIDTH-1   downto C_DATA_WIDTH/2);
-        data_1   <= DATA_TX_PLCWI(C_DATA_WIDTH/2-1 downto 0);
-        k_char_2 <= VALID_K_CHARAC_PLCWI(C_K_CHAR_WIDTH-1   downto C_K_CHAR_WIDTH/2);
-        k_char_1 <= VALID_K_CHARAC_PLCWI(C_K_CHAR_WIDTH/2-1 downto 0);
+        data_2              <= DATA_TX_PLCWI(C_DATA_WIDTH-1   downto C_DATA_WIDTH/2);
+        data_1              <= DATA_TX_PLCWI(C_DATA_WIDTH/2-1 downto 0);
+        k_char_2            <= VALID_K_CHARAC_PLCWI(C_K_CHAR_WIDTH-1   downto C_K_CHAR_WIDTH/2);
+        k_char_1            <= VALID_K_CHARAC_PLCWI(C_K_CHAR_WIDTH/2-1 downto 0);
         VALID_K_CHARAC_PLSI <= k_char_2 & k_char_1;
         DATA_TX_PLSI        <= data_2 & data_1;
         state_cnt           <= state_cnt + 2;
@@ -126,20 +126,20 @@ begin
         end if;
 
       when TX_SKIP_1_ST =>
-        data_2   <= DATA_TX_PLCWI(C_DATA_WIDTH-1   downto C_DATA_WIDTH/2);
-        data_1   <= DATA_TX_PLCWI(C_DATA_WIDTH/2-1 downto 0);
-        k_char_2 <= VALID_K_CHARAC_PLCWI(C_K_CHAR_WIDTH-1   downto C_K_CHAR_WIDTH/2);
-        k_char_1 <= VALID_K_CHARAC_PLCWI(C_K_CHAR_WIDTH/2-1 downto 0);
+        data_2              <= DATA_TX_PLCWI(C_DATA_WIDTH-1   downto C_DATA_WIDTH/2);
+        data_1              <= DATA_TX_PLCWI(C_DATA_WIDTH/2-1 downto 0);
+        k_char_2            <= VALID_K_CHARAC_PLCWI(C_K_CHAR_WIDTH-1   downto C_K_CHAR_WIDTH/2);
+        k_char_1            <= VALID_K_CHARAC_PLCWI(C_K_CHAR_WIDTH/2-1 downto 0);
         VALID_K_CHARAC_PLSI <= x"1" & k_char_1 ;
         DATA_TX_PLSI        <= C_SKIP_WORD & data_1;
         state               <= TX_DATA_2_ST;
         state_cnt           <= (others => '0');
 
       when TX_DATA_2_ST =>
-        data_2   <= DATA_TX_PLCWI(C_DATA_WIDTH-1   downto C_DATA_WIDTH/2);
-        data_1   <= DATA_TX_PLCWI(C_DATA_WIDTH/2-1 downto 0);
-        k_char_2 <= VALID_K_CHARAC_PLCWI(C_K_CHAR_WIDTH-1   downto C_K_CHAR_WIDTH/2);
-        k_char_1 <= VALID_K_CHARAC_PLCWI(C_K_CHAR_WIDTH/2-1 downto 0);
+        data_2              <= DATA_TX_PLCWI(C_DATA_WIDTH-1   downto C_DATA_WIDTH/2);
+        data_1              <= DATA_TX_PLCWI(C_DATA_WIDTH/2-1 downto 0);
+        k_char_2            <= VALID_K_CHARAC_PLCWI(C_K_CHAR_WIDTH-1   downto C_K_CHAR_WIDTH/2);
+        k_char_1            <= VALID_K_CHARAC_PLCWI(C_K_CHAR_WIDTH/2-1 downto 0);
         VALID_K_CHARAC_PLSI <= k_char_1 & k_char_0;
         DATA_TX_PLSI        <= data_1 & data_0;
         state_cnt           <= state_cnt + 2;
