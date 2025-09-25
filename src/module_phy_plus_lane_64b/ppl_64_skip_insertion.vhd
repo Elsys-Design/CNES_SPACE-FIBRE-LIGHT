@@ -120,7 +120,7 @@ begin
         state_cnt           <= state_cnt + 2;
         if ENABLE_TRANSM_DATA_PLIF = '0' then -- When the lane_init_fsm is in ACTIVE_ST
           state             <= TX_INIT_ST;
-        elsif state_cnt >= C_5000_WORDS then
+        elsif state_cnt >= C_5000_WORDS-2 then
           state_cnt         <= (others => '0');
           state             <= TX_SKIP_1_ST;
         end if;
@@ -130,10 +130,10 @@ begin
         data_1   <= DATA_TX_PLCWI(C_DATA_WIDTH/2-1 downto 0);
         k_char_2 <= VALID_K_CHARAC_PLCWI(C_K_CHAR_WIDTH-1   downto C_K_CHAR_WIDTH/2);
         k_char_1 <= VALID_K_CHARAC_PLCWI(C_K_CHAR_WIDTH/2-1 downto 0);
-        VALID_K_CHARAC_PLSI <= k_char_1 & x"1";
-        DATA_TX_PLSI        <= data_1 & C_SKIP_WORD;
-        state_cnt           <= state_cnt + 1;
+        VALID_K_CHARAC_PLSI <= x"1" & k_char_1 ;
+        DATA_TX_PLSI        <= C_SKIP_WORD & data_1;
         state               <= TX_DATA_2_ST;
+        state_cnt           <= (others => '0');
 
       when TX_DATA_2_ST =>
         data_2   <= DATA_TX_PLCWI(C_DATA_WIDTH-1   downto C_DATA_WIDTH/2);
@@ -145,17 +145,17 @@ begin
         state_cnt           <= state_cnt + 2;
         if ENABLE_TRANSM_DATA_PLIF = '0' then -- When the lane_init_fsm is in ACTIVE_ST
           state             <= TX_INIT_ST;
-        elsif state_cnt >= C_5000_WORDS-1 then
+        elsif state_cnt >= C_5000_WORDS-2 then
           state_cnt           <= (others => '0');
           state               <= TX_SKIP_2_ST;
-        elsif state_cnt = C_5000_WORDS-7 then
+        elsif state_cnt = C_5000_WORDS-8 then
           WAIT_SEND_DATA_PLSI <= '1';
         end if;
 
       when TX_SKIP_2_ST =>
         VALID_K_CHARAC_PLSI <= x"1" & k_char_0;
         DATA_TX_PLSI        <= C_SKIP_WORD & data_0;
-        state_cnt           <= (others => '0');
+        state_cnt           <= state_cnt + 1;
         state               <= TX_DATA_1_ST;
 
       when others =>

@@ -1404,7 +1404,7 @@ async def cocotb_run(dut):
         else:
             tb.logger.info("simulation time %d ns : step 3.26_b result: Pass\n\n\n\n", get_sim_time(units = "ns"))
 
-
+        stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 100))
 
 
         for seed in range (2):

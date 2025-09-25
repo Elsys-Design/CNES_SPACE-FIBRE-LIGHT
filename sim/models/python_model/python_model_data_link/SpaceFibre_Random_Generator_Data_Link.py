@@ -46,6 +46,7 @@ class SpaceFibre_Random_Generator:
         self.logger = logger
         self.time_per_input = period_ps
         self.time_per_output = period_ps
+        self.fct_counter = [0]*8
         if target == "NG_ULTRA":
             self.precision = "fs"
         elif target == "VERSAL":
@@ -107,7 +108,6 @@ class SpaceFibre_Random_Generator:
             word_10b = ""
             k_encoded_word = ""
             j = 0
-            word_realigned = 0
             buffer = previous_buffer
             while j < 4:
                 (data, k_encoded), buffer, realigned = await self.read_from_Tx(previous_buffer = buffer)
@@ -123,13 +123,14 @@ class SpaceFibre_Random_Generator:
                     word_bin = data + "_" + word_bin
                     word_10b = buffer + "_" + word_10b
                     k_encoded_word = str(k_encoded) + k_encoded_word
-                if realigned == 1 :
-                    word_realigned = 1
                 j += 1
             previous_buffer = buffer
             data_received = f"{int(word, base = 2):0>8X}"
             if data_received[6:8] == "7C" and k_encoded_word == "0001":
-                data_received = 1
+                channel = int(f"{(int(data_received[4:6], base = 16)):b}"[3:8], base = 2)
+                mult = int(f"{(int(data_received[4:6], base = 16)):b}"[0:3], base = 2)
+                self.fct_counter[channel] += 64 * mult
+
                 
 
 
@@ -293,6 +294,53 @@ class SpaceFibre_Random_Generator:
         target = f"{(target):0>8b}"
         if frame_type==0: #if Data Frame
 
+            while self.fct_counter[target] <= 0:
+                if word_counter_for_skip>= 5000:
+                    data_to_log = ""
+                    k_encoded_to_log = ""
+
+                    data_10b, k_encoded  = await self.write_to_Rx("11111100", 0, 1, invert_polarity = invert_polarity)
+                    data_to_log = data_10b + "_" + data_to_log
+                    k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                    data_10b, k_encoded  = await self.write_to_Rx("11001110", 0, 0, invert_polarity = invert_polarity)
+                    data_to_log = data_10b + "_" + data_to_log
+                    k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                    data_10b, k_encoded  = await self.write_to_Rx("01111111", 0, 0, invert_polarity = invert_polarity)
+                    data_to_log = data_10b + "_" + data_to_log
+                    k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                    data_10b, k_encoded  = await self.write_to_Rx("01111111", 0, 0, invert_polarity = invert_polarity)
+                    data_to_log = data_10b + "_" + data_to_log
+                    k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                    log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
+                    log_file.write("32;7F7FCEFC;0;0001;\n")
+                    word_counter_for_skip = 0
+                else :
+                    data_to_log = ""
+                    k_encoded_to_log = ""
+
+                    data_10b, k_encoded = await self.write_to_Rx("11111100", 0, 1, invert_polarity = invert_polarity)
+                    data_to_log = data_10b + "_" + data_to_log
+                    k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                    data_10b, k_encoded = await self.write_to_Rx("11001110", 0, 0, invert_polarity = invert_polarity)
+                    data_to_log = data_10b + "_" + data_to_log
+                    k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                    data_10b, k_encoded = await self.write_to_Rx("11001111", 0, 0, invert_polarity = invert_polarity)
+                    data_to_log = data_10b + "_" + data_to_log
+                    k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                    data_10b, k_encoded = await self.write_to_Rx("11001111", 0, 0, invert_polarity = invert_polarity)
+                    data_to_log = data_10b + "_" + data_to_log
+                    k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                    log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
+                    log_file.write("32;CFCFCEFC;0;0001;\n")
+                    word_counter_for_skip += 1
 
             #send first SDF
             data_to_log = ""
@@ -358,6 +406,53 @@ class SpaceFibre_Random_Generator:
                     k_encoded_to_log = ""
                     sequence += 1
                     
+                    while self.fct_counter[target] <= 0:
+                        if word_counter_for_skip>= 5000:
+                            data_to_log = ""
+                            k_encoded_to_log = ""
+
+                            data_10b, k_encoded  = await self.write_to_Rx("11111100", 0, 1, invert_polarity = invert_polarity)
+                            data_to_log = data_10b + "_" + data_to_log
+                            k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                            data_10b, k_encoded  = await self.write_to_Rx("11001110", 0, 0, invert_polarity = invert_polarity)
+                            data_to_log = data_10b + "_" + data_to_log
+                            k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                            data_10b, k_encoded  = await self.write_to_Rx("01111111", 0, 0, invert_polarity = invert_polarity)
+                            data_to_log = data_10b + "_" + data_to_log
+                            k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                            data_10b, k_encoded  = await self.write_to_Rx("01111111", 0, 0, invert_polarity = invert_polarity)
+                            data_to_log = data_10b + "_" + data_to_log
+                            k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                            log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
+                            log_file.write("32;7F7FCEFC;0;0001;\n")
+                            word_counter_for_skip = 0
+                        else :
+                            data_to_log = ""
+                            k_encoded_to_log = ""
+
+                            data_10b, k_encoded = await self.write_to_Rx("11111100", 0, 1, invert_polarity = invert_polarity)
+                            data_to_log = data_10b + "_" + data_to_log
+                            k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                            data_10b, k_encoded = await self.write_to_Rx("11001110", 0, 0, invert_polarity = invert_polarity)
+                            data_to_log = data_10b + "_" + data_to_log
+                            k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                            data_10b, k_encoded = await self.write_to_Rx("11001111", 0, 0, invert_polarity = invert_polarity)
+                            data_to_log = data_10b + "_" + data_to_log
+                            k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                            data_10b, k_encoded = await self.write_to_Rx("11001111", 0, 0, invert_polarity = invert_polarity)
+                            data_to_log = data_10b + "_" + data_to_log
+                            k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                            log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
+                            log_file.write("32;CFCFCEFC;0;0001;\n")
+                            word_counter_for_skip += 1
 
                     #Send EDF
                     data_10b, k_encoded  = await self.write_to_Rx("00011100", 0, 1, invert_polarity = invert_polarity)
@@ -410,6 +505,55 @@ class SpaceFibre_Random_Generator:
                         log_file.write("32;7F7FCEFC;0;0001;\n")
                         word_counter_for_skip = 0
                     
+
+                    while self.fct_counter[target] <= 0:
+                        if word_counter_for_skip>= 5000:
+                            data_to_log = ""
+                            k_encoded_to_log = ""
+
+                            data_10b, k_encoded  = await self.write_to_Rx("11111100", 0, 1, invert_polarity = invert_polarity)
+                            data_to_log = data_10b + "_" + data_to_log
+                            k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                            data_10b, k_encoded  = await self.write_to_Rx("11001110", 0, 0, invert_polarity = invert_polarity)
+                            data_to_log = data_10b + "_" + data_to_log
+                            k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                            data_10b, k_encoded  = await self.write_to_Rx("01111111", 0, 0, invert_polarity = invert_polarity)
+                            data_to_log = data_10b + "_" + data_to_log
+                            k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                            data_10b, k_encoded  = await self.write_to_Rx("01111111", 0, 0, invert_polarity = invert_polarity)
+                            data_to_log = data_10b + "_" + data_to_log
+                            k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                            log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
+                            log_file.write("32;7F7FCEFC;0;0001;\n")
+                            word_counter_for_skip = 0
+                        else :
+                            data_to_log = ""
+                            k_encoded_to_log = ""
+
+                            data_10b, k_encoded = await self.write_to_Rx("11111100", 0, 1, invert_polarity = invert_polarity)
+                            data_to_log = data_10b + "_" + data_to_log
+                            k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                            data_10b, k_encoded = await self.write_to_Rx("11001110", 0, 0, invert_polarity = invert_polarity)
+                            data_to_log = data_10b + "_" + data_to_log
+                            k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                            data_10b, k_encoded = await self.write_to_Rx("11001111", 0, 0, invert_polarity = invert_polarity)
+                            data_to_log = data_10b + "_" + data_to_log
+                            k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                            data_10b, k_encoded = await self.write_to_Rx("11001111", 0, 0, invert_polarity = invert_polarity)
+                            data_to_log = data_10b + "_" + data_to_log
+                            k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                            log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
+                            log_file.write("32;CFCFCEFC;0;0001;\n")
+                            word_counter_for_skip += 1
+
                     #send SDF
                     data_to_log = ""
                     k_encoded_to_log = ""
@@ -466,6 +610,54 @@ class SpaceFibre_Random_Generator:
                 else :
                     current_frame_size +=1
 
+
+                while self.fct_counter[target] <= 0:
+                    if word_counter_for_skip>= 5000:
+                        data_to_log = ""
+                        k_encoded_to_log = ""
+
+                        data_10b, k_encoded  = await self.write_to_Rx("11111100", 0, 1, invert_polarity = invert_polarity)
+                        data_to_log = data_10b + "_" + data_to_log
+                        k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                        data_10b, k_encoded  = await self.write_to_Rx("11001110", 0, 0, invert_polarity = invert_polarity)
+                        data_to_log = data_10b + "_" + data_to_log
+                        k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                        data_10b, k_encoded  = await self.write_to_Rx("01111111", 0, 0, invert_polarity = invert_polarity)
+                        data_to_log = data_10b + "_" + data_to_log
+                        k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                        data_10b, k_encoded  = await self.write_to_Rx("01111111", 0, 0, invert_polarity = invert_polarity)
+                        data_to_log = data_10b + "_" + data_to_log
+                        k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                        log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
+                        log_file.write("32;7F7FCEFC;0;0001;\n")
+                        word_counter_for_skip = 0
+                    else :
+                        data_to_log = ""
+                        k_encoded_to_log = ""
+
+                        data_10b, k_encoded = await self.write_to_Rx("11111100", 0, 1, invert_polarity = invert_polarity)
+                        data_to_log = data_10b + "_" + data_to_log
+                        k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                        data_10b, k_encoded = await self.write_to_Rx("11001110", 0, 0, invert_polarity = invert_polarity)
+                        data_to_log = data_10b + "_" + data_to_log
+                        k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                        data_10b, k_encoded = await self.write_to_Rx("11001111", 0, 0, invert_polarity = invert_polarity)
+                        data_to_log = data_10b + "_" + data_to_log
+                        k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                        data_10b, k_encoded = await self.write_to_Rx("11001111", 0, 0, invert_polarity = invert_polarity)
+                        data_to_log = data_10b + "_" + data_to_log
+                        k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                        log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
+                        log_file.write("32;CFCFCEFC;0;0001;\n")
+                        word_counter_for_skip += 1
                 #send Data
                 for n in range(4):
                     if current_packet_size==packet_size-1:
@@ -513,7 +705,7 @@ class SpaceFibre_Random_Generator:
                     log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
                     log_file.write("32;7F7FCEFC;0;0001;\n")
                     word_counter_for_skip = 0
-                
+    
             #check if EDF and SDF to be sent
             if current_frame_size == frame_size:
                 current_frame_size = 1
@@ -521,6 +713,53 @@ class SpaceFibre_Random_Generator:
                 k_encoded_to_log = ""
                 sequence += 1
                 
+                while self.fct_counter[target] <= 0:
+                    if word_counter_for_skip>= 5000:
+                        data_to_log = ""
+                        k_encoded_to_log = ""
+
+                        data_10b, k_encoded  = await self.write_to_Rx("11111100", 0, 1, invert_polarity = invert_polarity)
+                        data_to_log = data_10b + "_" + data_to_log
+                        k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                        data_10b, k_encoded  = await self.write_to_Rx("11001110", 0, 0, invert_polarity = invert_polarity)
+                        data_to_log = data_10b + "_" + data_to_log
+                        k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                        data_10b, k_encoded  = await self.write_to_Rx("01111111", 0, 0, invert_polarity = invert_polarity)
+                        data_to_log = data_10b + "_" + data_to_log
+                        k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                        data_10b, k_encoded  = await self.write_to_Rx("01111111", 0, 0, invert_polarity = invert_polarity)
+                        data_to_log = data_10b + "_" + data_to_log
+                        k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                        log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
+                        log_file.write("32;7F7FCEFC;0;0001;\n")
+                        word_counter_for_skip = 0
+                    else :
+                        data_to_log = ""
+                        k_encoded_to_log = ""
+
+                        data_10b, k_encoded = await self.write_to_Rx("11111100", 0, 1, invert_polarity = invert_polarity)
+                        data_to_log = data_10b + "_" + data_to_log
+                        k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                        data_10b, k_encoded = await self.write_to_Rx("11001110", 0, 0, invert_polarity = invert_polarity)
+                        data_to_log = data_10b + "_" + data_to_log
+                        k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                        data_10b, k_encoded = await self.write_to_Rx("11001111", 0, 0, invert_polarity = invert_polarity)
+                        data_to_log = data_10b + "_" + data_to_log
+                        k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                        data_10b, k_encoded = await self.write_to_Rx("11001111", 0, 0, invert_polarity = invert_polarity)
+                        data_to_log = data_10b + "_" + data_to_log
+                        k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                        log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
+                        log_file.write("32;CFCFCEFC;0;0001;\n")
+                        word_counter_for_skip += 1
 
                 #Send EDF
                 data_10b, k_encoded  = await self.write_to_Rx("00011100", 0, 1, invert_polarity = invert_polarity)
@@ -573,6 +812,56 @@ class SpaceFibre_Random_Generator:
                     log_file.write("32;7F7FCEFC;0;0001;\n")
                     word_counter_for_skip = 0
                 
+
+                while self.fct_counter[target] <= 0:
+                    if word_counter_for_skip>= 5000:
+                        data_to_log = ""
+                        k_encoded_to_log = ""
+
+                        data_10b, k_encoded  = await self.write_to_Rx("11111100", 0, 1, invert_polarity = invert_polarity)
+                        data_to_log = data_10b + "_" + data_to_log
+                        k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                        data_10b, k_encoded  = await self.write_to_Rx("11001110", 0, 0, invert_polarity = invert_polarity)
+                        data_to_log = data_10b + "_" + data_to_log
+                        k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                        data_10b, k_encoded  = await self.write_to_Rx("01111111", 0, 0, invert_polarity = invert_polarity)
+                        data_to_log = data_10b + "_" + data_to_log
+                        k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                        data_10b, k_encoded  = await self.write_to_Rx("01111111", 0, 0, invert_polarity = invert_polarity)
+                        data_to_log = data_10b + "_" + data_to_log
+                        k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                        log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
+                        log_file.write("32;7F7FCEFC;0;0001;\n")
+                        word_counter_for_skip = 0
+                    else :
+                        data_to_log = ""
+                        k_encoded_to_log = ""
+
+                        data_10b, k_encoded = await self.write_to_Rx("11111100", 0, 1, invert_polarity = invert_polarity)
+                        data_to_log = data_10b + "_" + data_to_log
+                        k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                        data_10b, k_encoded = await self.write_to_Rx("11001110", 0, 0, invert_polarity = invert_polarity)
+                        data_to_log = data_10b + "_" + data_to_log
+                        k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                        data_10b, k_encoded = await self.write_to_Rx("11001111", 0, 0, invert_polarity = invert_polarity)
+                        data_to_log = data_10b + "_" + data_to_log
+                        k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                        data_10b, k_encoded = await self.write_to_Rx("11001111", 0, 0, invert_polarity = invert_polarity)
+                        data_to_log = data_10b + "_" + data_to_log
+                        k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                        log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
+                        log_file.write("32;CFCFCEFC;0;0001;\n")
+                        word_counter_for_skip += 1
+
+
                 #send SDF
                 data_to_log = ""
                 k_encoded_to_log = ""
@@ -629,6 +918,54 @@ class SpaceFibre_Random_Generator:
             else :
                 current_frame_size += 1
 
+
+            while self.fct_counter[target] <= 0:
+                if word_counter_for_skip>= 5000:
+                    data_to_log = ""
+                    k_encoded_to_log = ""
+
+                    data_10b, k_encoded  = await self.write_to_Rx("11111100", 0, 1, invert_polarity = invert_polarity)
+                    data_to_log = data_10b + "_" + data_to_log
+                    k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                    data_10b, k_encoded  = await self.write_to_Rx("11001110", 0, 0, invert_polarity = invert_polarity)
+                    data_to_log = data_10b + "_" + data_to_log
+                    k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                    data_10b, k_encoded  = await self.write_to_Rx("01111111", 0, 0, invert_polarity = invert_polarity)
+                    data_to_log = data_10b + "_" + data_to_log
+                    k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                    data_10b, k_encoded  = await self.write_to_Rx("01111111", 0, 0, invert_polarity = invert_polarity)
+                    data_to_log = data_10b + "_" + data_to_log
+                    k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                    log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
+                    log_file.write("32;7F7FCEFC;0;0001;\n")
+                    word_counter_for_skip = 0
+                else :
+                    data_to_log = ""
+                    k_encoded_to_log = ""
+
+                    data_10b, k_encoded = await self.write_to_Rx("11111100", 0, 1, invert_polarity = invert_polarity)
+                    data_to_log = data_10b + "_" + data_to_log
+                    k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                    data_10b, k_encoded = await self.write_to_Rx("11001110", 0, 0, invert_polarity = invert_polarity)
+                    data_to_log = data_10b + "_" + data_to_log
+                    k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                    data_10b, k_encoded = await self.write_to_Rx("11001111", 0, 0, invert_polarity = invert_polarity)
+                    data_to_log = data_10b + "_" + data_to_log
+                    k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                    data_10b, k_encoded = await self.write_to_Rx("11001111", 0, 0, invert_polarity = invert_polarity)
+                    data_to_log = data_10b + "_" + data_to_log
+                    k_encoded_to_log = str(k_encoded) + k_encoded_to_log
+
+                    log_file_10b.write("32;" + data_to_log + ";0;" + k_encoded_to_log + ";" + str(get_sim_time(units = self.precision)) + "\n")
+                    log_file.write("32;CFCFCEFC;0;0001;\n")
+                    word_counter_for_skip += 1
             #Send last data_word
             last_packet_sent = (packet_number * packet_size-1)%4
             for n in range(4):

@@ -160,7 +160,7 @@ def check_skip_word(file_path,tb):
                 c = 0
                 init = 0
                 skip_counter += 1
-                tb.logger.info("simulation time %d ns : first skip word detected at line %d\n\n\n", get_sim_time(units = "ns"), line_number)
+                tb.logger.info("simulation time %d ns : first skip word detected at line %d after %d words\n\n\n", get_sim_time(units = "ns"), line_number, c)
             elif c != 5000:
                 compliancy_5000 = 0
                 skip_counter += 1
@@ -288,9 +288,14 @@ async def cocotb_run(dut):
     #Sets DUT lane initialisation FSM to Active with parallel loopback enabled 
     await initialization_procedure(tb)
 
+
+
     if target == "NG_ULTRA" :
-        monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_2", number_of_word = 50000))
         loopback = cocotb.start_soon(tb.spacefibre_loopback.loopback(400000))
+        await RisingEdge(tb.dut.RX_POS)
+        await Timer(80, units="ps")
+        await tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_2_alignement", number_of_word = 100)
+        monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_2", number_of_word = 70000))
     else:
         loopback = cocotb.start_soon(tb.spacefibre_loopback.loopback(111200))
         monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_2", number_of_word = 27800))
@@ -329,7 +334,7 @@ async def cocotb_run(dut):
 
 
     if target == "NG_ULTRA" :
-        if idle_number != (33360 - skip_number):
+        if idle_number != (53360 - skip_number):
             step_2_failed = 1
             tb.logger.error("simulation time %d ns : step 2.18 result: Failed\nIdle_umber : %d\n\n\n", get_sim_time(units = "ns"), idle_number)
         else:
