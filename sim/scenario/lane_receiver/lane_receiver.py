@@ -1339,6 +1339,7 @@ async def cocotb_run(dut):
 
         await stimuli
         
+
         check_error = cocotb.start_soon(tb.masters[0].read_data(Data_read_lane_config_status))
         stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
         
@@ -1391,9 +1392,13 @@ async def cocotb_run(dut):
 
         await stimuli
 
+        stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 100))
+
         check_error = cocotb.start_soon(tb.masters[0].read_data(Data_read_lane_config_status))
-        wait_check_error = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+        
         await check_error
+
+        await stimuli
 
         error_cnt = format(Data_read_lane_config_status.data[1], '0>8b')[4:8] + format(Data_read_lane_config_status.data[0], '0>8b')[0:4]
         error_overflow = format(Data_read_lane_config_status.data[1], '0>8b')[3]
@@ -1444,9 +1449,13 @@ async def cocotb_run(dut):
 
         await send_idle_ctrl_word(tb, 2000)
 
+        stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 100))
+
         check_error = cocotb.start_soon(tb.masters[0].read_data(Data_read_lane_config_status))
-        wait_check_error = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+        
         await check_error
+
+        await stimuli
 
         error_cnt = format(Data_read_lane_config_status.data[1], '0>8b')[4:8] + format(Data_read_lane_config_status.data[0], '0>8b')[0:4]
         error_overflow = format(Data_read_lane_config_status.data[1], '0>8b')[3]
@@ -1459,6 +1468,7 @@ async def cocotb_run(dut):
 
 
 
+        stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 100))
 
 
         for seed in range (3):
@@ -1496,9 +1506,13 @@ async def cocotb_run(dut):
 
         await stimuli
 
+        stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 100))
+
         check_error = cocotb.start_soon(tb.masters[0].read_data(Data_read_lane_config_status))
-        wait_check_error = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+        
         await check_error
+
+        await stimuli
 
         error_cnt = format(Data_read_lane_config_status.data[1], '0>8b')[4:8] + format(Data_read_lane_config_status.data[0], '0>8b')[0:4]
         error_overflow = format(Data_read_lane_config_status.data[1], '0>8b')[3]
@@ -1510,6 +1524,7 @@ async def cocotb_run(dut):
             tb.logger.info("simulation time %d ns : step 3.26_d result: Pass\n\n\n\n", get_sim_time(units = "ns"))
 
 
+        stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 100))
 
 
         for seed in range (2):
@@ -1552,7 +1567,6 @@ async def cocotb_run(dut):
         stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 100))
 
         check_error = cocotb.start_soon(tb.masters[0].read_data(Data_read_lane_config_status))
-        wait_check_error = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
         await check_error
 
         await stimuli
@@ -1609,7 +1623,6 @@ async def cocotb_run(dut):
                 stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 100))
 
                 check_error = cocotb.start_soon(tb.masters[0].read_data(Data_read_lane_config_status))
-                wait_check_error = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
                 await check_error
 
                 await stimuli
@@ -1655,6 +1668,7 @@ async def cocotb_run(dut):
 
 
 
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 100))
 
     #RXERR word reception
 
@@ -1666,7 +1680,7 @@ async def cocotb_run(dut):
     Data_lane_ana_control.data = bytearray( [0x01,0x00,0x00,0x00])
     await tb.masters[2].write_data(Data_lane_ana_control)
 
-    await wait_check_error
+    await stimuli
     
     await write_10b_to_Rx(tb, "1110110101", 0)
     await write_10b_to_Rx(tb, "1100011001", 0)
