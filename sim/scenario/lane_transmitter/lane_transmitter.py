@@ -151,8 +151,7 @@ def check_skip_word(file_path,tb):
     init = 1
     line_number = 0
     for line in input_file:
-        if len(line) == 22:
-            c += 1
+        c += 1
         line_number += 1
         skip_word_detected = line.find(skip_word)
         if skip_word_detected >= 0:
