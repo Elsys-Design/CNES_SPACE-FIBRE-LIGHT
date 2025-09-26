@@ -50,6 +50,13 @@ test_failed = 0
 
 target = os.environ.get("HARDWARE_TARGET")
 
+async def send_idle_ctrl_word(tb, number_of_words):
+    for x in range(number_of_words):
+        await tb.spacefibre_driver.write_to_Rx("11111100", delay = 0, k_encoding = 1)
+        await tb.spacefibre_driver.write_to_Rx("11001110", delay = 0, k_encoding = 0)
+        await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
+        await tb.spacefibre_driver.write_to_Rx("11001111", delay = 0, k_encoding = 0)
+
 def clean_dir(path):
     """Suppress all files of a directory pointed by path"""
     folder = path
@@ -131,12 +138,16 @@ async def initialization_procedure(tb):
     
     #Set Lane initialisatiion FSM from Started to Active state
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/Started_to_Active.dat")
-
+    await send_idle_ctrl_word(tb, 100)
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 50))
     #Check that Lane initialisatiion FSM is in Active State
     await tb.masters[0].read_data(Data_read_lane_config_status)
     if format(Data_read_lane_config_status.data[0], '0>8b')[4:8] != ACTIVE:
         global test_failed 
+        tb.logger.error("simulation time %d ns : Initialisation failed\nState : %s \n\n\n", get_sim_time(units = "ns"), format(Data_read_lane_config_status.data[0], '0>8b')[4:8] )
         test_failed = 1
+    await stimuli
+
 
 def check_skip_word(file_path,tb):
     """
@@ -172,6 +183,7 @@ def check_skip_word(file_path,tb):
         if c >= 5000 and init == 0:
             compliancy_5000 = 0
             tb.logger.error("simulation time %d ns : skip word timeout at line %d \nline of timeout : %s \n\n\n", get_sim_time(units = "ns"), line_number, line)
+    input_file.close()
     return compliancy_5000, skip_counter
 
 def check_idle_word(file_path, tb):
@@ -188,6 +200,7 @@ def check_idle_word(file_path, tb):
         if line.find(idle_word) >= 0:
             c += 1
             tb.logger.debug("simulation time %d ns : idle word n° %d detected at line %d\n\n\n", get_sim_time(units = "ns"), c, line_number)
+    input_file.close()
     return c
 
 @cocotb.test()
