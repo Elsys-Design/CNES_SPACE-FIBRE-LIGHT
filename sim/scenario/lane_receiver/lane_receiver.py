@@ -1339,6 +1339,7 @@ async def cocotb_run(dut):
 
         await stimuli
         
+
         check_error = cocotb.start_soon(tb.masters[0].read_data(Data_read_lane_config_status))
         stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
         
@@ -1391,9 +1392,13 @@ async def cocotb_run(dut):
 
         await stimuli
 
+        stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 100))
+
         check_error = cocotb.start_soon(tb.masters[0].read_data(Data_read_lane_config_status))
-        wait_check_error = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+        
         await check_error
+
+        await stimuli
 
         error_cnt = format(Data_read_lane_config_status.data[1], '0>8b')[4:8] + format(Data_read_lane_config_status.data[0], '0>8b')[0:4]
         error_overflow = format(Data_read_lane_config_status.data[1], '0>8b')[3]
@@ -1404,7 +1409,7 @@ async def cocotb_run(dut):
         else:
             tb.logger.info("simulation time %d ns : step 3.26_b result: Pass\n\n\n\n", get_sim_time(units = "ns"))
 
-
+        stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 100))
 
 
         for seed in range (2):
@@ -1444,9 +1449,13 @@ async def cocotb_run(dut):
 
         await send_idle_ctrl_word(tb, 2000)
 
+        stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 100))
+
         check_error = cocotb.start_soon(tb.masters[0].read_data(Data_read_lane_config_status))
-        wait_check_error = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+        
         await check_error
+
+        await stimuli
 
         error_cnt = format(Data_read_lane_config_status.data[1], '0>8b')[4:8] + format(Data_read_lane_config_status.data[0], '0>8b')[0:4]
         error_overflow = format(Data_read_lane_config_status.data[1], '0>8b')[3]
@@ -1459,6 +1468,7 @@ async def cocotb_run(dut):
 
 
 
+        stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 100))
 
 
         for seed in range (3):
@@ -1496,9 +1506,13 @@ async def cocotb_run(dut):
 
         await stimuli
 
+        stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 100))
+
         check_error = cocotb.start_soon(tb.masters[0].read_data(Data_read_lane_config_status))
-        wait_check_error = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+        
         await check_error
+
+        await stimuli
 
         error_cnt = format(Data_read_lane_config_status.data[1], '0>8b')[4:8] + format(Data_read_lane_config_status.data[0], '0>8b')[0:4]
         error_overflow = format(Data_read_lane_config_status.data[1], '0>8b')[3]
@@ -1510,6 +1524,7 @@ async def cocotb_run(dut):
             tb.logger.info("simulation time %d ns : step 3.26_d result: Pass\n\n\n\n", get_sim_time(units = "ns"))
 
 
+        stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 100))
 
 
         for seed in range (2):
@@ -1549,9 +1564,12 @@ async def cocotb_run(dut):
 
         await send_idle_ctrl_word(tb, 2000)
 
+        stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 100))
+
         check_error = cocotb.start_soon(tb.masters[0].read_data(Data_read_lane_config_status))
-        wait_check_error = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
         await check_error
+
+        await stimuli
 
         error_cnt = format(Data_read_lane_config_status.data[1], '0>8b')[4:8] + format(Data_read_lane_config_status.data[0], '0>8b')[0:4]
         error_overflow = format(Data_read_lane_config_status.data[1], '0>8b')[3]
@@ -1559,6 +1577,62 @@ async def cocotb_run(dut):
         if error_cnt != "00000000" or error_overflow != "0":
             step_3_failed = 1
             tb.logger.error("simulation time %d ns : step 3.26_e result: Failed\nError counter : %s\nError counter overflow: %s\n\n\n", get_sim_time(units = "ns"), error_cnt, error_overflow)
+            
+            
+            #Clear rx error counter before the rest of the test
+            while error_cnt != "00000000" or error_overflow != "0":
+
+                stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 100))
+
+                #Configure Lane_Analizer
+                Data_lane_ana_config.data = bytearray( [0x90,0x20,0x00,0x01])
+                await tb.masters[2].write_data(Data_lane_ana_config)
+
+                #Seed of Lane_Analyzer
+                Data_lane_ana_seed.data = bytearray( [0x2F,0x00,0x00,0x00])
+                await tb.masters[2].write_data(Data_lane_ana_seed)
+
+                #Start Test
+                Data_lane_ana_control.data = bytearray( [0x01,0x00,0x00,0x00])
+                await tb.masters[2].write_data(Data_lane_ana_control)
+                
+                await stimuli
+                
+                logfile  = "reference/spacefibre_serial/12288 _word_step_3_1_" + str(12) + ".dat"
+
+                await tb.spacefibre_random_generator.write_random_inputs(logfile,
+                                                                        frame_number = 0x10,
+                                                                        frame_size = 0x100,
+                                                                        seed = 0x00_00_00_2F)
+                stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
+
+                    
+                #Pull until Test End
+                error_cnt = await wait_end_test(tb)
+                
+                if error_cnt != "00000000":
+                    step_3_failed = 1
+                    tb.logger.error("simulation time %d ns : step 3.25.clearing result: Failed\nError counter : %s\n\n\n", get_sim_time(units = "ns"), error_cnt)
+                else:
+                    tb.logger.info("simulation time %d ns : step 3.25.clearing result: Pass\n\n\n\n", get_sim_time(units = "ns"))
+
+                await stimuli
+
+                await send_idle_ctrl_word(tb, 2000)
+                
+                stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 100))
+
+                check_error = cocotb.start_soon(tb.masters[0].read_data(Data_read_lane_config_status))
+                await check_error
+
+                await stimuli
+
+                error_cnt = format(Data_read_lane_config_status.data[1], '0>8b')[4:8] + format(Data_read_lane_config_status.data[0], '0>8b')[0:4]
+                error_overflow = format(Data_read_lane_config_status.data[1], '0>8b')[3]
+
+
+
+
         else:
             tb.logger.info("simulation time %d ns : step 3.26_e result: Pass\n\n\n\n", get_sim_time(units = "ns"))
 
@@ -1594,6 +1668,7 @@ async def cocotb_run(dut):
 
 
 
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 100))
 
     #RXERR word reception
 
@@ -1605,8 +1680,8 @@ async def cocotb_run(dut):
     Data_lane_ana_control.data = bytearray( [0x01,0x00,0x00,0x00])
     await tb.masters[2].write_data(Data_lane_ana_control)
 
-    await wait_check_error
-    
+    await stimuli
+
     await write_10b_to_Rx(tb, "1110110101", 0)
     await write_10b_to_Rx(tb, "1100011001", 0)
     await write_10b_to_Rx(tb, "1110110101", 0)
@@ -1754,7 +1829,7 @@ async def cocotb_run(dut):
     await write_10b_to_Rx(tb, "1100011001", 0)
     await write_10b_to_Rx(tb, "1100011001", 0)
 
-    wait_check_error = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
+    wait_check_error = cocotb.start_soon(send_idle_ctrl_word(tb, 100))
 
     #Pull until Test End
     error_cnt = await wait_end_test(tb)

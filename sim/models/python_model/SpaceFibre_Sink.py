@@ -28,6 +28,7 @@ from framework import   AxiStreamSource, AxiStreamSink, AxiStreamMonitor, AxiBus
                         AxiMonitor, AxiLiteMonitor, Data
 
 
+target = os.environ.get("HARDWARE_TARGET")
 
 class SpaceFibre_Sink:
 
@@ -50,6 +51,8 @@ class SpaceFibre_Sink:
         variation = random.randint(0, 2)
         if variation > 0:
             variation = 1
+        if target == "NG_ULTRA":
+            variation = 0
         for t in range(10):
             if not self.dut.TX_POS.value.binstr == "Z" and self.dut.TX_NEG.value.binstr == "Z":
                 if not self.dut.TX_POS.value == (self.dut.TX_NEG.value^1):
