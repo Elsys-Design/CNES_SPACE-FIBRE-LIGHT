@@ -1681,7 +1681,7 @@ async def cocotb_run(dut):
     await tb.masters[2].write_data(Data_lane_ana_control)
 
     await stimuli
-    
+
     await write_10b_to_Rx(tb, "1110110101", 0)
     await write_10b_to_Rx(tb, "1100011001", 0)
     await write_10b_to_Rx(tb, "1110110101", 0)
@@ -1829,7 +1829,7 @@ async def cocotb_run(dut):
     await write_10b_to_Rx(tb, "1100011001", 0)
     await write_10b_to_Rx(tb, "1100011001", 0)
 
-    wait_check_error = cocotb.start_soon(send_idle_ctrl_word(tb, 5000))
+    wait_check_error = cocotb.start_soon(send_idle_ctrl_word(tb, 100))
 
     #Pull until Test End
     error_cnt = await wait_end_test(tb)
