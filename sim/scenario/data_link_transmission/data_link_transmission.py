@@ -595,7 +595,8 @@ async def cocotb_run(dut):
     step_1_failed = 0
     #Sets DUT lane initialisation FSM to Active
 
-    
+    fct_monitor = cocotb.start_soon(tb.spacefibre_random_generator_data_link.monitor_FCT(20000))
+
     await initialization_procedure(tb, "reference/spacefibre_serial/monitor_step_1")
 
     monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_1", number_of_word = 20+66*8+23))
@@ -763,6 +764,10 @@ async def cocotb_run(dut):
 
     await monitor
 
+    await fct_monitor 
+
+    tb.spacefibre_random_generator_data_link.fct_counter = [0]*8
+    
     if step_1_failed == 0:
         tb.logger.info("simulation time %d ns : step 1 result: Pass", get_sim_time(units = 'ns'))
     else:
@@ -779,6 +784,8 @@ async def cocotb_run(dut):
     ##########################################################################
     
     step_2_failed = 0
+
+    fct_monitor = cocotb.start_soon(tb.spacefibre_random_generator_data_link.monitor_FCT(20000))
     
     await initialization_procedure(tb, "reference/spacefibre_serial/monitor_step_2")
 
@@ -939,6 +946,8 @@ async def cocotb_run(dut):
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/100_IDLE.dat", file_format = 16)
 
     await monitor
+    await fct_monitor 
+    tb.spacefibre_random_generator_data_link.fct_counter = [0]*8
 
     if step_2_failed == 0:
         tb.logger.info("simulation time %d ns : step 2 result: Pass", get_sim_time(units = 'ns'))
@@ -957,6 +966,7 @@ async def cocotb_run(dut):
     step_3_failed = 0
 
     # monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_3", number_of_word = 2500))
+    fct_monitor = cocotb.start_soon(tb.spacefibre_random_generator_data_link.monitor_FCT(20000))
 
     await initialization_procedure(tb, "reference/spacefibre_serial/monitor_step_3_init")
     
@@ -1029,6 +1039,10 @@ async def cocotb_run(dut):
 
     result = check_CRC(tb, "reference/spacefibre_serial/monitor_step_3_hexa.dat")
 
+    await fct_monitor
+    tb.spacefibre_random_generator_data_link.fct_counter = [0]*8
+
+
     if result == 1:
         step_3_failed = 1
 
@@ -1047,6 +1061,9 @@ async def cocotb_run(dut):
     ##########################################################################
 
     step_4_failed = 0
+
+    fct_monitor = cocotb.start_soon(tb.spacefibre_random_generator_data_link.monitor_FCT(20000))
+
 
     monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_4", number_of_word = 500+64*80))
 
@@ -1160,6 +1177,9 @@ async def cocotb_run(dut):
 
     await send_idle_ctrl_word(tb, 200)
 
+    await fct_monitor 
+    tb.spacefibre_random_generator_data_link.fct_counter = [0]*8
+
     if step_4_failed == 0:
         tb.logger.info("simulation time %d ns : step 4 result: Pass", get_sim_time(units = 'ns'))
     else:
@@ -1176,6 +1196,8 @@ async def cocotb_run(dut):
 
 
     step_5_failed = 0
+
+    fct_monitor = cocotb.start_soon(tb.spacefibre_random_generator_data_link.monitor_FCT(20000))
 
     await initialization_procedure(tb, "reference/spacefibre_serial/monitor_step_5")
     
@@ -1224,6 +1246,9 @@ async def cocotb_run(dut):
 
     await monitor
 
+    await fct_monitor
+    tb.spacefibre_random_generator_data_link.fct_counter = [0]*8
+
     if step_5_failed == 0:
         tb.logger.info("simulation time %d ns : step 5 result: Pass", get_sim_time(units = 'ns'))
     else:
@@ -1241,6 +1266,7 @@ async def cocotb_run(dut):
 
     step_6_failed = 0
 
+    fct_monitor = cocotb.start_soon(tb.spacefibre_random_generator_data_link.monitor_FCT(20000))
 
     await initialization_procedure(tb, "reference/spacefibre_serial/monitor_step_6")
     
@@ -1314,6 +1340,9 @@ async def cocotb_run(dut):
     #Check EEP insertion
 
     await send_idle_ctrl_word(tb, 200)
+    tb.spacefibre_random_generator_data_link.fct_counter = [0]*8
+
+    await fct_monitor 
 
     if step_6_failed == 0:
         tb.logger.info("simulation time %d ns : step 6 result: Pass", get_sim_time(units = 'ns'))
