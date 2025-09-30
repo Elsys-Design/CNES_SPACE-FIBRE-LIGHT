@@ -697,7 +697,7 @@ begin
       NEW_DATA_TX_DL               => NEW_DATA_TX,
       VALID_K_CHARAC_TX_DL         => VALID_K_CHARAC_TX,
       CAPABILITY_TX_DL             => CAPABILITY_TX,
-      LANE_RESET_DL                => LANE_RESET,
+      LANE_RESET_DL                => LANE_RESET_DL,
       -- ppl_64_data_fifo_tx (PLDFT) interface
       DATA_TX_PLBCT                => data_tx_plbct,
       NEW_DATA_TX_PLBCT            => new_data_tx_plbct,
@@ -766,7 +766,7 @@ begin
        RD_DATA_EN              => rd_data_en_plcwi,
        RD_DATA_VLD             => data_valid_plftd,
        -- Command port
-       CMD_FLUSH               => LANE_RESET_DL,
+       CMD_FLUSH               => LANE_RESET_DL or LANE_RESET,
        STATUS_BUSY_FLUSH       => open,
        -- Status port
        STATUS_THRESHOLD_HIGH   => open,

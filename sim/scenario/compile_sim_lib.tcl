@@ -147,17 +147,17 @@ vcom +cover=sb +acc -work phy_plus_lane_lib  $rootpath/src/module_phy_plus_lane/
 echo "######### End compile Lane_layer VERSAL ##########"
 
 echo "######## Start compile Lane_layer NGULTRA #########"
-vcom +cover=sb +acc -work phy_plus_lane_64_lib  $rootpath/src/module_phy_plus_lane_64b/ppl_64_lane_ctrl_word_detect.vhd
-vcom +cover=sb +acc -work phy_plus_lane_64_lib  $rootpath/src/module_phy_plus_lane_64b/ppl_64_lane_ctrl_word_insert.vhd
-vcom +cover=sb +acc -work phy_plus_lane_64_lib  $rootpath/src/module_phy_plus_lane_64b/ppl_64_lane_init_fsm.vhd
-vcom +cover=sb +acc -work phy_plus_lane_64_lib  $rootpath/src/module_phy_plus_lane_64b/ppl_64_parallel_loopback.vhd
-vcom +cover=sb +acc -work phy_plus_lane_64_lib  $rootpath/src/module_phy_plus_lane_64b/ppl_64_rx_wr_en_fifo.vhd
-vcom +cover=sb +acc -work phy_plus_lane_64_lib  $rootpath/src/module_phy_plus_lane_64b/ppl_64_rx_sync_fsm.vhd
-vcom +cover=sb +acc -work phy_plus_lane_64_lib  $rootpath/src/module_phy_plus_lane_64b/ppl_64_skip_insertion.vhd
-vcom +cover=sb +acc -work phy_plus_lane_64_lib  $rootpath/src/module_phy_plus_lane_64b/ppl_64_bus_concat_tx.vhd
-vcom +cover=sb +acc -work phy_plus_lane_64_lib  $rootpath/src/module_phy_plus_lane_64b/ppl_64_bus_split_rx.vhd
-vcom +cover=sb +acc -work phy_plus_lane_64_lib  $rootpath/src/module_phy_plus_lane_64b/phy_plus_lane_64b.vhd
-vcom +cover=sb +acc -work phy_plus_lane_64_lib  $rootpath/src/module_phy_plus_lane/mib_phy_plus_lane.vhd
+vcom +cover=sb +acc -2008 -work phy_plus_lane_64_lib  $rootpath/src/module_phy_plus_lane_64b/ppl_64_lane_ctrl_word_detect.vhd
+vcom +cover=sb +acc -2008 -work phy_plus_lane_64_lib  $rootpath/src/module_phy_plus_lane_64b/ppl_64_lane_ctrl_word_insert.vhd
+vcom +cover=sb +acc -2008 -work phy_plus_lane_64_lib  $rootpath/src/module_phy_plus_lane_64b/ppl_64_lane_init_fsm.vhd
+vcom +cover=sb +acc -2008 -work phy_plus_lane_64_lib  $rootpath/src/module_phy_plus_lane_64b/ppl_64_parallel_loopback.vhd
+vcom +cover=sb +acc -2008 -work phy_plus_lane_64_lib  $rootpath/src/module_phy_plus_lane_64b/ppl_64_rx_wr_en_fifo.vhd
+vcom +cover=sb +acc -2008 -work phy_plus_lane_64_lib  $rootpath/src/module_phy_plus_lane_64b/ppl_64_rx_sync_fsm.vhd
+vcom +cover=sb +acc -2008 -work phy_plus_lane_64_lib  $rootpath/src/module_phy_plus_lane_64b/ppl_64_skip_insertion.vhd
+vcom +cover=sb +acc -2008 -work phy_plus_lane_64_lib  $rootpath/src/module_phy_plus_lane_64b/ppl_64_bus_concat_tx.vhd
+vcom +cover=sb +acc -2008 -work phy_plus_lane_64_lib  $rootpath/src/module_phy_plus_lane_64b/ppl_64_bus_split_rx.vhd
+vcom +cover=sb +acc -2008 -work phy_plus_lane_64_lib  $rootpath/src/module_phy_plus_lane_64b/phy_plus_lane_64b.vhd
+vcom +cover=sb +acc -2008 -work phy_plus_lane_64_lib  $rootpath/src/module_phy_plus_lane/mib_phy_plus_lane.vhd
 echo "######### End compile Lane_layer NGULTRA ##########"
 
 
