@@ -132,9 +132,12 @@ class SpaceFibre_Random_Generator:
             if data_received[6:8] == "7C" and k_encoded_word == "0001":
                 channel = int(f"{(int(data_received[4:6], base = 16)):0>8b}"[3:8], base = 2)
                 mult = int(f"{(int(data_received[4:6], base = 16)):0>8b}"[0:3], base = 2)
-                self.logger.info("sim_time %d ns: fct monitor \nmult: %d \nchannel: %d\nFull word : %s", get_sim_time(units = 'ns'), mult, channel, data_received)
-                self.fct_counter[channel] += 64 * (mult+1)
-                self.logger.debug("sim_time %d ns: fct monitor: new FCT counter for channel %d: %d \n", get_sim_time(units = "ns"), channel, self.fct_counter[channel])
+                if 0 <= channel < 8: 
+                    self.fct_counter[channel] += 64 * (mult+1)
+                    self.logger.info("sim_time %d ns: fct monitor \nmult: %d \nchannel: %d\nFull word : %s", get_sim_time(units = 'ns'), mult, channel, data_received)
+                    self.logger.debug("sim_time %d ns: fct monitor: new FCT counter for channel %d: %d \n", get_sim_time(units = "ns"), channel, self.fct_counter[channel])
+                else :
+                    self.logger.warning("sim_time %d ns: fct monitor wrong channel \nmult: %d \nchannel: %d\nFull word : %s", get_sim_time(units = 'ns'), mult, channel, data_received)
         self.logger.info("sim_time %d ns: end of task fct monitor\n", get_sim_time(units = "ns"))
 
                 
@@ -221,7 +224,7 @@ class SpaceFibre_Random_Generator:
         self.logger.debug("sim_time %d ns: Data encoded sent : %d", get_sim_time(units = "ns"), encoded_data)
         return encoded_data, k_encoding
 
-    async def write_random_inputs(self, file_path, packet_size, packet_number, frame_size, frame_type, target, sequence, sequence_polarity = 0, delay = 0, invert_polarity = 0, seed = 42):
+    async def write_random_inputs(self, file_path, packet_size, packet_number, frame_size, frame_type, target, sequence, sequence_polarity = 0, delay = 0, invert_polarity = 0, seed = 42, ignore_fct_monitor = 0):
         """
         Writes the given number of inputs data randomly generated based on the given seed to the Rx port
         of the SpaceFibreLight IP. A log file at file_path is created to record the generated data.
@@ -301,7 +304,7 @@ class SpaceFibre_Random_Generator:
         target = f"{(target):0>8b}"
         if frame_type==0: #if Data Frame
 
-            while self.fct_counter[target_num] <= 0:
+            while self.fct_counter[target_num] <= 0 and ignore_fct_monitor == 0:
                 if word_counter_for_skip>= 5000:
                     data_to_log = ""
                     k_encoded_to_log = ""
@@ -413,7 +416,7 @@ class SpaceFibre_Random_Generator:
                     k_encoded_to_log = ""
                     sequence += 1
                     
-                    while self.fct_counter[target_num] <= 0:
+                    while self.fct_counter[target_num] <= 0 and ignore_fct_monitor == 0:
                         if word_counter_for_skip>= 5000:
                             data_to_log = ""
                             k_encoded_to_log = ""
@@ -513,7 +516,7 @@ class SpaceFibre_Random_Generator:
                         word_counter_for_skip = 0
                     
 
-                    while self.fct_counter[target_num] <= 0:
+                    while self.fct_counter[target_num] <= 0 and ignore_fct_monitor == 0:
                         if word_counter_for_skip>= 5000:
                             data_to_log = ""
                             k_encoded_to_log = ""
@@ -618,7 +621,7 @@ class SpaceFibre_Random_Generator:
                     current_frame_size +=1
 
 
-                while self.fct_counter[target_num] <= 0:
+                while self.fct_counter[target_num] <= 0 and ignore_fct_monitor == 0:
                     if word_counter_for_skip>= 5000:
                         data_to_log = ""
                         k_encoded_to_log = ""
@@ -721,7 +724,7 @@ class SpaceFibre_Random_Generator:
                 k_encoded_to_log = ""
                 sequence += 1
                 
-                while self.fct_counter[target_num] <= 0:
+                while self.fct_counter[target_num] <= 0 and ignore_fct_monitor == 0:
                     if word_counter_for_skip>= 5000:
                         data_to_log = ""
                         k_encoded_to_log = ""
@@ -821,7 +824,7 @@ class SpaceFibre_Random_Generator:
                     word_counter_for_skip = 0
                 
 
-                while self.fct_counter[target_num] <= 0:
+                while self.fct_counter[target_num] <= 0 and ignore_fct_monitor == 0:
                     if word_counter_for_skip>= 5000:
                         data_to_log = ""
                         k_encoded_to_log = ""
@@ -927,7 +930,7 @@ class SpaceFibre_Random_Generator:
                 current_frame_size += 1
 
 
-            while self.fct_counter[target_num] <= 0:
+            while self.fct_counter[target_num] <= 0 and ignore_fct_monitor == 0:
                 if word_counter_for_skip>= 5000:
                     data_to_log = ""
                     k_encoded_to_log = ""
