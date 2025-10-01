@@ -49,6 +49,7 @@ entity ppl_64_lane_ctrl_word_insert is
     SEND_INIT1_CTRL_WORD_PLIF            : in  std_logic;                                   --! Flag to send INIT1 control word followed by 64 pseudo-random data words
     SEND_INIT2_CTRL_WORD_PLIF            : in  std_logic;                                   --! Flag to send INIT2 control word followed by 64 pseudo-random data words
     SEND_INIT3_CTRL_WORD_PLIF            : in  std_logic;                                   --! Flag to send INIT3 control word followed by 64 pseudo-random data words
+    INIT3_X3_SENT_PLCWI                  : out std_logic;                                   --! Flag indicating at least 3 INIT 3 has been sent
     ENABLE_TRANSM_DATA_PLIF              : in  std_logic;                                   --! Flag to enable data transmission
     SEND_32_STANDBY_CTRL_WORDS_PLIF      : in  std_logic;                                   --! Flag to send 32 STANDBY control words
     SEND_32_LOSS_SIGNAL_CTRL_WORDS_PLIF  : in  std_logic;                                   --! Flag to send 32 LOSS_SIGNAL control words
@@ -69,6 +70,7 @@ signal prbs_counter      : unsigned(31 downto 0);
 signal send_stdby_cnt    : unsigned(5 downto 0);
 signal send_loss_sig_cnt : unsigned(5 downto 0);
 signal no_data_dl_r      : std_logic;
+signal init3_sent_cnt    : unsigned(1 downto 0);
 
 begin
 
@@ -77,7 +79,7 @@ begin
 ---------------------------------------------------------
 ---------------------------------------------------------
 -- Process: p_send_data
---! Inserts conrtol words into the data flow 
+--! Inserts conrtol words into the data flow
 ---------------------------------------------------------
   p_send_data : process(CLK, RST_N)
   begin
@@ -92,6 +94,7 @@ begin
       send_loss_sig_cnt              <= (others => '0');
       LOST_SIGNAL_X32_PLCWI          <= '0';
       no_data_dl_r                   <= '0';
+      init3_sent_cnt                 <= (others =>'0');
     elsif rising_edge(CLK) then
       no_data_dl_r                   <= NO_DATA_DL;
       RD_DATA_EN_PLCWI               <= '0';
@@ -115,13 +118,16 @@ begin
           prbs_counter          <= (others => '0');
           if SEND_INIT1_CTRL_WORD_PLIF = '1' then
             -- Send INIT1 control word
-            DATA_TX_PLCWI <= C_INIT1_WORD & std_logic_vector(prbs_counter);
+            DATA_TX_PLCWI       <= C_INIT1_WORD & std_logic_vector(prbs_counter);
           elsif SEND_INIT2_CTRL_WORD_PLIF = '1' then
             -- Send INIT2 control word
-            DATA_TX_PLCWI <= C_INIT2_WORD & std_logic_vector(prbs_counter);
+            DATA_TX_PLCWI       <= C_INIT2_WORD & std_logic_vector(prbs_counter);
           elsif SEND_INIT3_CTRL_WORD_PLIF = '1' then
             -- Send INIT3 control word
-            DATA_TX_PLCWI <= CAPABILITY_DL & C_INIT3_WORD & std_logic_vector(prbs_counter);
+            DATA_TX_PLCWI       <= CAPABILITY_DL & C_INIT3_WORD & std_logic_vector(prbs_counter);
+            if init3_sent_cnt <= 3 then
+              init3_sent_cnt    <= init3_sent_cnt + 1;
+            end if;
           end if;
         elsif prbs_counter = C_PRBS_COUNTER_64 then
           -- Insert INIT word on word 1
@@ -137,6 +143,9 @@ begin
           elsif SEND_INIT3_CTRL_WORD_PLIF = '1' then
             -- Send INIT3 control word
             DATA_TX_PLCWI       <= x"00000000" & CAPABILITY_DL & C_INIT3_WORD;
+            if init3_sent_cnt <= 3 then
+              init3_sent_cnt    <= init3_sent_cnt + 1;
+            end if;
           end if;
         end if;
 
@@ -145,6 +154,7 @@ begin
       --------------------------------------
       elsif ENABLE_TRANSM_DATA_PLIF = '1' then
         -- When lane_init_fsm is in ACTIVE_ST
+        init3_sent_cnt <= (others =>'0');
         NEW_DATA_PLCWI <= '1';
         if ((no_data_dl_r = '0' and NO_DATA_DL = '1') or NO_DATA_DL = '0') and WAIT_SEND_DATA_PLSI = '0' then
           RD_DATA_EN_PLCWI <= '1';
@@ -175,6 +185,7 @@ begin
       --       STANDBY Control Word       --
       --------------------------------------
       elsif SEND_32_STANDBY_CTRL_WORDS_PLIF = '1' then
+        init3_sent_cnt             <= (others =>'0');
         -- When lane_init_fsm is in PREPARE_STANDBY_ST
         if send_stdby_cnt >= C_X32_SIGNAL then
           -- 32 STANDBY control words have been sent
@@ -192,6 +203,7 @@ begin
       --     LOSS SIGNAL Control Word     --
       --------------------------------------
       elsif SEND_32_LOSS_SIGNAL_CTRL_WORDS_PLIF = '1' then
+        init3_sent_cnt          <= (others =>'0');
         -- When lane_init_fsm is in LOSS_OF_SIGNAL_ST
         if send_loss_sig_cnt >= C_X32_SIGNAL then
           -- 32 LOSS_SIGNAL control words have been sent
@@ -209,6 +221,7 @@ begin
         NEW_DATA_PLCWI        <= '0';
         DATA_TX_PLCWI         <= (others => '0');
         VALID_K_CHARAC_PLCWI  <= (others => '0');
+        init3_sent_cnt        <= (others =>'0');
         prbs_counter          <= (others => '0');
         send_stdby_cnt        <= (others => '0');
         send_loss_sig_cnt     <= (others => '0');
@@ -216,4 +229,20 @@ begin
     end if;
   end process p_send_data;
 
+  ---------------------------------------------------------
+  -- Process: p_init3_x3_sent
+  --! Manage the flag to indicate that 3 Init3 a=has been sent
+  ---------------------------------------------------------
+  p_init3_x3_sent: process(CLK, RST_N)
+  begin
+    if RST_N ='0' then
+      INIT3_X3_SENT_PLCWI            <= '0';
+    elsif rising_edge(CLK)  then
+      if init3_sent_cnt = 3 then
+        INIT3_X3_SENT_PLCWI            <= '1';
+      else
+        INIT3_X3_SENT_PLCWI            <= '0';
+      end if;
+    end if;
+  end process p_init3_x3_sent;
 end architecture rtl;

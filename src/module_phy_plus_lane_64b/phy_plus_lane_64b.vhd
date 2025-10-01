@@ -223,6 +223,7 @@ architecture rtl of phy_plus_lane_64b is
       SEND_INIT1_CTRL_WORD_PLIF            : in  std_logic;                                   --! Flag to send INIT1 control word followed by 64 pseudo-random data words
       SEND_INIT2_CTRL_WORD_PLIF            : in  std_logic;                                   --! Flag to send INIT2 control word followed by 64 pseudo-random data words
       SEND_INIT3_CTRL_WORD_PLIF            : in  std_logic;                                   --! Flag to send INIT3 control word followed by 64 pseudo-random data words
+      INIT3_X3_SENT_PLCWI                  : out std_logic;                                   --! Flag indicating at least 3 INIT 3 has been sent
       ENABLE_TRANSM_DATA_PLIF              : in  std_logic;                                   --! Flag to enable data transmission
       SEND_32_STANDBY_CTRL_WORDS_PLIF      : in  std_logic;                                   --! Flag to send 32 STANDBY control words
       SEND_32_LOSS_SIGNAL_CTRL_WORDS_PLIF  : in  std_logic;                                   --! Flag to send 32 LOSS_SIGNAL control words
@@ -303,6 +304,7 @@ architecture rtl of phy_plus_lane_64b is
       SEND_INIT1_CTRL_WORD_PLIF           : out std_logic;                      --! Flag to send INIT1 control word following by 64 pseudo-random data words
       SEND_INIT2_CTRL_WORD_PLIF           : out std_logic;                      --! Flag to send control word following by 64 pseudo-random data words
       SEND_INIT3_CTRL_WORD_PLIF           : out std_logic;                      --! Flag to send control word following by 64 pseudo-random data words
+      INIT3_X3_SENT_PLCWI                 : in  std_logic;                      --! Flag indicating at least 3 INIT 3 has been sent
       ENABLE_TRANSM_DATA_PLIF             : out std_logic;                      --! Flag to enable to send data
       SEND_32_STANDBY_CTRL_WORDS_PLIF     : out std_logic;                      --! Flag to send STANDBY control word x32
       SEND_32_LOSS_SIGNAL_CTRL_WORDS_PLIF : out std_logic;                      --! Flag to send LOSS_SIGNAL control word x32
@@ -522,6 +524,7 @@ architecture rtl of phy_plus_lane_64b is
   signal valid_k_charac_plcwi                 : std_logic_vector(C_K_CHAR_WIDTH-1 downto 00);
   signal standby_signal_x32_plcwi             : std_logic;
   signal lost_signal_x32_plcwi                : std_logic;
+  signal init3_x3_sent_plcwi                  : std_logic;
    -- Internal signals from skip_insertion
   signal wait_send_data_plsi                  : std_logic;
   signal data_tx_plsi                         : std_logic_vector(C_DATA_WIDTH-1 downto 00);
@@ -666,6 +669,7 @@ begin
       SEND_INIT1_CTRL_WORD_PLIF            => send_init1_ctrl_word_plif,
       SEND_INIT2_CTRL_WORD_PLIF            => send_init2_ctrl_word_plif,
       SEND_INIT3_CTRL_WORD_PLIF            => send_init3_ctrl_word_plif,
+      INIT3_X3_SENT_PLCWI                  => init3_x3_sent_plcwi,
       ENABLE_TRANSM_DATA_PLIF              => enable_transm_data_plif,
       SEND_32_STANDBY_CTRL_WORDS_PLIF      => send_32_standby_ctrl_words_plif,
       SEND_32_LOSS_SIGNAL_CTRL_WORDS_PLIF  => send_32_loss_signal_ctrl_words_pliF ,
@@ -800,6 +804,7 @@ begin
       SEND_INIT1_CTRL_WORD_PLIF            => send_init1_ctrl_word_plif,
       SEND_INIT2_CTRL_WORD_PLIF            => send_init2_ctrl_word_plif,
       SEND_INIT3_CTRL_WORD_PLIF            => send_init3_ctrl_word_plif,
+      INIT3_X3_SENT_PLCWI                  => init3_x3_sent_plcwi,
       ENABLE_TRANSM_DATA_PLIF              => enable_transm_data_plif,
       SEND_32_STANDBY_CTRL_WORDS_PLIF      => send_32_standby_ctrl_words_plif,
       SEND_32_LOSS_SIGNAL_CTRL_WORDS_PLIF  => send_32_loss_signal_ctrl_words_plif,

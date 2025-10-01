@@ -56,6 +56,7 @@ entity ppl_64_lane_init_fsm is
     SEND_INIT1_CTRL_WORD_PLIF           : out std_logic;                      --! Flag to send INIT1 control word following by 64 pseudo-random data words
     SEND_INIT2_CTRL_WORD_PLIF           : out std_logic;                      --! Flag to send control word following by 64 pseudo-random data words
     SEND_INIT3_CTRL_WORD_PLIF           : out std_logic;                      --! Flag to send control word following by 64 pseudo-random data words
+    INIT3_X3_SENT_PLCWI                 : in  std_logic;                      --! Flag indicating at least 3 INIT 3 has been sent
     ENABLE_TRANSM_DATA_PLIF             : out std_logic;                      --! Flag to enable to send data
     SEND_32_STANDBY_CTRL_WORDS_PLIF     : out std_logic;                      --! Flag to send STANDBY control word x32
     SEND_32_LOSS_SIGNAL_CTRL_WORDS_PLIF : out std_logic;                      --! Flag to send LOSS_SIGNAL control word x32
@@ -251,7 +252,7 @@ begin
                                       elsif init3_rxed_x3 = '1' then
                                         if LANE_START_MIB = '0' and AUTOSTART_MIB = '0' and init3_rxed_x3_fw = '1' then
                                           current_state  <= PREPARE_STANDBY_ST;
-                                        else
+                                        elsif INIT3_X3_SENT_PLCWI ='1' then
                                           current_state  <= ACTIVE_ST;
                                         end if;
                                       else
@@ -391,8 +392,8 @@ begin
 
             LANE_STATE_PLIF                     <= x"7"; -- Status of the FSM
             SEND_INIT1_CTRL_WORD_PLIF           <= '0';  -- stop INIT1 control word following by 64 pseudo-random data words
-            SEND_INIT2_CTRL_WORD_PLIF           <= '0';  -- send INIT2 control word following by 64 pseudo-random data words
-            SEND_INIT3_CTRL_WORD_PLIF           <= '0';  -- send INIT3 control word following by 64 pseudo-random data words
+            SEND_INIT2_CTRL_WORD_PLIF           <= '0';  -- stop INIT2 control word following by 64 pseudo-random data words
+            SEND_INIT3_CTRL_WORD_PLIF           <= '0';  -- stop INIT3 control word following by 64 pseudo-random data words
             enable_init_cnt                     <= '0';  -- disable timeout initialisation counter
             ENABLE_TRANSM_DATA_PLIF             <= '1';  -- enable transimission data and control word from data-link layer
 
@@ -401,6 +402,7 @@ begin
             LANE_STATE_PLIF                     <= x"8"; -- Status of the FSM
             ENABLE_TRANSM_DATA_PLIF             <= '0';  -- Disable transimission data and control word from data-link layer
             SEND_32_STANDBY_CTRL_WORDS_PLIF     <= '1';  -- send 32 STANDBY control words
+            SEND_INIT3_CTRL_WORD_PLIF           <= '0';  -- stop INIT3 control word following by 64 pseudo-random data words
 
          elsif current_state = LOSS_OF_SIGNAL_ST then
 
