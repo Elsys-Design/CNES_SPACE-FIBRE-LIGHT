@@ -45,7 +45,7 @@ entity ppl_64_lane_ctrl_word_detect is
     DETECTED_LOSS_SIGNAL_PLCWD       : out std_logic_vector(1 downto 0);                 --! Flag indicating LOSS_SIGNAL control word detected
     DETECTED_STANDBY_PLCWD           : out std_logic_vector(1 downto 0);                 --! Flag indicating STANDBY control word detected
     COMMA_K287_RXED_PLCWD            : out std_logic_vector(1 downto 0);                 --! Comma K28.7 character received flag
-    CAPABILITY_PLCWD                 : out std_logic_vector(15 downto 0);                --! Capability extracted from INIT3 control word: bits [31:24] and [63:56]
+    CAPABILITY_PLCWD                 : out std_logic_vector(7 downto 0);                --! Capability extracted from INIT3 control word: bits [31:24] and [63:56]
     SEND_RXERR_PLIF                  : in  std_logic_vector(1 downto 0);                 --! Flag to send RXERR control word to Data-Link layer when FSM exits ACTIVE_ST
     NO_SIGNAL_DETECTION_ENABLED_PLIF : in  std_logic;                                    --! Flag to enable the no-signal detection function
     ENABLE_TRANSM_DATA_PLIF          : in  std_logic;                                    --! Flag to enable the transmission of data
@@ -83,6 +83,7 @@ signal valid_k_charac_dl_fw     : std_logic_vector(3 downto 0);
 signal data_rdy_dl_fw           : std_logic;
 signal detected_rxerr_word_fw   : std_logic;
 signal capability_fw            : std_logic_vector(7 downto 0);
+signal capability_valid_fw      : std_logic;
 -- Second word signals
 signal rx_new_word_sw           : std_logic;
 signal detected_init1_sw        : std_logic;
@@ -98,6 +99,7 @@ signal valid_k_charac_dl_sw     : std_logic_vector(3 downto 0);
 signal data_rdy_dl_sw           : std_logic;
 signal detected_rxerr_word_sw   : std_logic;
 signal capability_sw            : std_logic_vector(7 downto 0);
+signal capability_valid_sw      : std_logic;
 
 
 begin
@@ -118,7 +120,6 @@ DETECTED_RXERR_WORD_PLCWD  <= detected_rxerr_word_sw  & detected_rxerr_word_fw;
 DETECTED_LOSS_SIGNAL_PLCWD <= detected_loss_signal_sw & detected_loss_signal_fw;
 DETECTED_STANDBY_PLCWD     <= detected_standby_sw     & detected_standby_fw;
 COMMA_K287_RXED_PLCWD      <= comma_k287_rxed_sw      & comma_k287_rxed_fw;
-CAPABILITY_PLCWD           <= capability_sw           & capability_fw;
 ---------------------------------------------------------
 -----                     Process                   -----
 ---------------------------------------------------------
@@ -143,6 +144,7 @@ CAPABILITY_PLCWD           <= capability_sw           & capability_fw;
       data_rdy_dl_fw           <= '0';
       detected_rxerr_word_fw   <= '0';
       capability_fw            <= (others => '0');
+      capability_valid_fw      <= '0';
     elsif rising_edge(CLK) then
       -- reset flags
       rx_new_word_fw          <= '0';
@@ -154,7 +156,7 @@ CAPABILITY_PLCWD           <= capability_sw           & capability_fw;
       comma_k287_rxed_fw      <= '0';
       detected_loss_signal_fw <= '0';
       detected_standby_fw     <= '0';
-      capability_fw            <= (others => '0');
+      capability_valid_fw     <= '0';
       data_rdy_dl_fw          <= '0';
       data_rx_dl_fw           <= (others => '0');
       valid_k_charac_dl_fw    <= (others => '0');
@@ -173,6 +175,7 @@ CAPABILITY_PLCWD           <= capability_sw           & capability_fw;
         elsif DATA_RX_PLPL(23 downto 0) = C_INIT3_WORD and VALID_K_CHARAC_PLPL(C_K_CHAR_WIDTH/2-1 downto 0) = x"1" then
           detected_init3_fw   <= '1';
           rx_new_word_fw      <= '1';
+          capability_valid_fw <= '1';
           capability_fw       <= DATA_RX_PLPL(31 downto 24);
         -- iINIT 1
         elsif DATA_RX_PLPL(C_DATA_WIDTH/2-1 downto 0) = C_I_INIT1_WORD and VALID_K_CHARAC_PLPL(C_K_CHAR_WIDTH/2-1 downto 0) = x"1" then
@@ -240,6 +243,7 @@ CAPABILITY_PLCWD           <= capability_sw           & capability_fw;
       data_rdy_dl_sw           <= '0';
       detected_rxerr_word_sw   <= '0';
       capability_sw            <= (others => '0');
+      capability_valid_sw      <= '0';
     elsif rising_edge(CLK) then
       -- reset flags
       rx_new_word_sw          <= '0';
@@ -251,7 +255,7 @@ CAPABILITY_PLCWD           <= capability_sw           & capability_fw;
       comma_k287_rxed_sw      <= '0';
       detected_loss_signal_sw <= '0';
       detected_standby_sw     <= '0';
-      capability_sw           <= (others => '0');
+      capability_valid_sw     <= '0';
       data_rdy_dl_sw          <= '0';
       data_rx_dl_sw           <= (others => '0');
       valid_k_charac_dl_sw    <= (others => '0');
@@ -270,6 +274,7 @@ CAPABILITY_PLCWD           <= capability_sw           & capability_fw;
         elsif DATA_RX_PLPL(C_DATA_WIDTH/2+23 downto C_DATA_WIDTH/2) = C_INIT3_WORD and VALID_K_CHARAC_PLPL(C_K_CHAR_WIDTH-1 downto C_K_CHAR_WIDTH/2) = x"1" then
           detected_init3_sw   <= '1';
           rx_new_word_sw      <= '1';
+          capability_valid_sw <= '1';
           capability_sw       <= DATA_RX_PLPL(63 downto 56);
         -- iINIT 1
         elsif DATA_RX_PLPL(C_DATA_WIDTH-1 downto C_DATA_WIDTH/2) = C_I_INIT1_WORD and VALID_K_CHARAC_PLPL(C_K_CHAR_WIDTH-1 downto C_K_CHAR_WIDTH/2) = x"1" then
@@ -347,4 +352,20 @@ CAPABILITY_PLCWD           <= capability_sw           & capability_fw;
       enable_transm_data_rr <= enable_transm_data_r;
     end if;
   end process p_enable_transm_data;
+    ---------------------------------------------------------
+  -- Process: p_management_capability
+  --!Update far_end_capabilty field
+  ---------------------------------------------------------
+  p_management_capability : process(CLK,RST_N)
+  begin
+    if RST_N = '0' then
+      CAPABILITY_PLCWD     <= (others => '0');
+    elsif rising_edge(CLK) then
+      if capability_valid_sw = '1' then
+        CAPABILITY_PLCWD <= capability_sw;
+      elsif capability_valid_fw = '1' then
+        CAPABILITY_PLCWD <= capability_fw;
+      end if;
+    end if;
+  end process p_management_capability;
 end architecture rtl;

@@ -270,7 +270,7 @@ architecture rtl of phy_plus_lane_64b is
       DATA_RX_PLPL             : out std_logic_vector(C_DATA_WIDTH-1 downto 0);   --! 64-bit Data
       VALID_K_CHARAC_PLPL      : out std_logic_vector(C_K_CHAR_WIDTH-1 downto 0); --! 8-bit Valid K character
       DATA_RDY_PLPL            : out std_logic;                                   --! Data ready flag
-      LOSS_OF_SIGNAL_PLPL      : out std_logic;                                   --! Loss of signal flag from PLPL 
+      LOSS_OF_SIGNAL_PLPL      : out std_logic;                                   --! Loss of signal flag from PLPL
       -- MIB interface
       PARALLEL_LOOPBACK_EN_MIB : in  std_logic                                    --! Enable or disable the parallel loopback
     );
@@ -378,7 +378,7 @@ architecture rtl of phy_plus_lane_64b is
       DETECTED_LOSS_SIGNAL_PLCWD       : out std_logic_vector(1 downto 0);                 --! Flag indicating LOSS_SIGNAL control word detected
       DETECTED_STANDBY_PLCWD           : out std_logic_vector(1 downto 0);                 --! Flag indicating STANDBY control word detected
       COMMA_K287_RXED_PLCWD            : out std_logic_vector(1 downto 0);                 --! Comma K28.7 character received flag
-      CAPABILITY_PLCWD                 : out std_logic_vector(15 downto 0);                --! Capability extracted from INIT3 control word: bits [31:24] and [63:56]
+      CAPABILITY_PLCWD                 : out std_logic_vector(7 downto 0);                --! Capability extracted from INIT3 control word: bits [31:24] and [63:56]
       SEND_RXERR_PLIF                  : in  std_logic_vector(1 downto 0);                 --! Flag to send RXERR control word to Data-Link layer when FSM exits ACTIVE_ST
       NO_SIGNAL_DETECTION_ENABLED_PLIF : in  std_logic;                                    --! Flag to enable the no-signal detection function
       ENABLE_TRANSM_DATA_PLIF          : in  std_logic;                                    --! Flag to enable the transmission of data
@@ -584,7 +584,7 @@ architecture rtl of phy_plus_lane_64b is
   signal detected_loss_signal_plcwd           : std_logic_vector(1 downto 0);
   signal detected_standby_plcwd               : std_logic_vector(1 downto 0);
   signal comma_k287_rxed_plcwd                : std_logic_vector(1 downto 0);
-  signal capability_plcwd                     : std_logic_vector(15 downto 0);
+  signal capability_plcwd                     : std_logic_vector(7 downto 0);
   signal data_rx_plcwd                        : std_logic_vector(C_DATA_WIDTH-1 downto 0);
   signal valid_k_charac_plcwd                 : std_logic_vector(C_K_CHAR_WIDTH-1 downto 0);
   signal data_rdy_plcwd                       : std_logic_vector(1 downto 0);
@@ -1102,7 +1102,7 @@ begin
   ------------------------------------------------------------------------------
   -- Instance of TX FIFO_1MB_wrapper module
   ------------------------------------------------------------------------------
-  lane_active_capa_in_fifo_rx <= enable_transm_data_plif & capability_plcwd(15 downto 8);
+  lane_active_capa_in_fifo_rx <= enable_transm_data_plif & capability_plcwd;
   lane_active_plfrc           <= lane_active_capa_plfrc(8)          when fifo_data_valid_plfrc ='1';
   far_end_capa_plfrc          <= lane_active_capa_plfrc(7 downto 0) when fifo_data_valid_plfrc ='1';
   inst_fifo_rx_ctrl : FIFO_DC
