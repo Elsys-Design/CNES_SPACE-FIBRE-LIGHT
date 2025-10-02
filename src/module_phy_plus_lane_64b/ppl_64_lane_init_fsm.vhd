@@ -898,6 +898,9 @@ begin
           if init3_rxed_cnt >= "01" then
             init3_rxed_cnt <= "00";
             init3_rxed_x3  <= '1';
+          elsif init3_rxed_x3 <= '1' then
+            init3_rxed_cnt <= "00";
+            init3_rxed_x3  <= '1';
           else
             init3_rxed_cnt <= init3_rxed_cnt+2;
             init3_rxed_x3  <= '0';
@@ -909,13 +912,16 @@ begin
             init3_rxed_cnt   <= "00";
             init3_rxed_x3    <= '1';
             init3_rxed_x3_fw <= '1';
+          elsif init3_rxed_x3 <= '1' then
+            init3_rxed_cnt <= "00";
+            init3_rxed_x3  <= '1';
           else
             init3_rxed_cnt <= init3_rxed_cnt+1;
             init3_rxed_x3  <= '0';
           end if;
 
         -- word 1 = INIT3 / word 2 = RXERR
-        elsif DETECTED_INIT3_PLCWD(0) = '1' and DETECTED_RXERR_WORD_PLCWD(1) ='0' then
+        elsif DETECTED_INIT3_PLCWD(0) = '1' and DETECTED_RXERR_WORD_PLCWD(1) ='1' then
           if init3_rxed_cnt >= "10" then
             init3_rxed_cnt   <= "00";
             init3_rxed_x3    <= '1';
@@ -928,6 +934,9 @@ begin
         -- word 1 = not RXERR / word 2 = INIT3
         elsif DETECTED_INIT3_PLCWD(1) = '1' and DETECTED_RXERR_WORD_PLCWD(0) ='0' then
           if init3_rxed_cnt >= "10" then
+            init3_rxed_cnt <= "00";
+            init3_rxed_x3  <= '1';
+          elsif init3_rxed_x3 <= '1' then
             init3_rxed_cnt <= "00";
             init3_rxed_x3  <= '1';
           else

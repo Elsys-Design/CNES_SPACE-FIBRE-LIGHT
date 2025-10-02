@@ -47,6 +47,7 @@ class SpaceFibre_Random_Generator:
         self.time_per_input = period_ps
         self.time_per_output = period_ps
         self.fct_counter = [0]*8
+        self.disable_disparity_control = 0
         if target == "NG_ULTRA":
             self.precision = "fs"
         elif target == "VERSAL":
@@ -1762,30 +1763,38 @@ class SpaceFibre_Random_Generator:
         #decode 5b/6b
         if ls_encoded_data == "100111" :
             ls_decoded_data = "00000"
-            self.dut_Tx_disparity[0] +=2
+            if self.disable_disparity_control == 0:
+                self.dut_Tx_disparity[0] +=2
         elif ls_encoded_data == "011000" :
             ls_decoded_data = "00000"
-            self.dut_Tx_disparity[0] -=2
+            if self.disable_disparity_control == 0:
+                self.dut_Tx_disparity[0] -=2
         elif ls_encoded_data == "011101" :
             ls_decoded_data = "00001"
-            self.dut_Tx_disparity[0] +=2
+            if self.disable_disparity_control == 0:
+                self.dut_Tx_disparity[0] +=2
         elif ls_encoded_data == "100010" :
             ls_decoded_data = "00001"
-            self.dut_Tx_disparity[0] -=2
+            if self.disable_disparity_control == 0:
+                self.dut_Tx_disparity[0] -=2
         elif ls_encoded_data == "101101" :
             ls_decoded_data = "00010"
-            self.dut_Tx_disparity[0] +=2
+            if self.disable_disparity_control == 0:
+                self.dut_Tx_disparity[0] +=2
         elif ls_encoded_data == "010010" :
             ls_decoded_data = "00010"
-            self.dut_Tx_disparity[0] -=2
+            if self.disable_disparity_control == 0:
+                self.dut_Tx_disparity[0] -=2
         elif ls_encoded_data == "110001" :
             ls_decoded_data = "00011"
         elif ls_encoded_data == "110101" :
             ls_decoded_data = "00100"
-            self.dut_Tx_disparity[0] +=2
+            if self.disable_disparity_control == 0:
+                self.dut_Tx_disparity[0] +=2
         elif ls_encoded_data == "001010" :
             ls_decoded_data = "00100"
-            self.dut_Tx_disparity[0] -=2
+            if self.disable_disparity_control == 0:
+                self.dut_Tx_disparity[0] -=2
         elif ls_encoded_data == "101001" :
             ls_decoded_data = "00101"
         elif ls_encoded_data == "011001" :
@@ -1796,10 +1805,12 @@ class SpaceFibre_Random_Generator:
             ls_decoded_data = "00111"
         elif ls_encoded_data == "111001" :
             ls_decoded_data = "01000"
-            self.dut_Tx_disparity[0] +=2
+            if self.disable_disparity_control == 0:
+                self.dut_Tx_disparity[0] +=2
         elif ls_encoded_data == "000110" :
             ls_decoded_data = "01000"
-            self.dut_Tx_disparity[0] -=2
+            if self.disable_disparity_control == 0:
+                self.dut_Tx_disparity[0] -=2
         elif ls_encoded_data == "100101" :
             ls_decoded_data = "01001"
         elif ls_encoded_data == "010101" :
@@ -1820,16 +1831,20 @@ class SpaceFibre_Random_Generator:
                 primary = 0
         elif ls_encoded_data == "010111" :
             ls_decoded_data = "01111"
-            self.dut_Tx_disparity[0] +=2
+            if self.disable_disparity_control == 0:
+                self.dut_Tx_disparity[0] +=2
         elif ls_encoded_data == "101000" :
             ls_decoded_data = "01111"
-            self.dut_Tx_disparity[0] -=2
+            if self.disable_disparity_control == 0:
+                self.dut_Tx_disparity[0] -=2
         elif ls_encoded_data == "011011" :
             ls_decoded_data = "10000"
-            self.dut_Tx_disparity[0] +=2
+            if self.disable_disparity_control == 0:
+                self.dut_Tx_disparity[0] +=2
         elif ls_encoded_data == "100100" :
             ls_decoded_data = "10000"
-            self.dut_Tx_disparity[0] -=2
+            if self.disable_disparity_control == 0:
+                self.dut_Tx_disparity[0] -=2
         elif ls_encoded_data == "100011" :
             ls_decoded_data = "10001"
             if self.dut_Tx_disparity[0] < 0:
@@ -1850,61 +1865,75 @@ class SpaceFibre_Random_Generator:
             ls_decoded_data = "10110"
         elif ls_encoded_data == "111010" :
             ls_decoded_data = "10111"
-            self.dut_Tx_disparity[0] +=2
+            if self.disable_disparity_control == 0:
+                self.dut_Tx_disparity[0] +=2
             k_encoded = -1
         elif ls_encoded_data == "000101" :
             ls_decoded_data = "10111"
-            self.dut_Tx_disparity[0] -=2
+            if self.disable_disparity_control == 0:
+                self.dut_Tx_disparity[0] -=2
             k_encoded = -1
         elif ls_encoded_data == "110011" :
             ls_decoded_data = "11000"
-            self.dut_Tx_disparity[0] +=2
+            if self.disable_disparity_control == 0:
+                self.dut_Tx_disparity[0] +=2
         elif ls_encoded_data == "001100" :
             ls_decoded_data = "11000"
-            self.dut_Tx_disparity[0] -=2
+            if self.disable_disparity_control == 0:
+                self.dut_Tx_disparity[0] -=2
         elif ls_encoded_data == "100110" :
             ls_decoded_data = "11001"
         elif ls_encoded_data == "010110" :
             ls_decoded_data = "11010"
         elif ls_encoded_data == "110110" :
             ls_decoded_data = "11011"
-            self.dut_Tx_disparity[0] +=2
+            if self.disable_disparity_control == 0:
+                self.dut_Tx_disparity[0] +=2
             k_encoded = -1
         elif ls_encoded_data == "001001" :
             ls_decoded_data = "11011"
-            self.dut_Tx_disparity[0] -=2
+            if self.disable_disparity_control == 0:
+                self.dut_Tx_disparity[0] -=2
             k_encoded = -1
         elif ls_encoded_data == "001110" :
             ls_decoded_data = "11100"
         elif ls_encoded_data == "101110" :
             ls_decoded_data = "11101"
-            self.dut_Tx_disparity[0] +=2
+            if self.disable_disparity_control == 0:
+                self.dut_Tx_disparity[0] +=2
             k_encoded = -1
         elif ls_encoded_data == "010001" :
             ls_decoded_data = "11101"
-            self.dut_Tx_disparity[0] -=2
+            if self.disable_disparity_control == 0:
+                self.dut_Tx_disparity[0] -=2
             k_encoded = -1
         elif ls_encoded_data == "011110" :
             ls_decoded_data = "11110"
-            self.dut_Tx_disparity[0] +=2
+            if self.disable_disparity_control == 0:
+                self.dut_Tx_disparity[0] +=2
             k_encoded = -1
         elif ls_encoded_data == "100001" :
             ls_decoded_data = "11110"
-            self.dut_Tx_disparity[0] -=2
+            if self.disable_disparity_control == 0:
+                self.dut_Tx_disparity[0] -=2
             k_encoded = -1
         elif ls_encoded_data == "101011" :
             ls_decoded_data = "11111"
-            self.dut_Tx_disparity[0] +=2
+            if self.disable_disparity_control == 0:
+                self.dut_Tx_disparity[0] +=2
         elif ls_encoded_data == "010100" :
             ls_decoded_data = "11111"
-            self.dut_Tx_disparity[0] -=2
+            if self.disable_disparity_control == 0:
+                self.dut_Tx_disparity[0] -=2
         elif ls_encoded_data == "001111" :
             ls_decoded_data = "11100"
-            self.dut_Tx_disparity[0] +=2
+            if self.disable_disparity_control == 0:
+                self.dut_Tx_disparity[0] +=2
             k_encoded = 1
         elif ls_encoded_data == "110000" :
             ls_decoded_data = "11100"
-            self.dut_Tx_disparity[0] -=2
+            if self.disable_disparity_control == 0:
+                self.dut_Tx_disparity[0] -=2
             k_encoded = 1
         else:
             ls_decoded_data = "00000"
@@ -1915,19 +1944,23 @@ class SpaceFibre_Random_Generator:
 
         if not self.dut_Tx_disparity[0] <= 1:
             self.logger.warning("sim_time %s ns : Disparity on Tx port is too high after 5b/6b sub-block. Sub-block : %s\tdisparity : %d", get_sim_time(units = 'ns'), ls_encoded_data, self.dut_Tx_disparity[0])
-            self.dut_Tx_disparity[0] = 1
+            if self.disable_disparity_control == 0:
+                self.dut_Tx_disparity[0] = 1
         if not self.dut_Tx_disparity[0] >= -1:
             self.logger.warning("sim_time %s ns : Disparity on Tx port is too low after 5b/6b sub-block. Sub-block : %s\tdisparity : %d", get_sim_time(units = 'ns'), ls_encoded_data, self.dut_Tx_disparity[0])
-            self.dut_Tx_disparity[0] = -1
+            if self.disable_disparity_control == 0:
+                self.dut_Tx_disparity[0] = -1
 
         #decode 3b/4b
 
         if ms_encoded_data == "1011" :
             ms_decoded_data = "000"
-            self.dut_Tx_disparity[0] +=2
+            if self.disable_disparity_control == 0:
+                self.dut_Tx_disparity[0] +=2
         elif ms_encoded_data == "0100" :
             ms_decoded_data = "000"
-            self.dut_Tx_disparity[0] -=2
+            if self.disable_disparity_control == 0:
+                self.dut_Tx_disparity[0] -=2
         elif ms_encoded_data == "1001" :
             if k_encoded == 1 :
                 if self.dut_Tx_disparity[0] >= 0 :
@@ -1950,16 +1983,18 @@ class SpaceFibre_Random_Generator:
             ms_decoded_data = "011"
         elif ms_encoded_data == "1101" :
             ms_decoded_data = "100"
-            self.dut_Tx_disparity[0] +=2
+            if self.disable_disparity_control == 0:
+                self.dut_Tx_disparity[0] +=2
         elif ms_encoded_data == "0010" :
             ms_decoded_data = "100"
-            self.dut_Tx_disparity[0] -=2
+            if self.disable_disparity_control == 0:
+                self.dut_Tx_disparity[0] -=2
         elif ms_encoded_data == "1010" :
             if k_encoded == 1 :
                 if self.dut_Tx_disparity[0] >= 0 :
-                    ms_decoded_data = "010"
-                else :
                     ms_decoded_data = "101"
+                else :
+                    ms_decoded_data = "010"
             else :
                 ms_decoded_data = "101"
         elif ms_encoded_data == "0110" :
@@ -1972,28 +2007,34 @@ class SpaceFibre_Random_Generator:
                 ms_decoded_data = "110"
         elif ms_encoded_data == "1110" :
             ms_decoded_data = "111"
-            self.dut_Tx_disparity[0] +=2
+            if self.disable_disparity_control == 0:
+                self.dut_Tx_disparity[0] +=2
         elif ms_encoded_data == "0001" :
             ms_decoded_data = "111"
-            self.dut_Tx_disparity[0] -=2
+            if self.disable_disparity_control == 0:
+                self.dut_Tx_disparity[0] -=2
         elif ms_encoded_data == "0111" :
             if k_encoded == -1 or k_encoded == 1:
                 ms_decoded_data = "111"
-                self.dut_Tx_disparity[0] +=2
+                if self.disable_disparity_control == 0:
+                    self.dut_Tx_disparity[0] +=2
                 k_encoded = 1
             else:
                 ms_decoded_data = "111"
-                self.dut_Tx_disparity[0] +=2
+                if self.disable_disparity_control == 0:
+                    self.dut_Tx_disparity[0] +=2
                 if not primary == 0:
                     self.logger.error("sim_tim %s ns: Error K1: Alternative encoding of D.x.7 when uneeded. Sub block : %s", get_sim_time(units = 'ns'), ms_encoded_data)
         elif ms_encoded_data == "1000" :
             if k_encoded == -1 or k_encoded == 1:
                 ms_decoded_data = "111"
-                self.dut_Tx_disparity[0] -=2
+                if self.disable_disparity_control == 0:
+                    self.dut_Tx_disparity[0] -=2
                 k_encoded = 1
             else:
                 ms_decoded_data = "111"
-                self.dut_Tx_disparity[0] -=2
+                if self.disable_disparity_control == 0:
+                    self.dut_Tx_disparity[0] -=2
                 if not primary == 0:
                     self.logger.error("sim_time %s ns : Error K2: Alternative encoding of D.x.7 when uneeded. Sub block : %s", get_sim_time(units = 'ns'), ms_encoded_data)
 
@@ -2008,8 +2049,10 @@ class SpaceFibre_Random_Generator:
         #check disparity
         if not self.dut_Tx_disparity[0] <= 1:
             self.logger.warning("sim_time %s ns : Disparity on Tx port is too high after 3b/4b sub-block. Sub-block : %s\tdisparity : %d", get_sim_time(units = 'ns'), ms_encoded_data, self.dut_Tx_disparity[0])
-            self.dut_Tx_disparity[0] = 1
+            if self.disable_disparity_control == 0:
+                self.dut_Tx_disparity[0] = 1
         if not self.dut_Tx_disparity[0] >= -1:
             self.logger.warning("sim_time %s ns : Disparity on Tx port is too low after 3b/4b sub-block. Sub-block : %s\tdisparity : %d", get_sim_time(units = 'ns'), ms_encoded_data, self.dut_Tx_disparity[0])
-            self.dut_Tx_disparity[0] = -1
+            if self.disable_disparity_control == 0:
+                self.dut_Tx_disparity[0] = -1
         return ms_decoded_data + ls_decoded_data , k_encoded

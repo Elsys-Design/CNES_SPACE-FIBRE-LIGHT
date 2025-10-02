@@ -17,7 +17,7 @@ import os
 
 import cocotb
 import cocotbext
-from cocotb.triggers import Edge, RisingEdge, FallingEdge, Timer, Join, Combine
+from cocotb.triggers import Edge, RisingEdge, FallingEdge, Timer, Join, Combine, First
 from cocotb.result import TestFailure, TestError
 from cocotb.utils import get_sim_time
 
@@ -79,7 +79,7 @@ async def initialization_procedure(tb):
 
     #Wait end of phy reset
     tb.logger.info("sim_time %d ns: Wait PHY reset completion", get_sim_time(units = 'ns') )
-    await RisingEdge(tb.dut.spacefibre_instance..inst_phy_plus_lane.RST_TX_DONE)
+    await RisingEdge(tb.dut.spacefibre_instance.gen_inst_phy_plus_lane.inst_phy_plus_lane.RST_TX_DONE)
     tb.logger.info("sim_time %d ns: Reset PHY completed", get_sim_time(units = 'ns') )
 
     #Wait to go to Disabled
@@ -432,27 +432,30 @@ async def get_resetflag(tb, resetflag_farend, monitor_path):
             not_started = 0
         time_out += 1
 
-    monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file(monitor_path, number_of_word = 4500))
+    monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file(monitor_path, number_of_word = 10000))
+    tb.spacefibre_random_generator_data_link.disable_disparity_control = 1
 
     
     #Set Lane initialisatiion FSM from Started to Active state
     await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/Started_to_Connected.dat")
-    for x in range (6):
-        await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/300_DEADBEEF.dat")
+    while format(Data_read_lane_config_status.data[0], '0>8b')[4:8] != ACTIVE:
+        await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/20_DEADBEEF.dat")
         await send_init3(tb, resetflag_farend)
+        await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/20_DEADBEEF.dat")
+        cocotb.start_soon(tb.masters[0].read_data(Data_read_lane_config_status))
+        await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/20_DEADBEEF.dat")
 
-    stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
+    # result = await First(monitor, stimuli)
+    monitor.cancel()
 
-    #Check that Lane initialisatiion FSM is in Active State
-    await tb.masters[0].read_data(Data_read_lane_config_status)
+    await send_idle_ctrl_word(tb, 1)
 
-    await stimuli
-    
-    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 1000))
     await monitor
+    
+    tb.spacefibre_random_generator_data_link.disable_disparity_control = 0
 
     resetflag_nearend = extract_last_init3(tb, monitor_path + "_hexa.dat")
-    await stimuli
+
     return resetflag_nearend
 
 
@@ -466,8 +469,9 @@ def extract_last_init3(tb, monitor_path):
     file = open(monitor_path, "r")
 
     link_reset_flag = None
-
+    file_size = 0
     for line in file:
+        file_size += 1
         input_splitted = line.split(';')
         if input_splitted[-1] == "\n":
             input_splitted.remove("\n")
@@ -477,6 +481,8 @@ def extract_last_init3(tb, monitor_path):
         if input_splitted[0][2:8] == "38CEBC" and input_splitted[1] == "0001":
             link_reset_flag = f"{(int(input_splitted[0][0:2], 16)):0>8b}"[7]
     file.close()
+    tb.logger.info("sim_time %d ns: Source file %s size is %d", get_sim_time(units = "ns"), monitor_path, file_size)
+
     return link_reset_flag
 
 
@@ -687,7 +693,7 @@ async def cocotb_run(dut):
     step_1_failed = 0
     #Sets DUT lane initialisation FSM to Active
 
-    
+    fct_monitor = cocotb.start_soon(tb.spacefibre_random_generator_data_link.monitor_FCT(30000))
 
     monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_1", number_of_word = 2500))
     
@@ -734,7 +740,7 @@ async def cocotb_run(dut):
 
     #Wait end of phy reset
     tb.logger.info("sim_time %d ns: Wait PHY reset completion", get_sim_time(units = 'ns') )
-    await RisingEdge(tb.dut.spacefibre_instance..inst_phy_plus_lane.RST_TX_DONE)
+    await RisingEdge(tb.dut.spacefibre_instance.gen_inst_phy_plus_lane.inst_phy_plus_lane.RST_TX_DONE)
     tb.logger.info("sim_time %d ns: Reset PHY completed", get_sim_time(units = 'ns') )
 
 
@@ -871,7 +877,7 @@ async def cocotb_run(dut):
 
     #Check Link Reset has been asserted
 
-    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 25))
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 5))
 
     await tb.masters[0].read_data(Data_read_dl_config_parameters)
     link_rst_asserted = format(Data_read_dl_config_parameters.data[0], '0>8b')[5]
@@ -1056,6 +1062,9 @@ async def cocotb_run(dut):
 
     await send_idle_ctrl_word(tb, 300)
 
+    await fct_monitor
+
+    tb.spacefibre_random_generator_data_link.fct_counter = [0]*8
 
     if step_1_failed == 0:
         tb.logger.info("simulation time %d ns : step 1 result: Pass")
@@ -1074,6 +1083,8 @@ async def cocotb_run(dut):
 
     step_2_failed = 0
     #Sets DUT lane initialisation FSM to Active
+
+    fct_monitor = cocotb.start_soon(tb.spacefibre_random_generator_data_link.monitor_FCT(30000))
 
     monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_2", number_of_word = 20000))
     
@@ -1305,6 +1316,8 @@ async def cocotb_run(dut):
     #Check that the data frame are received
 
     await send_idle_ctrl_word(tb, 64*8+400)
+
+    await fct_monitor
 
     await monitor
 
