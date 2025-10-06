@@ -149,7 +149,9 @@ async def wait_end_test_dl(tb, channel):
     test_end = format(Data_lane_ana_status.data[0], '0>8b')[6]
     timer = 0
     while test_end != '1' and timer < 1000:
+        stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 10))
         await tb.masters[channel].read_data(Data_lane_ana_status)
+        await stimuli
         timer += 1
         test_end = format(Data_lane_ana_status.data[0], '0>8b')[6]
         tb.logger.debug("simulation time %d ns : Data_lane_ana_status value read : %s", get_sim_time(units = "ns"), format(Data_lane_ana_status.data[0], '0>8b'))
@@ -1108,6 +1110,7 @@ async def cocotb_run(dut):
 
     await send_idle_ctrl_word(tb, 64*8+100)
 
+    tb.logger.info("simulation time %d ns : input 1\n\n", get_sim_time(units = "ns"))
 
 
     #Send first FCT to each virtual channel
@@ -1122,6 +1125,7 @@ async def cocotb_run(dut):
 
     await send_idle_ctrl_word(tb, 64*8+100)
 
+    tb.logger.info("simulation time %d ns : input 2\n\n", get_sim_time(units = "ns"))
 
     #Send first FCT to each virtual channel
     for x in range(8):
@@ -1137,9 +1141,10 @@ async def cocotb_run(dut):
 
     await tb.spacefibre_random_generator_data_link.write_random_inputs("reference/spacefibre_serial/step_2_1_" + str(0), 255, 1, 64, 0, 0, 24, delay = 0, invert_polarity = 0, seed = 42)
 
+
     #Check that the data frame are received
 
-    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 64*8+100))
+
 
     result = await wait_end_test_dl(tb, 4)
 
@@ -1149,11 +1154,12 @@ async def cocotb_run(dut):
     else:
         tb.logger.info("simulation time %d ns : step 2.1 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
 
-    await stimuli
 
 
+    tb.logger.info("simulation time %d ns : input 3\n\n", get_sim_time(units = "ns"))
 
 
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 100))
 
 
     #LinkReset with Lane_Configurator
@@ -1166,7 +1172,8 @@ async def cocotb_run(dut):
     await RisingEdge(tb.dut.spacefibre_instance.gen_inst_phy_plus_lane.inst_phy_plus_lane.RST_TX_DONE)
     tb.logger.info("sim_time %d ns: Reset PHY completed", get_sim_time(units = 'ns') )
 
-
+    await stimuli
+    
     await init_lane(tb)
 
 
@@ -1186,6 +1193,8 @@ async def cocotb_run(dut):
 
     await tb.masters[0].write_data(Data_read_dl_config_parameters)
     await stimuli
+
+    tb.logger.info("simulation time %d ns : input 4\n\n", get_sim_time(units = "ns"))
 
 
 
@@ -1209,6 +1218,9 @@ async def cocotb_run(dut):
 
     await send_idle_ctrl_word(tb, 64*8+100)
 
+    tb.logger.info("simulation time %d ns : input 5\n\n", get_sim_time(units = "ns"))
+
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 100))
 
     #InterfaceReset with Lane_Configurator
     await tb.masters[0].init_run("stimuli/axi/Interface_reset.json")
@@ -1220,6 +1232,7 @@ async def cocotb_run(dut):
     await RisingEdge(tb.dut.spacefibre_instance.gen_inst_phy_plus_lane.inst_phy_plus_lane.RST_TX_DONE)
     tb.logger.info("sim_time %d ns: Reset PHY completed", get_sim_time(units = 'ns') )
 
+    await stimuli
 
     await init_lane(tb)
     
@@ -1241,6 +1254,7 @@ async def cocotb_run(dut):
     await stimuli
 
 
+    tb.logger.info("simulation time %d ns : input 6\n\n", get_sim_time(units = "ns"))
 
     #Check EEP reception, #check EEP on input buffer 0
 
@@ -1263,18 +1277,25 @@ async def cocotb_run(dut):
     await send_idle_ctrl_word(tb, 64*8+100)
 
 
+    tb.logger.info("simulation time %d ns : input 7\n\n", get_sim_time(units = "ns"))
 
     #Send NACK
     await send_NACK(tb, "0" + f"{(9):0>7b}")
 
+
+    stimuli = cocotb.start_soon(send_idle_ctrl_word(tb, 100))
+
     #Check That Link Reset has been asserted
 
+    tb.logger.info("simulation time %d ns : input 8\n\n", get_sim_time(units = "ns"))
 
 
     #Wait end of phy reset
     tb.logger.info("sim_time %d ns: Wait PHY reset completion", get_sim_time(units = 'ns') )
     await RisingEdge(tb.dut.spacefibre_instance.gen_inst_phy_plus_lane.inst_phy_plus_lane.RST_TX_DONE)
     tb.logger.info("sim_time %d ns: Reset PHY completed", get_sim_time(units = 'ns') )
+
+    await stimuli
 
     await init_lane(tb)
 
@@ -1295,6 +1316,7 @@ async def cocotb_run(dut):
     await tb.masters[0].write_data(Data_read_dl_config_parameters)
     await stimuli
 
+    tb.logger.info("simulation time %d ns : input 9\n\n", get_sim_time(units = "ns"))
 
     #Check EEP reception, #check EEP on input buffer 0
 
@@ -1316,6 +1338,9 @@ async def cocotb_run(dut):
     #Check that the data frame are received
 
     await send_idle_ctrl_word(tb, 64*8+400)
+
+    tb.logger.info("simulation time %d ns : input 10\n\n", get_sim_time(units = "ns"))
+
 
     await fct_monitor
 
