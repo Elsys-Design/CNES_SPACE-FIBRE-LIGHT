@@ -583,9 +583,16 @@ This error can be caused by a number of factors:
 - Errors in RTL generator and analyzer models
 - Error coming from the IP itself
 
-#### 4.4.3 Unitary RTL tests
+#### 4.4.4 Unitary RTL tests
 Unit tests existed on the original code, but have not been updated.
 The unit tests must therefore be checked and corrected if necessary.
+ 
+
+#### 4.4.5 HSSL NG ULTRA out of table error detection issue
+When using the NG ULTRA version of the IP, two errors will be detected instead of one when an out of table char is received and the next valid char with an 8b/10b encoding depend on the running disparity is not received in the same 32b word.
+
+#### 4.4.6 HSSL NG ULTRA consecutive errors detection issue
+When using the NG ULTRA version of the IP, three errors will be detected instead of two when two consecutive errors are received.
 
 ### 4.5 License
 This IP is copyright CNES and is licensed under CERN open hardware license `CERN-OHL-W`.
