@@ -62,7 +62,7 @@ package pkg_phy_plus_lane_64b is
    constant C_LOST_SIG_WORD       : std_logic_vector(23 downto 00) := C_LOST_SIG_SYMB & C_LLCW_SYMB & C_K28_7_SYMB;                     --! bits 31 downto 24 = Reason field
    constant C_RXERR_WORD          : std_logic_vector(31 downto 00) := C_RXERR_SYMB & C_RXERR_SYMB & C_RXERR_SYMB & C_RXERR_SYMB;
    -- Counters max value
-   constant C_PRBS_COUNTER_64     : unsigned(31 downto 00)         := to_unsigned(64,32);                  --! 64 = 0 to 63 values. Max value of PRBS counter for INIT1/2/3 control words
+   constant C_PRBS_COUNTER_64     : unsigned(31 downto 00)         := to_unsigned(66,32);                  --! 66 = 2 to 65 values. Max value of PRBS counter for INIT1/2/3 control words
    constant C_X32_SIGNAL          : unsigned(04 downto 00)         := "11111";                             --! 32 = 0 to 31 values
    constant C_5000_WORDS          : unsigned(12 downto 00)         := to_unsigned(4998,13);                --! 4999 = 0 to 4998 values
    constant C_SYMB_X5             : unsigned(02 downto 00)         := "100";                               --! 5 = 0 to 4 values

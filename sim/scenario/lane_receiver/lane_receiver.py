@@ -909,10 +909,7 @@ async def cocotb_run(dut):
     await send_idle_ctrl_word(tb, 7000)
 
     await write_10b_to_Rx(tb, "1111110101", 0)
-    if target == "NG_ULTRA":
-        await tb.spacefibre_driver.write_to_Rx("00000001", delay = 0, k_encoding = 0)
-    else :
-        await write_10b_to_Rx(tb, "1100011001", 0)
+    await tb.spacefibre_driver.write_to_Rx("00000001", delay = 0, k_encoding = 0)
     await write_10b_to_Rx(tb, "1100011001", 0)
     await write_10b_to_Rx(tb, "1100011001", 0)
 
@@ -1257,6 +1254,7 @@ async def cocotb_run(dut):
     else:
         tb.logger.info("simulation time %d ns : step 3.26_a result: Pass\n\n\n\n", get_sim_time(units = "ns"))
 
+    await wait_check_error
 
 
 
@@ -1279,6 +1277,8 @@ async def cocotb_run(dut):
 
     #Specific test for NGULTRA 64b datapath width lane layer structure 
     if target == "NG_ULTRA" : 
+
+        wait_check_error = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16))
 
         #RXERR word reception
 
@@ -1979,7 +1979,7 @@ async def cocotb_run(dut):
         
         #Set Lane initialisatiion FSM from Started to Active state
 
-        await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/Started_to_Connecting.dat", invert_polarity = 1)
+        await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/Started_to_Connecting_short.dat", invert_polarity = 1)
 
         Started_to_Connecting = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/Started_to_Connecting.dat", invert_polarity = 1))
 
@@ -2056,7 +2056,7 @@ async def cocotb_run(dut):
 
 
 
-
+        tempo = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", invert_polarity = 1))
 
         #Incremental data generation
 
@@ -2071,6 +2071,9 @@ async def cocotb_run(dut):
         #Start Test
         Data_lane_ana_control.data = bytearray( [0x01,0x00,0x00,0x00])
         await tb.masters[2].write_data(Data_lane_ana_control)
+
+        await tempo
+
         await tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/255_incremental_data_1_frame.dat", file_format = 16, invert_polarity = 1)
         stimuli = cocotb.start_soon(tb.spacefibre_driver.write_from_file("stimuli/spacefibre_serial/50_IDLE.dat", file_format = 16, invert_polarity = 1))
 
@@ -2081,7 +2084,7 @@ async def cocotb_run(dut):
 
         if error_cnt != "00000000":
             step_4_failed = 1
-            tb.logger.error("simulation time %d ns : step 4.5 result: Failed\nError counter : %d\n\n\n", get_sim_time(units = "ns"), error_cnt)
+            tb.logger.error("simulation time %d ns : step 4.5 result: Failed\nError counter : %s\n\n\n", get_sim_time(units = "ns"), error_cnt)
         else:
             tb.logger.info("simulation time %d ns : step 4.5 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
 
@@ -2122,7 +2125,7 @@ async def cocotb_run(dut):
 
             if error_cnt != "00000000":
                 step_4_failed = 1
-                tb.logger.error("simulation time %d ns : step 4.%d result: Failed\nError counter : %d\n\n\n", get_sim_time(units = "ns"), 6 + seed, error_cnt)
+                tb.logger.error("simulation time %d ns : step 4.%d result: Failed\nError counter : %s\n\n\n", get_sim_time(units = "ns"), 6 + seed, error_cnt)
             else:
                 tb.logger.info("simulation time %d ns : step 4.%d result: Pass\n\n\n\n", get_sim_time(units = "ns"), 6 + seed) 
 
@@ -2320,7 +2323,7 @@ async def cocotb_run(dut):
 
         if error_cnt != "00000000":
             step_4_failed = 1
-            tb.logger.error("simulation time %d ns : step 4.27 result: Failed\nError counter : %d\n\n\n", get_sim_time(units = "ns"), error_cnt)
+            tb.logger.error("simulation time %d ns : step 4.27 result: Failed\nError counter : %s\n\n\n", get_sim_time(units = "ns"), error_cnt)
         else:
             tb.logger.info("simulation time %d ns : step 4.27 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
 
@@ -2362,7 +2365,7 @@ async def cocotb_run(dut):
 
             if error_cnt != "00000000":
                 step_4_failed = 1
-                tb.logger.error("simulation time %d ns : step 4.%d result: Failed\nError counter : %d\n\n\n", get_sim_time(units = "ns"), 28 + seed, error_cnt)
+                tb.logger.error("simulation time %d ns : step 4.%d result: Failed\nError counter : %s\n\n\n", get_sim_time(units = "ns"), 28 + seed, error_cnt)
             else:
                 tb.logger.info("simulation time %d ns : step 4.%d result: Pass\n\n\n\n", get_sim_time(units = "ns"), 28 + seed) 
     
@@ -2399,7 +2402,7 @@ async def cocotb_run(dut):
         
         if error_cnt != "00000000":
             step_4_failed = 1
-            tb.logger.error("simulation time %d ns : step 4.44 result: Failed\nError counter : %d\n\n\n", get_sim_time(units = "ns"), error_cnt)
+            tb.logger.error("simulation time %d ns : step 4.44 result: Failed\nError counter : %s\n\n\n", get_sim_time(units = "ns"), error_cnt)
         else:
             tb.logger.info("simulation time %d ns : step 4.44 result: Pass\n\n\n\n", get_sim_time(units = "ns"))
 

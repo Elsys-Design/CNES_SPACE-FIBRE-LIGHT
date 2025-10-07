@@ -88,7 +88,7 @@ begin
       NEW_DATA_PLCWI                 <= '0';
       DATA_TX_PLCWI                  <= (others => '0');
       VALID_K_CHARAC_PLCWI           <= (others => '0');
-      prbs_counter                   <= (others => '0');
+      prbs_counter                   <= to_unsigned(2,32);
       send_stdby_cnt                 <= (others => '0');
       STANDBY_SIGNAL_X32_PLCWI       <= '0';
       send_loss_sig_cnt              <= (others => '0');
@@ -115,7 +115,7 @@ begin
           -- Insert INIT word on word 2
           NEW_DATA_PLCWI        <= '1';
           VALID_K_CHARAC_PLCWI  <= x"10";
-          prbs_counter          <= (others => '0');
+          prbs_counter          <= to_unsigned(2,32);
           if SEND_INIT1_CTRL_WORD_PLIF = '1' then
             -- Send INIT1 control word
             DATA_TX_PLCWI       <= C_INIT1_WORD & std_logic_vector(prbs_counter);
@@ -133,7 +133,7 @@ begin
           -- Insert INIT word on word 1
           NEW_DATA_PLCWI        <= '1';
           VALID_K_CHARAC_PLCWI  <= x"01";
-          prbs_counter          <= to_unsigned(1, prbs_counter'length);
+          prbs_counter          <= to_unsigned(3,32);
           if SEND_INIT1_CTRL_WORD_PLIF = '1' then
             -- Send INIT1 control word
             DATA_TX_PLCWI       <= x"00000000" & C_INIT1_WORD;
@@ -222,7 +222,7 @@ begin
         DATA_TX_PLCWI         <= (others => '0');
         VALID_K_CHARAC_PLCWI  <= (others => '0');
         init3_sent_cnt        <= (others =>'0');
-        prbs_counter          <= (others => '0');
+          prbs_counter        <= to_unsigned(2,32);
         send_stdby_cnt        <= (others => '0');
         send_loss_sig_cnt     <= (others => '0');
       end if;

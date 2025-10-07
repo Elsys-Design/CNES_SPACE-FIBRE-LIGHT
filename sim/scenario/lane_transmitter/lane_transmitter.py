@@ -235,8 +235,8 @@ async def cocotb_run(dut):
         monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_1", number_of_word = 75000))
         loopback = cocotb.start_soon(tb.spacefibre_loopback.loopback(300000))
     else :
-        loopback = cocotb.start_soon(tb.spacefibre_loopback.loopback(72000))
-        monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_1", number_of_word = 18000))
+        loopback = cocotb.start_soon(tb.spacefibre_loopback.loopback(80000))
+        monitor = cocotb.start_soon(tb.spacefibre_sink.read_to_file("reference/spacefibre_serial/monitor_step_1", number_of_word = 20000))
 
 
     #Send 256 incremental data words
