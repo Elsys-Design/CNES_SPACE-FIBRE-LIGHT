@@ -135,6 +135,7 @@ xilinx.com:ip:proc_sys_reset:5.0\
 CNES:user:spacefibrelight:0.1\
 xilinx.com:ip:axi_traffic_gen:3.0\
 xilinx.com:ip:axi_noc:1.1\
+xilinx.com:ip:axis_vio:1.0\
 "
 
    set list_ips_missing ""
@@ -589,6 +590,46 @@ proc create_root_design { parentCell } {
    CONFIG.ASSOCIATED_BUSIF {M00_AXI:M01_AXI:M02_AXI:M03_AXI:M04_AXI:M05_AXI:M06_AXI:M07_AXI:M08_AXI} \
  ] [get_bd_pins /axi_noc_0/aclk6]
 
+  # Create instance: axis_vio_0, and set properties
+  set axis_vio_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_vio:1.0 axis_vio_0 ]
+  set_property -dict [list \
+    CONFIG.C_NUM_PROBE_IN {45} \
+    CONFIG.C_NUM_PROBE_OUT {22} \
+    CONFIG.C_PROBE_IN11_WIDTH {9} \
+    CONFIG.C_PROBE_IN12_WIDTH {9} \
+    CONFIG.C_PROBE_IN13_WIDTH {7} \
+    CONFIG.C_PROBE_IN14_WIDTH {7} \
+    CONFIG.C_PROBE_IN15_WIDTH {3} \
+    CONFIG.C_PROBE_IN16_WIDTH {3} \
+    CONFIG.C_PROBE_IN17_WIDTH {4} \
+    CONFIG.C_PROBE_IN18_WIDTH {3} \
+    CONFIG.C_PROBE_IN19_WIDTH {3} \
+    CONFIG.C_PROBE_IN1_WIDTH {8} \
+    CONFIG.C_PROBE_IN20_WIDTH {4} \
+    CONFIG.C_PROBE_IN21_WIDTH {2} \
+    CONFIG.C_PROBE_IN22_WIDTH {2} \
+    CONFIG.C_PROBE_IN23_WIDTH {8} \
+    CONFIG.C_PROBE_IN26_WIDTH {8} \
+    CONFIG.C_PROBE_IN27_WIDTH {8} \
+    CONFIG.C_PROBE_IN2_WIDTH {8} \
+    CONFIG.C_PROBE_IN35_WIDTH {32} \
+    CONFIG.C_PROBE_IN38_WIDTH {4} \
+    CONFIG.C_PROBE_IN39_WIDTH {4} \
+    CONFIG.C_PROBE_IN3_WIDTH {8} \
+    CONFIG.C_PROBE_IN40_WIDTH {8} \
+    CONFIG.C_PROBE_IN43_WIDTH {8} \
+    CONFIG.C_PROBE_IN4_WIDTH {8} \
+    CONFIG.C_PROBE_IN5_WIDTH {8} \
+    CONFIG.C_PROBE_OUT0_WIDTH {8} \
+    CONFIG.C_PROBE_OUT11_WIDTH {4} \
+    CONFIG.C_PROBE_OUT19_WIDTH {8} \
+    CONFIG.C_PROBE_OUT5_WIDTH {9} \
+    CONFIG.C_PROBE_OUT6_WIDTH {8} \
+    CONFIG.C_PROBE_OUT8_WIDTH {32} \
+    CONFIG.C_PROBE_OUT9_WIDTH {8} \
+  ] $axis_vio_0
+
+
   # Create interface connections
   connect_bd_intf_net -intf_net axi_noc_0_CH0_LPDDR4_0 [get_bd_intf_ports ch0_lpddr4_trip1] [get_bd_intf_pins axi_noc_0/CH0_LPDDR4_0]
   connect_bd_intf_net -intf_net axi_noc_0_CH1_LPDDR4_0 [get_bd_intf_ports ch1_lpddr4_trip1] [get_bd_intf_pins axi_noc_0/CH1_LPDDR4_0]
@@ -631,15 +672,82 @@ proc create_root_design { parentCell } {
   connect_bd_net -net CLK_GTY_0_1 [get_bd_ports CLK_GTY_0] [get_bd_pins spacefibrelight_0/CLK_GTY]
   connect_bd_net -net RX_NEG_0_1 [get_bd_ports RX_NEG_0] [get_bd_pins spacefibrelight_0/RX_NEG]
   connect_bd_net -net RX_POS_0_1 [get_bd_ports RX_POS_0] [get_bd_pins spacefibrelight_0/RX_POS]
+  connect_bd_net -net axis_vio_0_probe_out0 [get_bd_pins axis_vio_0/probe_out0] [get_bd_pins spacefibrelight_0/CURRENT_TIME_SLOT_NW]
+  connect_bd_net -net axis_vio_0_probe_out1 [get_bd_pins axis_vio_0/probe_out1] [get_bd_pins spacefibrelight_0/INTERFACE_RESET]
+  connect_bd_net -net axis_vio_0_probe_out2 [get_bd_pins axis_vio_0/probe_out2] [get_bd_pins spacefibrelight_0/LINK_RESET]
+  connect_bd_net -net axis_vio_0_probe_out3 [get_bd_pins axis_vio_0/probe_out3] [get_bd_pins spacefibrelight_0/NACK_RST_EN]
+  connect_bd_net -net axis_vio_0_probe_out4 [get_bd_pins axis_vio_0/probe_out4] [get_bd_pins spacefibrelight_0/NACK_RST_MODE]
+  connect_bd_net -net axis_vio_0_probe_out5 [get_bd_pins axis_vio_0/probe_out5] [get_bd_pins spacefibrelight_0/PAUSE_VC]
+  connect_bd_net -net axis_vio_0_probe_out6 [get_bd_pins axis_vio_0/probe_out6] [get_bd_pins spacefibrelight_0/CONTINUOUS_VC]
+  connect_bd_net -net axis_vio_0_probe_out7 [get_bd_pins axis_vio_0/probe_out7] [get_bd_pins spacefibrelight_0/ENABLE_INJ]
+  connect_bd_net -net axis_vio_0_probe_out8 [get_bd_pins axis_vio_0/probe_out8] [get_bd_pins spacefibrelight_0/DATA_TX_INJ]
+  connect_bd_net -net axis_vio_0_probe_out9 [get_bd_pins axis_vio_0/probe_out9] [get_bd_pins spacefibrelight_0/CAPABILITY_TX_INJ]
+  connect_bd_net -net axis_vio_0_probe_out10 [get_bd_pins axis_vio_0/probe_out10] [get_bd_pins spacefibrelight_0/NEW_DATA_TX_INJ]
+  connect_bd_net -net axis_vio_0_probe_out11 [get_bd_pins axis_vio_0/probe_out11] [get_bd_pins spacefibrelight_0/VALID_K_CHARAC_TX_INJ]
+  connect_bd_net -net axis_vio_0_probe_out12 [get_bd_pins axis_vio_0/probe_out12] [get_bd_pins spacefibrelight_0/LANE_RESET_INJ]
+  connect_bd_net -net axis_vio_0_probe_out13 [get_bd_pins axis_vio_0/probe_out13] [get_bd_pins spacefibrelight_0/ENABLE_SPY]
+  connect_bd_net -net axis_vio_0_probe_out14 [get_bd_pins axis_vio_0/probe_out14] [get_bd_pins spacefibrelight_0/FIFO_RX_RD_EN_SPY]
+  connect_bd_net -net axis_vio_0_probe_out15 [get_bd_pins axis_vio_0/probe_out15] [get_bd_pins spacefibrelight_0/LANE_START]
+  connect_bd_net -net axis_vio_0_probe_out16 [get_bd_pins axis_vio_0/probe_out16] [get_bd_pins spacefibrelight_0/AUTOSTART]
+  connect_bd_net -net axis_vio_0_probe_out17 [get_bd_pins axis_vio_0/probe_out17] [get_bd_pins spacefibrelight_0/LANE_RESET]
+  connect_bd_net -net axis_vio_0_probe_out18 [get_bd_pins axis_vio_0/probe_out18] [get_bd_pins spacefibrelight_0/PARALLEL_LOOPBACK_EN]
+  connect_bd_net -net axis_vio_0_probe_out19 [get_bd_pins axis_vio_0/probe_out19] [get_bd_pins spacefibrelight_0/STANDBY_REASON]
+  connect_bd_net -net axis_vio_0_probe_out20 [get_bd_pins axis_vio_0/probe_out20] [get_bd_pins spacefibrelight_0/NEAR_END_SERIAL_LB_EN]
+  connect_bd_net -net axis_vio_0_probe_out21 [get_bd_pins axis_vio_0/probe_out21] [get_bd_pins spacefibrelight_0/FAR_END_SERIAL_LB_EN]
   connect_bd_net -net proc_sys_reset_0_peripheral_aresetn [get_bd_pins proc_sys_reset_0/peripheral_aresetn] [get_bd_ports reset_n_fpga] [get_bd_pins traffic_VC0/s_axi_aresetn] [get_bd_pins traffic_VC1/s_axi_aresetn] [get_bd_pins traffic_VC7/s_axi_aresetn] [get_bd_pins traffic_VC2/s_axi_aresetn] [get_bd_pins traffic_VC3/s_axi_aresetn] [get_bd_pins traffic_VC4/s_axi_aresetn] [get_bd_pins traffic_VC5/s_axi_aresetn] [get_bd_pins traffic_VC6/s_axi_aresetn] [get_bd_pins traffic_VC8/s_axi_aresetn] [get_bd_pins spacefibrelight_0/RST_N] [get_bd_pins spacefibrelight_0/AXIS_VC0_TX_DL_RSTN] [get_bd_pins spacefibrelight_0/AXIS_VC1_TX_DL_RSTN] [get_bd_pins spacefibrelight_0/AXIS_VC2_TX_DL_RSTN] [get_bd_pins spacefibrelight_0/AXIS_VC3_TX_DL_RSTN] [get_bd_pins spacefibrelight_0/AXIS_VC4_TX_DL_RSTN] [get_bd_pins spacefibrelight_0/AXIS_VC5_TX_DL_RSTN] [get_bd_pins spacefibrelight_0/AXIS_VC6_TX_DL_RSTN] [get_bd_pins spacefibrelight_0/AXIS_VC7_TX_DL_RSTN] [get_bd_pins spacefibrelight_0/AXIS_VC8_TX_DL_RSTN] [get_bd_pins spacefibrelight_0/AXIS_VC0_RX_DL_RSTN] [get_bd_pins spacefibrelight_0/AXIS_VC1_RX_DL_RSTN] [get_bd_pins spacefibrelight_0/AXIS_VC2_RX_DL_RSTN] [get_bd_pins spacefibrelight_0/AXIS_VC3_RX_DL_RSTN] [get_bd_pins spacefibrelight_0/AXIS_VC4_RX_DL_RSTN] [get_bd_pins spacefibrelight_0/AXIS_VC5_RX_DL_RSTN] [get_bd_pins spacefibrelight_0/AXIS_VC6_RX_DL_RSTN] [get_bd_pins spacefibrelight_0/AXIS_VC7_RX_DL_RSTN] [get_bd_pins spacefibrelight_0/AXIS_VC8_RX_DL_RSTN]
+  connect_bd_net -net spacefibrelight_0_ACK_COUNTER_RX [get_bd_pins spacefibrelight_0/ACK_COUNTER_RX] [get_bd_pins axis_vio_0/probe_in18]
+  connect_bd_net -net spacefibrelight_0_ACK_COUNTER_TX [get_bd_pins spacefibrelight_0/ACK_COUNTER_TX] [get_bd_pins axis_vio_0/probe_in15]
+  connect_bd_net -net spacefibrelight_0_ACK_PULSE_RX [get_bd_pins spacefibrelight_0/ACK_PULSE_RX] [get_bd_pins axis_vio_0/probe_in29]
+  connect_bd_net -net spacefibrelight_0_ACK_SEQ_NUM [get_bd_pins spacefibrelight_0/ACK_SEQ_NUM] [get_bd_pins axis_vio_0/probe_in27]
+  connect_bd_net -net spacefibrelight_0_CRC_LONG_ERROR [get_bd_pins spacefibrelight_0/CRC_LONG_ERROR] [get_bd_pins axis_vio_0/probe_in6]
+  connect_bd_net -net spacefibrelight_0_CRC_SHORT_ERROR [get_bd_pins spacefibrelight_0/CRC_SHORT_ERROR] [get_bd_pins axis_vio_0/probe_in7]
+  connect_bd_net -net spacefibrelight_0_CREDIT_VC [get_bd_pins spacefibrelight_0/CREDIT_VC] [get_bd_pins axis_vio_0/probe_in3]
+  connect_bd_net -net spacefibrelight_0_CURRENT_TIME_SLOT [get_bd_pins spacefibrelight_0/CURRENT_TIME_SLOT] [get_bd_pins axis_vio_0/probe_in23]
+  connect_bd_net -net spacefibrelight_0_DATA_COUNTER_RX [get_bd_pins spacefibrelight_0/DATA_COUNTER_RX] [get_bd_pins axis_vio_0/probe_in14]
+  connect_bd_net -net spacefibrelight_0_DATA_COUNTER_TX [get_bd_pins spacefibrelight_0/DATA_COUNTER_TX] [get_bd_pins axis_vio_0/probe_in13]
+  connect_bd_net -net spacefibrelight_0_DATA_PULSE_RX [get_bd_pins spacefibrelight_0/DATA_PULSE_RX] [get_bd_pins axis_vio_0/probe_in28]
+  connect_bd_net -net spacefibrelight_0_DATA_RX_SPY [get_bd_pins spacefibrelight_0/DATA_RX_SPY] [get_bd_pins axis_vio_0/probe_in35]
+  connect_bd_net -net spacefibrelight_0_FAR_END_CAPA [get_bd_pins spacefibrelight_0/FAR_END_CAPA] [get_bd_pins axis_vio_0/probe_in43]
+  connect_bd_net -net spacefibrelight_0_FAR_END_LINK_RESET [get_bd_pins spacefibrelight_0/FAR_END_LINK_RESET] [get_bd_pins axis_vio_0/probe_in10]
+  connect_bd_net -net spacefibrelight_0_FCT_COUNTER_RX [get_bd_pins spacefibrelight_0/FCT_COUNTER_RX] [get_bd_pins axis_vio_0/probe_in20]
+  connect_bd_net -net spacefibrelight_0_FCT_COUNTER_TX [get_bd_pins spacefibrelight_0/FCT_COUNTER_TX] [get_bd_pins axis_vio_0/probe_in17]
+  connect_bd_net -net spacefibrelight_0_FCT_CREDIT_OVERFLOW [get_bd_pins spacefibrelight_0/FCT_CREDIT_OVERFLOW] [get_bd_pins axis_vio_0/probe_in5]
+  connect_bd_net -net spacefibrelight_0_FCT_PULSE_RX [get_bd_pins spacefibrelight_0/FCT_PULSE_RX] [get_bd_pins axis_vio_0/probe_in31]
+  connect_bd_net -net spacefibrelight_0_FIFO_RX_DATA_VALID_SPY [get_bd_pins spacefibrelight_0/FIFO_RX_DATA_VALID_SPY] [get_bd_pins axis_vio_0/probe_in37]
+  connect_bd_net -net spacefibrelight_0_FIFO_RX_EMPTY_SPY [get_bd_pins spacefibrelight_0/FIFO_RX_EMPTY_SPY] [get_bd_pins axis_vio_0/probe_in36]
+  connect_bd_net -net spacefibrelight_0_FIFO_TX_FULL_INJ [get_bd_pins spacefibrelight_0/FIFO_TX_FULL_INJ] [get_bd_pins axis_vio_0/probe_in34]
+  connect_bd_net -net spacefibrelight_0_FRAME_ERROR [get_bd_pins spacefibrelight_0/FRAME_ERROR] [get_bd_pins axis_vio_0/probe_in8]
+  connect_bd_net -net spacefibrelight_0_FRAME_FINISHED [get_bd_pins spacefibrelight_0/FRAME_FINISHED] [get_bd_pins axis_vio_0/probe_in11]
+  connect_bd_net -net spacefibrelight_0_FRAME_TX [get_bd_pins spacefibrelight_0/FRAME_TX] [get_bd_pins axis_vio_0/probe_in12]
+  connect_bd_net -net spacefibrelight_0_FULL_COUNTER_RX [get_bd_pins spacefibrelight_0/FULL_COUNTER_RX] [get_bd_pins axis_vio_0/probe_in21]
+  connect_bd_net -net spacefibrelight_0_FULL_PULSE_RX [get_bd_pins spacefibrelight_0/FULL_PULSE_RX] [get_bd_pins axis_vio_0/probe_in32]
+  connect_bd_net -net spacefibrelight_0_INPUT_BUF_OVF_VC [get_bd_pins spacefibrelight_0/INPUT_BUF_OVF_VC] [get_bd_pins axis_vio_0/probe_in4]
+  connect_bd_net -net spacefibrelight_0_LANE_STATE [get_bd_pins spacefibrelight_0/LANE_STATE] [get_bd_pins axis_vio_0/probe_in39]
+  connect_bd_net -net spacefibrelight_0_LINK_RST_ASSERTED [get_bd_pins spacefibrelight_0/LINK_RST_ASSERTED] [get_bd_pins axis_vio_0/probe_in25]
+  connect_bd_net -net spacefibrelight_0_LOSS_SIGNAL [get_bd_pins spacefibrelight_0/LOSS_SIGNAL] [get_bd_pins axis_vio_0/probe_in42]
+  connect_bd_net -net spacefibrelight_0_NACK_COUNTER_RX [get_bd_pins spacefibrelight_0/NACK_COUNTER_RX] [get_bd_pins axis_vio_0/probe_in19]
+  connect_bd_net -net spacefibrelight_0_NACK_COUNTER_TX [get_bd_pins spacefibrelight_0/NACK_COUNTER_TX] [get_bd_pins axis_vio_0/probe_in16]
+  connect_bd_net -net spacefibrelight_0_NACK_PULSE_RX [get_bd_pins spacefibrelight_0/NACK_PULSE_RX] [get_bd_pins axis_vio_0/probe_in30]
+  connect_bd_net -net spacefibrelight_0_NACK_SEQ_NUM [get_bd_pins spacefibrelight_0/NACK_SEQ_NUM] [get_bd_pins axis_vio_0/probe_in26]
+  connect_bd_net -net spacefibrelight_0_RESET_PARAM [get_bd_pins spacefibrelight_0/RESET_PARAM] [get_bd_pins axis_vio_0/probe_in24]
+  connect_bd_net -net spacefibrelight_0_RETRY_COUNTER_RX [get_bd_pins spacefibrelight_0/RETRY_COUNTER_RX] [get_bd_pins axis_vio_0/probe_in22]
+  connect_bd_net -net spacefibrelight_0_RETRY_PULSE_RX [get_bd_pins spacefibrelight_0/RETRY_PULSE_RX] [get_bd_pins axis_vio_0/probe_in33]
+  connect_bd_net -net spacefibrelight_0_RST_TXCLK_N [get_bd_pins spacefibrelight_0/RST_TXCLK_N] [get_bd_pins axis_vio_0/probe_in0]
+  connect_bd_net -net spacefibrelight_0_RX_ERROR_CNT [get_bd_pins spacefibrelight_0/RX_ERROR_CNT] [get_bd_pins axis_vio_0/probe_in40]
+  connect_bd_net -net spacefibrelight_0_RX_ERROR_OVF [get_bd_pins spacefibrelight_0/RX_ERROR_OVF] [get_bd_pins axis_vio_0/probe_in41]
+  connect_bd_net -net spacefibrelight_0_RX_POLARITY [get_bd_pins spacefibrelight_0/RX_POLARITY] [get_bd_pins axis_vio_0/probe_in44]
+  connect_bd_net -net spacefibrelight_0_SEQUENCE_ERROR [get_bd_pins spacefibrelight_0/SEQUENCE_ERROR] [get_bd_pins axis_vio_0/probe_in9]
+  connect_bd_net -net spacefibrelight_0_SEQ_NUMBER_RX [get_bd_pins spacefibrelight_0/SEQ_NUMBER_RX] [get_bd_pins axis_vio_0/probe_in2]
+  connect_bd_net -net spacefibrelight_0_SEQ_NUMBER_TX [get_bd_pins spacefibrelight_0/SEQ_NUMBER_TX] [get_bd_pins axis_vio_0/probe_in1]
   connect_bd_net -net spacefibrelight_0_TX_NEG [get_bd_pins spacefibrelight_0/TX_NEG] [get_bd_ports TX_NEG_0]
   connect_bd_net -net spacefibrelight_0_TX_POS [get_bd_pins spacefibrelight_0/TX_POS] [get_bd_ports TX_POS_0]
+  connect_bd_net -net spacefibrelight_0_VALID_K_CHARAC_RX_SPY [get_bd_pins spacefibrelight_0/VALID_K_CHARAC_RX_SPY] [get_bd_pins axis_vio_0/probe_in38]
   connect_bd_net -net versal_cips_0_fpd_cci_noc_axi0_clk [get_bd_pins versal_cips_0/fpd_cci_noc_axi0_clk] [get_bd_pins axi_noc_0/aclk0]
   connect_bd_net -net versal_cips_0_fpd_cci_noc_axi1_clk [get_bd_pins versal_cips_0/fpd_cci_noc_axi1_clk] [get_bd_pins axi_noc_0/aclk1]
   connect_bd_net -net versal_cips_0_fpd_cci_noc_axi2_clk [get_bd_pins versal_cips_0/fpd_cci_noc_axi2_clk] [get_bd_pins axi_noc_0/aclk2]
   connect_bd_net -net versal_cips_0_fpd_cci_noc_axi3_clk [get_bd_pins versal_cips_0/fpd_cci_noc_axi3_clk] [get_bd_pins axi_noc_0/aclk3]
   connect_bd_net -net versal_cips_0_lpd_axi_noc_clk [get_bd_pins versal_cips_0/lpd_axi_noc_clk] [get_bd_pins axi_noc_0/aclk4]
-  connect_bd_net -net versal_cips_0_pl0_ref_clk [get_bd_pins versal_cips_0/pl0_ref_clk] [get_bd_ports clk_l] [get_bd_pins traffic_VC0/s_axi_aclk] [get_bd_pins proc_sys_reset_0/slowest_sync_clk] [get_bd_pins traffic_VC1/s_axi_aclk] [get_bd_pins traffic_VC7/s_axi_aclk] [get_bd_pins traffic_VC2/s_axi_aclk] [get_bd_pins traffic_VC3/s_axi_aclk] [get_bd_pins traffic_VC4/s_axi_aclk] [get_bd_pins traffic_VC5/s_axi_aclk] [get_bd_pins traffic_VC6/s_axi_aclk] [get_bd_pins traffic_VC8/s_axi_aclk] [get_bd_pins spacefibrelight_0/CLK] [get_bd_pins spacefibrelight_0/AXIS_VC0_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC1_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC2_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC3_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC4_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC5_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC6_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC7_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC8_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC0_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC1_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC2_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC3_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC4_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC5_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC6_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC7_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC8_TX_DL_ACLK] [get_bd_pins axi_noc_0/aclk6]
+  connect_bd_net -net versal_cips_0_pl0_ref_clk [get_bd_pins versal_cips_0/pl0_ref_clk] [get_bd_ports clk_l] [get_bd_pins traffic_VC0/s_axi_aclk] [get_bd_pins proc_sys_reset_0/slowest_sync_clk] [get_bd_pins traffic_VC1/s_axi_aclk] [get_bd_pins traffic_VC7/s_axi_aclk] [get_bd_pins traffic_VC2/s_axi_aclk] [get_bd_pins traffic_VC3/s_axi_aclk] [get_bd_pins traffic_VC4/s_axi_aclk] [get_bd_pins traffic_VC5/s_axi_aclk] [get_bd_pins traffic_VC6/s_axi_aclk] [get_bd_pins traffic_VC8/s_axi_aclk] [get_bd_pins spacefibrelight_0/CLK] [get_bd_pins spacefibrelight_0/AXIS_VC0_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC1_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC2_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC3_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC4_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC5_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC6_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC7_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC8_RX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC0_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC1_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC2_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC3_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC4_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC5_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC6_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC7_TX_DL_ACLK] [get_bd_pins spacefibrelight_0/AXIS_VC8_TX_DL_ACLK] [get_bd_pins axi_noc_0/aclk6] [get_bd_pins axis_vio_0/clk]
   connect_bd_net -net versal_cips_0_pl0_resetn [get_bd_pins versal_cips_0/pl0_resetn] [get_bd_pins proc_sys_reset_0/ext_reset_in]
   connect_bd_net -net versal_cips_0_pmc_axi_noc_axi0_clk [get_bd_pins versal_cips_0/pmc_axi_noc_axi0_clk] [get_bd_pins axi_noc_0/aclk5]
 
