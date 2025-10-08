@@ -10,7 +10,7 @@ echo ""
 quietly set LIB_PATH_UNISIM_V    $rootpath/sim/libraries/unisim/verilog/src
 quietly set LIB_PATH_UNISIM_VHD  $rootpath/sim/libraries/unisim/vhdl/src/unisims
 quietly set LIB_PATH_BUF         $rootpath/sim/libraries/cores/BufG_GT_bd
-quietly set LIB_PATH_GTY         $rootpath/sim/libraries/cores/extended_phy_layer
+quietly set LIB_PATH_GTY         $rootpath/sim/libraries/cores/extended_phy_layer_gtwiz_versal_0_0
 quietly set LIB_PATH_XPM         $rootpath/sim/libraries/xpm
 quietly set LIB_PATH_SECUREIP    $rootpath/sim/libraries/secureip
 
@@ -101,25 +101,8 @@ vlog  +cover=sb +acc -work phy_plus_lane_lib  -L xpm -L unisim $LIB_PATH_BUF/ip/
 echo "############# End compile BUFG #############"
 
 echo "############# Start compile GTY #############"
-vlog +cover=sb +acc -work phy_plus_lane_lib  -L xpm -L unisim $LIB_PATH_GTY/ip/extended_phy_layer_clk_wizard_0_0/extended_phy_layer_clk_wizard_0_0_clocking_MBUFGCE_CE_DLY.v
-vlog +cover=sb +acc -sv -work phy_plus_lane_lib  -L xpm -L unisim $LIB_PATH_GTY/ip/extended_phy_layer_clk_wizard_0_0/extended_phy_layer_clk_wizard_0_0_clocking_Synchronizer3.sv
-vlog +cover=sb +acc -sv -work phy_plus_lane_lib  -L xpm -L unisim $LIB_PATH_GTY/ip/extended_phy_layer_clk_wizard_0_0/extended_phy_layer_clk_wizard_0_0_clocking_cmt_dpll_fd_cal.sv
-vlog +cover=sb +acc -work phy_plus_lane_lib  -L xpm -L unisim $LIB_PATH_GTY/ip/extended_phy_layer_clk_wizard_0_0/extended_phy_layer_clk_wizard_0_0_clocking_structure.v
-vlog +cover=sb +acc -work phy_plus_lane_lib  -L xpm -L unisim $LIB_PATH_GTY/ip/extended_phy_layer_clk_wizard_0_0/extended_phy_layer_clk_wizard_0_0_clk_wiz_top.v
-vlog +cover=sb +acc -work phy_plus_lane_lib  -L xpm -L unisim $LIB_PATH_GTY/ip/extended_phy_layer_clk_wizard_0_0/sim/extended_phy_layer_clk_wizard_0_0.v
-vlog +cover=sb +acc -sv -work phy_plus_lane_lib  -L xpm -L unisim $LIB_PATH_GTY/ip/extended_phy_layer_gtwiz_versal_0_0/ip_0/extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_rules_output.vh
-vlog +cover=sb +acc -work phy_plus_lane_lib  -L xpm -L unisim $LIB_PATH_GTY/ip/extended_phy_layer_gtwiz_versal_0_0/ip_0/extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_tx_function.v
-vlog +cover=sb +acc -work phy_plus_lane_lib  -L xpm -L unisim $LIB_PATH_GTY/ip/extended_phy_layer_gtwiz_versal_0_0/ip_0/extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_rx_function.v
-vlog +cover=sb +acc -work phy_plus_lane_lib  -L xpm -L unisim $LIB_PATH_GTY/ip/extended_phy_layer_gtwiz_versal_0_0/ip_0/extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0_inst.v
-vlog +cover=sb +acc -work phy_plus_lane_lib  -L xpm -L unisim $LIB_PATH_GTY/ip/extended_phy_layer_gtwiz_versal_0_0/ip_0/sim/extended_phy_layer_gtwiz_versal_0_0_gt_quad_base_0.v
-vlog +cover=sb +acc -work phy_plus_lane_lib  -L xpm -L unisim $LIB_PATH_GTY/ip/extended_phy_layer_gtwiz_versal_0_0/extended_phy_layer_gtwiz_versal_0_0_powergood_logic.v
-vlog +cover=sb +acc -work phy_plus_lane_lib  -L xpm -L unisim $LIB_PATH_GTY/ip/extended_phy_layer_gtwiz_versal_0_0/extended_phy_layer_gtwiz_versal_0_0_reset_ip.v
-vlog +cover=sb +acc -work phy_plus_lane_lib  -L xpm -L unisim $LIB_PATH_GTY/ip/extended_phy_layer_gtwiz_versal_0_0/extended_phy_layer_gtwiz_versal_0_0_quad_top.v
-vlog +cover=sb +acc -work phy_plus_lane_lib  -L xpm -L unisim $LIB_PATH_GTY/ip/extended_phy_layer_gtwiz_versal_0_0/extended_phy_layer_gtwiz_versal_0_0_intf_quad_map.v
-vlog +cover=sb +acc -work phy_plus_lane_lib  -L xpm -L unisim $LIB_PATH_GTY/ip/extended_phy_layer_gtwiz_versal_0_0/extended_phy_layer_gtwiz_versal_0_0_inst.v
-vlog +cover=sb +acc -work phy_plus_lane_lib  -L xpm -L unisim $LIB_PATH_GTY/ip/extended_phy_layer_gtwiz_versal_0_0/sim/extended_phy_layer_gtwiz_versal_0_0.v
-vlog +cover=sb +acc -work phy_plus_lane_lib  $LIB_PATH_GTY/sim/extended_phy_layer.v
-vlog +cover=sb +acc -work phy_plus_lane_lib  $LIB_PATH_GTY/hdl/extended_phy_layer_wrapper.v
+vlog +cover=sb +acc -work phy_plus_lane_lib  -L xpm -L unisim $LIB_PATH_GTY/*.v
+
 echo "############# End compile GTY #############"
 
 echo "#####################################################"

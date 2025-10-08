@@ -94,21 +94,59 @@ architecture rtl of phy_plus_lane is
    ----------------------------------------------------------------------------------------------------------------------------------------
    -------------------------------------------------------- Modules Declaration -----------------------------------------------------------
    ----------------------------------------------------------------------------------------------------------------------------------------
+
+--- Depending on the GTYP lane you use some port may change 
+-- FIXME : some generic associated with a generate for each component flavour
+--         might be added for a full configuation from xilinx IP gui
+--         this is not done for now because it will introduce lots of code dupplication
+--         not wanted for now as the IP is still in validation.
+--         It is worth noted that VHDL cannot dynamlically create port (or assign them)
+
+constant lane_number : integer :=3;
+
 component extended_phy_layer_gtwiz_versal_0_0 is
   port (
+
+------------------beginning of conditionnal port -------------------------------------------
+-- these ports might change depending on the channel you are using
+   -- CHANNEL 0
+   -- QUAD0_TX0_outclk : out STD_LOGIC;
+   -- QUAD0_RX0_outclk : out STD_LOGIC;
+   -- QUAD0_TX0_usrclk : in STD_LOGIC;
+   -- QUAD0_RX0_usrclk : in STD_LOGIC;
+   -- QUAD0_ch0_loopback : in STD_LOGIC_VECTOR ( 2 downto 0 );
+   
+   -- CHANNEL 1
+   -- QUAD0_TX1_outclk : out STD_LOGIC;
+   -- QUAD0_RX1_outclk : out STD_LOGIC;
+   -- QUAD0_TX1_usrclk : in STD_LOGIC;
+   -- QUAD0_RX1_usrclk : in STD_LOGIC;
+   -- QUAD0_ch1_loopback : in STD_LOGIC_VECTOR ( 2 downto 0 );
+
+   -- CHANNEL 2
+   -- QUAD0_TX2_outclk : out STD_LOGIC;
+   -- QUAD0_RX2_outclk : out STD_LOGIC;
+   -- QUAD0_TX2_usrclk : in STD_LOGIC;
+   -- QUAD0_RX2_usrclk : in STD_LOGIC;
+   -- QUAD0_ch2_loopback : in STD_LOGIC_VECTOR ( 2 downto 0 );
+
+   -- CHANNEL 3
+    QUAD0_TX3_outclk : out STD_LOGIC;
+    QUAD0_RX3_outclk : out STD_LOGIC;
+    QUAD0_TX3_usrclk : in STD_LOGIC;
+    QUAD0_RX3_usrclk : in STD_LOGIC;
+    QUAD0_ch3_loopback : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
+    ------------ End of conditionnal port ---------------
+
     gtpowergood : out STD_LOGIC;
     gtwiz_freerun_clk : in STD_LOGIC;
     QUAD0_GTREFCLK0 : in STD_LOGIC;
-    QUAD0_TX0_outclk : out STD_LOGIC;
-    QUAD0_RX0_outclk : out STD_LOGIC;
     QUAD0_rxp : in STD_LOGIC_VECTOR ( 3 downto 0 );
     QUAD0_rxn : in STD_LOGIC_VECTOR ( 3 downto 0 );
     QUAD0_txp : out STD_LOGIC_VECTOR ( 3 downto 0 );
     QUAD0_txn : out STD_LOGIC_VECTOR ( 3 downto 0 );
     QUAD0_gpi : in STD_LOGIC_VECTOR ( 31 downto 0 );
     QUAD0_gpo : out STD_LOGIC_VECTOR ( 31 downto 0 );
-    QUAD0_TX0_usrclk : in STD_LOGIC;
-    QUAD0_RX0_usrclk : in STD_LOGIC;
     INTF0_TX0_ch_txdata : in STD_LOGIC_VECTOR ( 127 downto 0 );
     INTF0_TX0_ch_txbufstatus : out STD_LOGIC_VECTOR ( 1 downto 0 );
     INTF0_TX0_ch_txdccdone : out STD_LOGIC_VECTOR ( 0 to 0 );
@@ -298,7 +336,6 @@ component extended_phy_layer_gtwiz_versal_0_0 is
     INTF0_rst_rx_pll_and_datapath_in : in STD_LOGIC;
     INTF0_rst_rx_datapath_in : in STD_LOGIC;
     INTF0_rst_rx_done_out : out STD_LOGIC;
-    QUAD0_ch0_loopback : in STD_LOGIC_VECTOR ( 2 downto 0 );
     QUAD0_hsclk0_lcplllock : out STD_LOGIC
   );
   end component extended_phy_layer_gtwiz_versal_0_0;
@@ -983,8 +1020,40 @@ begin
    ------------------------------------------------------------------------------
    -- Instance of extended_phy_layer module
    ------------------------------------------------------------------------------
+-- some port depends on GTYP configuration for channel----
 gtwiz_versal_0: extended_phy_layer_gtwiz_versal_0_0
      port map (
+--------------- beginning of conditionnal port map ------------
+      --CHANNEL 0
+      --QUAD0_RX0_outclk => open,
+      --QUAD0_RX0_usrclk => clk_tx,
+      --QUAD0_TX0_outclk => QUAD0_TX0_outclk,
+      --QUAD0_TX0_usrclk => clk_tx,
+      --QUAD0_ch0_loopback(2 downto 0) => QUAD0_ch0_loopback,
+
+      --CHANNEL 1
+      --QUAD0_RX1_outclk => open,
+      --QUAD0_RX1_usrclk => clk_tx,
+      --QUAD0_TX1_outclk => QUAD0_TX0_outclk,
+      --QUAD0_TX1_usrclk => clk_tx,
+      --QUAD0_ch1_loopback(2 downto 0) => QUAD0_ch0_loopback,
+   
+      --CHANNEL 2
+      --QUAD0_RX2_outclk => open,
+      --QUAD0_RX2_usrclk => clk_tx,
+      --QUAD0_TX2_outclk => QUAD0_TX0_outclk,
+      --QUAD0_TX2_usrclk => clk_tx,
+      --QUAD0_ch2_loopback(2 downto 0) => QUAD0_ch0_loopback,
+
+      --CHANNEL 3
+      QUAD0_RX3_outclk => open,
+      QUAD0_RX3_usrclk => clk_tx,
+      QUAD0_TX3_outclk => QUAD0_TX0_outclk,
+      QUAD0_TX3_usrclk => clk_tx,
+      QUAD0_ch3_loopback(2 downto 0) => QUAD0_ch0_loopback,
+    ------------ End of conditionnal port map---------------
+
+
       INTF0_RX0_ch_cdrbmcdrreq(0) => '0',
       INTF0_RX0_ch_cdrfreqos(0) => '0',
       INTF0_RX0_ch_cdrincpctrl(0) => '0',
@@ -1175,11 +1244,7 @@ gtwiz_versal_0: extended_phy_layer_gtwiz_versal_0_0
       INTF0_rst_tx_done_out => INTF0_rst_tx_done_out_0,
       INTF0_rst_tx_pll_and_datapath_in => '0',
       QUAD0_GTREFCLK0 => CLK_GTY,
-      QUAD0_RX0_outclk => open,
-      QUAD0_RX0_usrclk => clk_tx,
-      QUAD0_TX0_outclk => QUAD0_TX0_outclk,
-      QUAD0_TX0_usrclk => clk_tx,
-      QUAD0_ch0_loopback(2 downto 0) => QUAD0_ch0_loopback,
+      
       QUAD0_gpi(31 downto 0) => x"00000000",
       QUAD0_gpo => open,
       QUAD0_hsclk0_lcplllock => QUAD0_hsclk0_lcplllock,
@@ -1206,10 +1271,10 @@ RX_POLARITY                <= invert_rx_bits_from_lif;
 FAR_END_CAPA               <= far_end_capa_i;
 lane_active_dl_i           <= enable_transm_data_from_lif;
 
-QUAD0_rxp(0)               <= RX_POS;
-QUAD0_rxn(0)               <= RX_NEG;
-TX_POS                     <= QUAD0_txp(0);
-TX_NEG                     <= QUAD0_txn(0);
+QUAD0_rxp(lane_number)               <= RX_POS;
+QUAD0_rxn(lane_number)               <= RX_NEG;
+TX_POS                     <= QUAD0_txp(lane_number);
+TX_NEG                     <= QUAD0_txn(lane_number);
 
 RST_TX_DONE                <= INTF0_rst_tx_done_out_0;
 
