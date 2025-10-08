@@ -154,7 +154,7 @@ begin
   --------------------------------------
   SEND_INIT1_CTRL_WORD_PLIF <= '1';
   wait until rising_edge(CLK) and NEW_DATA_PLCWI ='1';
-  for i in 0 to 31 loop
+  for i in 1 to 32 loop
     check_equal("Test 0: INIT 1: DATA_TX_PLCWI i="& integer'image(i)    ,    std_logic_vector(to_unsigned(i*2+1,32))& std_logic_vector(to_unsigned(i*2,32)), DATA_TX_PLCWI,        test_failed);
     check_equal("Test 0: INIT 1: VALID_K_CHARAC_PLCWI i="& integer'image(i), x"00",                                                                          VALID_K_CHARAC_PLCWI, test_failed);
     check      ("Test 0: INIT 1: NEW_DATA_PLCWI i="& integer'image(i),       '1',                                                                            NEW_DATA_PLCWI,       test_failed);
@@ -165,14 +165,14 @@ begin
   check_equal("Test 0: INIT 1: VALID_K_CHARAC_PLCWI i= C_INIT1_WORD word 0", x"01",                                              VALID_K_CHARAC_PLCWI, test_failed);
   check      ("Test 0: INIT 1: NEW_DATA_PLCWI i= C_INIT1_WORD word 0",       '1',                                                NEW_DATA_PLCWI,       test_failed);
   wait until rising_edge(CLK);
-  for i in 1 to 31 loop
+  for i in 2 to 32 loop
     check_equal("Test 0: INIT 1: DATA_TX_PLCWI i2="& integer'image(i)    ,    std_logic_vector(to_unsigned(i*2,32))& std_logic_vector(to_unsigned((i-1)*2+1,32)), DATA_TX_PLCWI,        test_failed);
     check_equal("Test 0: INIT 1: VALID_K_CHARAC_PLCWI i2="& integer'image(i), x"00",                                                                              VALID_K_CHARAC_PLCWI, test_failed);
     check      ("Test 0: INIT 1: NEW_DATA_PLCWI i2="& integer'image(i),       '1',                                                                                NEW_DATA_PLCWI,       test_failed);
     wait until rising_edge(CLK);
   end loop;
   -- Check INIT 1 on word 1
-  check_equal("Test 0: INIT 1: DATA_TX_PLCWI i=C_INIT1_WORD word 1"     ,    C_INIT1_WORD & std_logic_vector(to_unsigned(63,32)), DATA_TX_PLCWI,        test_failed);
+  check_equal("Test 0: INIT 1: DATA_TX_PLCWI i=C_INIT1_WORD word 1"     ,    C_INIT1_WORD & std_logic_vector(to_unsigned(65,32)), DATA_TX_PLCWI,        test_failed);
   check_equal("Test 0: INIT 1: VALID_K_CHARAC_PLCWI i= C_INIT1_WORD word 1", x"10",                                               VALID_K_CHARAC_PLCWI, test_failed);
   check      ("Test 0: INIT 1: NEW_DATA_PLCWI i= C_INIT1_WORD word 1",       '1',                                                 NEW_DATA_PLCWI,       test_failed);
   SEND_INIT1_CTRL_WORD_PLIF <= '0';
@@ -182,7 +182,7 @@ begin
   wait until falling_edge(CLK);
   SEND_INIT2_CTRL_WORD_PLIF <= '1';
   wait until rising_edge(CLK) and NEW_DATA_PLCWI ='1';
-  for i in 0 to 31 loop
+  for i in 1 to 32 loop
     check_equal("Test 0: INIT 2: DATA_TX_PLCWI i="& integer'image(i)    ,    std_logic_vector(to_unsigned(i*2+1,32))& std_logic_vector(to_unsigned(i*2,32)), DATA_TX_PLCWI,        test_failed);
     check_equal("Test 0: INIT 2: VALID_K_CHARAC_PLCWI i="& integer'image(i), x"00",                                                                          VALID_K_CHARAC_PLCWI, test_failed);
     check      ("Test 0: INIT 2: NEW_DATA_PLCWI i="& integer'image(i),       '1',                                                                            NEW_DATA_PLCWI,       test_failed);
@@ -193,14 +193,14 @@ begin
   check_equal("Test 0: INIT 2: VALID_K_CHARAC_PLCWI i= C_INIT2_WORD word 0", x"01",                                              VALID_K_CHARAC_PLCWI, test_failed);
   check      ("Test 0: INIT 2: NEW_DATA_PLCWI i= C_INIT2_WORD word 0",       '1',                                                NEW_DATA_PLCWI,       test_failed);
   wait until rising_edge(CLK);
-  for i in 1 to 31 loop
+  for i in 2 to 32 loop
     check_equal("Test 0: INIT 2: DATA_TX_PLCWI i2="& integer'image(i)    ,    std_logic_vector(to_unsigned(i*2,32))& std_logic_vector(to_unsigned((i-1)*2+1,32)), DATA_TX_PLCWI,        test_failed);
     check_equal("Test 0: INIT 2: VALID_K_CHARAC_PLCWI i2="& integer'image(i), x"00",                                                                              VALID_K_CHARAC_PLCWI, test_failed);
     check      ("Test 0: INIT 2: NEW_DATA_PLCWI i2="& integer'image(i),       '1',                                                                                NEW_DATA_PLCWI,       test_failed);
     wait until rising_edge(CLK);
   end loop;
   -- Check INIT 2 on word 1
-  check_equal("Test 0: INIT 2: DATA_TX_PLCWI i=C_INIT2_WORD word 1"     ,    C_INIT2_WORD & std_logic_vector(to_unsigned(63,32)), DATA_TX_PLCWI,        test_failed);
+  check_equal("Test 0: INIT 2: DATA_TX_PLCWI i=C_INIT2_WORD word 1"     ,    C_INIT2_WORD & std_logic_vector(to_unsigned(65,32)), DATA_TX_PLCWI,        test_failed);
   check_equal("Test 0: INIT 2: VALID_K_CHARAC_PLCWI i= C_INIT2_WORD word 1", x"10",                                               VALID_K_CHARAC_PLCWI, test_failed);
   check      ("Test 0: INIT 2: NEW_DATA_PLCWI i= C_INIT2_WORD word 1",       '1',                                                 NEW_DATA_PLCWI,       test_failed);
   SEND_INIT2_CTRL_WORD_PLIF <= '0';
@@ -211,7 +211,7 @@ begin
   SEND_INIT3_CTRL_WORD_PLIF <= '1';
   CAPABILITY_DL  <= x"FF";
   wait until rising_edge(CLK) and NEW_DATA_PLCWI ='1';
-  for i in 0 to 31 loop
+  for i in 1 to 32 loop
     check_equal("Test 0: INIT 3: DATA_TX_PLCWI i="& integer'image(i)    ,    std_logic_vector(to_unsigned(i*2+1,32))& std_logic_vector(to_unsigned(i*2,32)), DATA_TX_PLCWI,        test_failed);
     check_equal("Test 0: INIT 3: VALID_K_CHARAC_PLCWI i="& integer'image(i), x"00",                                                                          VALID_K_CHARAC_PLCWI, test_failed);
     check      ("Test 0: INIT 3: NEW_DATA_PLCWI i="& integer'image(i),       '1',                                                                            NEW_DATA_PLCWI,       test_failed);
@@ -222,14 +222,14 @@ begin
   check_equal("Test 0: INIT 3: VALID_K_CHARAC_PLCWI i= C_INIT3_WORD word 0", x"01",                                                      VALID_K_CHARAC_PLCWI, test_failed);
   check      ("Test 0: INIT 3: NEW_DATA_PLCWI i= C_INIT3_WORD word 0",       '1',                                                        NEW_DATA_PLCWI,       test_failed);
   wait until rising_edge(CLK);
-  for i in 1 to 31 loop
+  for i in 2 to 32 loop
     check_equal("Test 0: INIT 3: DATA_TX_PLCWI i2="& integer'image(i)    ,    std_logic_vector(to_unsigned(i*2,32))& std_logic_vector(to_unsigned((i-1)*2+1,32)), DATA_TX_PLCWI,        test_failed);
     check_equal("Test 0: INIT 3: VALID_K_CHARAC_PLCWI i2="& integer'image(i), x"00",                                                                              VALID_K_CHARAC_PLCWI, test_failed);
     check      ("Test 0: INIT 3: NEW_DATA_PLCWI i2="& integer'image(i),       '1',                                                                                NEW_DATA_PLCWI,       test_failed);
     wait until rising_edge(CLK);
   end loop;
   -- Check INIT 3 on word 1
-  check_equal("Test 0: INIT 3: DATA_TX_PLCWI i=C_INIT3_WORD word 1"     ,    x"FF" & C_INIT3_WORD & std_logic_vector(to_unsigned(63,32)), DATA_TX_PLCWI,        test_failed);
+  check_equal("Test 0: INIT 3: DATA_TX_PLCWI i=C_INIT3_WORD word 1"     ,    x"FF" & C_INIT3_WORD & std_logic_vector(to_unsigned(65,32)), DATA_TX_PLCWI,        test_failed);
   check_equal("Test 0: INIT 3: VALID_K_CHARAC_PLCWI i= C_INIT3_WORD word 1", x"10",                                                       VALID_K_CHARAC_PLCWI, test_failed);
   check      ("Test 0: INIT 3: NEW_DATA_PLCWI i= C_INIT3_WORD word 1",       '1',                                                         NEW_DATA_PLCWI,       test_failed);
   SEND_INIT3_CTRL_WORD_PLIF <= '0';

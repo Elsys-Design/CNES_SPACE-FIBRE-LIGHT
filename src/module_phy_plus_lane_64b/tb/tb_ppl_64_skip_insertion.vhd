@@ -141,20 +141,16 @@ begin
   end process;
 
   cnt_word_process: process(clk)
+    variable test_failed : boolean := false;
   begin
    if rising_edge(clk) then
     data_tx_plsi_r <= DATA_TX_PLSI;
-    if DATA_TX_PLSI(63 downto 32) = C_SKIP_WORD then
-      if cnt_word /= 4999 then
+    if DATA_TX_PLSI(63 downto 32) = C_SKIP_WORD  then
+      if cnt_word /= 4998 then
         flg_cnt_word_error <='1';
       end if;
-      cnt_word <= (others => '0');
-    elsif DATA_TX_PLSI(31 downto 0) = C_SKIP_WORD  then
-      if cnt_word /= 5000 then
-        flg_cnt_word_error <='1';
-      end if;
-      cnt_word <= to_unsigned(1,14);
-    elsif cnt_word > 5000 then
+      cnt_word <= to_unsigned(0,14);
+    elsif cnt_word > 4998 then
       flg_cnt_word_error <='1';
     elsif DATA_TX_PLSI(31 downto 0)/= data_tx_plsi_r(31 downto 0) and DATA_TX_PLSI(63 downto 32)/= data_tx_plsi_r(63 downto 0) then
       cnt_word <= cnt_word + 2;
@@ -293,11 +289,12 @@ begin
     k_char_2             <= std_logic_vector(to_unsigned(12,C_K_CHAR_WIDTH/2));
     DATA_TX_PLCWI        <= data_2 & data_1;
     VALID_K_CHARAC_PLCWI <= k_char_2 & k_char_1;
-    wait until rising_edge(clk);
     -- check Skip insertion
-    check_equal("TX_SKIP_1_ST: DATA_TX_PLSI"       , data_1_rrr & C_SKIP_WORD, DATA_TX_PLSI,        test_failed);
-    check_equal("TX_SKIP_1_ST: VALID_K_CHARAC_PLSI", k_char_1_rrr & x"1",      VALID_K_CHARAC_PLSI, test_failed);
-    check      ("TX_SKIP_1_ST: WAIT_SEND_DATA_PLSI", '0',                     WAIT_SEND_DATA_PLSI, test_failed);
+    check_equal("TX_SKIP_1_ST: DATA_TX_PLSI"       , C_SKIP_WORD & data_1_rrr ,DATA_TX_PLSI,        test_failed);
+    check_equal("TX_SKIP_1_ST: VALID_K_CHARAC_PLSI", x"1" & k_char_1_rrr,      VALID_K_CHARAC_PLSI, test_failed);
+    check      ("TX_SKIP_1_ST: WAIT_SEND_DATA_PLSI", '0',                      WAIT_SEND_DATA_PLSI, test_failed);
+    
+    wait until rising_edge(clk);
     ------------------------------------------------------------
     --                     TX_DATA_2_ST                       --
     ------------------------------------------------------------
@@ -309,7 +306,6 @@ begin
       k_char_2             <= std_logic_vector(to_unsigned((i+1)*3,C_K_CHAR_WIDTH/2));
       DATA_TX_PLCWI        <= data_2 & data_1;
       VALID_K_CHARAC_PLCWI <= k_char_2 & k_char_1;
-      wait until rising_edge(clk);
       -- check outputs
       check_equal("TX_DATA_2_ST: DATA_TX_PLSI i=" & integer'image(i)       , data_1_rrr & data_0_rrr ,    DATA_TX_PLSI,        test_failed);
       check_equal("TX_DATA_2_ST: VALID_K_CHARAC_PLSI i=" & integer'image(i), k_char_1_rrr & k_char_0_rrr, VALID_K_CHARAC_PLSI, test_failed);
@@ -318,6 +314,7 @@ begin
       else
         check      ("TX_DATA_2_ST: WAIT_SEND_DATA_PLSI i=" & integer'image(i), '0', WAIT_SEND_DATA_PLSI, test_failed);
       end if;
+      wait until rising_edge(clk);
     end loop;
     data_1               <= std_logic_vector(to_unsigned(3,C_DATA_WIDTH/2));
     data_2               <= std_logic_vector(to_unsigned(5,C_DATA_WIDTH/2));
@@ -325,7 +322,6 @@ begin
     k_char_2             <= std_logic_vector(to_unsigned(3,C_K_CHAR_WIDTH/2));
     DATA_TX_PLCWI        <= data_2 & data_1;
     VALID_K_CHARAC_PLCWI <= k_char_2 & k_char_1;
-    wait until rising_edge(clk);
     ------------------------------------------------------------
     --                     TX_SKIP_2_ST                       --
     ------------------------------------------------------------
@@ -347,6 +343,7 @@ begin
     if flg_cnt_word_error ='1' then
       test_failed := true;
     end if;
+    check("Number of words before skip error", '0', flg_cnt_word_error, test_failed);
 
     log_test_result(test_failed);
     wait;

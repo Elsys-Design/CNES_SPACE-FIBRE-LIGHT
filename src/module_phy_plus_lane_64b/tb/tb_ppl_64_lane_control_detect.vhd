@@ -52,7 +52,7 @@ component ppl_64_lane_ctrl_word_detect is
     DETECTED_LOSS_SIGNAL_PLCWD       : out std_logic_vector(1 downto 0);                 --! Flag indicating LOSS_SIGNAL control word detected
     DETECTED_STANDBY_PLCWD           : out std_logic_vector(1 downto 0);                 --! Flag indicating STANDBY control word detected
     COMMA_K287_RXED_PLCWD            : out std_logic_vector(1 downto 0);                 --! Comma K28.7 character received flag
-    CAPABILITY_PLCWD                 : out std_logic_vector(15 downto 0);                --! Capability extracted from INIT3 control word: bits [31:24] and [63:56]
+    CAPABILITY_PLCWD                 : out std_logic_vector(7 downto 0);                --! Capability extracted from INIT3 control word: bits [31:24] and [63:56]
     SEND_RXERR_PLIF                  : in  std_logic_vector(1 downto 0);                 --! Flag to send RXERR control word to Data-Link layer when FSM exits ACTIVE_ST
     NO_SIGNAL_DETECTION_ENABLED_PLIF : in  std_logic;                                    --! Flag to enable the no-signal detection function
     ENABLE_TRANSM_DATA_PLIF          : in  std_logic;                                    --! Flag to enable the transmission of data
@@ -88,7 +88,7 @@ signal DETECTED_RXERR_WORD_PLCWD        : std_logic_vector(1 downto 0);
 signal DETECTED_LOSS_SIGNAL_PLCWD       : std_logic_vector(1 downto 0);
 signal DETECTED_STANDBY_PLCWD           : std_logic_vector(1 downto 0);
 signal COMMA_K287_RXED_PLCWD            : std_logic_vector(1 downto 0);
-signal CAPABILITY_PLCWD                 : std_logic_vector(15 downto 0);
+signal CAPABILITY_PLCWD                 : std_logic_vector(7 downto 0);
 signal SEND_RXERR_PLIF                  : std_logic_vector(1 downto 0) := "00";
 signal NO_SIGNAL_DETECTION_ENABLED_PLIF : std_logic := '0';
 signal ENABLE_TRANSM_DATA_PLIF          : std_logic := '0';
@@ -250,7 +250,7 @@ begin
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 2.1: INIT 3: DATA_RX_PLCWD",        x"12345678"& x"00000000", DATA_RX_PLCWD,        test_failed);
-  check_equal("Test 2.1: INIT 3: CAPABILITY_PLCWD",     x"00" & x"FF",            CAPABILITY_PLCWD,     test_failed);
+  check_equal("Test 2.1: INIT 3: CAPABILITY_PLCWD",     x"FF",                    CAPABILITY_PLCWD,     test_failed);
   check_equal("Test 2.1: INIT 3: VALID_K_CHARAC_PLCWD", x"00",                    VALID_K_CHARAC_PLCWD, test_failed);
   check_equal("Test 2.1: INIT 3: DATA_RDY_PLCWD",       "10",                     DATA_RDY_PLCWD,       test_failed);
   check_equal("Test 2.1: INIT 3: RX_NEW_WORD_PLCWD",    "11",                     RX_NEW_WORD_PLCWD,    test_failed);
@@ -263,7 +263,7 @@ begin
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 2.2: INIT 3: DATA_RX_PLCWD",        x"00000000" & x"12345678", DATA_RX_PLCWD,        test_failed);
-  check_equal("Test 2.2: INIT 3: CAPABILITY_PLCWD",     x"FF" & x"00",             CAPABILITY_PLCWD,     test_failed);
+  check_equal("Test 2.2: INIT 3: CAPABILITY_PLCWD",     x"FF",                     CAPABILITY_PLCWD,     test_failed);
   check_equal("Test 2.2: INIT 3: VALID_K_CHARAC_PLCWD", x"00",                     VALID_K_CHARAC_PLCWD, test_failed);
   check_equal("Test 2.2: INIT 3: DATA_RDY_PLCWD",       "01",                      DATA_RDY_PLCWD,       test_failed);
   check_equal("Test 2.2: INIT 3: RX_NEW_WORD_PLCWD",    "11",                      RX_NEW_WORD_PLCWD,    test_failed);
@@ -276,7 +276,7 @@ begin
   wait until falling_edge(CLK);
   wait until falling_edge(CLK);
   check_equal("Test 2.3: INIT 3: DATA_RX_PLCWD",        x"00000000" & x"00000000", DATA_RX_PLCWD,        test_failed);
-  check_equal("Test 2.3: INIT 3: CAPABILITY_PLCWD",     x"FF" & x"FF",             CAPABILITY_PLCWD,     test_failed);
+  check_equal("Test 2.3: INIT 3: CAPABILITY_PLCWD",     x"FF",                     CAPABILITY_PLCWD,     test_failed);
   check_equal("Test 2.3: INIT 3: VALID_K_CHARAC_PLCWD", x"00",                     VALID_K_CHARAC_PLCWD, test_failed);
   check_equal("Test 2.3: INIT 3: DATA_RDY_PLCWD",       "00",                      DATA_RDY_PLCWD,       test_failed);
   check_equal("Test 2.3: INIT 3: RX_NEW_WORD_PLCWD",    "11",                      RX_NEW_WORD_PLCWD,    test_failed);
